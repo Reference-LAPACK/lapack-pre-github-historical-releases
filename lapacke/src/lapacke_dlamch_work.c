@@ -28,15 +28,14 @@
 *****************************************************************************
 * Contents: Native middle-level C interface to LAPACK function dlamch
 * Author: Intel Corporation
-* Generated November, 2011
+* Generated November 2015
 *****************************************************************************/
 
 #include "lapacke_utils.h"
 
 double LAPACKE_dlamch_work( char cmach )
 {
-    lapack_int info = 0;
-	double res;
+    double res;
     /* Call LAPACK function and adjust info */
     res = LAPACK_dlamch( &cmach );
     return res;

@@ -1,5 +1,5 @@
 /*****************************************************************************
-  Copyright (c) 2011, Intel Corp.
+  Copyright (c) 2014, Intel Corp.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -28,30 +28,30 @@
 *****************************************************************************
 * Contents: Native high-level C interface to LAPACK function clanhe
 * Author: Intel Corporation
-* Generated November, 2011
+* Generated November 2015
 *****************************************************************************/
 
 #include "lapacke_utils.h"
 
-float LAPACKE_clanhe( int matrix_order, char norm, char uplo, lapack_int n,
+float LAPACKE_clanhe( int matrix_layout, char norm, char uplo, lapack_int n,
                       const lapack_complex_float* a, lapack_int lda )
 {
     lapack_int info = 0;
     float res = 0.;
     float* work = NULL;
-    if( matrix_order != LAPACK_COL_MAJOR && matrix_order != LAPACK_ROW_MAJOR ) {
+    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
         LAPACKE_xerbla( "LAPACKE_clanhe", -1 );
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
     /* Optionally check input matrices for NaNs */
-    if( LAPACKE_che_nancheck( matrix_order, uplo, n, a, lda ) ) {
+    if( LAPACKE_che_nancheck( matrix_layout, uplo, n, a, lda ) ) {
         return -5;
     }
 #endif
     /* Allocate memory for working array(s) */
     if( LAPACKE_lsame( norm, 'i' ) || LAPACKE_lsame( norm, '1' ) ||
-        LAPACKE_lsame( norm, '0' ) ) {
+        LAPACKE_lsame( norm, 'O' ) ) {
         work = (float*)LAPACKE_malloc( sizeof(float) * MAX(1,n) );
         if( work == NULL ) {
             info = LAPACK_WORK_MEMORY_ERROR;
@@ -59,10 +59,10 @@ float LAPACKE_clanhe( int matrix_order, char norm, char uplo, lapack_int n,
         }
     }
     /* Call middle-level interface */
-    res = LAPACKE_clanhe_work( matrix_order, norm, uplo, n, a, lda, work );
+    res = LAPACKE_clanhe_work( matrix_layout, norm, uplo, n, a, lda, work );
     /* Release memory and exit */
     if( LAPACKE_lsame( norm, 'i' ) || LAPACKE_lsame( norm, '1' ) ||
-        LAPACKE_lsame( norm, '0' ) ) {
+        LAPACKE_lsame( norm, 'O' ) ) {
         LAPACKE_free( work );
     }
 exit_level_0:

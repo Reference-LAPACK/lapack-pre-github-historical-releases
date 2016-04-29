@@ -1,5 +1,5 @@
 /*****************************************************************************
-  Copyright (c) 2011, Intel Corp.
+  Copyright (c) 2014, Intel Corp.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -28,37 +28,29 @@
 *****************************************************************************
 * Contents: Native high-level C interface to LAPACK function ssyconv
 * Author: Intel Corporation
-* Generated November, 2011
+* Generated November 2015
 *****************************************************************************/
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_ssyconv( int matrix_order, char uplo, char way, lapack_int n,
-                            float* a, lapack_int lda, const lapack_int* ipiv )
+lapack_int LAPACKE_ssyconv( int matrix_layout, char uplo, char way, lapack_int n,
+                            float* a, lapack_int lda, const lapack_int* ipiv, float* work )
 {
     lapack_int info = 0;
-    float* work = NULL;
-    if( matrix_order != LAPACK_COL_MAJOR && matrix_order != LAPACK_ROW_MAJOR ) {
+    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
         LAPACKE_xerbla( "LAPACKE_ssyconv", -1 );
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
     /* Optionally check input matrices for NaNs */
-    if( LAPACKE_sge_nancheck( matrix_order, lda, n, a, lda ) ) {
+    if( LAPACKE_sge_nancheck( matrix_layout, lda, n, a, lda ) ) {
         return -5;
     }
 #endif
-    /* Allocate memory for working array(s) */
-    work = (float*)LAPACKE_malloc( sizeof(float) * MAX(1,n) );
-    if( work == NULL ) {
-        info = LAPACK_WORK_MEMORY_ERROR;
-        goto exit_level_0;
-    }
+   
     /* Call middle-level interface */
-    info = LAPACKE_ssyconv_work( matrix_order, uplo, way, n, a, lda, ipiv,
+    info = LAPACKE_ssyconv_work( matrix_layout, uplo, way, n, a, lda, ipiv,
                                  work );
-    /* Release memory and exit */
-    LAPACKE_free( work );
 exit_level_0:
     if( info == LAPACK_WORK_MEMORY_ERROR ) {
         LAPACKE_xerbla( "LAPACKE_ssyconv", info );

@@ -1,5 +1,5 @@
 /*
-   LAPACKE Example : Calling DGELS using row-major order
+   LAPACKE Example : Calling DGELS using row-major layout
    =====================================================
  
    The program computes the solution to the system of linear
@@ -27,7 +27,7 @@
          (  16 16 )
          (  18 16 )
     We will first store the input matrix as a static C two-dimensional array,
-    which is stored in row-major order, and let LAPACKE handle the work space
+    which is stored in row-major layout, and let LAPACKE handle the work space
     array allocation. The LAPACK base name for this function is gels, and we 
     will use double precision (d), so the LAPACKE function name is LAPACKE_dgels.
 
@@ -49,13 +49,13 @@
 
    LAPACKE_dgels (row-major, high-level) Example Program Results
 
-  -- LAPACKE Example routine (version 3.5.0) --
+  -- LAPACKE Example routine (version 3.6.0) --
   -- LAPACK is a software package provided by Univ. of Tennessee,    --
   -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-     February 2012
+     November 2015
 
 */
-/* Calling DGELS using row-major order */
+/* Calling DGELS using row-major layout */
 
 /* Includes */
 #include <stdio.h>

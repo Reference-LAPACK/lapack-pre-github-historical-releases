@@ -1,5 +1,5 @@
 /*****************************************************************************
-  Copyright (c) 2011, Intel Corp.
+  Copyright (c) 2014, Intel Corp.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -28,15 +28,15 @@
 *****************************************************************************
 * Contents: Native high-level C interface to LAPACK function dtpttr
 * Author: Intel Corporation
-* Generated November, 2011
+* Generated November 2015
 *****************************************************************************/
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_dtpttr( int matrix_order, char uplo, lapack_int n,
+lapack_int LAPACKE_dtpttr( int matrix_layout, char uplo, lapack_int n,
                            const double* ap, double* a, lapack_int lda )
 {
-    if( matrix_order != LAPACK_COL_MAJOR && matrix_order != LAPACK_ROW_MAJOR ) {
+    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
         LAPACKE_xerbla( "LAPACKE_dtpttr", -1 );
         return -1;
     }
@@ -46,5 +46,5 @@ lapack_int LAPACKE_dtpttr( int matrix_order, char uplo, lapack_int n,
         return -4;
     }
 #endif
-    return LAPACKE_dtpttr_work( matrix_order, uplo, n, ap, a, lda );
+    return LAPACKE_dtpttr_work( matrix_layout, uplo, n, ap, a, lda );
 }

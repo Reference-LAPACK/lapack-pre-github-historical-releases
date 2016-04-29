@@ -1,5 +1,5 @@
 /*****************************************************************************
-  Copyright (c) 2011, Intel Corp.
+  Copyright (c) 2014, Intel Corp.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -28,24 +28,24 @@
 *****************************************************************************
 * Contents: Native high-level C interface to LAPACK function zgetrf
 * Author: Intel Corporation
-* Generated November, 2011
+* Generated November 2015
 *****************************************************************************/
 
 #include "lapacke_utils.h"
 
-lapack_int LAPACKE_zgetrf( int matrix_order, lapack_int m, lapack_int n,
+lapack_int LAPACKE_zgetrf( int matrix_layout, lapack_int m, lapack_int n,
                            lapack_complex_double* a, lapack_int lda,
                            lapack_int* ipiv )
 {
-    if( matrix_order != LAPACK_COL_MAJOR && matrix_order != LAPACK_ROW_MAJOR ) {
+    if( matrix_layout != LAPACK_COL_MAJOR && matrix_layout != LAPACK_ROW_MAJOR ) {
         LAPACKE_xerbla( "LAPACKE_zgetrf", -1 );
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
     /* Optionally check input matrices for NaNs */
-    if( LAPACKE_zge_nancheck( matrix_order, m, n, a, lda ) ) {
+    if( LAPACKE_zge_nancheck( matrix_layout, m, n, a, lda ) ) {
         return -4;
     }
 #endif
-    return LAPACKE_zgetrf_work( matrix_order, m, n, a, lda, ipiv );
+    return LAPACKE_zgetrf_work( matrix_layout, m, n, a, lda, ipiv );
 }

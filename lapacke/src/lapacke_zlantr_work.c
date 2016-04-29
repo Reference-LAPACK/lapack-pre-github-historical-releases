@@ -1,5 +1,5 @@
 /*****************************************************************************
-  Copyright (c) 2011, Intel Corp.
+  Copyright (c) 2014, Intel Corp.
   All rights reserved.
 
   Redistribution and use in source and binary forms, with or without
@@ -28,26 +28,26 @@
 *****************************************************************************
 * Contents: Native middle-level C interface to LAPACK function zlantr
 * Author: Intel Corporation
-* Generated November, 2011
+* Generated November 2015
 *****************************************************************************/
 
 #include "lapacke_utils.h"
 
-double LAPACKE_zlantr_work( int matrix_order, char norm, char uplo,
+double LAPACKE_zlantr_work( int matrix_layout, char norm, char uplo,
                                 char diag, lapack_int m, lapack_int n,
                                 const lapack_complex_double* a, lapack_int lda,
                                 double* work )
 {
     lapack_int info = 0;
 	double res = 0.;
-    if( matrix_order == LAPACK_COL_MAJOR ) {
+    if( matrix_layout == LAPACK_COL_MAJOR ) {
         /* Call LAPACK function and adjust info */
         res = LAPACK_zlantr( &norm, &uplo, &diag, &m, &n, a, &lda, work );
         if( info < 0 ) {
             info = info - 1;
         }
-    } else if( matrix_order == LAPACK_ROW_MAJOR ) {
-        lapack_int lda_t = MAX(1,n);
+    } else if( matrix_layout == LAPACK_ROW_MAJOR ) {
+        lapack_int lda_t = MAX(1,m);
         lapack_complex_double* a_t = NULL;
         /* Check leading dimension(s) */
         if( lda < n ) {
@@ -57,13 +57,13 @@ double LAPACKE_zlantr_work( int matrix_order, char norm, char uplo,
         }
         /* Allocate memory for temporary array(s) */
         a_t = (lapack_complex_double*)
-            LAPACKE_malloc( sizeof(lapack_complex_double) * lda_t * MAX(1,n) );
+            LAPACKE_malloc( sizeof(lapack_complex_double) * lda_t * MAX(1,MAX(m,n)) );
         if( a_t == NULL ) {
             info = LAPACK_TRANSPOSE_MEMORY_ERROR;
             goto exit_level_0;
         }
         /* Transpose input matrices */
-        LAPACKE_ztr_trans( matrix_order, uplo, diag, n, a, lda, a_t, lda_t );
+        LAPACKE_ztr_trans( matrix_layout, uplo, diag, MAX(m,n), a, lda, a_t, lda_t );
         /* Call LAPACK function and adjust info */
         res = LAPACK_zlantr( &norm, &uplo, &diag, &m, &n, a_t, &lda_t, work );
         info = 0;  /* LAPACK call is ok! */

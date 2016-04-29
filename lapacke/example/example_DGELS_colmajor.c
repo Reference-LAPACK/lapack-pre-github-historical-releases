@@ -1,5 +1,5 @@
 /*
-   LAPACKE Example : Calling DGELS using col-major order
+   LAPACKE Example : Calling DGELS using col-major layout
    =====================================================
  
    The program computes the solution to the system of linear
@@ -27,7 +27,7 @@
          (  16 16 )
          (  18 16 )
     We will first store the input matrix as a static C two-dimensional array,
-    which is stored in col-major order, and let LAPACKE handle the work space
+    which is stored in col-major layout, and let LAPACKE handle the work space
     array allocation. The LAPACK base name for this function is gels, and we 
     will use double precision (d), so the LAPACKE function name is LAPACKE_dgels.
 
@@ -49,13 +49,13 @@
 
    LAPACKE_dgels (col-major, high-level) Example Program Results
 
-  -- LAPACKE Example routine (version 3.5.0) --
+  -- LAPACKE Example routine (version 3.6.0) --
   -- LAPACK is a software package provided by Univ. of Tennessee,    --
   -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-     February 2012
+     November 2015
 
 */
-/* Calling DGELS using col-major order */
+/* Calling DGELS using col-major layout */
 
 /* Includes */
 #include <stdio.h>
@@ -66,10 +66,9 @@
 int main (int argc, const char * argv[])
 {
    /* Locals */
-   double A[5][3] = {1,2,3,4,5,1,3,5,2,4,1,4,2,5,3};
-   double b[5][2] = {-10,12,14,16,18,-3,14,12,16,16};
+   double A[5][3] = {{1,2,3},{4,5,1},{3,5,2},{4,1,4},{2,5,3}};
+   double b[5][2] = {{-10,12},{14,16},{18,-3},{14,12},{16,16}};
    lapack_int info,m,n,lda,ldb,nrhs;
-   int i,j;
 
    /* Initialization */
    m = 5;
@@ -92,5 +91,5 @@ int main (int argc, const char * argv[])
    /* Print Solution */
    print_matrix_colmajor( "Solution", n, nrhs, *b, ldb );
    printf( "\n" );
-   exit( 0 );
+   exit( info );
 } /* End of LAPACKE_dgels Example */

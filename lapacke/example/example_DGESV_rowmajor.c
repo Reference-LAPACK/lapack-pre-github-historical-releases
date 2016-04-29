@@ -25,10 +25,10 @@
 
    LAPACKE_dgesv (row-major, high-level) Example Program Results
 
-  -- LAPACKE Example routine (version 3.5.0) --
+  -- LAPACKE Example routine (version 3.6.0) --
   -- LAPACK is a software package provided by Univ. of Tennessee,    --
   -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-     February 2012
+     November 2015
 
 */
 #include <stdlib.h>
@@ -43,9 +43,8 @@ int main(int argc, char **argv) {
         /* Locals */
         lapack_int n, nrhs, lda, ldb, info;
 		int i, j;
-		double normr, normb;
         /* Local arrays */
-		double *A, *b, *Acopy, *bcopy;
+		double *A, *b;
 		lapack_int *ipiv;
 		
         /* Default Value */

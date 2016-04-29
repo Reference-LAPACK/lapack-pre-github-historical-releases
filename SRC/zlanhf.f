@@ -131,7 +131,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date September 2012
+*> \date November 2015
 *
 *> \ingroup complex16OTHERcomputational
 *
@@ -246,10 +246,10 @@
 *  =====================================================================
       DOUBLE PRECISION FUNCTION ZLANHF( NORM, TRANSR, UPLO, N, A, WORK )
 *
-*  -- LAPACK computational routine (version 3.4.2) --
+*  -- LAPACK computational routine (version 3.6.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     September 2012
+*     November 2015
 *
 *     .. Scalar Arguments ..
       CHARACTER          NORM, TRANSR, UPLO
@@ -286,7 +286,7 @@
          ZLANHF = ZERO
          RETURN
       ELSE IF( N.EQ.1 ) THEN
-         ZLANHF = ABS( A(0) )
+         ZLANHF = ABS(DBLE(A(0)))
          RETURN
       END IF
 *
