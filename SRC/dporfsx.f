@@ -3,10 +3,10 @@
      $                    ERR_BNDS_NORM, ERR_BNDS_COMP, NPARAMS, PARAMS,
      $                    WORK, IWORK, INFO )
 *
-*     -- LAPACK routine (version 3.2)                                 --
+*     -- LAPACK routine (version 3.2.1)                                 --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- November 2008                                                --
+*     -- April 2009                                                   --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -36,7 +36,8 @@
 *     definite, and provides error bounds and backward error estimates
 *     for the solution.  In addition to normwise error bound, the code
 *     provides maximum componentwise error bound if possible.  See
-*     comments for ERR_BNDS for details of the error bounds.
+*     comments for ERR_BNDS_NORM and ERR_BNDS_COMP for details of the
+*     error bounds.
 *
 *     The original system of linear equations may have been equilibrated
 *     before calling this routine, as described by arguments EQUED and S
@@ -299,7 +300,7 @@
       DOUBLE PRECISION   COMPONENTWISE_DEFAULT, RTHRESH_DEFAULT
       DOUBLE PRECISION   DZTHRESH_DEFAULT
       PARAMETER          ( ITREF_DEFAULT = 1.0D+0 )
-      PARAMETER          ( ITHRESH_DEFAULT = 100.0D+0 )
+      PARAMETER          ( ITHRESH_DEFAULT = 10.0D+0 )
       PARAMETER          ( COMPONENTWISE_DEFAULT = 1.0D+0 )
       PARAMETER          ( RTHRESH_DEFAULT = 0.5D+0 )
       PARAMETER          ( DZTHRESH_DEFAULT = 0.25D+0 )
@@ -312,8 +313,6 @@
      $                   LA_LINRX_RCOND_I
       PARAMETER          ( LA_LINRX_TRUST_I = 1, LA_LINRX_ERR_I = 2 )
       PARAMETER          ( LA_LINRX_RCOND_I = 3 )
-      INTEGER            LA_LINRX_MAX_N_ERRS
-      PARAMETER          ( LA_LINRX_MAX_N_ERRS = 3 )
 *     ..
 *     .. Local Scalars ..
       CHARACTER(1)       NORM

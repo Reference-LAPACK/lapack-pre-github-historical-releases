@@ -1,10 +1,10 @@
       SUBROUTINE DTFSM( TRANSR, SIDE, UPLO, TRANS, DIAG, M, N, ALPHA, A,
      +                  B, LDB )
 *
-*  -- LAPACK routine (version 3.2)                                    --
+*  -- LAPACK routine (version 3.2.1)                                    --
 *
 *  -- Contributed by Fred Gustavson of the IBM Watson Research Center --
-*  -- November 2008                                                   --
+*  -- April 2009                                                      --
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -126,8 +126,8 @@
 *           max( 1, m ).
 *           Unchanged on exit.
 *
-*  Notes
-*  =====
+*  Further Details
+*  ===============
 *
 *  We first consider Rectangular Full Packed (RFP) Format when N is
 *  even. We give an example where N = 6.
@@ -305,6 +305,7 @@
             END IF
          END IF
 *
+*
          IF( MISODD ) THEN
 *
 *           SIDE = 'L' and N is odd
@@ -322,24 +323,34 @@
 *                    SIDE  ='L', N is odd, TRANSR = 'N', UPLO = 'L', and
 *                    TRANS = 'N'
 *
-                     CALL DTRSM( 'L', 'L', 'N', DIAG, M1, N, ALPHA,
-     +                           A( 0 ), M, B, LDB )
-                     CALL DGEMM( 'N', 'N', M2, N, M1, -ONE, A( M1 ), M,
-     +                           B, LDB, ALPHA, B( M1, 0 ), LDB )
-                     CALL DTRSM( 'L', 'U', 'T', DIAG, M2, N, ONE,
-     +                           A( M ), M, B( M1, 0 ), LDB )
+                     IF( M.EQ.1 ) THEN
+                        CALL DTRSM( 'L', 'L', 'N', DIAG, M1, N, ALPHA,
+     +                              A, M, B, LDB )
+                     ELSE
+                        CALL DTRSM( 'L', 'L', 'N', DIAG, M1, N, ALPHA,
+     +                              A( 0 ), M, B, LDB )
+                        CALL DGEMM( 'N', 'N', M2, N, M1, -ONE, A( M1 ),
+     +                              M, B, LDB, ALPHA, B( M1, 0 ), LDB )
+                        CALL DTRSM( 'L', 'U', 'T', DIAG, M2, N, ONE,
+     +                              A( M ), M, B( M1, 0 ), LDB )
+                     END IF
 *
                   ELSE
 *
 *                    SIDE  ='L', N is odd, TRANSR = 'N', UPLO = 'L', and
 *                    TRANS = 'T'
 *
-                     CALL DTRSM( 'L', 'U', 'N', DIAG, M2, N, ALPHA,
-     +                           A( M ), M, B( M1, 0 ), LDB )
-                     CALL DGEMM( 'T', 'N', M1, N, M2, -ONE, A( M1 ), M,
-     +                           B( M1, 0 ), LDB, ALPHA, B, LDB )
-                     CALL DTRSM( 'L', 'L', 'T', DIAG, M1, N, ONE,
-     +                           A( 0 ), M, B, LDB )
+                     IF( M.EQ.1 ) THEN
+                        CALL DTRSM( 'L', 'L', 'T', DIAG, M1, N, ALPHA,
+     +                              A( 0 ), M, B, LDB )
+                     ELSE
+                        CALL DTRSM( 'L', 'U', 'N', DIAG, M2, N, ALPHA,
+     +                              A( M ), M, B( M1, 0 ), LDB )
+                        CALL DGEMM( 'T', 'N', M1, N, M2, -ONE, A( M1 ),
+     +                              M, B( M1, 0 ), LDB, ALPHA, B, LDB )
+                        CALL DTRSM( 'L', 'L', 'T', DIAG, M1, N, ONE,
+     +                              A( 0 ), M, B, LDB )
+                     END IF
 *
                   END IF
 *
@@ -388,24 +399,36 @@
 *                    SIDE  ='L', N is odd, TRANSR = 'T', UPLO = 'L', and
 *                    TRANS = 'N'
 *
-                     CALL DTRSM( 'L', 'U', 'T', DIAG, M1, N, ALPHA,
-     +                           A( 0 ), M1, B, LDB )
-                     CALL DGEMM( 'T', 'N', M2, N, M1, -ONE, A( M1*M1 ),
-     +                           M1, B, LDB, ALPHA, B( M1, 0 ), LDB )
-                     CALL DTRSM( 'L', 'L', 'N', DIAG, M2, N, ONE,
-     +                           A( 1 ), M1, B( M1, 0 ), LDB )
+                     IF( M.EQ.1 ) THEN
+                        CALL DTRSM( 'L', 'U', 'T', DIAG, M1, N, ALPHA,
+     +                              A( 0 ), M1, B, LDB )
+                     ELSE
+                        CALL DTRSM( 'L', 'U', 'T', DIAG, M1, N, ALPHA,
+     +                              A( 0 ), M1, B, LDB )
+                        CALL DGEMM( 'T', 'N', M2, N, M1, -ONE,
+     +                              A( M1*M1 ), M1, B, LDB, ALPHA,
+     +                              B( M1, 0 ), LDB )
+                        CALL DTRSM( 'L', 'L', 'N', DIAG, M2, N, ONE,
+     +                              A( 1 ), M1, B( M1, 0 ), LDB )
+                     END IF
 *
                   ELSE
 *
 *                    SIDE  ='L', N is odd, TRANSR = 'T', UPLO = 'L', and
 *                    TRANS = 'T'
 *
-                     CALL DTRSM( 'L', 'L', 'T', DIAG, M2, N, ALPHA,
-     +                           A( 1 ), M1, B( M1, 0 ), LDB )
-                     CALL DGEMM( 'N', 'N', M1, N, M2, -ONE, A( M1*M1 ),
-     +                           M1, B( M1, 0 ), LDB, ALPHA, B, LDB )
-                     CALL DTRSM( 'L', 'U', 'N', DIAG, M1, N, ONE,
-     +                           A( 0 ), M1, B, LDB )
+                     IF( M.EQ.1 ) THEN
+                        CALL DTRSM( 'L', 'U', 'N', DIAG, M1, N, ALPHA,
+     +                              A( 0 ), M1, B, LDB )
+                     ELSE
+                        CALL DTRSM( 'L', 'L', 'T', DIAG, M2, N, ALPHA,
+     +                              A( 1 ), M1, B( M1, 0 ), LDB )
+                        CALL DGEMM( 'N', 'N', M1, N, M2, -ONE,
+     +                              A( M1*M1 ), M1, B( M1, 0 ), LDB,
+     +                              ALPHA, B, LDB )
+                        CALL DTRSM( 'L', 'U', 'N', DIAG, M1, N, ONE,
+     +                              A( 0 ), M1, B, LDB )
+                     END IF
 *
                   END IF
 *

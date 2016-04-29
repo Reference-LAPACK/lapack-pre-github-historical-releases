@@ -4,10 +4,10 @@
      $                    ERR_BNDS_COMP, NPARAMS, PARAMS, WORK, IWORK,
      $                    INFO )
 *
-*     -- LAPACK driver routine (version 3.2)                          --
+*     -- LAPACK driver routine (version 3.2.1)                          --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- November 2008                                                --
+*     -- April 2009                                                   --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -428,7 +428,7 @@
 *
 *     .. Parameters ..
       REAL               ZERO, ONE
-      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+      PARAMETER          ( ZERO = 0.0E+0, ONE = 1.0E+0 )
       INTEGER            FINAL_NRM_ERR_I, FINAL_CMP_ERR_I, BERR_I
       INTEGER            RCOND_I, NRM_RCOND_I, NRM_ERR_I, CMP_RCOND_I
       INTEGER            CMP_ERR_I, PIV_GROWTH_I

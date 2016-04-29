@@ -1,10 +1,12 @@
       SUBROUTINE ZCPOSV( UPLO, N, NRHS, A, LDA, B, LDB, X, LDX, WORK,
      +                   SWORK, RWORK, ITER, INFO )
 *
-*  -- LAPACK PROTOTYPE driver routine (version 3.2) --
-*     Univ. of Tennessee, Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..
-*     November 2008
+*  -- LAPACK PROTOTYPE driver routine (version 3.2.1)                 --
 *
+*  -- April 2009                                                      --
+*
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
 *     ..
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -211,7 +213,7 @@
 *
 *     Compute some constants.
 *
-      ANRM = ZLANHE( 'I', UPLO, N, A, LDA, WORK )
+      ANRM = ZLANHE( 'I', UPLO, N, A, LDA, RWORK )
       EPS = DLAMCH( 'Epsilon' )
       CTE = ANRM*EPS*SQRT( DBLE( N ) )*BWDMAX
 *

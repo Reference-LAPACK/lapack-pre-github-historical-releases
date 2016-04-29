@@ -3,9 +3,10 @@
      $                   IWORK, LIWORK, INFO )
       IMPLICIT NONE
 *
-*  -- LAPACK computational routine (version 3.2) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK computational routine (version 3.2.1)                                  --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*  -- April 2009                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          JOBZ, RANGE
@@ -67,7 +68,7 @@
 *    Computer Science Division Technical Report No. UCB/CSD-97-971,
 *    UC Berkeley, May 1997.
 *
-*  Notes:
+*  Further Details
 *  1.SSTEMR works only on machines which follow IEEE-754
 *  floating-point standard in their handling of infinities and NaNs.
 *  This permits the use of efficient inner loops avoiding a check for

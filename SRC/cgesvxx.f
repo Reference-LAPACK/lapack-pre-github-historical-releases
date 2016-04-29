@@ -4,10 +4,10 @@
      $                    ERR_BNDS_COMP, NPARAMS, PARAMS, WORK, RWORK,
      $                    INFO )
 *
-*     -- LAPACK driver routine (version 3.2)                          --
+*     -- LAPACK driver routine (version 3.2.1)                          --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- November 2008                                                --
+*     -- April 2009                                                   --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -398,7 +398,7 @@
 *
 *     WORK    (workspace) COMPLEX array, dimension (2*N)
 *
-*     RWORK   (workspace) REAL array, dimension (3*N)
+*     RWORK   (workspace) REAL array, dimension (2*N)
 *
 *     INFO    (output) INTEGER
 *       = 0:  Successful exit. The solution to every right-hand side is

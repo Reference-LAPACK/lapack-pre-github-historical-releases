@@ -1,12 +1,12 @@
-      Subroutine CPORFSX( UPLO, EQUED, N, NRHS, A, LDA, AF, LDAF, S, B,
+      SUBROUTINE CPORFSX( UPLO, EQUED, N, NRHS, A, LDA, AF, LDAF, S, B,
      $                    LDB, X, LDX, RCOND, BERR, N_ERR_BNDS,
      $                    ERR_BNDS_NORM, ERR_BNDS_COMP, NPARAMS, PARAMS,
      $                    WORK, RWORK, INFO )
 *
-*     -- LAPACK routine (version 3.2)                                 --
+*     -- LAPACK routine (version 3.2.1)                                 --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- November 2008                                                --
+*     -- April 2009                                                   --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -35,7 +35,8 @@
 *     definite, and provides error bounds and backward error estimates
 *     for the solution.  In addition to normwise error bound, the code
 *     provides maximum componentwise error bound if possible.  See
-*     comments for ERR_BNDS for details of the error bounds.
+*     comments for ERR_BNDS_NORM and ERR_BNDS_COMP for details of the
+*     error bounds.
 *
 *     The original system of linear equations may have been equilibrated
 *     before calling this routine, as described by arguments EQUED and S
@@ -261,9 +262,9 @@
 *            is true, 0.0 is false.
 *         Default: 1.0 (attempt componentwise convergence)
 *
-*     WORK    (workspace) REAL array, dimension (4*N)
+*     WORK    (workspace) COMPLEX array, dimension (2*N)
 *
-*     IWORK   (workspace) INTEGER array, dimension (N)
+*     RWORK   (workspace) REAL array, dimension (2*N)
 *
 *     INFO    (output) INTEGER
 *       = 0:  Successful exit. The solution to every right-hand side is
@@ -311,8 +312,6 @@
      $                   LA_LINRX_RCOND_I
       PARAMETER          ( LA_LINRX_TRUST_I = 1, LA_LINRX_ERR_I = 2 )
       PARAMETER          ( LA_LINRX_RCOND_I = 3 )
-      INTEGER            LA_LINRX_MAX_N_ERRS
-      PARAMETER          ( LA_LINRX_MAX_N_ERRS = 3 )
 *     ..
 *     .. Local Scalars ..
       CHARACTER(1)       NORM
@@ -329,7 +328,7 @@
       EXTERNAL           XERBLA, CPOCON, CLA_PORFSX_EXTENDED
 *     ..
 *     .. Intrinsic Functions ..
-      INTRINSIC          MAX, SQRT
+      INTRINSIC          MAX, SQRT, TRANSFER
 *     ..
 *     .. External Functions ..
       EXTERNAL           LSAME, BLAS_FPINFO_X, ILATRANS, ILAPREC
@@ -454,7 +453,7 @@
 *     number of A.
 *
       NORM = 'I'
-      ANORM = CLANHE( NORM, UPLO, N, A, LDA, WORK )
+      ANORM = CLANHE( NORM, UPLO, N, A, LDA, RWORK )
       CALL CPOCON( UPLO, N, AF, LDAF, ANORM, RCOND, WORK, RWORK,
      $     INFO )
 *
@@ -467,7 +466,8 @@
          CALL CLA_PORFSX_EXTENDED( PREC_TYPE, UPLO, N,
      $        NRHS, A, LDA, AF, LDAF, RCEQU, S, B,
      $        LDB, X, LDX, BERR, N_NORMS, ERR_BNDS_NORM, ERR_BNDS_COMP,
-     $        WORK(N+1), WORK(1), WORK(2*N+1), WORK(1), RCOND,
+     $        WORK, RWORK, WORK(N+1),
+     $        TRANSFER (RWORK(1:2*N), (/ (ZERO, ZERO) /), N), RCOND,
      $        ITHRESH, RTHRESH, UNSTABLE_THRESH, IGNORE_CWISE,
      $        INFO )
       END IF

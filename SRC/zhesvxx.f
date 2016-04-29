@@ -3,10 +3,10 @@
      $                    N_ERR_BNDS, ERR_BNDS_NORM, ERR_BNDS_COMP,
      $                    NPARAMS, PARAMS, WORK, RWORK, INFO )
 *
-*     -- LAPACK driver routine (version 3.2)                          --
+*     -- LAPACK driver routine (version 3.2.1)                          --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- November 2008                                                --
+*     -- April 2009                                                   --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -155,7 +155,7 @@
 *     IPIV    (input or output) INTEGER array, dimension (N)
 *     If FACT = 'F', then IPIV is an input argument and on entry
 *     contains details of the interchanges and the block
-*     structure of D, as determined by DSYTRF.  If IPIV(k) > 0,
+*     structure of D, as determined by ZHETRF.  If IPIV(k) > 0,
 *     then rows and columns k and IPIV(k) were interchanged and
 *     D(k,k) is a 1-by-1 diagonal block.  If UPLO = 'U' and
 *     IPIV(k) = IPIV(k-1) < 0, then rows and columns k-1 and
@@ -166,7 +166,7 @@
 *
 *     If FACT = 'N', then IPIV is an output argument and on exit
 *     contains details of the interchanges and the block
-*     structure of D, as determined by DSYTRF.
+*     structure of D, as determined by ZHETRF.
 *
 *     EQUED   (input or output) CHARACTER*1
 *     Specifies the form of equilibration that was done.
@@ -361,7 +361,7 @@
 *
 *     WORK    (workspace) COMPLEX*16 array, dimension (2*N)
 *
-*     RWORK   (workspace) DOUBLE PRECISION array, dimension (3*N)
+*     RWORK   (workspace) DOUBLE PRECISION array, dimension (2*N)
 *
 *     INFO    (output) INTEGER
 *       = 0:  Successful exit. The solution to every right-hand side is
@@ -522,7 +522,7 @@
 *
             IF( N.GT.0 )
      $           RPVGRW = ZLA_HERPVGRW( UPLO, N, INFO, A, LDA, AF, LDAF,
-     $           IPIV, WORK )
+     $           IPIV, RWORK )
             RETURN
          END IF
       END IF
@@ -531,7 +531,7 @@
 *
       IF( N.GT.0 )
      $     RPVGRW = ZLA_HERPVGRW( UPLO, N, INFO, A, LDA, AF, LDAF, IPIV,
-     $     WORK )
+     $     RWORK )
 *
 *     Compute the solution matrix X.
 *

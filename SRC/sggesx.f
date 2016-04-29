@@ -3,9 +3,10 @@
      $                   VSR, LDVSR, RCONDE, RCONDV, WORK, LWORK, IWORK,
      $                   LIWORK, BWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.2) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK driver routine (version 3.2.1)                                  --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*  -- April 2009                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          JOBVSL, JOBVSR, SENSE, SORT
@@ -229,7 +230,7 @@
 *                      be caused due to scaling.
 *                =N+3: reordering failed in STGSEN.
 *
-*  Further details
+*  Further Details
 *  ===============
 *
 *  An approximate (asymptotic) bound on the average absolute error of

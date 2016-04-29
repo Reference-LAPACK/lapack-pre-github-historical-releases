@@ -3,10 +3,10 @@
      $                    N_ERR_BNDS, ERR_BNDS_NORM, ERR_BNDS_COMP,
      $                    NPARAMS, PARAMS, WORK, RWORK, INFO )
 *
-*     -- LAPACK driver routine (version 3.2)                          --
+*     -- LAPACK driver routine (version 3.2.1)                          --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- November 2008                                                --
+*     -- April 2009                                                   --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -353,9 +353,9 @@
 *            is true, 0.0 is false.
 *         Default: 1.0 (attempt componentwise convergence)
 *
-*     WORK    (workspace) DOUBLE PRECISION array, dimension (4*N)
+*     WORK    (workspace) COMPLEX*16 array, dimension (2*N)
 *
-*     IWORK   (workspace) INTEGER array, dimension (N)
+*     RWORK   (workspace) DOUBLE PRECISION array, dimension (2*N)
 *
 *     INFO    (output) INTEGER
 *       = 0:  Successful exit. The solution to every right-hand side is
@@ -514,14 +514,14 @@
 *           Compute the reciprocal pivot growth factor of the
 *           leading rank-deficient INFO columns of A.
 *
-            RPVGRW = ZLA_PORPVGRW( UPLO, N, A, LDA, AF, LDAF, WORK )
+            RPVGRW = ZLA_PORPVGRW( UPLO, N, A, LDA, AF, LDAF, RWORK )
             RETURN
          END IF
       END IF
 *
 *     Compute the reciprocal pivot growth factor RPVGRW.
 *
-      RPVGRW = ZLA_PORPVGRW( UPLO, N, A, LDA, AF, LDAF, WORK )
+      RPVGRW = ZLA_PORPVGRW( UPLO, N, A, LDA, AF, LDAF, RWORK )
 *
 *     Compute the solution matrix X.
 *

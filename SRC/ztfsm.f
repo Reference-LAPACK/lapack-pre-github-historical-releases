@@ -1,10 +1,10 @@
       SUBROUTINE ZTFSM( TRANSR, SIDE, UPLO, TRANS, DIAG, M, N, ALPHA, A,
      +                  B, LDB )
 *
-*  -- LAPACK routine (version 3.2)                                    --
+*  -- LAPACK routine (version 3.2.1)                                    --
 *
 *  -- Contributed by Fred Gustavson of the IBM Watson Research Center --
-*  -- November 2008                                                   --
+*  -- April 2009                                                      --
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -126,8 +126,8 @@
 *           max( 1, m ).
 *           Unchanged on exit.
 *
-*  Notes:
-*  ======
+*  Further Details
+*  ===============
 *
 *  We first consider Standard Packed Format when N is even.
 *  We give an example where N = 6.
@@ -339,24 +339,34 @@
 *                    SIDE  ='L', N is odd, TRANSR = 'N', UPLO = 'L', and
 *                    TRANS = 'N'
 *
-                     CALL ZTRSM( 'L', 'L', 'N', DIAG, M1, N, ALPHA,
-     +                           A( 0 ), M, B, LDB )
-                     CALL ZGEMM( 'N', 'N', M2, N, M1, -CONE, A( M1 ), M,
-     +                           B, LDB, ALPHA, B( M1, 0 ), LDB )
-                     CALL ZTRSM( 'L', 'U', 'C', DIAG, M2, N, CONE,
-     +                           A( M ), M, B( M1, 0 ), LDB )
+                     IF( M.EQ.1 ) THEN
+                        CALL ZTRSM( 'L', 'L', 'N', DIAG, M1, N, ALPHA,
+     +                              A, M, B, LDB )
+                     ELSE
+                        CALL ZTRSM( 'L', 'L', 'N', DIAG, M1, N, ALPHA,
+     +                              A( 0 ), M, B, LDB )
+                        CALL ZGEMM( 'N', 'N', M2, N, M1, -CONE, A( M1 ),
+     +                              M, B, LDB, ALPHA, B( M1, 0 ), LDB )
+                        CALL ZTRSM( 'L', 'U', 'C', DIAG, M2, N, CONE,
+     +                              A( M ), M, B( M1, 0 ), LDB )
+                     END IF
 *
                   ELSE
 *
 *                    SIDE  ='L', N is odd, TRANSR = 'N', UPLO = 'L', and
 *                    TRANS = 'C'
 *
-                     CALL ZTRSM( 'L', 'U', 'N', DIAG, M2, N, ALPHA,
-     +                           A( M ), M, B( M1, 0 ), LDB )
-                     CALL ZGEMM( 'C', 'N', M1, N, M2, -CONE, A( M1 ), M,
-     +                           B( M1, 0 ), LDB, ALPHA, B, LDB )
-                     CALL ZTRSM( 'L', 'L', 'C', DIAG, M1, N, CONE,
-     +                           A( 0 ), M, B, LDB )
+                     IF( M.EQ.1 ) THEN
+                        CALL ZTRSM( 'L', 'L', 'C', DIAG, M1, N, ALPHA,
+     +                              A( 0 ), M, B, LDB )
+                     ELSE
+                        CALL ZTRSM( 'L', 'U', 'N', DIAG, M2, N, ALPHA,
+     +                              A( M ), M, B( M1, 0 ), LDB )
+                        CALL ZGEMM( 'C', 'N', M1, N, M2, -CONE, A( M1 ),
+     +                              M, B( M1, 0 ), LDB, ALPHA, B, LDB )
+                        CALL ZTRSM( 'L', 'L', 'C', DIAG, M1, N, CONE,
+     +                              A( 0 ), M, B, LDB )
+                     END IF
 *
                   END IF
 *
@@ -405,24 +415,36 @@
 *                    SIDE  ='L', N is odd, TRANSR = 'C', UPLO = 'L', and
 *                    TRANS = 'N'
 *
-                     CALL ZTRSM( 'L', 'U', 'C', DIAG, M1, N, ALPHA,
-     +                           A( 0 ), M1, B, LDB )
-                     CALL ZGEMM( 'C', 'N', M2, N, M1, -CONE, A( M1*M1 ),
-     +                           M1, B, LDB, ALPHA, B( M1, 0 ), LDB )
-                     CALL ZTRSM( 'L', 'L', 'N', DIAG, M2, N, CONE,
-     +                           A( 1 ), M1, B( M1, 0 ), LDB )
+                     IF( M.EQ.1 ) THEN
+                        CALL ZTRSM( 'L', 'U', 'C', DIAG, M1, N, ALPHA,
+     +                              A( 0 ), M1, B, LDB )
+                     ELSE
+                        CALL ZTRSM( 'L', 'U', 'C', DIAG, M1, N, ALPHA,
+     +                              A( 0 ), M1, B, LDB )
+                        CALL ZGEMM( 'C', 'N', M2, N, M1, -CONE,
+     +                              A( M1*M1 ), M1, B, LDB, ALPHA,
+     +                              B( M1, 0 ), LDB )
+                        CALL ZTRSM( 'L', 'L', 'N', DIAG, M2, N, CONE,
+     +                              A( 1 ), M1, B( M1, 0 ), LDB )
+                     END IF
 *
                   ELSE
 *
 *                    SIDE  ='L', N is odd, TRANSR = 'C', UPLO = 'L', and
 *                    TRANS = 'C'
 *
-                     CALL ZTRSM( 'L', 'L', 'C', DIAG, M2, N, ALPHA,
-     +                           A( 1 ), M1, B( M1, 0 ), LDB )
-                     CALL ZGEMM( 'N', 'N', M1, N, M2, -CONE, A( M1*M1 ),
-     +                           M1, B( M1, 0 ), LDB, ALPHA, B, LDB )
-                     CALL ZTRSM( 'L', 'U', 'N', DIAG, M1, N, CONE,
-     +                           A( 0 ), M1, B, LDB )
+                     IF( M.EQ.1 ) THEN
+                        CALL ZTRSM( 'L', 'U', 'N', DIAG, M1, N, ALPHA,
+     +                              A( 0 ), M1, B, LDB )
+                     ELSE
+                        CALL ZTRSM( 'L', 'L', 'C', DIAG, M2, N, ALPHA,
+     +                              A( 1 ), M1, B( M1, 0 ), LDB )
+                        CALL ZGEMM( 'N', 'N', M1, N, M2, -CONE,
+     +                              A( M1*M1 ), M1, B( M1, 0 ), LDB,
+     +                              ALPHA, B, LDB )
+                        CALL ZTRSM( 'L', 'U', 'N', DIAG, M1, N, CONE,
+     +                              A( 0 ), M1, B, LDB )
+                     END IF
 *
                   END IF
 *

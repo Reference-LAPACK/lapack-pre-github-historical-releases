@@ -1,7 +1,8 @@
       SUBROUTINE CLATRZ( M, N, L, A, LDA, TAU, WORK )
 *
 *  -- LAPACK routine (version 3.2) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
 *     November 2006
 *
 *     .. Scalar Arguments ..
@@ -90,7 +91,7 @@
       COMPLEX            ALPHA
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           CLACGV, CLARFG, CLARZ
+      EXTERNAL           CLACGV, CLARFP, CLARZ
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          CONJG
@@ -115,7 +116,7 @@
 *
          CALL CLACGV( L, A( I, N-L+1 ), LDA )
          ALPHA = CONJG( A( I, I ) )
-         CALL CLARFG( L+1, ALPHA, A( I, N-L+1 ), LDA, TAU( I ) )
+         CALL CLARFP( L+1, ALPHA, A( I, N-L+1 ), LDA, TAU( I ) )
          TAU( I ) = CONJG( TAU( I ) )
 *
 *        Apply H(i) to A(1:i-1,i:n) from the right

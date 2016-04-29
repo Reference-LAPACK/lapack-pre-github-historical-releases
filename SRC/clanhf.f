@@ -1,9 +1,9 @@
       REAL FUNCTION CLANHF( NORM, TRANSR, UPLO, N, A, WORK )
 *
-*  -- LAPACK routine (version 3.2)                                    --
+*  -- LAPACK routine (version 3.2.1)                                    --
 *
 *  -- Contributed by Fred Gustavson of the IBM Watson Research Center --
-*  -- November 2008                                                   --
+*  -- April 2009                                                      --
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -90,8 +90,8 @@
 *            where LWORK >= N when NORM = 'I' or '1' or 'O'; otherwise,
 *            WORK is not referenced.
 *
-*  Note:
-*  =====
+*  Further Details
+*  ===============
 *
 *  We first consider Standard Packed Format when N is even.
 *  We give an example where N = 6.

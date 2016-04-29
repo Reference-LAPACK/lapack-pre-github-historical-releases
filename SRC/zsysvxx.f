@@ -3,10 +3,10 @@
      $                    N_ERR_BNDS, ERR_BNDS_NORM, ERR_BNDS_COMP,
      $                    NPARAMS, PARAMS, WORK, RWORK, INFO )
 *
-*     -- LAPACK driver routine (version 3.2)                          --
+*     -- LAPACK driver routine (version 3.2.1)                          --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- November 2008                                                --
+*     -- April 2009                                                   --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -114,6 +114,10 @@
 *       = 'N':  The matrix A will be copied to AF and factored.
 *       = 'E':  The matrix A will be equilibrated if necessary, then
 *               copied to AF and factored.
+*
+*     UPLO    (input) CHARACTER*1
+*       = 'U':  Upper triangle of A is stored;
+*       = 'L':  Lower triangle of A is stored.
 *
 *     N       (input) INTEGER
 *     The number of linear equations, i.e., the order of the
@@ -361,7 +365,7 @@
 *
 *     WORK    (workspace) COMPLEX*16 array, dimension (2*N)
 *
-*     RWORK   (workspace) DOUBLE PRECISION array, dimension (3*N)
+*     RWORK   (workspace) DOUBLE PRECISION array, dimension (2*N)
 *
 *     INFO    (output) INTEGER
 *       = 0:  Successful exit. The solution to every right-hand side is
@@ -523,7 +527,7 @@
 *
             IF ( N.GT.0 )
      $           RPVGRW = ZLA_SYRPVGRW( UPLO, N, INFO, A, LDA, AF,
-     $           LDAF, IPIV, WORK )
+     $           LDAF, IPIV, RWORK )
             RETURN
          END IF
       END IF
@@ -532,7 +536,7 @@
 *
       IF ( N.GT.0 )
      $     RPVGRW = ZLA_SYRPVGRW( UPLO, N, INFO, A, LDA, AF, LDAF,
-     $     IPIV, WORK )
+     $     IPIV, RWORK )
 *
 *     Compute the solution matrix X.
 *

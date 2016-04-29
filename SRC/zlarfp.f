@@ -1,7 +1,8 @@
       SUBROUTINE ZLARFP( N, ALPHA, X, INCX, TAU )
 *
 *  -- LAPACK auxiliary routine (version 3.2) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
 *     November 2006
 *
 *     .. Scalar Arguments ..
@@ -88,7 +89,7 @@
       ALPHR = DBLE( ALPHA )
       ALPHI = DIMAG( ALPHA )
 *
-      IF( XNORM.EQ.ZERO .AND. ALPHI.EQ.ZERO ) THEN
+      IF( XNORM.EQ.ZERO ) THEN
 *
 *        H  =  [1-alpha/abs(alpha) 0; 0 I], sign chosen so ALPHA >= 0.
 *
@@ -103,16 +104,16 @@
 !              zero checks when TAU.ne.ZERO, and we must clear X.
                TAU = TWO
                DO J = 1, N-1
-                  X( 1 + (J-1)*INCX ) = 0
+                  X( 1 + (J-1)*INCX ) = ZERO
                END DO
                ALPHA = -ALPHA
             END IF
          ELSE
 !           Only "reflecting" the diagonal entry to be real and non-negative.
             XNORM = DLAPY2( ALPHR, ALPHI )
-            TAU = CMPLX( ONE - ALPHR / XNORM, -ALPHI / XNORM )
+            TAU = DCMPLX( ONE - ALPHR / XNORM, -ALPHI / XNORM )
             DO J = 1, N-1
-               X( 1 + (J-1)*INCX ) = 0
+               X( 1 + (J-1)*INCX ) = ZERO
             END DO
             ALPHA = XNORM
          END IF

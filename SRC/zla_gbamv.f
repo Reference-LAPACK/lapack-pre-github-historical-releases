@@ -4,7 +4,7 @@
 *     -- LAPACK routine (version 3.2)                                 --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- November 2008                                                --
+*     -- April 2009                                                   --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -23,7 +23,7 @@
 *  Purpose
 *  =======
 *
-*  DLA_GEAMV  performs one of the matrix-vector operations
+*  DLA_GBAMV  performs one of the matrix-vector operations
 *
 *          y := alpha*abs(A)*abs(x) + beta*abs(y),
 *     or   y := alpha*abs(A)'*abs(x) + beta*abs(y),
@@ -40,7 +40,7 @@
 *  entry is considered "symbolic" if all multiplications involved
 *  in computing that entry have at least one zero multiplicand.
 *
-*  Parameters
+*  Arguments
 *  ==========
 *
 *  TRANS  - INTEGER
@@ -118,7 +118,8 @@
 *
 *  Level 2 Blas routine.
 *
-*     ..
+*  =====================================================================
+*
 *     .. Parameters ..
       COMPLEX*16         ONE, ZERO
       PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
@@ -126,7 +127,7 @@
 *     .. Local Scalars ..
       LOGICAL            SYMB_ZERO
       DOUBLE PRECISION   TEMP, SAFE1
-      INTEGER            I, INFO, IY, J, JX, KX, KY, LENX, LENY, KD
+      INTEGER            I, INFO, IY, J, JX, KX, KY, LENX, LENY, KD, KE
       COMPLEX*16         CDUM
 *     ..
 *     .. External Subroutines ..
@@ -159,9 +160,9 @@
          INFO = 2
       ELSE IF( N.LT.0 )THEN
          INFO = 3
-      ELSE IF( KL.LT.0 ) THEN
+      ELSE IF( KL.LT.0 .OR. KL.GT.M-1 ) THEN
          INFO = 4
-      ELSE IF( KU.LT.0 ) THEN
+      ELSE IF( KU.LT.0 .OR. KU.GT.N-1 ) THEN
          INFO = 5
       ELSE IF( LDAB.LT.KL+KU+1 )THEN
          INFO = 6
@@ -215,74 +216,123 @@
 *     to per-column.
 *
       KD = KU + 1
+      KE = KL + 1
       IY = KY
       IF ( INCX.EQ.1 ) THEN
-         DO I = 1, LENY
-            IF ( BETA .EQ. 0.0D+0 ) THEN
-               SYMB_ZERO = .TRUE.
-               Y( IY ) = 0.0D+0
-            ELSE IF ( Y( IY ) .EQ. 0.0D+0 ) THEN
-               SYMB_ZERO = .TRUE.
-            ELSE
-               SYMB_ZERO = .FALSE.
-               Y( IY ) = BETA * ABS( Y( IY ) )
-            END IF
-            IF ( ALPHA .NE. 0.0D+0 ) THEN
-               DO J = MAX( I-KU, 1 ), MIN( I+KL, LENX )
-                  IF( TRANS.EQ.ILATRANS( 'N' ) )THEN
+         IF( TRANS.EQ.ILATRANS( 'N' ) )THEN
+            DO I = 1, LENY
+               IF ( BETA .EQ. 0.0D+0 ) THEN
+                  SYMB_ZERO = .TRUE.
+                  Y( IY ) = 0.0D+0
+               ELSE IF ( Y( IY ) .EQ. 0.0D+0 ) THEN
+                  SYMB_ZERO = .TRUE.
+               ELSE
+                  SYMB_ZERO = .FALSE.
+                  Y( IY ) = BETA * ABS( Y( IY ) )
+               END IF
+               IF ( ALPHA .NE. 0.0D+0 ) THEN
+                  DO J = MAX( I-KL, 1 ), MIN( I+KU, LENX )
                      TEMP = CABS1( AB( KD+I-J, J ) )
-                  ELSE
-                     TEMP = CABS1( AB( J, KD+I-J ) )
-                  END IF
+                     SYMB_ZERO = SYMB_ZERO .AND.
+     $                    ( X( J ) .EQ. ZERO .OR. TEMP .EQ. ZERO )
 
-                  SYMB_ZERO = SYMB_ZERO .AND.
-     $                 ( X( J ) .EQ. ZERO .OR. TEMP .EQ. ZERO )
+                     Y( IY ) = Y( IY ) + ALPHA*CABS1( X( J ) )*TEMP
+                  END DO
+               END IF
 
-                  Y( IY ) = Y( IY ) + ALPHA*CABS1( X( J ) )*TEMP
-               END DO
-            END IF
+               IF ( .NOT.SYMB_ZERO)
+     $              Y( IY ) = Y( IY ) + SIGN( SAFE1, Y( IY ) )
 
-            IF ( .NOT.SYMB_ZERO)
-     $           Y( IY ) = Y( IY ) + SIGN( SAFE1, Y( IY ) )
+               IY = IY + INCY
+            END DO
+         ELSE
+            DO I = 1, LENY
+               IF ( BETA .EQ. 0.0D+0 ) THEN
+                  SYMB_ZERO = .TRUE.
+                  Y( IY ) = 0.0D+0
+               ELSE IF ( Y( IY ) .EQ. 0.0D+0 ) THEN
+                  SYMB_ZERO = .TRUE.
+               ELSE
+                  SYMB_ZERO = .FALSE.
+                  Y( IY ) = BETA * ABS( Y( IY ) )
+               END IF
+               IF ( ALPHA .NE. 0.0D+0 ) THEN
+                  DO J = MAX( I-KL, 1 ), MIN( I+KU, LENX )
+                     TEMP = CABS1( AB( KE-I+J, I ) )
+                     SYMB_ZERO = SYMB_ZERO .AND.
+     $                    ( X( J ) .EQ. ZERO .OR. TEMP .EQ. ZERO )
 
-            IY = IY + INCY
-         END DO
+                     Y( IY ) = Y( IY ) + ALPHA*CABS1( X( J ) )*TEMP
+                  END DO
+               END IF
+
+               IF ( .NOT.SYMB_ZERO)
+     $              Y( IY ) = Y( IY ) + SIGN( SAFE1, Y( IY ) )
+
+               IY = IY + INCY
+            END DO
+         END IF
       ELSE
-         DO I = 1, LENY
-            IF ( BETA .EQ. 0.0D+0 ) THEN
-               SYMB_ZERO = .TRUE.
-               Y( IY ) = 0.0D+0
-            ELSE IF ( Y( IY ) .EQ. 0.0D+0 ) THEN
-               SYMB_ZERO = .TRUE.
-            ELSE
-               SYMB_ZERO = .FALSE.
-               Y( IY ) = BETA * ABS( Y( IY ) )
-            END IF
-            IF ( ALPHA .NE. 0.0D+0 ) THEN
-               JX = KX
-               DO J = MAX( I-KU, 1 ), MIN( I+KL, LENX )
-
-                  IF( TRANS.EQ.ILATRANS( 'N' ) )THEN
+         IF( TRANS.EQ.ILATRANS( 'N' ) )THEN
+            DO I = 1, LENY
+               IF ( BETA .EQ. 0.0D+0 ) THEN
+                  SYMB_ZERO = .TRUE.
+                  Y( IY ) = 0.0D+0
+               ELSE IF ( Y( IY ) .EQ. 0.0D+0 ) THEN
+                  SYMB_ZERO = .TRUE.
+               ELSE
+                  SYMB_ZERO = .FALSE.
+                  Y( IY ) = BETA * ABS( Y( IY ) )
+               END IF
+               IF ( ALPHA .NE. 0.0D+0 ) THEN
+                  JX = KX
+                  DO J = MAX( I-KL, 1 ), MIN( I+KU, LENX )
                      TEMP = CABS1( AB( KD+I-J, J ) )
-                  ELSE
-                     TEMP = CABS1( AB( J, KD+I-J ) )
-                  END IF
+                     SYMB_ZERO = SYMB_ZERO .AND.
+     $                    ( X( JX ) .EQ. ZERO .OR. TEMP .EQ. ZERO )
 
-                  SYMB_ZERO = SYMB_ZERO .AND.
-     $                 ( X( JX ) .EQ. ZERO .OR. TEMP .EQ. ZERO )
+                     Y( IY ) = Y( IY ) + ALPHA*CABS1( X( JX ) )*TEMP
+                     JX = JX + INCX
+                  END DO
+               END IF
 
-                  Y( IY ) = Y( IY ) + ALPHA*CABS1( X( JX ) )*TEMP
-                  JX = JX + INCX
-               END DO
-            END IF
+               IF ( .NOT.SYMB_ZERO )
+     $              Y( IY ) = Y( IY ) + SIGN( SAFE1, Y( IY ) )
 
-            IF ( .NOT.SYMB_ZERO )
-     $           Y( IY ) = Y( IY ) + SIGN( SAFE1, Y( IY ) )
+               IY = IY + INCY
+            END DO
+         ELSE
+            DO I = 1, LENY
+               IF ( BETA .EQ. 0.0D+0 ) THEN
+                  SYMB_ZERO = .TRUE.
+                  Y( IY ) = 0.0D+0
+               ELSE IF ( Y( IY ) .EQ. 0.0D+0 ) THEN
+                  SYMB_ZERO = .TRUE.
+               ELSE
+                  SYMB_ZERO = .FALSE.
+                  Y( IY ) = BETA * ABS( Y( IY ) )
+               END IF
+               IF ( ALPHA .NE. 0.0D+0 ) THEN
+                  JX = KX
+                  DO J = MAX( I-KL, 1 ), MIN( I+KU, LENX )
+                     TEMP = CABS1( AB( KE-I+J, I ) )
+                     SYMB_ZERO = SYMB_ZERO .AND.
+     $                    ( X( JX ) .EQ. ZERO .OR. TEMP .EQ. ZERO )
+                     
+                     Y( IY ) = Y( IY ) + ALPHA*CABS1( X( JX ) )*TEMP
+                     JX = JX + INCX
+                  END DO
+               END IF
 
-            IY = IY + INCY
-         END DO
+               IF ( .NOT.SYMB_ZERO )
+     $              Y( IY ) = Y( IY ) + SIGN( SAFE1, Y( IY ) )
+
+               IY = IY + INCY
+            END DO
+         END IF
+         
       END IF
-*
+*     
       RETURN
 *
 *     End of ZLA_GBAMV

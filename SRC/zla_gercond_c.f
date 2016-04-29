@@ -1,11 +1,11 @@
       DOUBLE PRECISION FUNCTION ZLA_GERCOND_C( TRANS, N, A, LDA, AF, 
-     $                             LDAF, IPIV, C, CAPPLY, INFO, WORK, 
-     $     RWORK )
+     $                                         LDAF, IPIV, C, CAPPLY,
+     $                                         INFO, WORK, RWORK )
 *
-*     -- LAPACK routine (version 3.2)                                 --
+*     -- LAPACK routine (version 3.2.1)                                 --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- November 2008                                                --
+*     -- April 2009                                                   --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -21,12 +21,63 @@
       INTEGER            IPIV( * )
       COMPLEX*16         A( LDA, * ), AF( LDAF, * ), WORK( * )
       DOUBLE PRECISION   C( * ), RWORK( * )
+*     ..
+*
+*  Purpose
+*  =======
 *
 *     ZLA_GERCOND_C computes the infinity norm condition number of
 *     op(A) * inv(diag(C)) where C is a DOUBLE PRECISION vector.
-*     WORK is a COMPLEX*16 workspace of size 2*N, and
-*     RWORK is a DOUBLE PRECISION workspace of size 3*N.
-*     ..
+*
+*  Arguments
+*  =========
+*
+*     TRANS   (input) CHARACTER*1
+*     Specifies the form of the system of equations:
+*       = 'N':  A * X = B     (No transpose)
+*       = 'T':  A**T * X = B  (Transpose)
+*       = 'C':  A**H * X = B  (Conjugate Transpose = Transpose)
+*
+*     N       (input) INTEGER
+*     The number of linear equations, i.e., the order of the
+*     matrix A.  N >= 0.
+*
+*     A       (input) COMPLEX*16 array, dimension (LDA,N)
+*     On entry, the N-by-N matrix A
+*
+*     LDA     (input) INTEGER
+*     The leading dimension of the array A.  LDA >= max(1,N).
+*
+*     AF      (input) COMPLEX*16 array, dimension (LDAF,N)
+*     The factors L and U from the factorization
+*     A = P*L*U as computed by ZGETRF.
+*
+*     LDAF    (input) INTEGER
+*     The leading dimension of the array AF.  LDAF >= max(1,N).
+*
+*     IPIV    (input) INTEGER array, dimension (N)
+*     The pivot indices from the factorization A = P*L*U
+*     as computed by ZGETRF; row i of the matrix was interchanged
+*     with row IPIV(i).
+*
+*     C       (input) DOUBLE PRECISION array, dimension (N)
+*     The vector C in the formula op(A) * inv(diag(C)).
+*
+*     CAPPLY  (input) LOGICAL
+*     If .TRUE. then access the vector C in the formula above.
+*
+*     INFO    (output) INTEGER
+*       = 0:  Successful exit.
+*     i > 0:  The ith argument is invalid.
+*
+*     WORK    (input) COMPLEX*16 array, dimension (2*N).
+*     Workspace.
+*
+*     RWORK   (input) DOUBLE PRECISION array, dimension (N).
+*     Workspace.
+*
+*  =====================================================================
+*
 *     .. Local Scalars ..
       LOGICAL            NOTRANS
       INTEGER            KASE, I, J
@@ -82,7 +133,7 @@
                   TMP = TMP + CABS1( A( I, J ) )
                END DO
             END IF
-            RWORK( 2*N+I ) = TMP
+            RWORK( I ) = TMP
             ANORM = MAX( ANORM, TMP )
          END DO
       ELSE
@@ -97,7 +148,7 @@
                   TMP = TMP + CABS1( A( J, I ) )
                END DO
             END IF
-            RWORK( 2*N+I ) = TMP
+            RWORK( I ) = TMP
             ANORM = MAX( ANORM, TMP )
          END DO
       END IF
@@ -124,7 +175,7 @@
 *           Multiply by R.
 *
             DO I = 1, N
-               WORK( I ) = WORK( I ) * RWORK( 2*N+I )
+               WORK( I ) = WORK( I ) * RWORK( I )
             END DO
 *
             IF (NOTRANS) THEN
@@ -163,7 +214,7 @@
 *           Multiply by R.
 *
             DO I = 1, N
-               WORK( I ) = WORK( I ) * RWORK( 2*N+I )
+               WORK( I ) = WORK( I ) * RWORK( I )
             END DO
          END IF
          GO TO 10

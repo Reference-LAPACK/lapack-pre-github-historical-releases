@@ -1,7 +1,8 @@
       SUBROUTINE CGEQPF( M, N, A, LDA, JPVT, TAU, WORK, RWORK, INFO )
 *
 *  -- LAPACK deprecated driver routine (version 3.2) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
 *     November 2006
 *
 *     .. Scalar Arguments ..
@@ -95,7 +96,7 @@
       COMPLEX            AII
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           CGEQR2, CLARF, CLARFG, CSWAP, CUNM2R, XERBLA
+      EXTERNAL           CGEQR2, CLARF, CLARFP, CSWAP, CUNM2R, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, CMPLX, CONJG, MAX, MIN, SQRT
@@ -185,7 +186,7 @@
 *           Generate elementary reflector H(i)
 *
             AII = A( I, I )
-            CALL CLARFG( M-I+1, AII, A( MIN( I+1, M ), I ), 1,
+            CALL CLARFP( M-I+1, AII, A( MIN( I+1, M ), I ), 1,
      $                   TAU( I ) )
             A( I, I ) = AII
 *

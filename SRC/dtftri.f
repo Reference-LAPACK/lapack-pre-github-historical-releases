@@ -1,9 +1,9 @@
       SUBROUTINE DTFTRI( TRANSR, UPLO, DIAG, N, A, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.2.1)                                  --
 *
 *  -- Contributed by Fred Gustavson of the IBM Watson Research Center --
-*  -- November 2008 --
+*  -- April 2009    --
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -65,8 +65,8 @@
 *          > 0: if INFO = i, A(i,i) is exactly zero.  The triangular
 *               matrix is singular and its inverse can not be computed.
 *
-*  Notes
-*  =====
+*  Further Details
+*  ===============
 *
 *  We first consider Rectangular Full Packed (RFP) Format when N is
 *  even. We give an example where N = 6.

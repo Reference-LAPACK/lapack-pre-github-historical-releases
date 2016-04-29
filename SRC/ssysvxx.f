@@ -3,10 +3,10 @@
      $                    N_ERR_BNDS, ERR_BNDS_NORM, ERR_BNDS_COMP,
      $                    NPARAMS, PARAMS, WORK, IWORK, INFO )
 *
-*     -- LAPACK driver routine (version 3.2)                          --
+*     -- LAPACK routine (version 3.2.1)                               --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- November 2008                                                --
+*     -- April 2009                                                   --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -113,6 +113,10 @@
 *       = 'N':  The matrix A will be copied to AF and factored.
 *       = 'E':  The matrix A will be equilibrated if necessary, then
 *               copied to AF and factored.
+*
+*     UPLO    (input) CHARACTER*1
+*       = 'U':  Upper triangle of A is stored;
+*       = 'L':  Lower triangle of A is stored.
 *
 *     N       (input) INTEGER
 *     The number of linear equations, i.e., the order of the

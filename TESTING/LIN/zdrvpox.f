@@ -2,9 +2,9 @@
      $                   A, AFAC, ASAV, B, BSAV, X, XACT, S, WORK,
      $                   RWORK, NOUT )
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.2.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     April 2009
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -23,6 +23,9 @@
 *  =======
 *
 *  ZDRVPO tests the driver routines ZPOSV, -SVX, and -SVXX.
+*
+*  Note that this file is used only when the XBLAS are available,
+*  otherwise zdrvpo.f defines this subroutine.
 *
 *  Arguments
 *  =========
@@ -263,9 +266,6 @@
                   END IF
 *
                   DO 90 IFACT = 1, NFACT
-                     DO I = 1, NTESTS
-                        RESULT (I) = ZERO
-                     END DO
                      FACT = FACTS( IFACT )
                      PREFAC = LSAME( FACT, 'F' )
                      NOFACT = LSAME( FACT, 'N' )
@@ -431,13 +431,11 @@
 *
 *                    Check the error code from ZPOSVX.
 *
-                     IF( INFO.EQ.N+1 ) GOTO 90
-                     IF( INFO.NE.IZERO ) THEN
-                        CALL ALAERH( PATH, 'ZPOSVX', INFO, IZERO,
+                     IF( INFO.NE.IZERO )
+     $                  CALL ALAERH( PATH, 'ZPOSVX', INFO, IZERO,
      $                               FACT // UPLO, N, N, -1, -1, NRHS,
      $                               IMAT, NFAIL, NERRS, NOUT )
                         GO TO 90
-                     END IF
 *
                      IF( INFO.EQ.0 ) THEN
                         IF( .NOT.PREFAC ) THEN
@@ -530,10 +528,11 @@
 *                    and error bounds using ZPOSVXX.
 *
                      SRNAMT = 'ZPOSVXX'
+                     N_ERR_BNDS = 3
                      CALL ZPOSVXX( FACT, UPLO, N, NRHS, A, LDA, AFAC,
      $                    LDA, EQUED, S, B, LDA, X,
-     $                    LDA, rcond, rpvgrw_svxx, berr, n_err_bnds,
-     $                    errbnds_n, errbnds_c, 0, ZERO, WORK,
+     $                    LDA, RCOND, RPVGRW_SVXX, BERR, N_ERR_BNDS,
+     $                    ERRBNDS_N, ERRBNDS_C, 0, ZERO, WORK,
      $                    RWORK( 2*NRHS+1 ), INFO )
 *
 *                    Check the error code from ZPOSVXX.

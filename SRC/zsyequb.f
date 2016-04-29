@@ -63,6 +63,14 @@
 *          < 0:  if INFO = -i, the i-th argument had an illegal value
 *          > 0:  if INFO = i, the i-th diagonal element is nonpositive.
 *
+*  Further Details
+*  ======= =======
+*
+*  Reference: Livne, O.E. and Golub, G.H., "Scaling by Binormalization",
+*  Numerical Algorithms, vol. 35, no. 1, pp. 97-120, January 2004.
+*  DOI 10.1023/B:NUMA.0000016606.32820.69
+*  Tech report version: http://ruready.utah.edu/archive/papers/bin.pdf
+*
 *  =====================================================================
 *
 *     .. Parameters ..
@@ -185,10 +193,10 @@
         AVG = AVG / N
 
         STD = 0.0D+0
-        DO I = 2*N+1, 3*N
-           WORK( I ) = S( I-2*N ) * WORK( I-2*N ) - AVG
+        DO I = N+1, 2*N
+           WORK( I ) = S( I-N ) * WORK( I-N ) - AVG
         END DO
-        CALL ZLASSQ( N, WORK( 2*N+1 ), 1, SCALE, SUMSQ )
+        CALL ZLASSQ( N, WORK( N+1 ), 1, SCALE, SUMSQ )
         STD = SCALE * SQRT( SUMSQ / N )
 
         IF ( STD .LT. TOL * AVG ) GOTO 999

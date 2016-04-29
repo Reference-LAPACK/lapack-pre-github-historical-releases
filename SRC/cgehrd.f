@@ -1,8 +1,9 @@
       SUBROUTINE CGEHRD( N, ILO, IHI, A, LDA, TAU, WORK, LWORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK routine (version 3.2.1)                                  --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*  -- April 2009                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            IHI, ILO, INFO, LDA, LWORK, N
@@ -97,9 +98,9 @@
 *  modified element of the upper Hessenberg matrix H, and vi denotes an
 *  element of the vector defining H(i).
 *
-*  This file is a slight modification of LAPACK-3.0's CGEHRD
+*  This file is a slight modification of LAPACK-3.0's DGEHRD
 *  subroutine incorporating improvements proposed by Quintana-Orti and
-*  Van de Geijn (2005). 
+*  Van de Geijn (2006). (See DLAHR2.)
 *
 *  =====================================================================
 *

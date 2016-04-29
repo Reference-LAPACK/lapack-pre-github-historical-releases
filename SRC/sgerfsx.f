@@ -3,10 +3,10 @@
      $                    ERR_BNDS_NORM, ERR_BNDS_COMP, NPARAMS, PARAMS,
      $                    WORK, IWORK, INFO )
 *
-*     -- LAPACK routine (version 3.2)                                 --
+*     -- LAPACK routine (version 3.2.1)                                 --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- November 2008                                                --
+*     -- April 2009                                                   --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -35,8 +35,8 @@
 *     equations and provides error bounds and backward error estimates
 *     for the solution.  In addition to normwise error bound, the code
 *     provides maximum componentwise error bound if possible.  See
-*     comments for ERR_BNDS_N and ERR_BNDS_C for details of the error
-*     bounds.
+*     comments for ERR_BNDS_NORM and ERR_BNDS_COMP for details of the
+*     error bounds.
 *
 *     The original system of linear equations may have been equilibrated
 *     before calling this routine, as described by arguments EQUED, R
@@ -500,7 +500,7 @@
      $           IGNORE_CWISE, INFO )
          ELSE
             CALL SLA_GERFSX_EXTENDED( PREC_TYPE, TRANS_TYPE,  N,
-     $           NRHS, A, LDA, AF, LDAF, IPIV, ROWEQU, C, B,
+     $           NRHS, A, LDA, AF, LDAF, IPIV, ROWEQU, R, B,
      $           LDB, X, LDX, BERR, N_NORMS, ERR_BNDS_NORM,
      $           ERR_BNDS_COMP, WORK(N+1), WORK(1), WORK(2*N+1),
      $           WORK(1), RCOND, ITHRESH, RTHRESH, UNSTABLE_THRESH,

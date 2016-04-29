@@ -1,10 +1,10 @@
       DOUBLE PRECISION FUNCTION ZLA_HERPVGRW( UPLO, N, INFO, A, LDA, AF,
-     $                             LDAF, IPIV, WORK )
+     $                                        LDAF, IPIV, WORK )
 *
-*     -- LAPACK routine (version 3.2)                                 --
+*     -- LAPACK routine (version 3.2.1)                                 --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- November 2008                                                --
+*     -- April 2009                                                   --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -20,6 +20,56 @@
       COMPLEX*16         A( LDA, * ), AF( LDAF, * )
       DOUBLE PRECISION   WORK( * )
 *     ..
+*
+*  Purpose
+*  =======
+* 
+*  ZLA_HERPVGRW computes the reciprocal pivot growth factor
+*  norm(A)/norm(U). The "max absolute element" norm is used. If this is
+*  much less than 1, the stability of the LU factorization of the
+*  (equilibrated) matrix A could be poor. This also means that the
+*  solution X, estimated condition numbers, and error bounds could be
+*  unreliable.
+*
+*  Arguments
+*  =========
+*
+*     UPLO    (input) CHARACTER*1
+*       = 'U':  Upper triangle of A is stored;
+*       = 'L':  Lower triangle of A is stored.
+*
+*     N       (input) INTEGER
+*     The number of linear equations, i.e., the order of the
+*     matrix A.  N >= 0.
+*
+*     INFO    (input) INTEGER
+*     The value of INFO returned from ZHETRF, .i.e., the pivot in
+*     column INFO is exactly 0.
+*
+*     NCOLS   (input) INTEGER
+*     The number of columns of the matrix A. NCOLS >= 0.
+*
+*     A       (input) COMPLEX*16 array, dimension (LDA,N)
+*     On entry, the N-by-N matrix A.
+*
+*     LDA     (input) INTEGER
+*     The leading dimension of the array A.  LDA >= max(1,N).
+*
+*     AF      (input) COMPLEX*16 array, dimension (LDAF,N)
+*     The block diagonal matrix D and the multipliers used to
+*     obtain the factor U or L as computed by ZHETRF.
+*
+*     LDAF    (input) INTEGER
+*     The leading dimension of the array AF.  LDAF >= max(1,N).
+*
+*     IPIV    (input) INTEGER array, dimension (N)
+*     Details of the interchanges and the block structure of D
+*     as determined by ZHETRF.
+*
+*     WORK    (input) COMPLEX*16 array, dimension (2*N)
+*
+*  =====================================================================
+*
 *     .. Local Scalars ..
       INTEGER            NCOLS, I, J, K, KP
       DOUBLE PRECISION   AMAX, UMAX, RPVGRW, TMP

@@ -3,10 +3,10 @@
      $                    ERR_BNDS_NORM, ERR_BNDS_COMP, NPARAMS, PARAMS,
      $                    WORK, RWORK, INFO )
 *
-*     -- LAPACK routine (version 3.2)                                 --
+*     -- LAPACK routine (version 3.2.1)                                 --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- November 2008                                                --
+*     -- April 2009                                                   --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -35,8 +35,8 @@
 *     equations and provides error bounds and backward error estimates
 *     for the solution.  In addition to normwise error bound, the code
 *     provides maximum componentwise error bound if possible.  See
-*     comments for ERR_BNDS_N and ERR_BNDS_C for details of the error
-*     bounds.
+*     comments for ERR_BNDS_NORM and ERR_BNDS_COMP for details of the
+*     error bounds.
 *
 *     The original system of linear equations may have been equilibrated
 *     before calling this routine, as described by arguments EQUED, R
@@ -283,9 +283,9 @@
 *            is true, 0.0 is false.
 *         Default: 1.0 (attempt componentwise convergence)
 *
-*     WORK    (workspace) REAL array, dimension (4*N)
+*     WORK    (workspace) COMPLEX array, dimension (2*N)
 *
-*     IWORK   (workspace) INTEGER array, dimension (N)
+*     RWORK   (workspace) REAL array, dimension (2*N)
 *
 *     INFO    (output) INTEGER
 *       = 0:  Successful exit. The solution to every right-hand side is
@@ -349,7 +349,7 @@
       EXTERNAL           XERBLA, CGECON, CLA_GERFSX_EXTENDED
 *     ..
 *     .. Intrinsic Functions ..
-      INTRINSIC          MAX, SQRT
+      INTRINSIC          MAX, SQRT, TRANSFER
 *     ..
 *     .. External Functions ..
       EXTERNAL           LSAME, BLAS_FPINFO_X, ILATRANS, ILAPREC
@@ -482,7 +482,7 @@
       ELSE
          NORM = '1'
       END IF
-      ANORM = CLANGE( NORM, N, N, A, LDA, WORK )
+      ANORM = CLANGE( NORM, N, N, A, LDA, RWORK )
       CALL CGECON( NORM, N, AF, LDAF, ANORM, RCOND, WORK, RWORK, INFO )
 *
 *     Perform refinement on each right-hand side
@@ -495,15 +495,17 @@
             CALL CLA_GERFSX_EXTENDED( PREC_TYPE, TRANS_TYPE,  N,
      $           NRHS, A, LDA, AF, LDAF, IPIV, COLEQU, C, B,
      $           LDB, X, LDX, BERR, N_NORMS, ERR_BNDS_NORM,
-     $           ERR_BNDS_COMP, WORK(N+1), RWORK, WORK(1), RWORK, RCOND,
-     $           ITHRESH, RTHRESH, UNSTABLE_THRESH, IGNORE_CWISE,
+     $           ERR_BNDS_COMP, WORK, RWORK, WORK(N+1),
+     $           TRANSFER (RWORK(1:2*N), (/ (ZERO, ZERO) /), N),
+     $           RCOND, ITHRESH, RTHRESH, UNSTABLE_THRESH, IGNORE_CWISE,
      $           INFO )
          ELSE
             CALL CLA_GERFSX_EXTENDED( PREC_TYPE, TRANS_TYPE,  N,
-     $           NRHS, A, LDA, AF, LDAF, IPIV, ROWEQU, C, B,
+     $           NRHS, A, LDA, AF, LDAF, IPIV, ROWEQU, R, B,
      $           LDB, X, LDX, BERR, N_NORMS, ERR_BNDS_NORM,
-     $           ERR_BNDS_COMP, WORK(N+1), RWORK, WORK(1), RWORK, RCOND,
-     $           ITHRESH, RTHRESH, UNSTABLE_THRESH, IGNORE_CWISE,
+     $           ERR_BNDS_COMP, WORK, RWORK, WORK(N+1),
+     $           TRANSFER (RWORK(1:2*N), (/ (ZERO, ZERO) /), N),
+     $           RCOND, ITHRESH, RTHRESH, UNSTABLE_THRESH, IGNORE_CWISE,
      $           INFO )
          END IF
       END IF

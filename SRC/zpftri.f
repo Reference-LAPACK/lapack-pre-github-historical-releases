@@ -1,9 +1,9 @@
       SUBROUTINE ZPFTRI( TRANSR, UPLO, N, A, INFO )
 *
-*  -- LAPACK routine (version 3.2)                                    --
+*  -- LAPACK routine (version 3.2.1)                                    --
 *
 *  -- Contributed by Fred Gustavson of the IBM Watson Research Center --
-*  -- November 2008                                                   --
+*  -- April 2009                                                      --
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -58,8 +58,8 @@
 *          > 0:  if INFO = i, the (i,i) element of the factor U or L is
 *                zero, and the inverse could not be computed.
 *
-*  Note:
-*  =====
+*  Further Details
+*  ===============
 *
 *  We first consider Standard Packed Format when N is even.
 *  We give an example where N = 6.

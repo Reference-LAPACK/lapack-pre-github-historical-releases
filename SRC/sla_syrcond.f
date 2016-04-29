@@ -1,10 +1,10 @@
       REAL FUNCTION SLA_SYRCOND( UPLO, N, A, LDA, AF, LDAF, IPIV, CMODE,
      $                           C, INFO, WORK, IWORK )
 *
-*     -- LAPACK routine (version 3.2)                                 --
+*     -- LAPACK routine (version 3.2.1)                                 --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- November 2008                                                --
+*     -- April 2009                                                   --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -18,6 +18,10 @@
 *     .. Array Arguments
       INTEGER            IWORK( * ), IPIV( * )
       REAL               A( LDA, * ), AF( LDAF, * ), WORK( * ), C( * )
+*     ..
+*
+*  Purpose
+*  =======
 *
 *     SLA_SYRCOND estimates the Skeel condition number of  op(A) * op2(C)
 *     where op2 is determined by CMODE as follows
@@ -28,9 +32,56 @@
 *     is computed by computing scaling factors R such that
 *     diag(R)*A*op2(C) is row equilibrated and computing the standard
 *     infinity-norm condition number.
-*     WORK is a real workspace of size 3*N, and
-*     IWORK is an integer workspace of size N.
-*     ..
+*
+*  Arguments
+*  ==========
+*
+*     UPLO    (input) CHARACTER*1
+*       = 'U':  Upper triangle of A is stored;
+*       = 'L':  Lower triangle of A is stored.
+*
+*     N       (input) INTEGER
+*     The number of linear equations, i.e., the order of the
+*     matrix A.  N >= 0.
+*
+*     A       (input) REAL array, dimension (LDA,N)
+*     On entry, the N-by-N matrix A.
+*
+*     LDA     (input) INTEGER
+*     The leading dimension of the array A.  LDA >= max(1,N).
+*
+*     AF      (input) REAL array, dimension (LDAF,N)
+*     The block diagonal matrix D and the multipliers used to
+*     obtain the factor U or L as computed by SSYTRF.
+*
+*     LDAF    (input) INTEGER
+*     The leading dimension of the array AF.  LDAF >= max(1,N).
+*
+*     IPIV    (input) INTEGER array, dimension (N)
+*     Details of the interchanges and the block structure of D
+*     as determined by SSYTRF.
+*
+*     CMODE   (input) INTEGER
+*     Determines op2(C) in the formula op(A) * op2(C) as follows:
+*     CMODE =  1    op2(C) = C
+*     CMODE =  0    op2(C) = I
+*     CMODE = -1    op2(C) = inv(C)
+*
+*     C       (input) REAL array, dimension (N)
+*     The vector C in the formula op(A) * op2(C).
+*
+*     INFO    (output) INTEGER
+*       = 0:  Successful exit.
+*     i > 0:  The ith argument is invalid.
+*
+*     WORK    (input) REAL array, dimension (3*N).
+*     Workspace.
+*
+*     IWORK   (input) INTEGER array, dimension (N).
+*     Workspace.
+*
+*  =====================================================================
+*
 *     .. Local Scalars ..
       CHARACTER          NORMIN
       INTEGER            KASE, I, J
@@ -149,9 +200,9 @@
             END DO
 
             IF ( UP ) THEN
-               call ssytrs( 'U', n, 1, af, ldaf, ipiv, work, n, info )
+               CALL SSYTRS( 'U', N, 1, AF, LDAF, IPIV, WORK, N, INFO )
             ELSE
-               call ssytrs( 'L', n, 1, af, ldaf, ipiv, work, n, info )
+               CALL SSYTRS( 'L', N, 1, AF, LDAF, IPIV, WORK, N, INFO )
             ENDIF
 *
 *           Multiply by inv(C).
@@ -180,9 +231,9 @@
             END IF
 
             IF ( UP ) THEN
-               call ssytrs( 'U', n, 1, af, ldaf, ipiv, work, n, info )
+               CALL SSYTRS( 'U', N, 1, AF, LDAF, IPIV, WORK, N, INFO )
             ELSE
-               call ssytrs( 'L', n, 1, af, ldaf, ipiv, work, n, info )
+               CALL SSYTRS( 'L', N, 1, AF, LDAF, IPIV, WORK, N, INFO )
             ENDIF
 *
 *           Multiply by R.

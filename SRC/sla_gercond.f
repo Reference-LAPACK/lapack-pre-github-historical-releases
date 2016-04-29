@@ -1,10 +1,10 @@
       REAL FUNCTION SLA_GERCOND ( TRANS, N, A, LDA, AF, LDAF, IPIV,
      $                            CMODE, C, INFO, WORK, IWORK )
 *
-*     -- LAPACK routine (version 3.2)                                 --
+*     -- LAPACK routine (version 3.2.1)                                 --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- November 2008                                                --
+*     -- April 2009                                                   --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -19,6 +19,10 @@
       INTEGER            IPIV( * ), IWORK( * )
       REAL               A( LDA, * ), AF( LDAF, * ), WORK( * ),
      $                   C( * )
+*    ..
+*
+*  Purpose
+*  =======
 *
 *     SLA_GERCOND estimates the Skeel condition number of op(A) * op2(C)
 *     where op2 is determined by CMODE as follows
@@ -29,9 +33,59 @@
 *     is computed by computing scaling factors R such that
 *     diag(R)*A*op2(C) is row equilibrated and computing the standard
 *     infinity-norm condition number.
-*     WORK is a REAL workspace of size 3*N, and
-*     IWORK is an INTEGER workspace of size N.
-*     ..
+*
+*  Arguments
+*  ==========
+*
+*     TRANS   (input) CHARACTER*1
+*     Specifies the form of the system of equations:
+*       = 'N':  A * X = B     (No transpose)
+*       = 'T':  A**T * X = B  (Transpose)
+*       = 'C':  A**H * X = B  (Conjugate Transpose = Transpose)
+*
+*     N       (input) INTEGER
+*     The number of linear equations, i.e., the order of the
+*     matrix A.  N >= 0.
+*
+*     A       (input) REAL array, dimension (LDA,N)
+*     On entry, the N-by-N matrix A.
+*
+*     LDA     (input) INTEGER
+*     The leading dimension of the array A.  LDA >= max(1,N).
+*
+*     AF      (input) REAL array, dimension (LDAF,N)
+*     The factors L and U from the factorization
+*     A = P*L*U as computed by SGETRF.
+*
+*     LDAF    (input) INTEGER
+*     The leading dimension of the array AF.  LDAF >= max(1,N).
+*
+*     IPIV    (input) INTEGER array, dimension (N)
+*     The pivot indices from the factorization A = P*L*U
+*     as computed by SGETRF; row i of the matrix was interchanged
+*     with row IPIV(i).
+*
+*     CMODE   (input) INTEGER
+*     Determines op2(C) in the formula op(A) * op2(C) as follows:
+*     CMODE =  1    op2(C) = C
+*     CMODE =  0    op2(C) = I
+*     CMODE = -1    op2(C) = inv(C)
+*
+*     C       (input) REAL array, dimension (N)
+*     The vector C in the formula op(A) * op2(C).
+*
+*     INFO    (output) INTEGER
+*       = 0:  Successful exit.
+*     i > 0:  The ith argument is invalid.
+*
+*     WORK    (input) REAL array, dimension (3*N).
+*     Workspace.
+*
+*     IWORK   (input) INTEGER array, dimension (N).
+*     Workspace.2
+*
+*  =====================================================================
+*
 *     .. Local Scalars ..
       LOGICAL            NOTRANS
       INTEGER            KASE, I, J
@@ -61,6 +115,10 @@
          INFO = -1
       ELSE IF( N.LT.0 ) THEN
          INFO = -2
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+         INFO = -4
+      ELSE IF( LDAF.LT.MAX( 1, N ) ) THEN
+         INFO = -6
       END IF
       IF( INFO.NE.0 ) THEN
          CALL XERBLA( 'SLA_GERCOND', -INFO )

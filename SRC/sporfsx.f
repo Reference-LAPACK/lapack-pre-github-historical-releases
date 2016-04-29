@@ -3,13 +3,13 @@
      $                    ERR_BNDS_NORM, ERR_BNDS_COMP, NPARAMS, PARAMS,
      $                    WORK, IWORK, INFO )
 *
-*     -- LAPACK routine (version 3.2)                                 --
-*     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
-*     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- November 2008                                                --
+*  -- LAPACK routine (version 3.2.1)                                  --
+*  -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and    --
+*  -- Jason Riedy of Univ. of California Berkeley.                    --
+*  -- April 2009                                                      --
 *
-*     -- LAPACK is a software package provided by Univ. of Tennessee, --
-*     -- Univ. of California Berkeley and NAG Ltd.                    --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
 *
       IMPLICIT NONE
 *     ..
@@ -36,7 +36,8 @@
 *     definite, and provides error bounds and backward error estimates
 *     for the solution.  In addition to normwise error bound, the code
 *     provides maximum componentwise error bound if possible.  See
-*     comments for ERR_BNDS for details of the error bounds.
+*     comments for ERR_BNDS_NORM and ERR_BNDS_COMP for details of the
+*     error bounds.
 *
 *     The original system of linear equations may have been equilibrated
 *     before calling this routine, as described by arguments EQUED and S
@@ -312,8 +313,6 @@
      $                   LA_LINRX_RCOND_I
       PARAMETER          ( LA_LINRX_TRUST_I = 1, LA_LINRX_ERR_I = 2 )
       PARAMETER          ( LA_LINRX_RCOND_I = 3 )
-      INTEGER            LA_LINRX_MAX_N_ERRS
-      PARAMETER          ( LA_LINRX_MAX_N_ERRS = 3 )
 *     ..
 *     .. Local Scalars ..
       CHARACTER(1)       NORM

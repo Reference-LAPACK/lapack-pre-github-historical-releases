@@ -2,9 +2,9 @@
      $                   IHIZ, Z, LDZ, NS, ND, SR, SI, V, LDV, NH, T,
      $                   LDT, NV, WV, LDWV, WORK, LWORK )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.2.1)                        --
 *     Univ. of Tennessee, Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..
-*     November 2006
+*  -- April 2009                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            IHIZ, ILOZ, KBOT, KTOP, LDH, LDT, LDV, LDWV,
@@ -196,8 +196,8 @@
 *        ==== Workspace query call to DORMHR ====
 *
          CALL DORMHR( 'R', 'N', JW, JW, 1, JW-1, T, LDT, WORK, V, LDV,
-     $                WORK( JW+1 ), -1, INFO )
-         LWK2 = INT( WORK( JW+1 ) )
+     $                WORK, -1, INFO )
+         LWK2 = INT( WORK( 1 ) )
 *
 *        ==== Workspace query call to DLAQR4 ====
 *

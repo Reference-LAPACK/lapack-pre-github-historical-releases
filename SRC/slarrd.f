@@ -3,9 +3,10 @@
      $                    M, W, WERR, WL, WU, IBLOCK, INDEXW,
      $                    WORK, IWORK, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK auxiliary routine (version 3.2.1)                        --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*  -- April 2009                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          ORDER, RANGE
@@ -218,7 +219,7 @@
      $                   IM, IN, IOFF, IOUT, IRANGE, ITMAX, ITMP1,
      $                   ITMP2, IW, IWOFF, J, JBLK, JDISC, JE, JEE, NB,
      $                   NWL, NWU
-      REAL               ATOLI, EPS, GL, GU, RTOLI, SPDIAM, TMP1, TMP2,
+      REAL               ATOLI, EPS, GL, GU, RTOLI, TMP1, TMP2,
      $                   TNORM, UFLOW, WKILL, WLU, WUL
 
 *     ..
@@ -325,7 +326,8 @@
       TNORM = MAX( ABS( GL ), ABS( GU ) )
       GL = GL - FUDGE*TNORM*EPS*N - FUDGE*TWO*PIVMIN
       GU = GU + FUDGE*TNORM*EPS*N + FUDGE*TWO*PIVMIN
-      SPDIAM = GU - GL
+*     [JAN/28/2009] remove the line below since SPDIAM variable not use
+*     SPDIAM = GU - GL
 *     Input arguments for SLAEBZ:
 *     The relative tolerance.  An interval (a,b] lies within
 *     "relative tolerance" if  b-a < RELTOL*max(|a|,|b|),
@@ -490,9 +492,14 @@
                GL =  MIN( GL, GERS( 2*J - 1))
                GU = MAX( GU, GERS(2*J) )
    40       CONTINUE
-            SPDIAM = GU - GL
-            GL = GL - FUDGE*SPDIAM*EPS*IN - FUDGE*PIVMIN
-            GU = GU + FUDGE*SPDIAM*EPS*IN + FUDGE*PIVMIN
+*           [JAN/28/2009]
+*           change SPDIAM by TNORM in lines 2 and 3 thereafter
+*           line 1: remove computation of SPDIAM (not useful anymore)
+*           SPDIAM = GU - GL
+*           GL = GL - FUDGE*SPDIAM*EPS*IN - FUDGE*PIVMIN
+*           GU = GU + FUDGE*SPDIAM*EPS*IN + FUDGE*PIVMIN
+            GL = GL - FUDGE*TNORM*EPS*IN - FUDGE*PIVMIN
+            GU = GU + FUDGE*TNORM*EPS*IN + FUDGE*PIVMIN
 *
             IF( IRANGE.GT.1 ) THEN
                IF( GU.LT.WL ) THEN

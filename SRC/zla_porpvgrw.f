@@ -1,10 +1,10 @@
       DOUBLE PRECISION FUNCTION ZLA_PORPVGRW( UPLO, NCOLS, A, LDA, AF, 
-     $     LDAF, WORK )
+     $                                        LDAF, WORK )
 *
-*     -- LAPACK routine (version 3.2)                                 --
+*     -- LAPACK routine (version 3.2.1)                                 --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- November 2008                                                --
+*     -- April 2009                                                   --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -19,6 +19,44 @@
       COMPLEX*16         A( LDA, * ), AF( LDAF, * )
       DOUBLE PRECISION   WORK( * )
 *     ..
+*
+*  Purpose
+*  =======
+* 
+*  ZLA_PORPVGRW computes the reciprocal pivot growth factor
+*  norm(A)/norm(U). The "max absolute element" norm is used. If this is
+*  much less than 1, the stability of the LU factorization of the
+*  (equilibrated) matrix A could be poor. This also means that the
+*  solution X, estimated condition numbers, and error bounds could be
+*  unreliable.
+*
+*  Arguments
+*  =========
+*
+*     UPLO    (input) CHARACTER*1
+*       = 'U':  Upper triangle of A is stored;
+*       = 'L':  Lower triangle of A is stored.
+*
+*     NCOLS   (input) INTEGER
+*     The number of columns of the matrix A. NCOLS >= 0.
+*
+*     A       (input) COMPLEX*16 array, dimension (LDA,N)
+*     On entry, the N-by-N matrix A.
+*
+*     LDA     (input) INTEGER
+*     The leading dimension of the array A.  LDA >= max(1,N).
+*
+*     AF      (input) COMPLEX*16 array, dimension (LDAF,N)
+*     The triangular factor U or L from the Cholesky factorization
+*     A = U**T*U or A = L*L**T, as computed by ZPOTRF.
+*
+*     LDAF    (input) INTEGER
+*     The leading dimension of the array AF.  LDAF >= max(1,N).
+*
+*     WORK    (input) COMPLEX*16 array, dimension (2*N)
+*
+*  =====================================================================
+*
 *     .. Local Scalars ..
       INTEGER            I, J
       DOUBLE PRECISION   AMAX, UMAX, RPVGRW

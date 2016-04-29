@@ -2,9 +2,10 @@
      $                   ALPHAR, ALPHAI, BETA, Q, LDQ, Z, LDZ, WORK,
      $                   LWORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK routine (version 3.2.1)                                  --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*  -- April 2009                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          COMPQ, COMPZ, JOB
@@ -777,7 +778,7 @@
 *
             IF( ILAST.LT.ILASTM )
      $         CALL DROT( ILASTM-ILAST, T( ILAST-1, ILAST+1 ), LDT,
-     $                    T( ILAST, ILAST+1 ), LDH, CL, SL )
+     $                    T( ILAST, ILAST+1 ), LDT, CL, SL )
             IF( IFRSTM.LT.ILAST-1 )
      $         CALL DROT( IFIRST-IFRSTM, T( IFRSTM, ILAST-1 ), 1,
      $                    T( IFRSTM, ILAST ), 1, CR, SR )

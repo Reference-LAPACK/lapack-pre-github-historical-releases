@@ -2,9 +2,10 @@
      $                   LDB, TOLA, TOLB, ALPHA, BETA, U, LDU, V, LDV,
      $                   Q, LDQ, WORK, NCYCLE, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK routine (version 3.2.1)                                  --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*  -- April 2009                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          JOBQ, JOBU, JOBV
@@ -143,7 +144,7 @@
 *          K and L specify the subblocks in the input matrices A and B:
 *          A23 = A(K+1:MIN(K+L,M),N-L+1:N) and B13 = B(1:L,N-L+1:N)
 *          of A and B, whose GSVD is going to be computed by STGSJA.
-*          See Further details.
+*          See Further Details.
 *
 *  A       (input/output) REAL array, dimension (LDA,N)
 *          On entry, the M-by-N matrix A.
