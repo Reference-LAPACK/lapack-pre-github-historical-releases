@@ -218,7 +218,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup realGEeigen
 *
@@ -226,10 +226,10 @@
       SUBROUTINE SGGEV( JOBVL, JOBVR, N, A, LDA, B, LDB, ALPHAR, ALPHAI,
      $                  BETA, VL, LDVL, VR, LDVR, WORK, LWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.4.0) --
+*  -- LAPACK driver routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          JOBVL, JOBVR
@@ -573,6 +573,8 @@
 *
 *     Undo scaling if necessary
 *
+  110 CONTINUE
+*
       IF( ILASCL ) THEN
          CALL SLASCL( 'G', 0, 0, ANRMTO, ANRM, N, 1, ALPHAR, N, IERR )
          CALL SLASCL( 'G', 0, 0, ANRMTO, ANRM, N, 1, ALPHAI, N, IERR )
@@ -582,10 +584,7 @@
          CALL SLASCL( 'G', 0, 0, BNRMTO, BNRM, N, 1, BETA, N, IERR )
       END IF
 *
-  110 CONTINUE
-*
       WORK( 1 ) = MAXWRK
-*
       RETURN
 *
 *     End of SGGEV

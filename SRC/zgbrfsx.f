@@ -121,7 +121,7 @@
 *>
 *> \param[in] AB
 *> \verbatim
-*>          AB is DOUBLE PRECISION array, dimension (LDAB,N)
+*>          AB is COMPLEX*16 array, dimension (LDAB,N)
 *>     The original band matrix A, stored in rows 1 to KL+KU+1.
 *>     The j-th column of A is stored in the j-th column of the
 *>     array AB as follows:
@@ -136,7 +136,7 @@
 *>
 *> \param[in] AFB
 *> \verbatim
-*>          AFB is DOUBLE PRECISION array, dimension (LDAFB,N)
+*>          AFB is COMPLEX*16 array, dimension (LDAFB,N)
 *>     Details of the LU factorization of the band matrix A, as
 *>     computed by DGBTRF.  U is stored as an upper triangular band
 *>     matrix with KL+KU superdiagonals in rows 1 to KL+KU+1, and
@@ -159,7 +159,7 @@
 *>
 *> \param[in,out] R
 *> \verbatim
-*>          R is or output) DOUBLE PRECISION array, dimension (N)
+*>          R is DOUBLE PRECISION array, dimension (N)
 *>     The row scale factors for A.  If EQUED = 'R' or 'B', A is
 *>     multiplied on the left by diag(R); if EQUED = 'N' or 'C', R
 *>     is not accessed.  R is an input argument if FACT = 'F';
@@ -177,7 +177,7 @@
 *>
 *> \param[in,out] C
 *> \verbatim
-*>          C is or output) DOUBLE PRECISION array, dimension (N)
+*>          C is DOUBLE PRECISION array, dimension (N)
 *>     The column scale factors for A.  If EQUED = 'C' or 'B', A is
 *>     multiplied on the right by diag(C); if EQUED = 'N' or 'R', C
 *>     is not accessed.  C is an input argument if FACT = 'F';
@@ -207,7 +207,7 @@
 *>
 *> \param[in,out] X
 *> \verbatim
-*>          X is DOUBLE PRECISION array, dimension (LDX,NRHS)
+*>          X is COMPLEX*16 array, dimension (LDX,NRHS)
 *>     On entry, the solution matrix X, as computed by DGETRS.
 *>     On exit, the improved solution matrix X.
 *> \endverbatim
@@ -232,7 +232,7 @@
 *>
 *> \param[out] BERR
 *> \verbatim
-*>          BERR is DOUBLE PRECISION array, dimension (NRHS)
+*>          BERR is COMPLEX*16 array, dimension (NRHS)
 *>     Componentwise relative backward error.  This is the
 *>     componentwise relative backward error of each solution vector X(j)
 *>     (i.e., the smallest relative change in any element of A or B that
@@ -350,7 +350,7 @@
 *>
 *> \param[in,out] PARAMS
 *> \verbatim
-*>          PARAMS is / output) DOUBLE PRECISION array, dimension NPARAMS
+*>          PARAMS is DOUBLE PRECISION array, dimension NPARAMS
 *>     Specifies algorithm parameters.  If an entry is .LT. 0.0, then
 *>     that entry will be filled with default value used for that
 *>     parameter.  Only positions up to NPARAMS are accessed; defaults
@@ -429,7 +429,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup complex16GBcomputational
 *
@@ -440,10 +440,10 @@
      $                    ERR_BNDS_COMP, NPARAMS, PARAMS, WORK, RWORK,
      $                    INFO )
 *
-*  -- LAPACK computational routine (version 3.4.0) --
+*  -- LAPACK computational routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          TRANS, EQUED

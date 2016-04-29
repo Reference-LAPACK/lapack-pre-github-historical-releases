@@ -266,7 +266,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup complex16GEcomputational
 *
@@ -284,10 +284,10 @@
      $                   ALPHA, BETA, Q, LDQ, Z, LDZ, WORK, LWORK,
      $                   RWORK, INFO )
 *
-*  -- LAPACK computational routine (version 3.4.0) --
+*  -- LAPACK computational routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          COMPQ, COMPZ, JOB
@@ -744,8 +744,8 @@
 *
 *           Exceptional shift.  Chosen for no particularly good reason.
 *
-            ESHIFT = ESHIFT + DCONJG( ( ASCALE*H( ILAST-1, ILAST ) ) /
-     $               ( BSCALE*T( ILAST-1, ILAST-1 ) ) )
+            ESHIFT = ESHIFT + (ASCALE*H(ILAST,ILAST-1))/
+     $                        (BSCALE*T(ILAST-1,ILAST-1))
             SHIFT = ESHIFT
          END IF
 *

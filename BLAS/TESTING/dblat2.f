@@ -95,16 +95,17 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup double_blas_testing
 *
-*  =====================================================================      PROGRAM DBLAT2
+*  =====================================================================
+      PROGRAM DBLAT2
 *
-*  -- Reference BLAS test routine (version 3.4.0) --
+*  -- Reference BLAS test routine (version 3.4.1) --
 *  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *  =====================================================================
 *
@@ -113,8 +114,8 @@
       PARAMETER          ( NIN = 5 )
       INTEGER            NSUBS
       PARAMETER          ( NSUBS = 16 )
-      DOUBLE PRECISION   ZERO, HALF, ONE
-      PARAMETER          ( ZERO = 0.0D0, HALF = 0.5D0, ONE = 1.0D0 )
+      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D0, ONE = 1.0D0 )
       INTEGER            NMAX, INCMAX
       PARAMETER          ( NMAX = 65, INCMAX = 2 )
       INTEGER            NINMAX, NIDMAX, NKBMAX, NALMAX, NBEMAX
@@ -280,14 +281,7 @@
 *
 *     Compute EPS (the machine precision).
 *
-      EPS = ONE
-   90 CONTINUE
-      IF( DDIFF( ONE + EPS, ONE ).EQ.ZERO )
-     $   GO TO 100
-      EPS = HALF*EPS
-      GO TO 90
-  100 CONTINUE
-      EPS = EPS + EPS
+      EPS = EPSILON(ZERO)
       WRITE( NOUT, FMT = 9998 )EPS
 *
 *     Check the reliability of DMVCH using exact data.

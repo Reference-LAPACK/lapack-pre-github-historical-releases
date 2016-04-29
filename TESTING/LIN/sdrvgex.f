@@ -158,7 +158,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup single_lin
 *
@@ -167,10 +167,10 @@
      $                   A, AFAC, ASAV, B, BSAV, X, XACT, S, WORK,
      $                   RWORK, IWORK, NOUT )
 *
-*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK test routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -217,9 +217,9 @@
 *     ..
 *     .. External Functions ..
       LOGICAL            LSAME
-      REAL               SGET06, SLAMCH, SLANGE, SLANTR, SLA_RPVGRW
+      REAL               SGET06, SLAMCH, SLANGE, SLANTR, SLA_GERPVGRW
       EXTERNAL           LSAME, SGET06, SLAMCH, SLANGE, SLANTR,
-     $                   SLA_RPVGRW
+     $                   SLA_GERPVGRW
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           ALADHD, ALAERH, ALASVM, SERRVX, SGEEQU, SGESV,
@@ -743,9 +743,11 @@
 *
 
                      IF ( INFO .GT. 0 .AND. INFO .LT. N+1 ) THEN
-                        RPVGRW = SLA_RPVGRW(N, INFO, A, LDA, AFAC, LDA)
+                        RPVGRW = SLA_GERPVGRW
+     $                                     (N, INFO, A, LDA, AFAC, LDA)
                      ELSE
-                        RPVGRW = SLA_RPVGRW(N, N, A, LDA, AFAC, LDA)
+                        RPVGRW = SLA_GERPVGRW
+     $                                     (N, N, A, LDA, AFAC, LDA)
                      ENDIF
 
                      RESULT( 7 ) = ABS( RPVGRW-RPVGRW_SVXX ) /

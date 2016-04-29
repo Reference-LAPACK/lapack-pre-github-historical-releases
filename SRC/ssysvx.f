@@ -132,7 +132,7 @@
 *>
 *> \param[in,out] AF
 *> \verbatim
-*>          AF is or output) REAL array, dimension (LDAF,N)
+*>          AF is REAL array, dimension (LDAF,N)
 *>          If FACT = 'F', then AF is an input argument and on entry
 *>          contains the block diagonal matrix D and the multipliers used
 *>          to obtain the factor U or L from the factorization
@@ -152,7 +152,7 @@
 *>
 *> \param[in,out] IPIV
 *> \verbatim
-*>          IPIV is or output) INTEGER array, dimension (N)
+*>          IPIV is INTEGER array, dimension (N)
 *>          If FACT = 'F', then IPIV is an input argument and on entry
 *>          contains details of the interchanges and the block structure
 *>          of D, as determined by SSYTRF.
@@ -275,7 +275,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup realSYsolve
 *
@@ -284,10 +284,10 @@
      $                   LDB, X, LDX, RCOND, FERR, BERR, WORK, LWORK,
      $                   IWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.4.0) --
+*  -- LAPACK driver routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          FACT, UPLO

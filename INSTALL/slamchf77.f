@@ -60,51 +60,21 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup auxOTHERauxiliary
 *
 *  =====================================================================
       REAL FUNCTION SLAMCH( CMACH )
 *
-*  -- LAPACK auxiliary routine (version 3.4.0) --
+*  -- LAPACK auxiliary routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          CMACH
 *     ..
-*
-*     .. Scalar Arguments ..
-      LOGICAL            IEEE1, RND
-      INTEGER            BETA, T
-*     ..
-*
-*     .. Scalar Arguments ..
-      LOGICAL            RND
-      INTEGER            BETA, EMAX, EMIN, T
-      REAL               EPS, RMAX, RMIN
-*     ..
-*
-*     .. Scalar Arguments ..
-      REAL               A, B
-*     ..
-*
-*     .. Scalar Arguments ..
-      INTEGER            BASE
-      INTEGER            EMIN
-      REAL               START
-*     ..
-*
-*     .. Scalar Arguments ..
-      LOGICAL            IEEE
-      INTEGER            BETA, EMAX, EMIN, P
-      REAL               RMAX
-*     ..
-*
-* =====================================================================
-*
 *     .. Parameters ..
       REAL               ONE, ZERO
       PARAMETER          ( ONE = 1.0E+0, ZERO = 0.0E+0 )
@@ -220,7 +190,7 @@
 *>          'round to nearest' style.
 *> \endverbatim
 *> \author LAPACK is a software package provided by Univ. of Tennessee, Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..
-*> \date November 2011
+*> \date April 2012
 *> \ingroup auxOTHERauxiliary
 *>
 *> \details \b Further \b Details
@@ -239,7 +209,7 @@
 *>
       SUBROUTINE SLAMC1( BETA, T, RND, IEEE1 )
 *
-*  -- LAPACK auxiliary routine (version 3.4.0) --
+*  -- LAPACK auxiliary routine (version 3.4.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2010
 *
@@ -392,7 +362,7 @@
 *> list.
 *> \endverbatim
 *> \author LAPACK is a software package provided by Univ. of Tennessee, Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..
-*> \date November 2011
+*> \date April 2012
 *> \ingroup auxOTHERauxiliary
 *>
 *> \param[out] BETA
@@ -452,7 +422,7 @@
 *> \endverbatim
       SUBROUTINE SLAMC2( BETA, T, RND, EPS, EMIN, RMIN, EMAX, RMAX )
 *
-*  -- LAPACK auxiliary routine (version 3.4.0) --
+*  -- LAPACK auxiliary routine (version 3.4.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2010
 *
@@ -675,7 +645,7 @@
 
       REAL FUNCTION SLAMC3( A, B )
 *
-*  -- LAPACK auxiliary routine (version 3.4.0) --
+*  -- LAPACK auxiliary routine (version 3.4.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2010
 *
@@ -722,7 +692,7 @@
 *>
       SUBROUTINE SLAMC4( EMIN, START, BASE )
 *
-*  -- LAPACK auxiliary routine (version 3.4.0) --
+*  -- LAPACK auxiliary routine (version 3.4.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2010
 *
@@ -830,7 +800,7 @@
 *>
       SUBROUTINE SLAMC5( BETA, P, EMIN, IEEE, EMAX, RMAX )
 *
-*  -- LAPACK auxiliary routine (version 3.4.0) --
+*  -- LAPACK auxiliary routine (version 3.4.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2010
 *

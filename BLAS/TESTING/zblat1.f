@@ -30,16 +30,17 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup complex16_blas_testing
 *
-*  =====================================================================      PROGRAM ZBLAT1
+*  =====================================================================
+      PROGRAM ZBLAT1
 *
-*  -- Reference BLAS test routine (version 3.4.0) --
+*  -- Reference BLAS test routine (version 3.4.1) --
 *  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *  =====================================================================
 *
@@ -570,7 +571,8 @@
 *
 *     .. Parameters ..
       INTEGER          NOUT
-      PARAMETER        (NOUT=6)
+      DOUBLE PRECISION ZERO
+      PARAMETER        (NOUT=6, ZERO=0.0D0)
 *     .. Scalar Arguments ..
       DOUBLE PRECISION SFAC
       INTEGER          LEN
@@ -593,7 +595,7 @@
 *
       DO 40 I = 1, LEN
          SD = SCOMP(I) - STRUE(I)
-         IF (SDIFF(ABS(SSIZE(I))+ABS(SFAC*SD),ABS(SSIZE(I))).EQ.0.0D0)
+         IF (ABS(SFAC*SD) .LE. ABS(SSIZE(I))*EPSILON(ZERO))
      +       GO TO 40
 *
 *                             HERE    SCOMP(I) IS NOT CLOSE TO STRUE(I).

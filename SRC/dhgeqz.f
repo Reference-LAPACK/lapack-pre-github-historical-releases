@@ -282,7 +282,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup doubleGEcomputational
 *
@@ -304,10 +304,10 @@
      $                   ALPHAR, ALPHAI, BETA, Q, LDQ, Z, LDZ, WORK,
      $                   LWORK, INFO )
 *
-*  -- LAPACK computational routine (version 3.4.0) --
+*  -- LAPACK computational routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          COMPQ, COMPZ, JOB
@@ -741,7 +741,7 @@
 *
             IF( ( DBLE( MAXIT )*SAFMIN )*ABS( H( ILAST-1, ILAST ) ).LT.
      $          ABS( T( ILAST-1, ILAST-1 ) ) ) THEN
-               ESHIFT = ESHIFT + H( ILAST-1, ILAST ) /
+               ESHIFT = ESHIFT + H( ILAST, ILAST-1 ) /
      $                  T( ILAST-1, ILAST-1 )
             ELSE
                ESHIFT = ESHIFT + ONE / ( SAFMIN*DBLE( MAXIT ) )
@@ -920,6 +920,7 @@
                      Z( J, ILAST ) = -Z( J, ILAST )
   220             CONTINUE
                END IF
+               B22 = -B22
             END IF
 *
 *           Step 2: Compute ALPHAR, ALPHAI, and BETA (see refs.)

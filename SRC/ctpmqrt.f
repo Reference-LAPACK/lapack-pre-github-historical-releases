@@ -175,7 +175,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup complexOTHERcomputational
 *
@@ -216,10 +216,10 @@
       SUBROUTINE CTPMQRT( SIDE, TRANS, M, N, K, L, NB, V, LDV, T, LDT,
      $                    A, LDA, B, LDB, WORK, INFO )
 *
-*  -- LAPACK computational routine (version 3.4.0) --
+*  -- LAPACK computational routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER SIDE, TRANS
@@ -277,13 +277,13 @@
       ELSE IF( NB.LT.1 .OR. NB.GT.K ) THEN
          INFO = -7
       ELSE IF( LDV.LT.MAX( 1, Q ) ) THEN
-         INFO = -8
+         INFO = -9
       ELSE IF( LDT.LT.NB ) THEN
-         INFO = -10
+         INFO = -11
       ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
-         INFO = -12
+         INFO = -13
       ELSE IF( LDB.LT.MAX( 1, M ) ) THEN
-         INFO = -12
+         INFO = -15
       END IF
 *
       IF( INFO.NE.0 ) THEN

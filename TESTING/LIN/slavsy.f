@@ -96,7 +96,26 @@
 *> \param[in] IPIV
 *> \verbatim
 *>          IPIV is INTEGER array, dimension (N)
-*>          The pivot indices from SSYTRF.
+*>          Details of the interchanges and the block structure of D,
+*>          as determined by SSYTRF.
+*>
+*>          If UPLO = 'U':
+*>               If IPIV(k) > 0, then rows and columns k and IPIV(k)
+*>               were interchanged and D(k,k) is a 1-by-1 diagonal block.
+*>               (If IPIV( k ) = k, no interchange was done).
+*>
+*>               If IPIV(k) = IPIV(k-1) < 0, then rows and
+*>               columns k-1 and -IPIV(k) were interchanged,
+*>               D(k-1:k,k-1:k) is a 2-by-2 diagonal block.
+*>
+*>          If UPLO = 'L':
+*>               If IPIV(k) > 0, then rows and columns k and IPIV(k)
+*>               were interchanged and D(k,k) is a 1-by-1 diagonal block.
+*>               (If IPIV( k ) = k, no interchange was done).
+*>
+*>               If IPIV(k) = IPIV(k+1) < 0, then rows and
+*>               columns k+1 and -IPIV(k) were interchanged,
+*>               D(k:k+1,k:k+1) is a 2-by-2 diagonal block.
 *> \endverbatim
 *>
 *> \param[in,out] B
@@ -127,7 +146,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup single_lin
 *
@@ -135,10 +154,10 @@
       SUBROUTINE SLAVSY( UPLO, TRANS, DIAG, N, NRHS, A, LDA, IPIV, B,
      $                   LDB, INFO )
 *
-*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK test routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          DIAG, TRANS, UPLO

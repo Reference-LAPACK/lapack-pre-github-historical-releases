@@ -31,7 +31,6 @@
 * Generated November, 2011
 *****************************************************************************/
 
-#include "lapacke.h"
 #include "lapacke_utils.h"
 
 float LAPACKE_clansy_work( int matrix_order, char norm, char uplo,
@@ -67,8 +66,6 @@ float LAPACKE_clansy_work( int matrix_order, char norm, char uplo,
         /* Call LAPACK function and adjust info */
         res = LAPACK_clansy( &norm, &uplo, &n, a_t, &lda_t, work );
         info = 0;  /* LAPACK call is ok! */
-        /* Transpose output matrices */
-        LAPACKE_csy_trans( LAPACK_COL_MAJOR, uplo, n, a_t, lda_t, a, lda );
         /* Release memory and exit */
         LAPACKE_free( a_t );
 exit_level_0:

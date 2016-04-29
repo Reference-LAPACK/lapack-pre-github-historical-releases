@@ -181,7 +181,7 @@
 *>
 *> \param[in,out] AF
 *> \verbatim
-*>          AF is or output) COMPLEX*16 array, dimension (LDAF,N)
+*>          AF is COMPLEX*16 array, dimension (LDAF,N)
 *>     If FACT = 'F', then AF is an input argument and on entry
 *>     contains the block diagonal matrix D and the multipliers
 *>     used to obtain the factor U or L from the factorization A =
@@ -201,7 +201,7 @@
 *>
 *> \param[in,out] IPIV
 *> \verbatim
-*>          IPIV is or output) INTEGER array, dimension (N)
+*>          IPIV is INTEGER array, dimension (N)
 *>     If FACT = 'F', then IPIV is an input argument and on entry
 *>     contains details of the interchanges and the block
 *>     structure of D, as determined by ZHETRF.  If IPIV(k) > 0,
@@ -220,7 +220,7 @@
 *>
 *> \param[in,out] EQUED
 *> \verbatim
-*>          EQUED is or output) CHARACTER*1
+*>          EQUED is CHARACTER*1
 *>     Specifies the form of equilibration that was done.
 *>       = 'N':  No equilibration (always true if FACT = 'N').
 *>       = 'Y':  Both row and column equilibration, i.e., A has been
@@ -231,7 +231,7 @@
 *>
 *> \param[in,out] S
 *> \verbatim
-*>          S is or output) DOUBLE PRECISION array, dimension (N)
+*>          S is DOUBLE PRECISION array, dimension (N)
 *>     The scale factors for A.  If EQUED = 'Y', A is multiplied on
 *>     the left and right by diag(S).  S is an input argument if FACT =
 *>     'F'; otherwise, S is an output argument.  If FACT = 'F' and EQUED
@@ -420,7 +420,7 @@
 *>
 *> \param[in,out] PARAMS
 *> \verbatim
-*>          PARAMS is / output) DOUBLE PRECISION array, dimension NPARAMS
+*>          PARAMS is DOUBLE PRECISION array, dimension NPARAMS
 *>     Specifies algorithm parameters.  If an entry is .LT. 0.0, then
 *>     that entry will be filled with default value used for that
 *>     parameter.  Only positions up to NPARAMS are accessed; defaults
@@ -496,7 +496,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup complex16HEsolve
 *
@@ -506,10 +506,10 @@
      $                    N_ERR_BNDS, ERR_BNDS_NORM, ERR_BNDS_COMP,
      $                    NPARAMS, PARAMS, WORK, RWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.4.0) --
+*  -- LAPACK driver routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          EQUED, FACT, UPLO

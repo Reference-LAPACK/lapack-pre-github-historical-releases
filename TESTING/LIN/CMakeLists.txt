@@ -13,7 +13,7 @@ set(SLINTST  schkaa.f
    schksp.f schksy.f schktb.f schktp.f schktr.f 
    schktz.f 
    sdrvgt.f sdrvls.f sdrvpb.f 
-   sdrvpp.f sdrvpt.f sdrvsp.f sdrvsy.f 
+   sdrvpp.f sdrvpt.f sdrvsp.f sdrvsy.f
    serrgt.f serrlq.f serrls.f 
    serrpo.f serrps.f serrql.f serrqp.f serrqr.f 
    serrrq.f serrsy.f serrtr.f serrtz.f serrvx.f 
@@ -29,11 +29,12 @@ set(SLINTST  schkaa.f
    sqrt01.f sqrt01p.f sqrt02.f sqrt03.f sqrt11.f sqrt12.f 
    sqrt13.f sqrt14.f sqrt15.f sqrt16.f sqrt17.f 
    srqt01.f srqt02.f srqt03.f srzt01.f srzt02.f 
-   sspt01.f ssyt01.f 
+   sspt01.f ssyt01.f
    stbt02.f stbt03.f stbt05.f stbt06.f stpt01.f 
    stpt02.f stpt03.f stpt05.f stpt06.f strt01.f 
    strt02.f strt03.f strt05.f strt06.f 
-   stzt01.f stzt02.f sgennd.f)
+   stzt01.f stzt02.f sgennd.f 
+   sqrt04.f sqrt05.f schkqrt.f serrqrt.f schkqrtp.f serrqrtp.f)
 
 if(USEXBLAS)
   list(APPEND SLINTST sdrvgex.f serrgex.f sdrvgbx.f sdrvpox.f sebchvxx.f)
@@ -72,7 +73,8 @@ set(CLINTST  cchkaa.f
    ctbt02.f ctbt03.f ctbt05.f ctbt06.f ctpt01.f 
    ctpt02.f ctpt03.f ctpt05.f ctpt06.f ctrt01.f 
    ctrt02.f ctrt03.f ctrt05.f ctrt06.f 
-   ctzt01.f ctzt02.f sget06.f cgennd.f)
+   ctzt01.f ctzt02.f sget06.f cgennd.f
+   cqrt04.f cqrt05.f cchkqrt.f cerrqrt.f cchkqrtp.f cerrqrtp.f )
 
 if(USEXBLAS)
   list(APPEND 
@@ -88,7 +90,7 @@ set(DLINTST  dchkaa.f
    dchksp.f dchksy.f dchktb.f dchktp.f dchktr.f 
    dchktz.f 
    ddrvgt.f ddrvls.f ddrvpb.f 
-   ddrvpp.f ddrvpt.f ddrvsp.f ddrvsy.f 
+   ddrvpp.f ddrvpt.f ddrvsp.f ddrvsy.f
    derrgt.f derrlq.f derrls.f 
    derrps.f derrql.f derrqp.f derrqr.f 
    derrrq.f derrsy.f derrtr.f derrtz.f derrvx.f 
@@ -104,11 +106,12 @@ set(DLINTST  dchkaa.f
    dqrt01.f dqrt01p.f dqrt02.f dqrt03.f dqrt11.f dqrt12.f 
    dqrt13.f dqrt14.f dqrt15.f dqrt16.f dqrt17.f 
    drqt01.f drqt02.f drqt03.f drzt01.f drzt02.f 
-   dspt01.f dsyt01.f 
+   dspt01.f dsyt01.f
    dtbt02.f dtbt03.f dtbt05.f dtbt06.f dtpt01.f 
    dtpt02.f dtpt03.f dtpt05.f dtpt06.f dtrt01.f 
    dtrt02.f dtrt03.f dtrt05.f dtrt06.f 
-   dtzt01.f dtzt02.f dgennd.f)
+   dtzt01.f dtzt02.f dgennd.f
+   dqrt04.f dqrt05.f dchkqrt.f derrqrt.f dchkqrtp.f derrqrtp.f )
 
 if(USEXBLAS)
   list(APPEND 
@@ -126,7 +129,7 @@ set(ZLINTST  zchkaa.f
    zchktp.f zchktr.f zchktz.f 
    zdrvgt.f zdrvhe.f zdrvhp.f 
    zdrvls.f zdrvpb.f zdrvpp.f zdrvpt.f 
-   zdrvsp.f zdrvsy.f 
+   zdrvsp.f zdrvsy.f
    zerrgt.f zerrhe.f zerrlq.f 
    zerrls.f zerrps.f zerrql.f zerrqp.f 
    zerrqr.f zerrrq.f zerrsy.f zerrtr.f zerrtz.f 
@@ -149,7 +152,8 @@ set(ZLINTST  zchkaa.f
    ztbt02.f ztbt03.f ztbt05.f ztbt06.f ztpt01.f 
    ztpt02.f ztpt03.f ztpt05.f ztpt06.f ztrt01.f 
    ztrt02.f ztrt03.f ztrt05.f ztrt06.f 
-   ztzt01.f ztzt02.f dget06.f zgennd.f)
+   ztzt01.f ztzt02.f dget06.f zgennd.f
+   zqrt04.f zqrt05.f zchkqrt.f zerrqrt.f zchkqrtp.f zerrqrtp.f )
 
 if(USEXBLAS)
   list(APPEND

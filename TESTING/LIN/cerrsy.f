@@ -48,17 +48,17 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup complex_lin
 *
 *  =====================================================================
       SUBROUTINE CERRSY( PATH, NUNIT )
 *
-*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK test routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER*3        PATH
@@ -126,10 +126,11 @@
       ANRM = 1.0
       OK = .TRUE.
 *
-*     Test error exits of the routines that use the diagonal pivoting
-*     factorization of a symmetric indefinite matrix.
-*
       IF( LSAMEN( 2, C2, 'SY' ) ) THEN
+*
+*        Test error exits of the routines that use factorization
+*        of a symmetric indefinite matrix with patrial
+*        (Bunch-Kaufman) pivoting.
 *
 *        CSYTRF
 *
@@ -250,10 +251,11 @@
          CALL CSYCON( 'U', 1, A, 1, IP, -ANRM, RCOND, W, INFO )
          CALL CHKXER( 'CSYCON', INFOT, NOUT, LERR, OK )
 *
-*     Test error exits of the routines that use the diagonal pivoting
-*     factorization of a symmetric indefinite packed matrix.
-*
       ELSE IF( LSAMEN( 2, C2, 'SP' ) ) THEN
+*
+*        Test error exits of the routines that use factorization
+*        of a symmetric indefinite packed matrix with patrial
+*        (Bunch-Kaufman) pivoting.
 *
 *        CSPTRF
 *

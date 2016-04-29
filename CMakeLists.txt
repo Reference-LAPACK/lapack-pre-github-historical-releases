@@ -15,9 +15,20 @@ if (UNIX)
    if ( "${CMAKE_Fortran_COMPILER}" MATCHES "ifort" )
   set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fltconsistency -fp_port" )
    endif ()
+   if ( "${CMAKE_Fortran_COMPILER}" MATCHES "xlf" )
+  set( CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -qnosave -qstrict=none" )
+   endif ()
+# Delete libmtsk in linking sequence for Sun/Oracle Fortran Compiler.
+# This library is not present in the Sun package SolarisStudio12.3-linux-x86-bin
+   STRING(REPLACE \;mtsk\; \; CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES "${CMAKE_Fortran_IMPLICIT_LINK_LIBRARIES}")
 endif ()
 
-
+# Get Python
+find_package(PythonInterp)
+message(STATUS "Looking for Python found - ${PYTHONINTERP_FOUND}")
+if (PYTHONINTERP_FOUND)
+   message(STATUS "Using Python version ${PYTHON_VERSION_STRING}")
+endif()
 # --------------------------------------------------
 
 # On Windows-GNU builds try to provide MS import libraries too.
@@ -87,6 +98,7 @@ option(BUILD_SINGLE "Build LAPACK Single Precision" ON)
 option(BUILD_DOUBLE "Build LAPACK Double Precision" ON)
 option(BUILD_COMPLEX "Build LAPACK Complex Precision" ON)
 option(BUILD_COMPLEX16 "Build LAPACK Double Complex Precision" ON)
+
 # --------------------------------------------------
 # Subdirectories that need to be processed
 
@@ -141,15 +153,29 @@ if(BUILD_TESTING)
 endif(BUILD_TESTING)
 
 # --------------------------------------------------
+# LAPACKE
+option(LAPACKE "Build LAPACKE" OFF)
+# LAPACKE has also the interface to some routines from tmglib,
+# if LAPACKE_WITH_TMG is selected, we need to add those routines to LAPACKE
+option(LAPACKE_WITH_TMG "Build LAPACKE with tmglib routines" OFF)
+if (LAPACKE_WITH_TMG)
+  option(LAPACKE "Build LAPACKE" ON)
+endif(LAPACKE_WITH_TMG)
+
+if(LAPACKE)
+  add_subdirectory(lapacke)
+endif(LAPACKE)
+
+# --------------------------------------------------
 # CPACK Packaging 
 
 SET(CPACK_PACKAGE_NAME "LAPACK")
 SET(CPACK_PACKAGE_VENDOR "University of Tennessee, Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd")
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "LAPACK- Linear Algebra Package")
-set(LAPACK_VERSION 3.4.0)
+set(LAPACK_VERSION 3.4.1)
 set(CPACK_PACKAGE_VERSION_MAJOR 3)
 set(CPACK_PACKAGE_VERSION_MINOR 4)
-set(CPACK_PACKAGE_VERSION_PATCH 0)
+set(CPACK_PACKAGE_VERSION_PATCH 1)
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 SET(CPACK_PACKAGE_INSTALL_DIRECTORY "LAPACK")
 IF(WIN32 AND NOT UNIX)
@@ -177,17 +203,27 @@ OPTION(BUILD_STATIC_LIBS "Build static libraries" ON )
 #OPTION(BUILD_SHARED_LIBS "Build shared libraries" ON )
 
 if( NOT BLAS_FOUND )
-  export(TARGETS blas lapack FILE lapack-targets.cmake)
+  if(LAPACKE)
+     export(TARGETS blas lapack tmglib lapacke FILE lapack-targets.cmake)
+  else (LAPACKE)
+     export(TARGETS blas lapack tmglib FILE lapack-targets.cmake)
+  endif(LAPACKE)
 else( NOT BLAS_FOUND )
-  export(TARGETS lapack FILE lapack-targets.cmake)
+  if(LAPACKE)
+     export(TARGETS lapack tmglib lapacke FILE lapack-targets.cmake)
+  else (LAPACKE)
+     export(TARGETS lapack tmglib FILE lapack-targets.cmake)
+  endif(LAPACKE)
 endif( NOT BLAS_FOUND )
+
 configure_file(${LAPACK_SOURCE_DIR}/CMAKE/lapack-config-version.cmake.in
   ${LAPACK_BINARY_DIR}/lapack-config-version.cmake @ONLY)
 configure_file(${LAPACK_SOURCE_DIR}/CMAKE/lapack-config-build.cmake.in
   ${LAPACK_BINARY_DIR}/lapack-config.cmake @ONLY)
 
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/lapack.pc.in ${CMAKE_CURRENT_BINARY_DIR}/lapack.pc)
- install(FILES
+  install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/lapack.pc
   DESTINATION ${PKG_CONFIG_DIR}
    )
@@ -200,5 +236,6 @@ install(FILES
   ${LAPACK_BINARY_DIR}/lapack-config-version.cmake
   DESTINATION lib/cmake/lapack-${LAPACK_VERSION}
   )
+
 install(EXPORT lapack-targets
   DESTINATION lib/cmake/lapack-${LAPACK_VERSION})

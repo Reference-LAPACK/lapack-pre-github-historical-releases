@@ -173,7 +173,7 @@
 *>
 *> \param[in,out] AFB
 *> \verbatim
-*>          AFB is or output) COMPLEX array, dimension (LDAFB,N)
+*>          AFB is COMPLEX array, dimension (LDAFB,N)
 *>          If FACT = 'F', then AFB is an input argument and on entry
 *>          contains details of the LU factorization of the band matrix
 *>          A, as computed by CGBTRF.  U is stored as an upper triangular
@@ -199,7 +199,7 @@
 *>
 *> \param[in,out] IPIV
 *> \verbatim
-*>          IPIV is or output) INTEGER array, dimension (N)
+*>          IPIV is INTEGER array, dimension (N)
 *>          If FACT = 'F', then IPIV is an input argument and on entry
 *>          contains the pivot indices from the factorization A = L*U
 *>          as computed by CGBTRF; row i of the matrix was interchanged
@@ -216,7 +216,7 @@
 *>
 *> \param[in,out] EQUED
 *> \verbatim
-*>          EQUED is or output) CHARACTER*1
+*>          EQUED is CHARACTER*1
 *>          Specifies the form of equilibration that was done.
 *>          = 'N':  No equilibration (always true if FACT = 'N').
 *>          = 'R':  Row equilibration, i.e., A has been premultiplied by
@@ -231,7 +231,7 @@
 *>
 *> \param[in,out] R
 *> \verbatim
-*>          R is or output) REAL array, dimension (N)
+*>          R is REAL array, dimension (N)
 *>          The row scale factors for A.  If EQUED = 'R' or 'B', A is
 *>          multiplied on the left by diag(R); if EQUED = 'N' or 'C', R
 *>          is not accessed.  R is an input argument if FACT = 'F';
@@ -241,7 +241,7 @@
 *>
 *> \param[in,out] C
 *> \verbatim
-*>          C is or output) REAL array, dimension (N)
+*>          C is REAL array, dimension (N)
 *>          The column scale factors for A.  If EQUED = 'C' or 'B', A is
 *>          multiplied on the right by diag(C); if EQUED = 'N' or 'R', C
 *>          is not accessed.  C is an input argument if FACT = 'F';
@@ -361,7 +361,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup complexGBsolve
 *
@@ -370,10 +370,10 @@
      $                   LDAFB, IPIV, EQUED, R, C, B, LDB, X, LDX,
      $                   RCOND, FERR, BERR, WORK, RWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.4.0) --
+*  -- LAPACK driver routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          EQUED, FACT, TRANS

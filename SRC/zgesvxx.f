@@ -183,7 +183,7 @@
 *>
 *> \param[in,out] AF
 *> \verbatim
-*>          AF is or output) COMPLEX*16 array, dimension (LDAF,N)
+*>          AF is COMPLEX*16 array, dimension (LDAF,N)
 *>     If FACT = 'F', then AF is an input argument and on entry
 *>     contains the factors L and U from the factorization
 *>     A = P*L*U as computed by ZGETRF.  If EQUED .ne. 'N', then
@@ -207,7 +207,7 @@
 *>
 *> \param[in,out] IPIV
 *> \verbatim
-*>          IPIV is or output) INTEGER array, dimension (N)
+*>          IPIV is INTEGER array, dimension (N)
 *>     If FACT = 'F', then IPIV is an input argument and on entry
 *>     contains the pivot indices from the factorization A = P*L*U
 *>     as computed by ZGETRF; row i of the matrix was interchanged
@@ -224,7 +224,7 @@
 *>
 *> \param[in,out] EQUED
 *> \verbatim
-*>          EQUED is or output) CHARACTER*1
+*>          EQUED is CHARACTER*1
 *>     Specifies the form of equilibration that was done.
 *>       = 'N':  No equilibration (always true if FACT = 'N').
 *>       = 'R':  Row equilibration, i.e., A has been premultiplied by
@@ -239,7 +239,7 @@
 *>
 *> \param[in,out] R
 *> \verbatim
-*>          R is or output) DOUBLE PRECISION array, dimension (N)
+*>          R is DOUBLE PRECISION array, dimension (N)
 *>     The row scale factors for A.  If EQUED = 'R' or 'B', A is
 *>     multiplied on the left by diag(R); if EQUED = 'N' or 'C', R
 *>     is not accessed.  R is an input argument if FACT = 'F';
@@ -257,7 +257,7 @@
 *>
 *> \param[in,out] C
 *> \verbatim
-*>          C is or output) DOUBLE PRECISION array, dimension (N)
+*>          C is DOUBLE PRECISION array, dimension (N)
 *>     The column scale factors for A.  If EQUED = 'C' or 'B', A is
 *>     multiplied on the right by diag(C); if EQUED = 'N' or 'R', C
 *>     is not accessed.  C is an input argument if FACT = 'F';
@@ -453,7 +453,7 @@
 *>
 *> \param[in,out] PARAMS
 *> \verbatim
-*>          PARAMS is / output) DOUBLE PRECISION array, dimension NPARAMS
+*>          PARAMS is DOUBLE PRECISION array, dimension NPARAMS
 *>     Specifies algorithm parameters.  If an entry is .LT. 0.0, then
 *>     that entry will be filled with default value used for that
 *>     parameter.  Only positions up to NPARAMS are accessed; defaults
@@ -529,7 +529,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup complex16GEsolve
 *
@@ -540,10 +540,10 @@
      $                    ERR_BNDS_COMP, NPARAMS, PARAMS, WORK, RWORK,
      $                    INFO )
 *
-*  -- LAPACK driver routine (version 3.4.0) --
+*  -- LAPACK driver routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          EQUED, FACT, TRANS
@@ -581,9 +581,9 @@
      $                   ROWCND, SMLNUM
 *     ..
 *     .. External Functions ..
-      EXTERNAL           LSAME, DLAMCH, ZLA_RPVGRW
+      EXTERNAL           LSAME, DLAMCH, ZLA_GERPVGRW
       LOGICAL            LSAME
-      DOUBLE PRECISION   DLAMCH, ZLA_RPVGRW
+      DOUBLE PRECISION   DLAMCH, ZLA_GERPVGRW
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           ZGEEQUB, ZGETRF, ZGETRS, ZLACPY, ZLAQGE,
@@ -732,14 +732,14 @@
 *           Compute the reciprocal pivot growth factor of the
 *           leading rank-deficient INFO columns of A.
 *
-            RPVGRW = ZLA_RPVGRW( N, INFO, A, LDA, AF, LDAF )
+            RPVGRW = ZLA_GERPVGRW( N, INFO, A, LDA, AF, LDAF )
             RETURN
          END IF
       END IF
 *
 *     Compute the reciprocal pivot growth factor RPVGRW.
 *
-      RPVGRW = ZLA_RPVGRW( N, N, A, LDA, AF, LDAF )
+      RPVGRW = ZLA_GERPVGRW( N, N, A, LDA, AF, LDAF )
 *
 *     Compute the solution matrix X.
 *

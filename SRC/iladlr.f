@@ -71,17 +71,17 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup auxOTHERauxiliary
 *
 *  =====================================================================
       INTEGER FUNCTION ILADLR( M, N, A, LDA )
 *
-*  -- LAPACK auxiliary routine (version 3.4.0) --
+*  -- LAPACK auxiliary routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       INTEGER            M, N, LDA
@@ -111,11 +111,8 @@
          ILADLR = 0
          DO J = 1, N
             I=M
-            DO WHILE ((A(I,J).NE.ZERO).AND.(I.GE.1))
-              I=I-1
-              IF (I.EQ.0) THEN
-                 EXIT
-              END IF
+            DO WHILE((A(MAX(I,1),J).EQ.ZERO).AND.(I.GE.1))
+               I=I-1
             ENDDO
             ILADLR = MAX( ILADLR, I )
          END DO

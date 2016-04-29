@@ -96,16 +96,17 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup complex_blas_testing
 *
-*  =====================================================================      PROGRAM CBLAT2
+*  =====================================================================
+      PROGRAM CBLAT2
 *
-*  -- Reference BLAS test routine (version 3.4.0) --
+*  -- Reference BLAS test routine (version 3.4.1) --
 *  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *  =====================================================================
 *
@@ -116,8 +117,8 @@
       PARAMETER          ( NSUBS = 17 )
       COMPLEX            ZERO, ONE
       PARAMETER          ( ZERO = ( 0.0, 0.0 ), ONE = ( 1.0, 0.0 ) )
-      REAL               RZERO, RHALF, RONE
-      PARAMETER          ( RZERO = 0.0, RHALF = 0.5, RONE = 1.0 )
+      REAL               RZERO
+      PARAMETER          ( RZERO = 0.0 )
       INTEGER            NMAX, INCMAX
       PARAMETER          ( NMAX = 65, INCMAX = 2 )
       INTEGER            NINMAX, NIDMAX, NKBMAX, NALMAX, NBEMAX
@@ -285,14 +286,7 @@
 *
 *     Compute EPS (the machine precision).
 *
-      EPS = RONE
-   90 CONTINUE
-      IF( SDIFF( RONE + EPS, RONE ).EQ.RZERO )
-     $   GO TO 100
-      EPS = RHALF*EPS
-      GO TO 90
-  100 CONTINUE
-      EPS = EPS + EPS
+      EPS = EPSILON(RZERO)
       WRITE( NOUT, FMT = 9998 )EPS
 *
 *     Check the reliability of CMVCH using exact data.

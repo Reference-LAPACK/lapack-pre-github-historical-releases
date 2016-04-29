@@ -96,16 +96,17 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup complex16_blas_testing
 *
-*  =====================================================================      PROGRAM ZBLAT2
+*  =====================================================================
+      PROGRAM ZBLAT2
 *
-*  -- Reference BLAS test routine (version 3.4.0) --
+*  -- Reference BLAS test routine (version 3.4.1) --
 *  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *  =====================================================================
 *
@@ -117,8 +118,8 @@
       COMPLEX*16         ZERO, ONE
       PARAMETER          ( ZERO = ( 0.0D0, 0.0D0 ),
      $                   ONE = ( 1.0D0, 0.0D0 ) )
-      DOUBLE PRECISION   RZERO, RHALF, RONE
-      PARAMETER          ( RZERO = 0.0D0, RHALF = 0.5D0, RONE = 1.0D0 )
+      DOUBLE PRECISION   RZERO
+      PARAMETER          ( RZERO = 0.0D0 )
       INTEGER            NMAX, INCMAX
       PARAMETER          ( NMAX = 65, INCMAX = 2 )
       INTEGER            NINMAX, NIDMAX, NKBMAX, NALMAX, NBEMAX
@@ -286,14 +287,7 @@
 *
 *     Compute EPS (the machine precision).
 *
-      EPS = RONE
-   90 CONTINUE
-      IF( DDIFF( RONE + EPS, RONE ).EQ.RZERO )
-     $   GO TO 100
-      EPS = RHALF*EPS
-      GO TO 90
-  100 CONTINUE
-      EPS = EPS + EPS
+      EPS = EPSILON(RZERO)
       WRITE( NOUT, FMT = 9998 )EPS
 *
 *     Check the reliability of ZMVCH using exact data.

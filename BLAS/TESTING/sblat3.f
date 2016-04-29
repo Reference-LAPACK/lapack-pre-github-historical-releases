@@ -75,16 +75,17 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup single_blas_testing
 *
-*  =====================================================================      PROGRAM SBLAT3
+*  =====================================================================
+      PROGRAM SBLAT3
 *
-*  -- Reference BLAS test routine (version 3.4.0) --
+*  -- Reference BLAS test routine (version 3.4.1) --
 *  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *  =====================================================================
 *
@@ -93,8 +94,8 @@
       PARAMETER          ( NIN = 5 )
       INTEGER            NSUBS
       PARAMETER          ( NSUBS = 6 )
-      REAL               ZERO, HALF, ONE
-      PARAMETER          ( ZERO = 0.0, HALF = 0.5, ONE = 1.0 )
+      REAL               ZERO, ONE
+      PARAMETER          ( ZERO = 0.0, ONE = 1.0 )
       INTEGER            NMAX
       PARAMETER          ( NMAX = 65 )
       INTEGER            NIDMAX, NALMAX, NBEMAX
@@ -227,14 +228,7 @@
 *
 *     Compute EPS (the machine precision).
 *
-      EPS = ONE
-   70 CONTINUE
-      IF( SDIFF( ONE + EPS, ONE ).EQ.ZERO )
-     $   GO TO 80
-      EPS = HALF*EPS
-      GO TO 70
-   80 CONTINUE
-      EPS = EPS + EPS
+      EPS = EPSILON(ZERO)
       WRITE( NOUT, FMT = 9998 )EPS
 *
 *     Check the reliability of SMMCH using exact data.

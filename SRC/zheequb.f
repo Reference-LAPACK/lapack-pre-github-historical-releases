@@ -36,8 +36,8 @@
 *>
 *> \verbatim
 *>
-*> ZSYEQUB computes row and column scalings intended to equilibrate a
-*> symmetric matrix A and reduce its condition number
+*> ZHEEQUB computes row and column scalings intended to equilibrate a
+*> Hermitian matrix A and reduce its condition number
 *> (with respect to the two-norm).  S contains the scale factors,
 *> S(i) = 1/sqrt(A(i,i)), chosen so that the scaled matrix B with
 *> elements B(i,j) = S(i)*A(i,j)*S(j) has ones on the diagonal.  This
@@ -65,7 +65,7 @@
 *> \param[in] A
 *> \verbatim
 *>          A is COMPLEX*16 array, dimension (LDA,N)
-*>          The N-by-N symmetric matrix whose scaling
+*>          The N-by-N Hermitian matrix whose scaling
 *>          factors are to be computed.  Only the diagonal elements of A
 *>          are referenced.
 *> \endverbatim
@@ -100,7 +100,7 @@
 *>
 *> \param[out] WORK
 *> \verbatim
-*>          WORK is DOUBLE PRECISION array, dimension (3*N)
+*>          WORK is COMPLEX*16 array, dimension (3*N)
 *> \endverbatim
 *>
 *> \param[out] INFO
@@ -119,17 +119,17 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup complex16HEcomputational
 *
 *  =====================================================================
       SUBROUTINE ZHEEQUB( UPLO, N, A, LDA, S, SCOND, AMAX, WORK, INFO )
 *
-*  -- LAPACK computational routine (version 3.4.0) --
+*  -- LAPACK computational routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, N

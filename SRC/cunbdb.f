@@ -124,7 +124,7 @@
 *>
 *> \param[in,out] X12
 *> \verbatim
-*>          X12 is CMPLX array, dimension (LDX12,M-Q)
+*>          X12 is COMPLEX array, dimension (LDX12,M-Q)
 *>          On entry, the top-right block of the unitary matrix to
 *>          be reduced. On exit, the form depends on TRANS:
 *>          If TRANS = 'N', then
@@ -309,9 +309,8 @@
 *     .. Parameters ..
       REAL               REALONE
       PARAMETER          ( REALONE = 1.0E0 )
-      COMPLEX            NEGONE, ONE
-      PARAMETER          ( NEGONE = (-1.0E0,0.0E0),
-     $                     ONE = (1.0E0,0.0E0) )
+      COMPLEX            ONE
+      PARAMETER          ( ONE = (1.0E0,0.0E0) )
 *     ..
 *     .. Local Scalars ..
       LOGICAL            COLMAJOR, LQUERY

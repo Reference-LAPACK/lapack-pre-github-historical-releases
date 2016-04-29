@@ -31,7 +31,6 @@
 * Generated November, 2011
 *****************************************************************************/
 
-#include "lapacke.h"
 #include "lapacke_utils.h"
 
 lapack_int LAPACKE_zlarft( int matrix_order, char direct, char storev,
@@ -40,15 +39,16 @@ lapack_int LAPACKE_zlarft( int matrix_order, char direct, char storev,
                            const lapack_complex_double* tau,
                            lapack_complex_double* t, lapack_int ldt )
 {
+    lapack_int ncols_v, nrows_v;
     if( matrix_order != LAPACK_COL_MAJOR && matrix_order != LAPACK_ROW_MAJOR ) {
         LAPACKE_xerbla( "LAPACKE_zlarft", -1 );
         return -1;
     }
 #ifndef LAPACK_DISABLE_NAN_CHECK
     /* Optionally check input matrices for NaNs */
-    lapack_int ncols_v = LAPACKE_lsame( storev, 'c' ) ? k :
+    ncols_v = LAPACKE_lsame( storev, 'c' ) ? k :
                          ( LAPACKE_lsame( storev, 'r' ) ? n : 1);
-    lapack_int nrows_v = LAPACKE_lsame( storev, 'c' ) ? n :
+    nrows_v = LAPACKE_lsame( storev, 'c' ) ? n :
                          ( LAPACKE_lsame( storev, 'r' ) ? k : 1);
     if( LAPACKE_z_nancheck( k, tau, 1 ) ) {
         return -8;

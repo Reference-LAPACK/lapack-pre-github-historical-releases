@@ -203,7 +203,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup realGEsing
 *
@@ -211,10 +211,10 @@
       SUBROUTINE SGESVD( JOBU, JOBVT, M, N, A, LDA, S, U, LDU, VT, LDVT,
      $                   WORK, LWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.4.0) --
+*  -- LAPACK driver routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          JOBU, JOBVT
@@ -477,7 +477,7 @@
             CALL SGELQF( M, N, A, LDA, DUM(1), DUM(1), -1, IERR )
             LWORK_SGELQF=DUM(1)
 *           Compute space needed for SORGLQ
-            CALL SORGLQ( N, N, M, VT, LDVT, DUM(1), DUM(1), -1, IERR )
+            CALL SORGLQ( N, N, M, DUM(1), N, DUM(1), DUM(1), -1, IERR )
             LWORK_SORGLQ_N=DUM(1)
             CALL SORGLQ( M, N, M, A, LDA, DUM(1), DUM(1), -1, IERR )
             LWORK_SORGLQ_M=DUM(1)

@@ -163,7 +163,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup single_lin
 *
@@ -172,10 +172,10 @@
      $                   THRESH, TSTERR, NMAX, A, AFAC, AINV, B, X,
      $                   XACT, WORK, RWORK, IWORK, NOUT )
 *
-*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK test routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -257,6 +257,10 @@
       IF( TSTERR )
      $   CALL SERRSY( PATH, NOUT )
       INFOT = 0
+*
+*     Set the minimum block size for which the block routine should
+*     be used, which will be later returned by ILAENV
+*
       CALL XLAENV( 2, 2 )
 *
 *     Do for each value of N in NVAL
@@ -270,6 +274,9 @@
      $      NIMAT = 1
 *
          IZERO = 0
+*
+*        Do for each value of matrix type IMAT
+*
          DO 170 IMAT = 1, NIMAT
 *
 *           Do the tests only if DOTYPE( IMAT ) is true.
@@ -288,18 +295,22 @@
             DO 160 IUPLO = 1, 2
                UPLO = UPLOS( IUPLO )
 *
-*              Set up parameters with SLATB4 and generate a test matrix
-*              with SLATMS.
+*              Begin generate the test matrix A.
+*
+*              Set up parameters with SLATB4 for the matrix generator
+*              based on the type of matrix to be generated.
 *
                CALL SLATB4( PATH, IMAT, N, N, TYPE, KL, KU, ANORM, MODE,
      $                      CNDNUM, DIST )
+*
+*              Generate a matrix with SLATMS.
 *
                SRNAMT = 'SLATMS'
                CALL SLATMS( N, N, DIST, ISEED, TYPE, RWORK, MODE,
      $                      CNDNUM, ANORM, KL, KU, UPLO, A, LDA, WORK,
      $                      INFO )
 *
-*              Check error code from SLATMS.
+*              Check error code from SLATMS and handle error.
 *
                IF( INFO.NE.0 ) THEN
                   CALL ALAERH( PATH, 'SLATMS', INFO, 0, UPLO, N, N, -1,
@@ -307,8 +318,9 @@
                   GO TO 160
                END IF
 *
-*              For types 3-6, zero one or more rows and columns of
-*              the matrix to test that INFO is returned correctly.
+*              For matrix types 3-6, zero one or more rows and
+*              columns of the matrix to test that INFO is returned
+*              correctly.
 *
                IF( ZEROT ) THEN
                   IF( IMAT.EQ.3 ) THEN
@@ -374,16 +386,29 @@
                   IZERO = 0
                END IF
 *
+*              End generate the test matrix A.
+*
 *              Do for each value of NB in NBVAL
 *
                DO 150 INB = 1, NNB
+*
+*                 Set the optimal blocksize, which will be later
+*                 returned by ILAENV.
+*
                   NB = NBVAL( INB )
                   CALL XLAENV( 1, NB )
 *
-*                 Compute the L*D*L' or U*D*U' factorization of the
-*                 matrix.
+*                 Copy the test matrix A into matrix AFAC which
+*                 will be factorized in place. This is needed to
+*                 preserve the test matrix A for subsequent tests.
 *
                   CALL SLACPY( UPLO, N, N, A, LDA, AFAC, LDA )
+*
+*                 Compute the L*D*L**T or U*D*U**T factorization of the
+*                 matrix. IWORK stores details of the interchanges and
+*                 the block structure of D. AINV is a work array for
+*                 block factorization, LWORK is the length of AINV.
+*
                   LWORK = MAX( 2, NB )*LDA
                   SRNAMT = 'SSYTRF'
                   CALL SSYTRF( UPLO, N, AFAC, LDA, IWORK, AINV, LWORK,
@@ -406,11 +431,14 @@
                      END IF
                   END IF
 *
-*                 Check error code from SSYTRF.
+*                 Check error code from SSYTRF and handle error.
 *
                   IF( INFO.NE.K )
      $               CALL ALAERH( PATH, 'SSYTRF', INFO, K, UPLO, N, N,
      $                            -1, -1, NB, IMAT, NFAIL, NERRS, NOUT )
+*
+*                 Set the condition estimate flag if the INFO is not 0.
+*
                   IF( INFO.NE.0 ) THEN
                      TRFCON = .TRUE.
                   ELSE
@@ -425,7 +453,10 @@
                   NT = 1
 *
 *+    TEST 2
-*                 Form the inverse and compute the residual.
+*                 Form the inverse and compute the residual,
+*                 if the factorization was competed without INFO > 0
+*                 (i.e. there is no zero rows and columns).
+*                 Do it only for the first block size.
 *
                   IF( INB.EQ.1 .AND. .NOT.TRFCON ) THEN
                      CALL SLACPY( UPLO, N, N, AFAC, LDA, AINV, LDA )
@@ -434,12 +465,15 @@
                      CALL SSYTRI2( UPLO, N, AINV, LDA, IWORK, WORK,
      $                            LWORK, INFO )
 *
-*                 Check error code from SSYTRI2.
+*                    Check error code from SSYTRI2 and handle error.
 *
                      IF( INFO.NE.0 )
      $                  CALL ALAERH( PATH, 'SSYTRI2', INFO, -1, UPLO, N,
      $                               N, -1, -1, -1, IMAT, NFAIL, NERRS,
      $                               NOUT )
+*
+*                    Compute the residual for a symmetric matrix times
+*                    its inverse.
 *
                      CALL SPOT03( UPLO, N, A, LDA, AINV, LDA, WORK, LDA,
      $                            RWORK, RCONDC, RESULT( 2 ) )
@@ -479,6 +513,9 @@
 *+    TEST 3 (Using DSYTRS)
 *                 Solve and compute residual for  A * X = B.
 *
+*                    Choose a set of NRHS random solution vectors
+*                    stored in XACT and set up the right hand side B
+*
                      SRNAMT = 'SLARHS'
                      CALL SLARHS( PATH, XTYPE, UPLO, ' ', N, N, KL, KU,
      $                            NRHS, A, LDA, XACT, LDA, B, LDA,
@@ -489,7 +526,7 @@
                      CALL SSYTRS( UPLO, N, NRHS, AFAC, LDA, IWORK, X,
      $                            LDA, INFO )
 *
-*                 Check error code from SSYTRS.
+*                    Check error code from SSYTRS and handle error.
 *
                      IF( INFO.NE.0 )
      $                  CALL ALAERH( PATH, 'SSYTRS', INFO, 0, UPLO, N,
@@ -497,11 +534,17 @@
      $                               NERRS, NOUT )
 *
                      CALL SLACPY( 'Full', N, NRHS, B, LDA, WORK, LDA )
+*
+*                    Compute the residual for the solution
+*
                      CALL SPOT02( UPLO, N, NRHS, A, LDA, X, LDA, WORK,
      $                            LDA, RWORK, RESULT( 3 ) )
 *
 *+    TEST 4 (Using DSYTRS2)
 *                 Solve and compute residual for  A * X = B.
+*
+*                    Choose a set of NRHS random solution vectors
+*                    stored in XACT and set up the right hand side B
 *
                      SRNAMT = 'SLARHS'
                      CALL SLARHS( PATH, XTYPE, UPLO, ' ', N, N, KL, KU,
@@ -513,7 +556,7 @@
                      CALL SSYTRS2( UPLO, N, NRHS, AFAC, LDA, IWORK, X,
      $                            LDA, WORK, INFO )
 *
-*                 Check error code from SSYTRS2.
+*                    Check error code from SSYTRS2 and handle error.
 *
                      IF( INFO.NE.0 )
      $                  CALL ALAERH( PATH, 'SSYTRS2', INFO, 0, UPLO, N,
@@ -521,6 +564,9 @@
      $                               NERRS, NOUT )
 *
                      CALL SLACPY( 'Full', N, NRHS, B, LDA, WORK, LDA )
+*
+*                    Compute the residual for the solution
+*
                      CALL SPOT02( UPLO, N, NRHS, A, LDA, X, LDA, WORK,
      $                            LDA, RWORK, RESULT( 4 ) )
 *
@@ -564,7 +610,7 @@
                            NFAIL = NFAIL + 1
                         END IF
   120                CONTINUE
-                     NRUN = NRUN + 5
+                     NRUN = NRUN + 6
   130             CONTINUE
 *
 *+    TEST 9
@@ -576,11 +622,13 @@
                   CALL SSYCON( UPLO, N, AFAC, LDA, IWORK, ANORM, RCOND,
      $                         WORK, IWORK( N+1 ), INFO )
 *
-*                 Check error code from SSYCON.
+*                 Check error code from SSYCON and handle error.
 *
                   IF( INFO.NE.0 )
      $               CALL ALAERH( PATH, 'SSYCON', INFO, 0, UPLO, N, N,
      $                            -1, -1, -1, IMAT, NFAIL, NERRS, NOUT )
+*
+*                 Compute the test ratio to compare to values of RCOND
 *
                   RESULT( 9 ) = SGET06( RCOND, RCONDC )
 *

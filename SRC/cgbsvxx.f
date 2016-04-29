@@ -175,7 +175,7 @@
 *>
 *> \param[in,out] AB
 *> \verbatim
-*>          AB is REAL array, dimension (LDAB,N)
+*>          AB is COMPLEX array, dimension (LDAB,N)
 *>     On entry, the matrix A in band storage, in rows 1 to KL+KU+1.
 *>     The j-th column of A is stored in the j-th column of the
 *>     array AB as follows:
@@ -200,7 +200,7 @@
 *>
 *> \param[in,out] AFB
 *> \verbatim
-*>          AFB is or output) REAL array, dimension (LDAFB,N)
+*>          AFB is COMPLEX array, dimension (LDAFB,N)
 *>     If FACT = 'F', then AFB is an input argument and on entry
 *>     contains details of the LU factorization of the band matrix
 *>     A, as computed by CGBTRF.  U is stored as an upper triangular
@@ -227,7 +227,7 @@
 *>
 *> \param[in,out] IPIV
 *> \verbatim
-*>          IPIV is or output) INTEGER array, dimension (N)
+*>          IPIV is INTEGER array, dimension (N)
 *>     If FACT = 'F', then IPIV is an input argument and on entry
 *>     contains the pivot indices from the factorization A = P*L*U
 *>     as computed by SGETRF; row i of the matrix was interchanged
@@ -244,7 +244,7 @@
 *>
 *> \param[in,out] EQUED
 *> \verbatim
-*>          EQUED is or output) CHARACTER*1
+*>          EQUED is CHARACTER*1
 *>     Specifies the form of equilibration that was done.
 *>       = 'N':  No equilibration (always true if FACT = 'N').
 *>       = 'R':  Row equilibration, i.e., A has been premultiplied by
@@ -259,7 +259,7 @@
 *>
 *> \param[in,out] R
 *> \verbatim
-*>          R is or output) REAL array, dimension (N)
+*>          R is REAL array, dimension (N)
 *>     The row scale factors for A.  If EQUED = 'R' or 'B', A is
 *>     multiplied on the left by diag(R); if EQUED = 'N' or 'C', R
 *>     is not accessed.  R is an input argument if FACT = 'F';
@@ -277,7 +277,7 @@
 *>
 *> \param[in,out] C
 *> \verbatim
-*>          C is or output) REAL array, dimension (N)
+*>          C is REAL array, dimension (N)
 *>     The column scale factors for A.  If EQUED = 'C' or 'B', A is
 *>     multiplied on the right by diag(C); if EQUED = 'N' or 'R', C
 *>     is not accessed.  C is an input argument if FACT = 'F';
@@ -295,7 +295,7 @@
 *>
 *> \param[in,out] B
 *> \verbatim
-*>          B is REAL array, dimension (LDB,NRHS)
+*>          B is COMPLEX array, dimension (LDB,NRHS)
 *>     On entry, the N-by-NRHS right hand side matrix B.
 *>     On exit,
 *>     if EQUED = 'N', B is not modified;
@@ -313,7 +313,7 @@
 *>
 *> \param[out] X
 *> \verbatim
-*>          X is REAL array, dimension (LDX,NRHS)
+*>          X is COMPLEX array, dimension (LDX,NRHS)
 *>     If INFO = 0, the N-by-NRHS solution matrix X to the original
 *>     system of equations.  Note that A and B are modified on exit
 *>     if EQUED .ne. 'N', and the solution to the equilibrated system is
@@ -473,7 +473,7 @@
 *>
 *> \param[in,out] PARAMS
 *> \verbatim
-*>          PARAMS is / output) REAL array, dimension NPARAMS
+*>          PARAMS is REAL array, dimension NPARAMS
 *>     Specifies algorithm parameters.  If an entry is .LT. 0.0, then
 *>     that entry will be filled with default value used for that
 *>     parameter.  Only positions up to NPARAMS are accessed; defaults
@@ -552,7 +552,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup complexGBsolve
 *
@@ -563,10 +563,10 @@
      $                    ERR_BNDS_NORM, ERR_BNDS_COMP, NPARAMS, PARAMS,
      $                    WORK, RWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.4.0) --
+*  -- LAPACK driver routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          EQUED, FACT, TRANS

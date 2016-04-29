@@ -164,7 +164,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup complex_lin
 *
@@ -173,10 +173,10 @@
      $                   THRESH, TSTERR, NMAX, A, AFAC, AINV, B, X,
      $                   XACT, WORK, RWORK, IWORK, NOUT )
 *
-*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK test routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -196,6 +196,8 @@
 *     .. Parameters ..
       REAL               ZERO
       PARAMETER          ( ZERO = 0.0E+0 )
+      COMPLEX            CZERO
+      PARAMETER          ( CZERO = ( 0.0E+0, 0.0E+0 )  )
       INTEGER            NTYPES
       PARAMETER          ( NTYPES = 11 )
       INTEGER            NTESTS
@@ -216,8 +218,8 @@
       REAL               RESULT( NTESTS )
 *     ..
 *     .. External Functions ..
-      REAL               CLANSY, SGET06
-      EXTERNAL           CLANSY, SGET06
+      REAL               SGET06, CLANSY
+      EXTERNAL           SGET06, CLANSY
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           ALAERH, ALAHD, ALASUM, CERRSY, CGET04, CLACPY,
@@ -260,6 +262,11 @@
      $   CALL CERRSY( PATH, NOUT )
       INFOT = 0
 *
+*     Set the minimum block size for which the block routine should
+*     be used, which will be later returned by ILAENV
+*
+      CALL XLAENV( 2, 2 )
+*
 *     Do for each value of N in NVAL
 *
       DO 180 IN = 1, NN
@@ -271,6 +278,9 @@
      $      NIMAT = 1
 *
          IZERO = 0
+*
+*        Do for each value of matrix type IMAT
+*
          DO 170 IMAT = 1, NIMAT
 *
 *           Do the tests only if DOTYPE( IMAT ) is true.
@@ -291,18 +301,22 @@
 *
                IF( IMAT.NE.NTYPES ) THEN
 *
-*                 Set up parameters with CLATB4 and generate a test
-*                 matrix with CLATMS.
+*                 Begin generate the test matrix A.
+*
+*                 Set up parameters with CLATB4 for the matrix generator
+*                 based on the type of matrix to be generated.
 *
                   CALL CLATB4( PATH, IMAT, N, N, TYPE, KL, KU, ANORM,
      $                         MODE, CNDNUM, DIST )
+*
+*                 Generate a matrix with CLATMS.
 *
                   SRNAMT = 'CLATMS'
                   CALL CLATMS( N, N, DIST, ISEED, TYPE, RWORK, MODE,
      $                         CNDNUM, ANORM, KL, KU, 'N', A, LDA, WORK,
      $                         INFO )
 *
-*                 Check error code from CLATMS.
+*                 Check error code from CLATMS and handle error.
 *
                   IF( INFO.NE.0 ) THEN
                      CALL ALAERH( PATH, 'CLATMS', INFO, 0, UPLO, N, N,
@@ -310,8 +324,9 @@
                      GO TO 160
                   END IF
 *
-*                 For types 3-6, zero one or more rows and columns of
-*                 the matrix to test that INFO is returned correctly.
+*                 For matrix types 3-6, zero one or more rows and
+*                 columns of the matrix to test that INFO is returned
+*                 correctly.
 *
                   IF( ZEROT ) THEN
                      IF( IMAT.EQ.3 ) THEN
@@ -329,22 +344,22 @@
                         IF( IUPLO.EQ.1 ) THEN
                            IOFF = ( IZERO-1 )*LDA
                            DO 20 I = 1, IZERO - 1
-                              A( IOFF+I ) = ZERO
+                              A( IOFF+I ) = CZERO
    20                      CONTINUE
                            IOFF = IOFF + IZERO
                            DO 30 I = IZERO, N
-                              A( IOFF ) = ZERO
+                              A( IOFF ) = CZERO
                               IOFF = IOFF + LDA
    30                      CONTINUE
                         ELSE
                            IOFF = IZERO
                            DO 40 I = 1, IZERO - 1
-                              A( IOFF ) = ZERO
+                              A( IOFF ) = CZERO
                               IOFF = IOFF + LDA
    40                      CONTINUE
                            IOFF = IOFF - IZERO
                            DO 50 I = IZERO, N
-                              A( IOFF+I ) = ZERO
+                              A( IOFF+I ) = CZERO
    50                      CONTINUE
                         END IF
                      ELSE
@@ -356,7 +371,7 @@
                            DO 70 J = 1, N
                               I2 = MIN( J, IZERO )
                               DO 60 I = 1, I2
-                                 A( IOFF+I ) = ZERO
+                                 A( IOFF+I ) = CZERO
    60                         CONTINUE
                               IOFF = IOFF + LDA
    70                      CONTINUE
@@ -368,7 +383,7 @@
                            DO 90 J = 1, N
                               I1 = MAX( J, IZERO )
                               DO 80 I = I1, N
-                                 A( IOFF+I ) = ZERO
+                                 A( IOFF+I ) = CZERO
    80                         CONTINUE
                               IOFF = IOFF + LDA
    90                      CONTINUE
@@ -377,24 +392,39 @@
                   ELSE
                      IZERO = 0
                   END IF
+*
+*                 End generate the test matrix A.
+*
                ELSE
 *
 *                 Use a special block diagonal matrix to test alternate
 *                 code for the 2 x 2 blocks.
 *
                   CALL CLATSY( UPLO, N, A, LDA, ISEED )
+*
                END IF
 *
 *              Do for each value of NB in NBVAL
 *
                DO 150 INB = 1, NNB
+*
+*                 Set the optimal blocksize, which will be later
+*                 returned by ILAENV.
+*
                   NB = NBVAL( INB )
                   CALL XLAENV( 1, NB )
 *
-*                 Compute the L*D*L' or U*D*U' factorization of the
-*                 matrix.
+*                 Copy the test matrix A into matrix AFAC which
+*                 will be factorized in place. This is needed to
+*                 preserve the test matrix A for subsequent tests.
 *
                   CALL CLACPY( UPLO, N, N, A, LDA, AFAC, LDA )
+*
+*                 Compute the L*D*L**T or U*D*U**T factorization of the
+*                 matrix. IWORK stores details of the interchanges and
+*                 the block structure of D. AINV is a work array for
+*                 block factorization, LWORK is the length of AINV.
+*
                   LWORK = MAX( 2, NB )*LDA
                   SRNAMT = 'CSYTRF'
                   CALL CSYTRF( UPLO, N, AFAC, LDA, IWORK, AINV, LWORK,
@@ -417,11 +447,14 @@
                      END IF
                   END IF
 *
-*                 Check error code from CSYTRF.
+*                 Check error code from CSYTRF and handle error.
 *
                   IF( INFO.NE.K )
      $               CALL ALAERH( PATH, 'CSYTRF', INFO, K, UPLO, N, N,
      $                            -1, -1, NB, IMAT, NFAIL, NERRS, NOUT )
+*
+*                 Set the condition estimate flag if the INFO is not 0.
+*
                   IF( INFO.NE.0 ) THEN
                      TRFCON = .TRUE.
                   ELSE
@@ -436,7 +469,10 @@
                   NT = 1
 *
 *+    TEST 2
-*                 Form the inverse and compute the residual.
+*                 Form the inverse and compute the residual,
+*                 if the factorization was competed without INFO > 0
+*                 (i.e. there is no zero rows and columns).
+*                 Do it only for the first block size.
 *
                   IF( INB.EQ.1 .AND. .NOT.TRFCON ) THEN
                      CALL CLACPY( UPLO, N, N, AFAC, LDA, AINV, LDA )
@@ -445,12 +481,15 @@
                      CALL CSYTRI2( UPLO, N, AINV, LDA, IWORK, WORK,
      $                            LWORK, INFO )
 *
-*                 Check error code from CSYTRI.
+*                    Check error code from CSYTRI2 and handle error.
 *
                      IF( INFO.NE.0 )
-     $                  CALL ALAERH( PATH, 'CSYTRI', INFO, 0, UPLO, N,
+     $                  CALL ALAERH( PATH, 'CSYTRI2', INFO, 0, UPLO, N,
      $                               N, -1, -1, -1, IMAT, NFAIL, NERRS,
      $                               NOUT )
+*
+*                    Compute the residual for a symmetric matrix times
+*                    its inverse.
 *
                      CALL CSYT03( UPLO, N, A, LDA, AINV, LDA, WORK, LDA,
      $                            RWORK, RCONDC, RESULT( 2 ) )
@@ -487,8 +526,11 @@
                   DO 130 IRHS = 1, NNS
                      NRHS = NSVAL( IRHS )
 *
-*+    TEST 3
+*+    TEST 3 (Using TRS)
 *                 Solve and compute residual for  A * X = B.
+*
+*                    Choose a set of NRHS random solution vectors
+*                    stored in XACT and set up the right hand side B
 *
                      SRNAMT = 'CLARHS'
                      CALL CLARHS( PATH, XTYPE, UPLO, ' ', N, N, KL, KU,
@@ -500,7 +542,7 @@
                      CALL CSYTRS( UPLO, N, NRHS, AFAC, LDA, IWORK, X,
      $                            LDA, INFO )
 *
-*                 Check error code from CSYTRS.
+*                    Check error code from CSYTRS and handle error.
 *
                      IF( INFO.NE.0 )
      $                  CALL ALAERH( PATH, 'CSYTRS', INFO, 0, UPLO, N,
@@ -508,11 +550,17 @@
      $                               NERRS, NOUT )
 *
                      CALL CLACPY( 'Full', N, NRHS, B, LDA, WORK, LDA )
+*
+*                    Compute the residual for the solution
+*
                      CALL CSYT02( UPLO, N, NRHS, A, LDA, X, LDA, WORK,
      $                            LDA, RWORK, RESULT( 3 ) )
 *
-*+    TEST 4
+*+    TEST 4 (Using TRS2)
 *                 Solve and compute residual for  A * X = B.
+*
+*                    Choose a set of NRHS random solution vectors
+*                    stored in XACT and set up the right hand side B
 *
                      SRNAMT = 'CLARHS'
                      CALL CLARHS( PATH, XTYPE, UPLO, ' ', N, N, KL, KU,
@@ -524,7 +572,7 @@
                      CALL CSYTRS2( UPLO, N, NRHS, AFAC, LDA, IWORK, X,
      $                            LDA, WORK, INFO )
 *
-*                 Check error code from CSYTRS2.
+*                    Check error code from CSYTRS2 and handle error.
 *
                      IF( INFO.NE.0 )
      $                  CALL ALAERH( PATH, 'CSYTRS2', INFO, 0, UPLO, N,
@@ -532,6 +580,9 @@
      $                               NERRS, NOUT )
 *
                      CALL CLACPY( 'Full', N, NRHS, B, LDA, WORK, LDA )
+*
+*                    Compute the residual for the solution
+*
                      CALL CSYT02( UPLO, N, NRHS, A, LDA, X, LDA, WORK,
      $                            LDA, RWORK, RESULT( 4 ) )
 *
@@ -575,7 +626,7 @@
                            NFAIL = NFAIL + 1
                         END IF
   120                CONTINUE
-                     NRUN = NRUN + 5
+                     NRUN = NRUN + 6
   130             CONTINUE
 *
 *+    TEST 9
@@ -587,11 +638,13 @@
                   CALL CSYCON( UPLO, N, AFAC, LDA, IWORK, ANORM, RCOND,
      $                         WORK, INFO )
 *
-*                 Check error code from CSYCON.
+*                 Check error code from CSYCON and handle error.
 *
                   IF( INFO.NE.0 )
      $               CALL ALAERH( PATH, 'CSYCON', INFO, 0, UPLO, N, N,
      $                            -1, -1, -1, IMAT, NFAIL, NERRS, NOUT )
+*
+*                 Compute the test ratio to compare to values of RCOND
 *
                   RESULT( 9 ) = SGET06( RCOND, RCONDC )
 *

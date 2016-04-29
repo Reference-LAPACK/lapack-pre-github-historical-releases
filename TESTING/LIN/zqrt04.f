@@ -11,7 +11,7 @@
 *       SUBROUTINE ZQRT04(M,N,NB,RESULT)
 * 
 *       .. Scalar Arguments ..
-*       INTEGER LWORK, M, N, NB, LDT
+*       INTEGER M, N, NB, LDT
 *       .. Return values ..
 *       DOUBLE PRECISION RESULT(6)
 *  
@@ -66,20 +66,21 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup complex16_lin
 *
 *  =====================================================================
       SUBROUTINE ZQRT04(M,N,NB,RESULT)
+      IMPLICIT NONE
 *
-*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK test routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
-      INTEGER LWORK, M, N, NB, LDT
+      INTEGER M, N, NB, LDT
 *     .. Return values ..
       DOUBLE PRECISION RESULT(6)
 *
@@ -97,7 +98,7 @@
       PARAMETER( ZERO = 0.0, ONE = (1.0,0.0), CZERO=(0.0,0.0) )
 *     ..
 *     .. Local Scalars ..
-      INTEGER INFO, J, K, L
+      INTEGER INFO, J, K, L, LWORK
       DOUBLE PRECISION   ANORM, EPS, RESID, CNORM, DNORM
 *     ..
 *     .. Local Arrays ..
@@ -141,7 +142,7 @@
 *     Generate the m-by-m matrix Q
 *
       CALL ZLASET( 'Full', M, M, CZERO, ONE, Q, M )
-      CALL ZGEMQRT( 'R', 'N', M, M, K, NB, AF, M, T, LDT, Q, M, 
+      CALL ZGEMQRT( 'R', 'N', M, M, K, NB, AF, M, T, LDT, Q, M,
      $              WORK, INFO )
 *
 *     Copy R
@@ -178,7 +179,7 @@
 *     Apply Q to C as Q*C
 *
       CALL ZGEMQRT( 'L', 'N', M, N, K, NB, AF, M, T, NB, CF, M, 
-     $             WORK, LWORK, INFO)
+     $             WORK, INFO)
 *
 *     Compute |Q*C - Q*C| / |C|
 *
@@ -197,7 +198,7 @@
 *     Apply Q to C as QT*C
 *
       CALL ZGEMQRT( 'L', 'C', M, N, K, NB, AF, M, T, NB, CF, M, 
-     $             WORK, LWORK, INFO)
+     $             WORK, INFO)
 *
 *     Compute |QT*C - QT*C| / |C|
 *
@@ -220,7 +221,7 @@
 *     Apply Q to D as D*Q
 *
       CALL ZGEMQRT( 'R', 'N', N, M, K, NB, AF, M, T, NB, DF, N, 
-     $             WORK, LWORK, INFO)      
+     $             WORK, INFO)      
 *
 *     Compute |D*Q - D*Q| / |D|
 *
@@ -239,7 +240,7 @@
 *     Apply Q to D as D*QT
 *
       CALL ZGEMQRT( 'R', 'C', N, M, K, NB, AF, M, T, NB, DF, N, 
-     $             WORK, LWORK, INFO)      
+     $             WORK, INFO)      
 *
 *     Compute |D*QT - D*QT| / |D|
 *

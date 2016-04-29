@@ -131,7 +131,7 @@
 *>
 *> \param[in,out] CNORM
 *> \verbatim
-*>          CNORM is or output) REAL array, dimension (N)
+*>          CNORM is REAL array, dimension (N)
 *>
 *>          If NORMIN = 'Y', CNORM is an input argument and CNORM(j)
 *>          contains the norm of the off-diagonal part of the j-th column
@@ -159,7 +159,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup complexOTHERauxiliary
 *
@@ -239,10 +239,10 @@
       SUBROUTINE CLATRS( UPLO, TRANS, DIAG, NORMIN, N, A, LDA, X, SCALE,
      $                   CNORM, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.4.0) --
+*  -- LAPACK auxiliary routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          DIAG, NORMIN, TRANS, UPLO

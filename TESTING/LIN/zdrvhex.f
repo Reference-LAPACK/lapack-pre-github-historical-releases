@@ -126,7 +126,7 @@
 *>
 *> \param[out] RWORK
 *> \verbatim
-*>          RWORK is DOUBLE PRECISION array, dimension (NMAX+2*NRHS)
+*>          RWORK is DOUBLE PRECISION array, dimension (2*NMAX+2*NRHS)
 *> \endverbatim
 *>
 *> \param[out] IWORK
@@ -148,7 +148,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup complex16_lin
 *
@@ -157,10 +157,10 @@
      $                   A, AFAC, AINV, B, X, XACT, WORK, RWORK, IWORK,
      $                   NOUT )
 *
-*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK test routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -614,7 +614,7 @@
      $                 LDA, IWORK, EQUED, WORK( N+1 ), B, LDA, X,
      $                 LDA, RCOND, RPVGRW_SVXX, BERR, N_ERR_BNDS,
      $                 ERRBNDS_N, ERRBNDS_C, 0, ZERO, WORK,
-     $                 IWORK( N+1 ), INFO )
+     $                 RWORK, INFO )
 *
 *                 Adjust the expected value of INFO to account for
 *                 pivoting.
@@ -635,7 +635,7 @@
 *
 *                 Check the error code from ZHESVXX.
 *
-                  IF( INFO.NE.K ) THEN
+                  IF( INFO.NE.K .AND. INFO.LE.N) THEN
                      CALL ALAERH( PATH, 'ZHESVXX', INFO, K,
      $                    FACT // UPLO, N, N, -1, -1, NRHS, IMAT, NFAIL,
      $                    NERRS, NOUT )

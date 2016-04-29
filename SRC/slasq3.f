@@ -173,7 +173,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup auxOTHERcomputational
 *
@@ -182,10 +182,10 @@
      $                   ITER, NDIV, IEEE, TTYPE, DMIN1, DMIN2, DN, DN1,
      $                   DN2, G, TAU )
 *
-*  -- LAPACK computational routine (version 3.4.0) --
+*  -- LAPACK computational routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       LOGICAL            IEEE
@@ -331,15 +331,15 @@
 *
    70 CONTINUE
 *
-      CALL SLASQ5( I0, N0, Z, PP, TAU, DMIN, DMIN1, DMIN2, DN,
-     $             DN1, DN2, IEEE )
+      CALL SLASQ5( I0, N0, Z, PP, TAU, SIGMA, DMIN, DMIN1, DMIN2, DN,
+     $             DN1, DN2, IEEE, EPS )
 *
       NDIV = NDIV + ( N0-I0+2 )
       ITER = ITER + 1
 *
 *     Check status.
 *
-      IF( DMIN.GE.ZERO .AND. DMIN1.GT.ZERO ) THEN
+      IF( DMIN.GE.ZERO .AND. DMIN1.GE.ZERO ) THEN
 *
 *        Success.
 *

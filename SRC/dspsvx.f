@@ -123,7 +123,7 @@
 *>
 *> \param[in,out] AFP
 *> \verbatim
-*>          AFP is or output) DOUBLE PRECISION array, dimension
+*>          AFP is DOUBLE PRECISION array, dimension
 *>                            (N*(N+1)/2)
 *>          If FACT = 'F', then AFP is an input argument and on entry
 *>          contains the block diagonal matrix D and the multipliers used
@@ -140,7 +140,7 @@
 *>
 *> \param[in,out] IPIV
 *> \verbatim
-*>          IPIV is or output) INTEGER array, dimension (N)
+*>          IPIV is INTEGER array, dimension (N)
 *>          If FACT = 'F', then IPIV is an input argument and on entry
 *>          contains details of the interchanges and the block structure
 *>          of D, as determined by DSPTRF.
@@ -249,7 +249,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup doubleOTHERsolve
 *
@@ -277,10 +277,10 @@
       SUBROUTINE DSPSVX( FACT, UPLO, N, NRHS, AP, AFP, IPIV, B, LDB, X,
      $                   LDX, RCOND, FERR, BERR, WORK, IWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.4.0) --
+*  -- LAPACK driver routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          FACT, UPLO

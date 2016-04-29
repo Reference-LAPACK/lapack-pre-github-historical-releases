@@ -164,7 +164,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup complex16_lin
 *
@@ -173,10 +173,10 @@
      $                   THRESH, TSTERR, NMAX, A, AFAC, AINV, B, X,
      $                   XACT, WORK, RWORK, IWORK, NOUT )
 *
-*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK test routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -196,6 +196,8 @@
 *     .. Parameters ..
       DOUBLE PRECISION   ZERO
       PARAMETER          ( ZERO = 0.0D+0 )
+      COMPLEX*16         CZERO
+      PARAMETER          ( CZERO = ( 0.0D+0, 0.0D+0 )  )
       INTEGER            NTYPES
       PARAMETER          ( NTYPES = 11 )
       INTEGER            NTESTS
@@ -260,6 +262,11 @@
      $   CALL ZERRSY( PATH, NOUT )
       INFOT = 0
 *
+*     Set the minimum block size for which the block routine should
+*     be used, which will be later returned by ILAENV
+*
+      CALL XLAENV( 2, 2 )
+*
 *     Do for each value of N in NVAL
 *
       DO 180 IN = 1, NN
@@ -271,6 +278,9 @@
      $      NIMAT = 1
 *
          IZERO = 0
+*
+*        Do for each value of matrix type IMAT
+*
          DO 170 IMAT = 1, NIMAT
 *
 *           Do the tests only if DOTYPE( IMAT ) is true.
@@ -297,12 +307,14 @@
                   CALL ZLATB4( PATH, IMAT, N, N, TYPE, KL, KU, ANORM,
      $                         MODE, CNDNUM, DIST )
 *
+*                 Generate a matrix with ZLATMS.
+*
                   SRNAMT = 'ZLATMS'
                   CALL ZLATMS( N, N, DIST, ISEED, TYPE, RWORK, MODE,
      $                         CNDNUM, ANORM, KL, KU, 'N', A, LDA, WORK,
      $                         INFO )
 *
-*                 Check error code from ZLATMS.
+*                 Check error code from ZLATMS and handle error.
 *
                   IF( INFO.NE.0 ) THEN
                      CALL ALAERH( PATH, 'ZLATMS', INFO, 0, UPLO, N, N,
@@ -310,8 +322,9 @@
                      GO TO 160
                   END IF
 *
-*                 For types 3-6, zero one or more rows and columns of
-*                 the matrix to test that INFO is returned correctly.
+*                 For matrix types 3-6, zero one or more rows and
+*                 columns of the matrix to test that INFO is returned
+*                 correctly.
 *
                   IF( ZEROT ) THEN
                      IF( IMAT.EQ.3 ) THEN
@@ -329,22 +342,22 @@
                         IF( IUPLO.EQ.1 ) THEN
                            IOFF = ( IZERO-1 )*LDA
                            DO 20 I = 1, IZERO - 1
-                              A( IOFF+I ) = ZERO
+                              A( IOFF+I ) = CZERO
    20                      CONTINUE
                            IOFF = IOFF + IZERO
                            DO 30 I = IZERO, N
-                              A( IOFF ) = ZERO
+                              A( IOFF ) = CZERO
                               IOFF = IOFF + LDA
    30                      CONTINUE
                         ELSE
                            IOFF = IZERO
                            DO 40 I = 1, IZERO - 1
-                              A( IOFF ) = ZERO
+                              A( IOFF ) = CZERO
                               IOFF = IOFF + LDA
    40                      CONTINUE
                            IOFF = IOFF - IZERO
                            DO 50 I = IZERO, N
-                              A( IOFF+I ) = ZERO
+                              A( IOFF+I ) = CZERO
    50                      CONTINUE
                         END IF
                      ELSE
@@ -356,7 +369,7 @@
                            DO 70 J = 1, N
                               I2 = MIN( J, IZERO )
                               DO 60 I = 1, I2
-                                 A( IOFF+I ) = ZERO
+                                 A( IOFF+I ) = CZERO
    60                         CONTINUE
                               IOFF = IOFF + LDA
    70                      CONTINUE
@@ -368,7 +381,7 @@
                            DO 90 J = 1, N
                               I1 = MAX( J, IZERO )
                               DO 80 I = I1, N
-                                 A( IOFF+I ) = ZERO
+                                 A( IOFF+I ) = CZERO
    80                         CONTINUE
                               IOFF = IOFF + LDA
    90                      CONTINUE
@@ -377,24 +390,39 @@
                   ELSE
                      IZERO = 0
                   END IF
+*
+*                 End generate the test matrix A.
+*
                ELSE
 *
 *                 Use a special block diagonal matrix to test alternate
 *                 code for the 2 x 2 blocks.
 *
                   CALL ZLATSY( UPLO, N, A, LDA, ISEED )
+*
                END IF
 *
 *              Do for each value of NB in NBVAL
 *
                DO 150 INB = 1, NNB
+*
+*                 Set the optimal blocksize, which will be later
+*                 returned by ILAENV.
+*
                   NB = NBVAL( INB )
                   CALL XLAENV( 1, NB )
 *
-*                 Compute the L*D*L' or U*D*U' factorization of the
-*                 matrix.
+*                 Copy the test matrix A into matrix AFAC which
+*                 will be factorized in place. This is needed to
+*                 preserve the test matrix A for subsequent tests.
 *
                   CALL ZLACPY( UPLO, N, N, A, LDA, AFAC, LDA )
+*
+*                 Compute the L*D*L**T or U*D*U**T factorization of the
+*                 matrix. IWORK stores details of the interchanges and
+*                 the block structure of D. AINV is a work array for
+*                 block factorization, LWORK is the length of AINV.
+*
                   LWORK = MAX( 2, NB )*LDA
                   SRNAMT = 'ZSYTRF'
                   CALL ZSYTRF( UPLO, N, AFAC, LDA, IWORK, AINV, LWORK,
@@ -417,11 +445,14 @@
                      END IF
                   END IF
 *
-*                 Check error code from ZSYTRF.
+*                 Check error code from ZSYTRF and handle error.
 *
                   IF( INFO.NE.K )
      $               CALL ALAERH( PATH, 'ZSYTRF', INFO, K, UPLO, N, N,
      $                            -1, -1, NB, IMAT, NFAIL, NERRS, NOUT )
+*
+*                 Set the condition estimate flag if the INFO is not 0.
+*
                   IF( INFO.NE.0 ) THEN
                      TRFCON = .TRUE.
                   ELSE
@@ -436,7 +467,10 @@
                   NT = 1
 *
 *+    TEST 2
-*                 Form the inverse and compute the residual.
+*                 Form the inverse and compute the residual,
+*                 if the factorization was competed without INFO > 0
+*                 (i.e. there is no zero rows and columns).
+*                 Do it only for the first block size.
 *
                   IF( INB.EQ.1 .AND. .NOT.TRFCON ) THEN
                      CALL ZLACPY( UPLO, N, N, AFAC, LDA, AINV, LDA )
@@ -445,12 +479,15 @@
                      CALL ZSYTRI2( UPLO, N, AINV, LDA, IWORK, WORK,
      $                            LWORK, INFO )
 *
-*                 Check error code from ZSYTRI2.
+*                    Check error code from ZSYTRI2 and handle error.
 *
                      IF( INFO.NE.0 )
      $                  CALL ALAERH( PATH, 'ZSYTRI2', INFO, 0, UPLO, N,
      $                               N, -1, -1, -1, IMAT, NFAIL, NERRS,
      $                               NOUT )
+*
+*                    Compute the residual for a symmetric matrix times
+*                    its inverse.
 *
                      CALL ZSYT03( UPLO, N, A, LDA, AINV, LDA, WORK, LDA,
      $                            RWORK, RCONDC, RESULT( 2 ) )
@@ -487,8 +524,11 @@
                   DO 130 IRHS = 1, NNS
                      NRHS = NSVAL( IRHS )
 *
-*+    TEST 3 (Using ZSYTRS)
+*+    TEST 3 (Using TRS)
 *                 Solve and compute residual for  A * X = B.
+*
+*                    Choose a set of NRHS random solution vectors
+*                    stored in XACT and set up the right hand side B
 *
                      SRNAMT = 'ZLARHS'
                      CALL ZLARHS( PATH, XTYPE, UPLO, ' ', N, N, KL, KU,
@@ -500,7 +540,7 @@
                      CALL ZSYTRS( UPLO, N, NRHS, AFAC, LDA, IWORK, X,
      $                            LDA, INFO )
 *
-*                 Check error code from ZSYTRS.
+*                    Check error code from ZSYTRS and handle error.
 *
                      IF( INFO.NE.0 )
      $                  CALL ALAERH( PATH, 'ZSYTRS', INFO, 0, UPLO, N,
@@ -508,11 +548,17 @@
      $                               NERRS, NOUT )
 *
                      CALL ZLACPY( 'Full', N, NRHS, B, LDA, WORK, LDA )
+*
+*                    Compute the residual for the solution
+*
                      CALL ZSYT02( UPLO, N, NRHS, A, LDA, X, LDA, WORK,
      $                            LDA, RWORK, RESULT( 3 ) )
 *
-*+    TEST 4 (Using ZSYTRS2)
+*+    TEST 4 (Using TRS2)
 *                 Solve and compute residual for  A * X = B.
+*
+*                    Choose a set of NRHS random solution vectors
+*                    stored in XACT and set up the right hand side B
 *
                      SRNAMT = 'ZLARHS'
                      CALL ZLARHS( PATH, XTYPE, UPLO, ' ', N, N, KL, KU,
@@ -524,7 +570,7 @@
                      CALL ZSYTRS2( UPLO, N, NRHS, AFAC, LDA, IWORK, X,
      $                            LDA, WORK, INFO )
 *
-*                 Check error code from ZSYTRS.
+*                    Check error code from ZSYTRS2 and handle error.
 *
                      IF( INFO.NE.0 )
      $                  CALL ALAERH( PATH, 'ZSYTRS', INFO, 0, UPLO, N,
@@ -532,6 +578,9 @@
      $                               NERRS, NOUT )
 *
                      CALL ZLACPY( 'Full', N, NRHS, B, LDA, WORK, LDA )
+*
+*                    Compute the residual for the solution
+*
                      CALL ZSYT02( UPLO, N, NRHS, A, LDA, X, LDA, WORK,
      $                            LDA, RWORK, RESULT( 4 ) )
 *
@@ -551,7 +600,7 @@
      $                            RWORK( NRHS+1 ), WORK,
      $                            RWORK( 2*NRHS+1 ), INFO )
 *
-*                 Check error code from ZSYRFS.
+*                    Check error code from ZSYRFS and handle error.
 *
                      IF( INFO.NE.0 )
      $                  CALL ALAERH( PATH, 'ZSYRFS', INFO, 0, UPLO, N,
@@ -576,7 +625,7 @@
                            NFAIL = NFAIL + 1
                         END IF
   120                CONTINUE
-                     NRUN = NRUN + 5
+                     NRUN = NRUN + 6
   130             CONTINUE
 *
 *+    TEST 9
@@ -588,11 +637,13 @@
                   CALL ZSYCON( UPLO, N, AFAC, LDA, IWORK, ANORM, RCOND,
      $                         WORK, INFO )
 *
-*                 Check error code from ZSYCON.
+*                 Check error code from ZSYCON and handle error.
 *
                   IF( INFO.NE.0 )
      $               CALL ALAERH( PATH, 'ZSYCON', INFO, 0, UPLO, N, N,
      $                            -1, -1, -1, IMAT, NFAIL, NERRS, NOUT )
+*
+*                 Compute the test ratio to compare to values of RCOND
 *
                   RESULT( 9 ) = DGET06( RCOND, RCONDC )
 *

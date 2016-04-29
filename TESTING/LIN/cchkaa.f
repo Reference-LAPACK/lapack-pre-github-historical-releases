@@ -19,12 +19,12 @@
 *> CCHKAA is the main test program for the COMPLEX linear equation
 *> routines.
 *>
-*> The program must be driven by a short data file. The first 14 records
-*> specify problem dimensions and program options using list-directed
-*> input.  The remaining lines specify the LAPACK test paths and the
-*> number of matrix types to use in testing.  An annotated example of a
-*> data file can be obtained by deleting the first 3 characters from the
-*> following 38 lines:
+*> The program must be driven by a short data file. The first 15 records
+*> (not including the first comment  line) specify problem dimensions
+*> and program options using list-directed input. The remaining lines
+*> specify the LAPACK test paths and the number of matrix types to use
+*> in testing.  An annotated example of a data file can be obtained by
+*> deleting the first 3 characters from the following 42 lines:
 *> Data file for testing COMPLEX LAPACK linear equation routines
 *> 7                      Number of values of M
 *> 0 1 2 3 5 10 16        Values of M (row dimension)
@@ -52,6 +52,7 @@
 *> CHE   10               List types on next line if 0 < NTYPES < 10
 *> CHP   10               List types on next line if 0 < NTYPES < 10
 *> CSY   11               List types on next line if 0 < NTYPES < 11
+*> CSR   11               List types on next line if 0 < NTYPES < 11
 *> CSP   11               List types on next line if 0 < NTYPES < 11
 *> CTR   18               List types on next line if 0 < NTYPES < 18
 *> CTP   18               List types on next line if 0 < NTYPES < 18
@@ -64,21 +65,26 @@
 *> CTZ    3               List types on next line if 0 < NTYPES <  3
 *> CLS    6               List types on next line if 0 < NTYPES <  6
 *> CEQ
+*> CQT
+*> CQX
 *> \endverbatim
 *
-*  Arguments:
+*  Parameters:
 *  ==========
 *
 *> \verbatim
 *>  NMAX    INTEGER
-*>          The maximum allowable value for N.
+*>          The maximum allowable value for M and N.
 *>
 *>  MAXIN   INTEGER
 *>          The number of different values that can be used for each of
-*>          M, N, or NB
+*>          M, N, NRHS, NB, NX and RANK
 *>
 *>  MAXRHS  INTEGER
 *>          The maximum number of right hand sides
+*>
+*>  MATMAX  INTEGER
+*>          The maximum number of matrix types to use for testing
 *>
 *>  NIN     INTEGER
 *>          The unit number for input
@@ -95,16 +101,17 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup complex_lin
 *
-*  =====================================================================      PROGRAM CCHKAA
+*  =====================================================================
+      PROGRAM CCHKAA
 *
-*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK test routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *  =====================================================================
 *
@@ -153,10 +160,11 @@
       EXTERNAL           ALAREQ, CCHKEQ, CCHKGB, CCHKGE, CCHKGT, CCHKHE,
      $                   CCHKHP, CCHKLQ, CCHKPB, CCHKPO, CCHKPS, CCHKPP,
      $                   CCHKPT, CCHKQ3, CCHKQL, CCHKQP, CCHKQR, CCHKRQ,
-     $                   CCHKSP, CCHKSY, CCHKTB, CCHKTP, CCHKTR, CCHKTZ,
-     $                   CDRVGB, CDRVGE, CDRVGT, CDRVHE, CDRVHP, CDRVLS,
-     $                   CDRVPB, CDRVPO, CDRVPP, CDRVPT, CDRVSP, CDRVSY,
-     $                   ILAVER
+     $                   CCHKSP, CCHKSY, CCHKTB, CCHKTP,
+     $                   CCHKTR, CCHKTZ, CDRVGB, CDRVGE, CDRVGT, CDRVHE,
+     $                   CDRVHP, CDRVLS, CDRVPB, CDRVPO, CDRVPP, CDRVPT,
+     $                   CDRVSP, CDRVSY, ILAVER, CCHKQRT,
+     $                   CCHKQRTP
 *     ..
 *     .. Scalars in Common ..
       LOGICAL            LERR, OK
@@ -657,7 +665,8 @@
 *
       ELSE IF( LSAMEN( 2, C2, 'SY' ) ) THEN
 *
-*        SY:  symmetric indefinite matrices
+*        SY:  symmetric indefinite matrices,
+*             with partial (Bunch-Kaufman) pivoting algorithm
 *
          NTYPES = 11
          CALL ALAREQ( PATH, NMATS, DOTYPE, NTYPES, NIN, NOUT )
@@ -682,7 +691,8 @@
 *
       ELSE IF( LSAMEN( 2, C2, 'SP' ) ) THEN
 *
-*        SP:  symmetric indefinite packed matrices
+*        SP:  symmetric indefinite packed matrices,
+*             with partial (Bunch-Kaufman) pivoting algorithm
 *
          NTYPES = 11
          CALL ALAREQ( PATH, NMATS, DOTYPE, NTYPES, NIN, NOUT )
@@ -882,11 +892,32 @@
             WRITE( NOUT, FMT = 9989 )PATH
          END IF
 *
+      ELSE IF( LSAMEN( 2, C2, 'QT' ) ) THEN
+*
+*        QT:  QRT routines for general matrices
+*
+         IF( TSTCHK ) THEN
+            CALL CCHKQRT( THRESH, TSTERR, NM, MVAL, NN, NVAL, NNB, 
+     $                    NBVAL, NOUT )
+         ELSE
+            WRITE( NOUT, FMT = 9989 )PATH
+         END IF
+*
+      ELSE IF( LSAMEN( 2, C2, 'QX' ) ) THEN
+*
+*        QX:  QRT routines for triangular-pentagonal matrices
+*
+         IF( TSTCHK ) THEN
+            CALL CCHKQRTP( THRESH, TSTERR, NM, MVAL, NN, NVAL, NNB, 
+     $                     NBVAL, NOUT )
+         ELSE
+            WRITE( NOUT, FMT = 9989 )PATH
+         END IF
+*
       ELSE
 *
          WRITE( NOUT, FMT = 9990 )PATH
       END IF
-
 *
 *     Go back to get another input line.
 *

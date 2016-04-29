@@ -116,7 +116,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date April 2012
 *
 *> \ingroup complex16OTHERcomputational
 *
@@ -130,40 +130,31 @@
 *>
 *> \verbatim
 *>
-*>  The factorization is obtained by Householder's method.  The kth
-*>  transformation matrix, Z( k ), which is used to introduce zeros into
-*>  the ( m - k + 1 )th row of A, is given in the form
+*>  The N-by-N matrix Z can be computed by
 *>
-*>     Z( k ) = ( I     0   ),
-*>              ( 0  T( k ) )
+*>     Z =  Z(1)*Z(2)* ... *Z(M)
 *>
-*>  where
+*>  where each N-by-N Z(k) is given by
 *>
-*>     T( k ) = I - tau*u( k )*u( k )**H,   u( k ) = (   1    ),
-*>                                                 (   0    )
-*>                                                 ( z( k ) )
+*>     Z(k) = I - tau(k)*v(k)*v(k)**H
 *>
-*>  tau is a scalar and z( k ) is an ( n - m ) element vector.
-*>  tau and z( k ) are chosen to annihilate the elements of the kth row
-*>  of X.
+*>  with v(k) is the kth row vector of the M-by-N matrix
 *>
-*>  The scalar tau is returned in the kth element of TAU and the vector
-*>  u( k ) in the kth row of A, such that the elements of z( k ) are
-*>  in  a( k, m + 1 ), ..., a( k, n ). The elements of R are returned in
-*>  the upper triangular part of A.
+*>     V = ( I   A(:,M+1:N) )
 *>
-*>  Z is given by
+*>  I is the M-by-M identity matrix, A(:,M+1:N) 
+*>  is the output stored in A on exit from DTZRZF,
+*>  and tau(k) is the kth element of the array TAU.
 *>
-*>     Z =  Z( 1 ) * Z( 2 ) * ... * Z( m ).
 *> \endverbatim
 *>
 *  =====================================================================
       SUBROUTINE ZTZRZF( M, N, A, LDA, TAU, WORK, LWORK, INFO )
 *
-*  -- LAPACK computational routine (version 3.4.0) --
+*  -- LAPACK computational routine (version 3.4.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     April 2012
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, LWORK, M, N
