@@ -1,9 +1,9 @@
       SUBROUTINE CGEQR2( M, N, A, LDA, TAU, WORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, M, N
@@ -74,7 +74,7 @@
       COMPLEX            ALPHA
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           CLARF, CLARFP, XERBLA
+      EXTERNAL           CLARF, CLARFG, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          CONJG, MAX, MIN
@@ -102,7 +102,7 @@
 *
 *        Generate elementary reflector H(i) to annihilate A(i+1:m,i)
 *
-         CALL CLARFP( M-I+1, A( I, I ), A( MIN( I+1, M ), I ), 1,
+         CALL CLARFG( M-I+1, A( I, I ), A( MIN( I+1, M ), I ), 1,
      $                TAU( I ) )
          IF( I.LT.N ) THEN
 *

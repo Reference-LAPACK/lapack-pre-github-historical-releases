@@ -2,10 +2,10 @@
      $                   CUTPNT, Z, DLAMDA, Q2, LDQ2, W, PERM, GIVPTR,
      $                   GIVCOL, GIVNUM, INDXP, INDX, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            CUTPNT, GIVPTR, ICOMPQ, INFO, K, LDQ, LDQ2, N,
@@ -189,6 +189,13 @@
          RETURN
       END IF
 *
+*     Need to initialize GIVPTR to O here in case of quick exit
+*     to prevent an unspecified code behavior (usually sigfault) 
+*     when IWORK array on entry to *stedc is not zeroed 
+*     (or at least some IWORK entries which used in *laed7 for GIVPTR).
+*
+      GIVPTR = 0
+*
 *     Quick return if possible
 *
       IF( N.EQ.0 )
@@ -263,7 +270,6 @@
 *     components of Z are zero in this new basis.
 *
       K = 0
-      GIVPTR = 0
       K2 = N + 1
       DO 70 J = 1, N
          IF( RHO*ABS( Z( J ) ).LE.TOL ) THEN

@@ -1,10 +1,10 @@
       SUBROUTINE ZGESDD( JOBZ, M, N, A, LDA, S, U, LDU, VT, LDVT, WORK,
      $                   LWORK, RWORK, IWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.2) --
+*  -- LAPACK driver routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *     8-15-00:  Improve consistency of WS calculations (eca)
 *
 *     .. Scalar Arguments ..
@@ -127,7 +127,8 @@
 *
 *  RWORK   (workspace) DOUBLE PRECISION array, dimension (MAX(1,LRWORK))
 *          If JOBZ = 'N', LRWORK >= 5*min(M,N).
-*          Otherwise, LRWORK >= 5*min(M,N)*min(M,N) + 7*min(M,N)
+*          Otherwise,
+*          LRWORK >= min(M,N)*max(5*min(M,N)+7,2*max(M,N)+2*min(M,N)+1)
 *
 *  IWORK   (workspace) INTEGER array, dimension (8*min(M,N))
 *

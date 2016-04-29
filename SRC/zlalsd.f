@@ -1,10 +1,10 @@
       SUBROUTINE ZLALSD( UPLO, SMLSIZ, N, NRHS, D, E, B, LDB, RCOND,
      $                   RANK, WORK, RWORK, IWORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -89,7 +89,8 @@
 *         (N * NRHS).
 *
 *  RWORK  (workspace) DOUBLE PRECISION array, dimension at least
-*         (9*N + 2*N*SMLSIZ + 8*N*NLVL + 3*SMLSIZ*NRHS + (SMLSIZ+1)**2),
+*         (9*N + 2*N*SMLSIZ + 8*N*NLVL + 3*SMLSIZ*NRHS +
+*         MAX( (SMLSIZ+1)**2, N*(1+NRHS) + 2*NRHS ),
 *         where
 *         NLVL = MAX( 0, INT( LOG_2( MIN( M,N )/(SMLSIZ+1) ) ) + 1 )
 *
@@ -99,7 +100,7 @@
 *  INFO   (output) INTEGER
 *         = 0:  successful exit.
 *         < 0:  if INFO = -i, the i-th argument had an illegal value.
-*         > 0:  The algorithm failed to compute an singular value while
+*         > 0:  The algorithm failed to compute a singular value while
 *               working on the submatrix lying in rows and columns
 *               INFO/(N+1) through MOD(INFO,N+1).
 *

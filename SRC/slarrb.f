@@ -2,10 +2,10 @@
      $                   RTOL2, OFFSET, W, WGAP, WERR, WORK, IWORK,
      $                   PIVMIN, SPDIAM, TWIST, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            IFIRST, ILAST, INFO, N, OFFSET, TWIST
@@ -83,10 +83,10 @@
 *  IWORK   (workspace) INTEGER array, dimension (2*N)
 *          Workspace.
 *
-*  PIVMIN  (input) DOUBLE PRECISION
+*  PIVMIN  (input) REAL
 *          The minimum pivot in the Sturm sequence.
 *
-*  SPDIAM  (input) DOUBLE PRECISION
+*  SPDIAM  (input) REAL
 *          The spectral diameter of the matrix.
 *
 *  TWIST   (input) INTEGER

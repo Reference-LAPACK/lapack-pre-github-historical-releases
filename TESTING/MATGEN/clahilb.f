@@ -1,10 +1,10 @@
-      SUBROUTINE CLAHILB(N, NRHS, A, LDA, X, LDX, B, LDB, WORK, 
+      SUBROUTINE CLAHILB( N, NRHS, A, LDA, X, LDX, B, LDB, WORK, 
      $     INFO, PATH)
 !
-!  -- LAPACK auxiliary test routine (version 3.0) --
+!  -- LAPACK auxiliary test routine (version 3.2.2) --
 !     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,
 !     Courant Institute, Argonne National Lab, and Rice University
-!     28 August, 2006
+*     June 2010
 !
 !     David Vu <dtv@cs.berkeley.edu>
 !     Yozo Hida <yozo@cs.berkeley.edu>
@@ -48,7 +48,7 @@
 !  N       (input) INTEGER
 !          The dimension of the matrix A.
 !
-!  NRHS    (input) NRHS
+!  NRHS    (input) INTEGER
 !          The requested number of right-hand sides.
 !
 !  A       (output) COMPLEX array, dimension (LDA, N)
@@ -155,7 +155,8 @@
       END DO
 
 !     Generate the scaled Hilbert matrix in A
-!     If we are testing SY routines, take D1_i = D2_i, else, D1_i = D2_i*
+!     If we are testing SY routines, take 
+!          D1_i = D2_i, else, D1_i = D2_i*
       IF ( LSAMEN( 2, C2, 'SY' ) ) THEN
          DO J = 1, N
             DO I = 1, N
@@ -186,7 +187,8 @@
      $        * (N +J -1)
       END DO
       
-!     If we are testing SY routines, take D1_i = D2_i, else, D1_i = D2_i*
+!     If we are testing SY routines, 
+!            take D1_i = D2_i, else, D1_i = D2_i*
       IF ( LSAMEN( 2, C2, 'SY' ) ) THEN
          DO J = 1, NRHS
             DO I = 1, N

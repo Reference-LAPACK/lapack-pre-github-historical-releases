@@ -2,10 +2,10 @@
      $                   VS, LDVS, RCONDE, RCONDV, WORK, LWORK, RWORK,
      $                   BWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.2) --
+*  -- LAPACK driver routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       CHARACTER          JOBVS, SENSE, SORT
@@ -156,8 +156,8 @@
       PARAMETER          ( ZERO = 0.0D0, ONE = 1.0D0 )
 *     ..
 *     .. Local Scalars ..
-      LOGICAL            SCALEA, WANTSB, WANTSE, WANTSN, WANTST, WANTSV,
-     $                   WANTVS
+      LOGICAL            LQUERY, SCALEA, WANTSB, WANTSE, WANTSN, WANTST,
+     $                   WANTSV, WANTVS
       INTEGER            HSWORK, I, IBAL, ICOND, IERR, IEVAL, IHI, ILO,
      $                   ITAU, IWRK, LWRK, MAXWRK, MINWRK
       DOUBLE PRECISION   ANRM, BIGNUM, CSCALE, EPS, SMLNUM
@@ -189,6 +189,8 @@
       WANTSE = LSAME( SENSE, 'E' )
       WANTSV = LSAME( SENSE, 'V' )
       WANTSB = LSAME( SENSE, 'B' )
+      LQUERY = ( LWORK.EQ.-1 )
+*
       IF( ( .NOT.WANTVS ) .AND. ( .NOT.LSAME( JOBVS, 'N' ) ) ) THEN
          INFO = -1
       ELSE IF( ( .NOT.WANTST ) .AND. ( .NOT.LSAME( SORT, 'N' ) ) ) THEN
@@ -243,13 +245,15 @@
          END IF
          WORK( 1 ) = LWRK
 *
-         IF( LWORK.LT.MINWRK ) THEN
+         IF( LWORK.LT.MINWRK .AND. .NOT.LQUERY ) THEN
             INFO = -15
          END IF
       END IF
 *
       IF( INFO.NE.0 ) THEN
          CALL XERBLA( 'ZGEESX', -INFO )
+         RETURN
+      ELSE IF( LQUERY ) THEN
          RETURN
       END IF
 *

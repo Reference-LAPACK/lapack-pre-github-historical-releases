@@ -1,10 +1,10 @@
       SUBROUTINE STGEX2( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ, Z,
      $                   LDZ, J1, N1, N2, WORK, LWORK, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       LOGICAL            WANTQ, WANTZ
@@ -134,8 +134,8 @@
 *     .. Parameters ..
       REAL               ZERO, ONE
       PARAMETER          ( ZERO = 0.0E+0, ONE = 1.0E+0 )
-      REAL               TEN
-      PARAMETER          ( TEN = 1.0E+01 )
+      REAL               TWENTY
+      PARAMETER          ( TWENTY = 2.0E+01 )
       INTEGER            LDST
       PARAMETER          ( LDST = 4 )
       LOGICAL            WANDS
@@ -205,7 +205,16 @@
       CALL SLACPY( 'Full', M, M, T, LDST, WORK, M )
       CALL SLASSQ( M*M, WORK, 1, DSCALE, DSUM )
       DNORM = DSCALE*SQRT( DSUM )
-      THRESH = MAX( TEN*EPS*DNORM, SMLNUM )
+*
+*     THRES has been changed from 
+*        THRESH = MAX( TEN*EPS*SA, SMLNUM )
+*     to
+*        THRESH = MAX( TWENTY*EPS*SA, SMLNUM )
+*     on 04/01/10.
+*     "Bug" reported by Ondra Kamenik, confirmed by Julie Langou, fixed by
+*     Jim Demmel and Guillaume Revy. See forum post 1783.
+*
+      THRESH = MAX( TWENTY*EPS*DNORM, SMLNUM )
 *
       IF( M.EQ.2 ) THEN
 *

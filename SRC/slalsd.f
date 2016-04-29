@@ -1,10 +1,10 @@
       SUBROUTINE SLALSD( UPLO, SMLSIZ, N, NRHS, D, E, B, LDB, RCOND,
      $                   RANK, WORK, IWORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -94,7 +94,7 @@
 *  INFO   (output) INTEGER
 *         = 0:  successful exit.
 *         < 0:  if INFO = -i, the i-th argument had an illegal value.
-*         > 0:  The algorithm failed to compute an singular value while
+*         > 0:  The algorithm failed to compute a singular value while
 *               working on the submatrix lying in rows and columns
 *               INFO/(N+1) through MOD(INFO,N+1).
 *

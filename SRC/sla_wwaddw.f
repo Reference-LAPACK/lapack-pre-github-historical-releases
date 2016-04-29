@@ -1,9 +1,9 @@
       SUBROUTINE SLA_WWADDW( N, X, Y, W )
 *
-*     -- LAPACK routine (version 3.2.1)                                 --
+*     -- LAPACK routine (version 3.2.2)                                 --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- April 2009                                                   --
+*     -- June 2010                                                    --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -31,10 +31,13 @@
 *     N      (input) INTEGER
 *            The length of vectors X, Y, and W.
 *
-*     X, Y   (input/output) REAL array, length N
-*            The doubled-single accumulation vector.
+*     X      (input/output) REAL array, dimension (N)
+*            The first part of the doubled-single accumulation vector.
 *
-*     W      (input) REAL array, length N
+*     Y      (input/output) REAL array, dimension (N)
+*            The second part of the doubled-single accumulation vector.
+*
+*     W      (input) REAL array, dimension (N)
 *            The vector to be added.
 *
 *  =====================================================================

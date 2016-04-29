@@ -3,10 +3,10 @@
      $                   SPDIAM, CLGAPL, CLGAPR, PIVMIN, SIGMA,
      $                   DPLUS, LPLUS, WORK, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 **
 *     .. Scalar Arguments ..
       INTEGER            CLSTRT, CLEND, INFO, N
@@ -48,22 +48,29 @@
 *  CLEND   (input) INTEGER
 *          The index of the last eigenvalue in the cluster.
 *
-*  W       (input) DOUBLE PRECISION array, dimension >=  (CLEND-CLSTRT+1)
+*  W       (input) DOUBLE PRECISION array, dimension
+*          dimension is >=  (CLEND-CLSTRT+1)
 *          The eigenvalue APPROXIMATIONS of L D L^T in ascending order.
 *          W( CLSTRT ) through W( CLEND ) form the cluster of relatively
 *          close eigenalues.
 *
-*  WGAP    (input/output) DOUBLE PRECISION array, dimension >=  (CLEND-CLSTRT+1)
+*  WGAP    (input/output) DOUBLE PRECISION array, dimension
+*          dimension is >=  (CLEND-CLSTRT+1)
 *          The separation from the right neighbor eigenvalue in W.
 *
-*  WERR    (input) DOUBLE PRECISION array, dimension >=  (CLEND-CLSTRT+1)
+*  WERR    (input) DOUBLE PRECISION array, dimension
+*          dimension is  >=  (CLEND-CLSTRT+1)
 *          WERR contain the semiwidth of the uncertainty
 *          interval of the corresponding eigenvalue APPROXIMATION in W
 *
-*  SPDIAM (input) estimate of the spectral diameter obtained from the
+*  SPDIAM  (input) DOUBLE PRECISION
+*          estimate of the spectral diameter obtained from the
 *          Gerschgorin intervals
 *
-*  CLGAPL, CLGAPR (input) absolute gap on each end of the cluster.
+*  CLGAPL  (input) DOUBLE PRECISION
+*
+*  CLGAPR  (input) DOUBLE PRECISION
+*          absolute gap on each end of the cluster.
 *          Set by the calling routine to protect against shifts too close
 *          to eigenvalues outside the cluster.
 *
@@ -82,6 +89,9 @@
 *
 *  WORK    (workspace) DOUBLE PRECISION array, dimension (2*N)
 *          Workspace.
+*
+*  INFO    (output) INTEGER
+*          Signals processing OK (=0) or failure (=1)
 *
 *  Further Details
 *  ===============

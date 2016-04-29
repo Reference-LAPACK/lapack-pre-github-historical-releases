@@ -1,10 +1,10 @@
       REAL FUNCTION SLA_GBRCOND( TRANS, N, KL, KU, AB, LDAB, AFB, LDAFB,
      $                           IPIV, CMODE, C, INFO, WORK, IWORK )
 *
-*     -- LAPACK routine (version 3.2.1)                               --
+*     -- LAPACK routine (version 3.2.2)                               --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- April 2009                                                   --
+*     -- June 2010                                                    --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -24,7 +24,7 @@
 *  Purpose
 *  =======
 *
-*     SLA_GERCOND Estimates the Skeel condition number of  op(A) * op2(C)
+*     SLA_GBRCOND Estimates the Skeel condition number of  op(A) * op2(C)
 *     where op2 is determined by CMODE as follows
 *     CMODE =  1    op2(C) = C
 *     CMODE =  0    op2(C) = I

@@ -1,9 +1,9 @@
       SUBROUTINE ZTZRQF( M, N, A, LDA, TAU, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, M, N
@@ -99,7 +99,7 @@
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           XERBLA, ZAXPY, ZCOPY, ZGEMV, ZGERC, ZLACGV,
-     $                   ZLARFP
+     $                   ZLARFG
 *     ..
 *     .. Executable Statements ..
 *
@@ -136,7 +136,7 @@
             A( K, K ) = DCONJG( A( K, K ) )
             CALL ZLACGV( N-M, A( K, M1 ), LDA )
             ALPHA = A( K, K )
-            CALL ZLARFP( N-M+1, ALPHA, A( K, M1 ), LDA, TAU( K ) )
+            CALL ZLARFG( N-M+1, ALPHA, A( K, M1 ), LDA, TAU( K ) )
             A( K, K ) = ALPHA
             TAU( K ) = DCONJG( TAU( K ) )
 *

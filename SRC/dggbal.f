@@ -1,10 +1,10 @@
       SUBROUTINE DGGBAL( JOB, N, A, LDA, B, LDB, ILO, IHI, LSCALE,
      $                   RSCALE, WORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       CHARACTER          JOB
@@ -88,7 +88,7 @@
 *          The order in which the interchanges are made is N to IHI+1,
 *          then 1 to ILO-1.
 *
-*  WORK    (workspace) REAL array, dimension (lwork)
+*  WORK    (workspace) DOUBLE PRECISION array, dimension (lwork)
 *          lwork must be at least max(1,6*N) when JOB = 'S' or 'B', and
 *          at least 1 when JOB = 'N' or 'P'.
 *

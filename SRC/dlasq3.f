@@ -2,12 +2,12 @@
      $                   ITER, NDIV, IEEE, TTYPE, DMIN1, DMIN2, DN, DN1,
      $                   DN2, G, TAU )
 *
-*  -- LAPACK routine (version 3.2)                                    --
+*  -- LAPACK routine (version 3.2.2)                                    --
 *
 *  -- Contributed by Osni Marques of the Lawrence Berkeley National   --
 *  -- Laboratory and Beresford Parlett of the Univ. of California at  --
 *  -- Berkeley                                                        --
-*  -- November 2008                                                   --
+*  -- June 2010                                                       --
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -35,7 +35,7 @@
 *  I0     (input) INTEGER
 *         First index.
 *
-*  N0     (input) INTEGER
+*  N0     (input/output) INTEGER
 *         Last index.
 *
 *  Z      (input) DOUBLE PRECISION array, dimension ( 4*N )
@@ -74,7 +74,20 @@
 *  TTYPE  (input/output) INTEGER
 *         Shift type.
 *
-*  DMIN1, DMIN2, DN, DN1, DN2, G, TAU (input/output) DOUBLE PRECISION
+*  DMIN1  (input/output) DOUBLE PRECISION
+*
+*  DMIN2  (input/output) DOUBLE PRECISION
+*
+*  DN     (input/output) DOUBLE PRECISION
+*
+*  DN1    (input/output) DOUBLE PRECISION
+*
+*  DN2    (input/output) DOUBLE PRECISION
+*
+*  G      (input/output) DOUBLE PRECISION
+*
+*  TAU    (input/output) DOUBLE PRECISION
+*
 *         These are passed as arguments in order to save their values
 *         between calls to DLASQ3.
 *

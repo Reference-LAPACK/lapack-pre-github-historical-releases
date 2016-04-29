@@ -4,7 +4,7 @@
 *
 *  -- LAPACK test routine (version 3.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -103,7 +103,7 @@
 *
 *     .. Parameters ..
       INTEGER            NTESTS
-      PARAMETER          ( NTESTS = 8 )
+      PARAMETER          ( NTESTS = 9 )
       INTEGER            NTYPES
       PARAMETER          ( NTYPES = 8 )
       DOUBLE PRECISION   ZERO
@@ -127,8 +127,8 @@
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           ALAERH, ALAHD, ALASUM, DERRQR, DGEQRS, DGET02,
-     $                   DLACPY, DLARHS, DLATB4, DLATMS, DQRT01, DQRT02,
-     $                   DQRT03, XLAENV
+     $                   DLACPY, DLARHS, DLATB4, DLATMS, DQRT01, 
+     $                   DQRT01P, DQRT02, DQRT03, XLAENV
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -244,10 +244,17 @@
 *
                         CALL DQRT01( M, N, A, AF, AQ, AR, LDA, TAU,
      $                               WORK, LWORK, RWORK, RESULT( 1 ) )
-                        IF( .NOT.DGENND( M, N, AF, LDA ) )
-     $                       RESULT( 8 ) = 2*THRESH
+
+*
+*                       Test DGEQRFP
+*
+                        CALL DQRT01P( M, N, A, AF, AQ, AR, LDA, TAU,
+     $                               WORK, LWORK, RWORK, RESULT( 8 ) )
+
+                         IF( .NOT. DGENND( M, N, AF, LDA ) )
+     $                       RESULT( 9 ) = 2*THRESH
                         NT = NT + 1
-                     ELSE IF( M.GE.N ) THEN
+                    ELSE IF( M.GE.N ) THEN
 *
 *                       Test DORGQR, using factorization
 *                       returned by DQRT01
@@ -302,7 +309,7 @@
 *                    Print information about the tests that did not
 *                    pass the threshold.
 *
-                     DO 20 I = 1, NT
+                     DO 20 I = 1, NTESTS
                         IF( RESULT( I ).GE.THRESH ) THEN
                            IF( NFAIL.EQ.0 .AND. NERRS.EQ.0 )
      $                        CALL ALAHD( NOUT, PATH )

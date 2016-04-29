@@ -2,10 +2,10 @@
      $                    NSPLIT, ISPLIT, INFO )
       IMPLICIT NONE
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, N, NSPLIT
@@ -45,12 +45,12 @@
 *          On exit, the entries E2( ISPLIT( I ) ),
 *          1 <= I <= NSPLIT, have been set to zero
 *
-*  SPLTOL (input) DOUBLE PRECISION
+*  SPLTOL  (input) DOUBLE PRECISION
 *          The threshold for splitting. Two criteria can be used:
 *          SPLTOL<0 : criterion based on absolute off-diagonal value
 *          SPLTOL>0 : criterion that preserves relative accuracy
 *
-*  TNRM (input) DOUBLE PRECISION
+*  TNRM    (input) DOUBLE PRECISION
 *          The norm of the matrix.
 *
 *  NSPLIT  (output) INTEGER

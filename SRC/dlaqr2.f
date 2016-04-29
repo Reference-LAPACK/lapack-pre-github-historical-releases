@@ -2,9 +2,9 @@
      $                   IHIZ, Z, LDZ, NS, ND, SR, SI, V, LDV, NH, T,
      $                   LDT, NV, WV, LDWV, WORK, LWORK )
 *
-*  -- LAPACK auxiliary routine (version 3.2.1)                        --
+*  -- LAPACK auxiliary routine (version 3.2.2)                        --
 *     Univ. of Tennessee, Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..
-*  -- April 2009                                                      --
+*  -- June 2010                                                       --
 *
 *     .. Scalar Arguments ..
       INTEGER            IHIZ, ILOZ, KBOT, KTOP, LDH, LDT, LDV, LDWV,
@@ -101,8 +101,8 @@
 *          The number of converged eigenvalues uncovered by this
 *          subroutine.
 *
-*     SR      (output) DOUBLE PRECISION array, dimension KBOT
-*     SI      (output) DOUBLE PRECISION array, dimension KBOT
+*     SR      (output) DOUBLE PRECISION array, dimension (KBOT)
+*     SI      (output) DOUBLE PRECISION array, dimension (KBOT)
 *          On output, the real and imaginary parts of approximate
 *          eigenvalues that may be used for shifts are stored in
 *          SR(KBOT-ND-NS+1) through SR(KBOT-ND) and
@@ -137,7 +137,7 @@
 *          The leading dimension of W just as declared in the
 *          calling subroutine.  NW .LE. LDV
 *
-*     WORK    (workspace) DOUBLE PRECISION array, dimension LWORK.
+*     WORK    (workspace) DOUBLE PRECISION array, dimension (LWORK)
 *          On exit, WORK(1) is set to an estimate of the optimal value
 *          of LWORK for the given values of N, NW, KTOP and KBOT.
 *

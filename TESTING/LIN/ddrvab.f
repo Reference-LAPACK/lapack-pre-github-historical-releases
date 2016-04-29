@@ -5,7 +5,7 @@
 *
 *  -- LAPACK test routine (version 3.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            NM, NMAX, NNS, NOUT
@@ -264,10 +264,10 @@
 *
 *              If iterative refinement has been used and claimed to 
 *              be successful (ITER>0), we want
-*                NORM1(B - A*X)/(NORM1(A)*NORM1(X)*EPS*SRQT(N)) < 1
+*                NORMI(B - A*X)/(NORMI(A)*NORMI(X)*EPS*SRQT(N)) < 1
 *
 *              If double precision has been used (ITER<0), we want
-*                NORM1(B - A*X)/(NORM1(A)*NORM1(X)*EPS) < THRES
+*                NORMI(B - A*X)/(NORMI(A)*NORMI(X)*EPS) < THRES
 *              (Cf. the linear solver testing routines)
 *
                IF ((THRESH.LE.0.0E+00)

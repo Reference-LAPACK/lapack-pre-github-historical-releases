@@ -1,10 +1,10 @@
       SUBROUTINE DLAQPS( M, N, OFFSET, NB, KB, A, LDA, JPVT, TAU, VN1,
      $                   VN2, AUXV, F, LDF )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            KB, LDA, LDF, M, N, NB, OFFSET
@@ -91,7 +91,7 @@
 *  Partial column norm updating strategy modified by
 *    Z. Drmac and Z. Bujanovic, Dept. of Mathematics,
 *    University of Zagreb, Croatia.
-*    June 2006.
+*     June 2010
 *  For more details see LAPACK Working Note 176.
 *  =====================================================================
 *
@@ -104,7 +104,7 @@
       DOUBLE PRECISION   AKK, TEMP, TEMP2, TOL3Z
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEMM, DGEMV, DLARFP, DSWAP
+      EXTERNAL           DGEMM, DGEMV, DLARFG, DSWAP
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, DBLE, MAX, MIN, NINT, SQRT
@@ -152,9 +152,9 @@
 *        Generate elementary reflector H(k).
 *
          IF( RK.LT.M ) THEN
-            CALL DLARFP( M-RK+1, A( RK, K ), A( RK+1, K ), 1, TAU( K ) )
+            CALL DLARFG( M-RK+1, A( RK, K ), A( RK+1, K ), 1, TAU( K ) )
          ELSE
-            CALL DLARFP( 1, A( RK, K ), A( RK, K ), 1, TAU( K ) )
+            CALL DLARFG( 1, A( RK, K ), A( RK, K ), 1, TAU( K ) )
          END IF
 *
          AKK = A( RK, K )

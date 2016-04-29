@@ -1,10 +1,10 @@
       SUBROUTINE DTGEX2( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ, Z,
      $                   LDZ, J1, N1, N2, WORK, LWORK, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       LOGICAL            WANTQ, WANTZ
@@ -47,21 +47,21 @@
 *  N       (input) INTEGER
 *          The order of the matrices A and B. N >= 0.
 *
-*  A      (input/output) DOUBLE PRECISION arrays, dimensions (LDA,N)
+*  A       (input/output) DOUBLE PRECISION array, dimensions (LDA,N)
 *          On entry, the matrix A in the pair (A, B).
 *          On exit, the updated matrix A.
 *
-*  LDA     (input)  INTEGER
+*  LDA     (input) INTEGER
 *          The leading dimension of the array A. LDA >= max(1,N).
 *
-*  B      (input/output) DOUBLE PRECISION arrays, dimensions (LDB,N)
+*  B       (input/output) DOUBLE PRECISION array, dimensions (LDB,N)
 *          On entry, the matrix B in the pair (A, B).
 *          On exit, the updated matrix B.
 *
-*  LDB     (input)  INTEGER
+*  LDB     (input) INTEGER
 *          The leading dimension of the array B. LDB >= max(1,N).
 *
-*  Q       (input/output) DOUBLE PRECISION array, dimension (LDZ,N)
+*  Q       (input/output) DOUBLE PRECISION array, dimension (LDQ,N)
 *          On entry, if WANTQ = .TRUE., the orthogonal matrix Q.
 *          On exit, the updated matrix Q.
 *          Not referenced if WANTQ = .FALSE..
@@ -134,8 +134,8 @@
 *     .. Parameters ..
       DOUBLE PRECISION   ZERO, ONE
       PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
-      DOUBLE PRECISION   TEN
-      PARAMETER          ( TEN = 1.0D+01 )
+      DOUBLE PRECISION   TWENTY
+      PARAMETER          ( TWENTY = 2.0D+01 )
       INTEGER            LDST
       PARAMETER          ( LDST = 4 )
       LOGICAL            WANDS
@@ -205,7 +205,16 @@
       CALL DLACPY( 'Full', M, M, T, LDST, WORK, M )
       CALL DLASSQ( M*M, WORK, 1, DSCALE, DSUM )
       DNORM = DSCALE*SQRT( DSUM )
-      THRESH = MAX( TEN*EPS*DNORM, SMLNUM )
+*
+*     THRES has been changed from 
+*        THRESH = MAX( TEN*EPS*SA, SMLNUM )
+*     to
+*        THRESH = MAX( TWENTY*EPS*SA, SMLNUM )
+*     on 04/01/10.
+*     "Bug" reported by Ondra Kamenik, confirmed by Julie Langou, fixed by
+*     Jim Demmel and Guillaume Revy. See forum post 1783.
+*
+      THRESH = MAX( TWENTY*EPS*DNORM, SMLNUM )
 *
       IF( M.EQ.2 ) THEN
 *

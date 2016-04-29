@@ -4,15 +4,15 @@
      $                    WORK, IWORK, INFO )
       IMPLICIT NONE
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       CHARACTER          RANGE
       INTEGER            IL, INFO, IU, M, N, NSPLIT
-      REAL              PIVMIN, RTOL1, RTOL2, SPLTOL, VL, VU
+      REAL               PIVMIN, RTOL1, RTOL2, SPLTOL, VL, VU
 *     ..
 *     .. Array Arguments ..
       INTEGER            IBLOCK( * ), ISPLIT( * ), IWORK( * ),
@@ -138,7 +138,7 @@
 *          The N Gerschgorin intervals (the i-th Gerschgorin interval
 *          is (GERS(2*i-1), GERS(2*i)).
 *
-*  PIVMIN  (output) DOUBLE PRECISION
+*  PIVMIN  (output) REAL
 *          The minimum pivot in the Sturm sequence for T.
 *
 *  WORK    (workspace) REAL             array, dimension (6*N)

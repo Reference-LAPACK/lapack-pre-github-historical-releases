@@ -2,10 +2,10 @@
      $                   VL, VU, IL, IU, ABSTOL, M, W, Z, LDZ, WORK,
      $                   LWORK, IWORK, IFAIL, INFO )
 *
-*  -- LAPACK driver routine (version 3.2) --
+*  -- LAPACK driver routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       CHARACTER          JOBZ, RANGE, UPLO
@@ -68,7 +68,7 @@
 *  LDA     (input) INTEGER
 *          The leading dimension of the array A.  LDA >= max(1,N).
 *
-*  B       (input/output) DOUBLE PRECISION array, dimension (LDA, N)
+*  B       (input/output) DOUBLE PRECISION array, dimension (LDB, N)
 *          On entry, the symmetric matrix B.  If UPLO = 'U', the
 *          leading N-by-N upper triangular part of B contains the
 *          upper triangular part of the matrix B.  If UPLO = 'L',

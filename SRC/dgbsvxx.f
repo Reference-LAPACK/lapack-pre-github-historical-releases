@@ -4,10 +4,10 @@
      $                    ERR_BNDS_NORM, ERR_BNDS_COMP, NPARAMS, PARAMS,
      $                    WORK, IWORK, INFO )
 *
-*     -- LAPACK driver routine (version 3.2)                          --
+*     -- LAPACK driver routine (version 3.2.2)                          --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- November 2008                                                --
+*     -- June 2010                                                    --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -17,7 +17,7 @@
 *     .. Scalar Arguments ..
       CHARACTER          EQUED, FACT, TRANS
       INTEGER            INFO, LDAB, LDAFB, LDB, LDX, N, NRHS, NPARAMS,
-     $                   N_ERR_BNDS
+     $                   N_ERR_BNDS, KL, KU
       DOUBLE PRECISION   RCOND, RPVGRW
 *     ..
 *     .. Array Arguments ..
@@ -377,7 +377,7 @@
 *     Specifies the number of parameters set in PARAMS.  If .LE. 0, the
 *     PARAMS array is never referenced and default values are used.
 *
-*     PARAMS  (input / output) DOUBLE PRECISION array, dimension NPARAMS
+*     PARAMS  (input / output) DOUBLE PRECISION array, dimension (NPARAMS)
 *     Specifies algorithm parameters.  If an entry is .LT. 0.0, then
 *     that entry will be filled with default value used for that
 *     parameter.  Only positions up to NPARAMS are accessed; defaults
@@ -451,7 +451,7 @@
 *     ..
 *     .. Local Scalars ..
       LOGICAL            COLEQU, EQUIL, NOFACT, NOTRAN, ROWEQU
-      INTEGER            INFEQU, I, J, KL, KU
+      INTEGER            INFEQU, I, J
       DOUBLE PRECISION   AMAX, BIGNUM, COLCND, RCMAX, RCMIN,
      $                   ROWCND, SMLNUM
 *     ..

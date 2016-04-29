@@ -1,9 +1,9 @@
       SUBROUTINE DSYEQUB( UPLO, N, A, LDA, S, SCOND, AMAX, WORK, INFO )
 *
-*     -- LAPACK routine (version 3.2)                                 --
+*     -- LAPACK routine (version 3.2.2)                                 --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- November 2008                                                --
+*     -- June 2010                                                    --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -34,6 +34,12 @@
 *  Arguments
 *  =========
 *
+*  UPLO    (input) CHARACTER*1
+*          Specifies whether the details of the factorization are stored
+*          as an upper or lower triangular matrix.
+*          = 'U':  Upper triangular, form is A = U*D*U**T;
+*          = 'L':  Lower triangular, form is A = L*D*L**T.
+*
 *  N       (input) INTEGER
 *          The order of the matrix A.  N >= 0.
 *
@@ -57,6 +63,9 @@
 *          Absolute value of largest matrix element.  If AMAX is very
 *          close to overflow or very close to underflow, the matrix
 *          should be scaled.
+*
+*  WORK    (workspace) DOUBLE PRECISION array, dimension (3*N)
+*
 *  INFO    (output) INTEGER
 *          = 0:  successful exit
 *          < 0:  if INFO = -i, the i-th argument had an illegal value
@@ -87,9 +96,13 @@
 *     .. External Functions ..
       DOUBLE PRECISION   DLAMCH
       LOGICAL            LSAME
+      EXTERNAL           DLAMCH, LSAME
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           DLASSQ
+*     ..
+*     .. Intrinsic Functions ..
+      INTRINSIC          ABS, INT, LOG, MAX, MIN, SQRT
 *     ..
 *     .. Executable Statements ..
 *

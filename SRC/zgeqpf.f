@@ -1,9 +1,9 @@
       SUBROUTINE ZGEQPF( M, N, A, LDA, JPVT, TAU, WORK, RWORK, INFO )
 *
-*  -- LAPACK deprecated driver routine (version 3.2) --
+*  -- LAPACK deprecated computational routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, M, N
@@ -81,7 +81,7 @@
 *  Partial column norm updating strategy modified by
 *    Z. Drmac and Z. Bujanovic, Dept. of Mathematics,
 *    University of Zagreb, Croatia.
-*    June 2006.
+*     June 2010
 *  For more details see LAPACK Working Note 176.
 *
 *  =====================================================================
@@ -96,7 +96,7 @@
       COMPLEX*16         AII
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           XERBLA, ZGEQR2, ZLARF, ZLARFP, ZSWAP, ZUNM2R
+      EXTERNAL           XERBLA, ZGEQR2, ZLARF, ZLARFG, ZSWAP, ZUNM2R
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, DCMPLX, DCONJG, MAX, MIN, SQRT
@@ -186,7 +186,7 @@
 *           Generate elementary reflector H(i)
 *
             AII = A( I, I )
-            CALL ZLARFP( M-I+1, AII, A( MIN( I+1, M ), I ), 1,
+            CALL ZLARFG( M-I+1, AII, A( MIN( I+1, M ), I ), 1,
      $                   TAU( I ) )
             A( I, I ) = AII
 *

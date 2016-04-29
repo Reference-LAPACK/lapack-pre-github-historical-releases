@@ -1,9 +1,9 @@
-      SUBROUTINE ZLARFP( N, ALPHA, X, INCX, TAU )
+      SUBROUTINE ZLARFGP( N, ALPHA, X, INCX, TAU )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            INCX, N
@@ -16,7 +16,7 @@
 *  Purpose
 *  =======
 *
-*  ZLARFP generates a complex elementary reflector H of order n, such
+*  ZLARFGP generates a complex elementary reflector H of order n, such
 *  that
 *
 *        H' * ( alpha ) = ( beta ),   H' * H = I.
@@ -33,8 +33,6 @@
 *
 *  If the elements of x are all zero and alpha is real, then tau = 0
 *  and H is taken to be the unit matrix.
-*
-*  Otherwise  1 <= real(tau) <= 2  and  abs(tau-1) <= 1 .
 *
 *  Arguments
 *  =========
@@ -65,7 +63,8 @@
 *     ..
 *     .. Local Scalars ..
       INTEGER            J, KNT
-      DOUBLE PRECISION   ALPHI, ALPHR, BETA, RSAFMN, SAFMIN, XNORM
+      DOUBLE PRECISION   ALPHI, ALPHR, BETA, BIGNUM, SMLNUM, XNORM
+      COMPLEX*16         SAVEALPHA
 *     ..
 *     .. External Functions ..
       DOUBLE PRECISION   DLAMCH, DLAPY3, DLAPY2, DZNRM2
@@ -95,13 +94,13 @@
 *
          IF( ALPHI.EQ.ZERO ) THEN
             IF( ALPHR.GE.ZERO ) THEN
-!              When TAU.eq.ZERO, the vector is special-cased to be
-!              all zeros in the application routines.  We do not need
-!              to clear it.
+*              When TAU.eq.ZERO, the vector is special-cased to be
+*              all zeros in the application routines.  We do not need
+*              to clear it.
                TAU = ZERO
             ELSE
-!              However, the application routines rely on explicit
-!              zero checks when TAU.ne.ZERO, and we must clear X.
+*              However, the application routines rely on explicit
+*              zero checks when TAU.ne.ZERO, and we must clear X.
                TAU = TWO
                DO J = 1, N-1
                   X( 1 + (J-1)*INCX ) = ZERO
@@ -109,7 +108,7 @@
                ALPHA = -ALPHA
             END IF
          ELSE
-!           Only "reflecting" the diagonal entry to be real and non-negative.
+*           Only "reflecting" the diagonal entry to be real and non-negative.
             XNORM = DLAPY2( ALPHR, ALPHI )
             TAU = DCMPLX( ONE - ALPHR / XNORM, -ALPHI / XNORM )
             DO J = 1, N-1
@@ -122,29 +121,30 @@
 *        general case
 *
          BETA = SIGN( DLAPY3( ALPHR, ALPHI, XNORM ), ALPHR )
-         SAFMIN = DLAMCH( 'S' ) / DLAMCH( 'E' )
-         RSAFMN = ONE / SAFMIN
+         SMLNUM = DLAMCH( 'S' ) / DLAMCH( 'E' )
+         BIGNUM = ONE / SMLNUM
 *
          KNT = 0
-         IF( ABS( BETA ).LT.SAFMIN ) THEN
+         IF( ABS( BETA ).LT.SMLNUM ) THEN
 *
 *           XNORM, BETA may be inaccurate; scale X and recompute them
 *
    10       CONTINUE
             KNT = KNT + 1
-            CALL ZDSCAL( N-1, RSAFMN, X, INCX )
-            BETA = BETA*RSAFMN
-            ALPHI = ALPHI*RSAFMN
-            ALPHR = ALPHR*RSAFMN
-            IF( ABS( BETA ).LT.SAFMIN )
+            CALL ZDSCAL( N-1, BIGNUM, X, INCX )
+            BETA = BETA*BIGNUM
+            ALPHI = ALPHI*BIGNUM
+            ALPHR = ALPHR*BIGNUM
+            IF( ABS( BETA ).LT.SMLNUM )
      $         GO TO 10
 *
-*           New BETA is at most 1, at least SAFMIN
+*           New BETA is at most 1, at least SMLNUM
 *
             XNORM = DZNRM2( N-1, X, INCX )
             ALPHA = DCMPLX( ALPHR, ALPHI )
             BETA = SIGN( DLAPY3( ALPHR, ALPHI, XNORM ), ALPHR )
          END IF
+         SAVEALPHA = ALPHA
          ALPHA = ALPHA + BETA
          IF( BETA.LT.ZERO ) THEN
             BETA = -BETA
@@ -156,18 +156,55 @@
             ALPHA = DCMPLX( -ALPHR, ALPHI )
          END IF
          ALPHA = ZLADIV( DCMPLX( ONE ), ALPHA )
-         CALL ZSCAL( N-1, ALPHA, X, INCX )
+*
+         IF ( ABS(TAU).LE.SMLNUM ) THEN
+*
+*           In the case where the computed TAU ends up being a denormalized number,
+*           it loses relative accuracy. This is a BIG problem. Solution: flush TAU 
+*           to ZERO (or TWO or whatever makes a nonnegative real number for BETA).
+*
+*           (Bug report provided by Pat Quillen from MathWorks on Jul 29, 2009.)
+*           (Thanks Pat. Thanks MathWorks.)
+*
+            ALPHR = DBLE( SAVEALPHA )
+            ALPHI = DIMAG( SAVEALPHA )
+            IF( ALPHI.EQ.ZERO ) THEN
+               IF( ALPHR.GE.ZERO ) THEN
+                  TAU = ZERO
+               ELSE
+                  TAU = TWO
+                  DO J = 1, N-1
+                     X( 1 + (J-1)*INCX ) = ZERO
+                  END DO
+                  BETA = -SAVEALPHA
+               END IF
+            ELSE
+               XNORM = DLAPY2( ALPHR, ALPHI )
+               TAU = DCMPLX( ONE - ALPHR / XNORM, -ALPHI / XNORM )
+               DO J = 1, N-1
+                  X( 1 + (J-1)*INCX ) = ZERO
+               END DO
+               BETA = XNORM
+            END IF
+*
+         ELSE 
+*
+*           This is the general case.
+*
+            CALL ZSCAL( N-1, ALPHA, X, INCX )
+*
+         END IF
 *
 *        If BETA is subnormal, it may lose relative accuracy
 *
          DO 20 J = 1, KNT
-            BETA = BETA*SAFMIN
+            BETA = BETA*SMLNUM
  20      CONTINUE
          ALPHA = BETA
       END IF
 *
       RETURN
 *
-*     End of ZLARFP
+*     End of ZLARFGP
 *
       END

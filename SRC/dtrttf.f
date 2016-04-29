@@ -1,9 +1,9 @@
       SUBROUTINE DTRTTF( TRANSR, UPLO, N, A, LDA, ARF, INFO )
 *
-*  -- LAPACK routine (version 3.2.1)                                    --
+*  -- LAPACK routine (version 3.2.2)                                    --
 *
 *  -- Contributed by Fred Gustavson of the IBM Watson Research Center --
-*  -- April 2009                                                      --
+*  -- June 2010                                                       --
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -25,7 +25,7 @@
 *  Arguments
 *  =========
 *
-*  TRANSR   (input) CHARACTER
+*  TRANSR  (input) CHARACTER
 *          = 'N':  ARF in Normal form is wanted;
 *          = 'T':  ARF in Transpose form is wanted.
 *
@@ -101,7 +101,7 @@
 *     05 15 25 35 45 55 22    53 54 55 22 32 42 52
 *
 *
-*  We first consider Rectangular Full Packed (RFP) Format when N is
+*  We then consider Rectangular Full Packed (RFP) Format when N is
 *  odd. We give an example where N = 5.
 *
 *     AP is Upper                 AP is Lower

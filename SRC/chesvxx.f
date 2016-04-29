@@ -3,10 +3,10 @@
      $                    N_ERR_BNDS, ERR_BNDS_NORM, ERR_BNDS_COMP,
      $                    NPARAMS, PARAMS, WORK, RWORK, INFO )
 *
-*     -- LAPACK driver routine (version 3.2.1)                          --
+*     -- LAPACK driver routine (version 3.2.2)                          --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- April 2009                                                   --
+*     -- June 2010                                                    --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -510,7 +510,7 @@
 *
       IF( NOFACT .OR. EQUIL ) THEN
 *
-*        Compute the LU factorization of A.
+*        Compute the LDL^T or UDU^T factorization of A.
 *
          CALL CLACPY( UPLO, N, N, A, LDA, AF, LDAF )
          CALL CHETRF( UPLO, N, AF, LDAF, IPIV, WORK, 5*MAX(1,N), INFO )

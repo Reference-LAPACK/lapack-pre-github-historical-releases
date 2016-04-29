@@ -4,7 +4,7 @@
 *
 *  -- LAPACK test routine (version 3.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -103,7 +103,7 @@
 *
 *     .. Parameters ..
       INTEGER            NTESTS
-      PARAMETER          ( NTESTS = 8 )
+      PARAMETER          ( NTESTS = 9 )
       INTEGER            NTYPES
       PARAMETER          ( NTYPES = 8 )
       REAL               ZERO
@@ -127,8 +127,8 @@
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           ALAERH, ALAHD, ALASUM, SERRQR, SGEQRS, SGET02,
-     $                   SLACPY, SLARHS, SLATB4, SLATMS, SQRT01, SQRT02,
-     $                   SQRT03, XLAENV
+     $                   SLACPY, SLARHS, SLATB4, SLATMS, SQRT01,
+     $                   SQRT01P, SQRT02, SQRT03, XLAENV
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -244,9 +244,15 @@
 *
                         CALL SQRT01( M, N, A, AF, AQ, AR, LDA, TAU,
      $                               WORK, LWORK, RWORK, RESULT( 1 ) )
-                        IF( .NOT.SGENND( M, N, AF, LDA ) )
-     $                       RESULT( 8 ) = 2*THRESH
-                        NT = NT + 1
+*
+*                       Test SGEQRFP
+*
+                        CALL SQRT01P( M, N, A, AF, AQ, AR, LDA, TAU,
+     $                               WORK, LWORK, RWORK, RESULT( 8 ) )
+
+                         IF( .NOT. SGENND( M, N, AF, LDA ) )
+     $                       RESULT( 9 ) = 2*THRESH
+                         NT = NT + 1
                      ELSE IF( M.GE.N ) THEN
 *
 *                       Test SORGQR, using factorization

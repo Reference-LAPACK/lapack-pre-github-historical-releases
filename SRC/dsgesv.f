@@ -1,7 +1,7 @@
       SUBROUTINE DSGESV( N, NRHS, A, LDA, IPIV, B, LDB, X, LDX, WORK,
      +                   SWORK, ITER, INFO )
 *
-*  -- LAPACK PROTOTYPE driver routine (version 3.2) --
+*  -- LAPACK PROTOTYPE driver routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
 *     February 2007
@@ -62,7 +62,7 @@
 *          The number of right hand sides, i.e., the number of columns
 *          of the matrix B.  NRHS >= 0.
 *
-*  A       (input or input/ouptut) DOUBLE PRECISION array,
+*  A       (input/output) DOUBLE PRECISION array,
 *          dimension (LDA,N)
 *          On entry, the N-by-N coefficient matrix A.
 *          On exit, if iterative refinement has been successfully used
@@ -94,7 +94,7 @@
 *  LDX     (input) INTEGER
 *          The leading dimension of the array X.  LDX >= max(1,N).
 *
-*  WORK    (workspace) DOUBLE PRECISION array, dimension (N*NRHS)
+*  WORK    (workspace) DOUBLE PRECISION array, dimension (N,NRHS)
 *          This array is used to hold the residual vectors.
 *
 *  SWORK   (workspace) REAL array, dimension (N*(N+NRHS))

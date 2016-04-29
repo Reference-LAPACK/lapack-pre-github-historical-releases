@@ -3,10 +3,10 @@
      $                    ERR_BNDS_NORM, ERR_BNDS_COMP, NPARAMS, PARAMS,
      $                    WORK, RWORK, INFO )
 *
-*     -- LAPACK routine (version 3.2.1)                                 --
+*     -- LAPACK routine (version 3.2.2)                                 --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- April 2009                                                   --
+*     -- June 2010                                                    --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -421,10 +421,12 @@
             IF ( N_ERR_BNDS .GE. 1 ) THEN
                ERR_BNDS_NORM( J, LA_LINRX_TRUST_I ) = 1.0D+0
                ERR_BNDS_COMP( J, LA_LINRX_TRUST_I ) = 1.0D+0
-            ELSE IF ( N_ERR_BNDS .GE. 2 ) THEN
+            END IF
+            IF ( N_ERR_BNDS .GE. 2 ) THEN
                ERR_BNDS_NORM( J, LA_LINRX_ERR_I ) = 0.0D+0
                ERR_BNDS_COMP( J, LA_LINRX_ERR_I ) = 0.0D+0
-            ELSE IF ( N_ERR_BNDS .GE. 3 ) THEN
+            END IF
+            IF ( N_ERR_BNDS .GE. 3 ) THEN
                ERR_BNDS_NORM( J, LA_LINRX_RCOND_I ) = 1.0D+0
                ERR_BNDS_COMP( J, LA_LINRX_RCOND_I ) = 1.0D+0
             END IF
@@ -440,10 +442,12 @@
          IF ( N_ERR_BNDS .GE. 1 ) THEN
             ERR_BNDS_NORM( J, LA_LINRX_TRUST_I ) = 1.0D+0
             ERR_BNDS_COMP( J, LA_LINRX_TRUST_I ) = 1.0D+0
-         ELSE IF ( N_ERR_BNDS .GE. 2 ) THEN
+         END IF
+         IF ( N_ERR_BNDS .GE. 2 ) THEN
             ERR_BNDS_NORM( J, LA_LINRX_ERR_I ) = 1.0D+0
             ERR_BNDS_COMP( J, LA_LINRX_ERR_I ) = 1.0D+0
-         ELSE IF ( N_ERR_BNDS .GE. 3 ) THEN
+         END IF
+         IF ( N_ERR_BNDS .GE. 3 ) THEN
             ERR_BNDS_NORM( J, LA_LINRX_RCOND_I ) = 0.0D+0
             ERR_BNDS_COMP( J, LA_LINRX_RCOND_I ) = 0.0D+0
          END IF

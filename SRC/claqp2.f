@@ -1,10 +1,10 @@
       SUBROUTINE CLAQP2( M, N, OFFSET, A, LDA, JPVT, TAU, VN1, VN2,
      $                   WORK )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            LDA, M, N, OFFSET
@@ -75,7 +75,7 @@
 *  Partial column norm updating strategy modified by
 *    Z. Drmac and Z. Bujanovic, Dept. of Mathematics,
 *    University of Zagreb, Croatia.
-*    June 2006.
+*     June 2010
 *  For more details see LAPACK Working Note 176.
 *  =====================================================================
 *
@@ -91,7 +91,7 @@
       COMPLEX            AII
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           CLARF, CLARFP, CSWAP
+      EXTERNAL           CLARF, CLARFG, CSWAP
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, CONJG, MAX, MIN, SQRT
@@ -128,10 +128,10 @@
 *        Generate elementary reflector H(i).
 *
          IF( OFFPI.LT.M ) THEN
-            CALL CLARFP( M-OFFPI+1, A( OFFPI, I ), A( OFFPI+1, I ), 1,
+            CALL CLARFG( M-OFFPI+1, A( OFFPI, I ), A( OFFPI+1, I ), 1,
      $                   TAU( I ) )
          ELSE
-            CALL CLARFP( 1, A( M, I ), A( M, I ), 1, TAU( I ) )
+            CALL CLARFG( 1, A( M, I ), A( M, I ), 1, TAU( I ) )
          END IF
 *
          IF( I.LT.N ) THEN

@@ -3,7 +3,7 @@
 *
 *  -- LAPACK test routine (version 3.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       CHARACTER          TRANS
@@ -18,7 +18,7 @@
 *  Purpose
 *  =======
 *
-*  DGET02 computes the residual for a solution of a system of linear
+*  DGET08 computes the residual for a solution of a system of linear
 *  equations  A*x = b  or  A'*x = b:
 *     RESID = norm(B - A*X,inf) / ( norm(A,inf) * norm(X,inf) * EPS ),
 *  where EPS is the machine epsilon.

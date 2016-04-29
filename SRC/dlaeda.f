@@ -1,10 +1,10 @@
       SUBROUTINE DLAEDA( N, TLVLS, CURLVL, CURPBM, PRMPTR, PERM, GIVPTR,
      $                   GIVCOL, GIVNUM, Q, QPTR, Z, ZTEMP, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            CURLVL, CURPBM, INFO, N, TLVLS
@@ -154,7 +154,7 @@
          Z( K ) = ZERO
    20 CONTINUE
 *
-*     Loop thru remaining levels 1 -> CURLVL applying the Givens
+*     Loop through remaining levels 1 -> CURLVL applying the Givens
 *     rotations and permutation and then multiplying the center matrices
 *     against the current Z.
 *

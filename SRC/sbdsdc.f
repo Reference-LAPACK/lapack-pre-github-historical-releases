@@ -1,10 +1,10 @@
       SUBROUTINE SBDSDC( UPLO, COMPQ, N, D, E, U, LDU, VT, LDVT, Q, IQ,
      $                   WORK, IWORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       CHARACTER          COMPQ, UPLO
@@ -119,7 +119,7 @@
 *  INFO    (output) INTEGER
 *          = 0:  successful exit.
 *          < 0:  if INFO = -i, the i-th argument had an illegal value.
-*          > 0:  The algorithm failed to compute an singular value.
+*          > 0:  The algorithm failed to compute a singular value.
 *                The update process of divide and conquer failed.
 *
 *  Further Details
@@ -367,9 +367,9 @@
      $                      Q( START+( IC+QSTART-2 )*N ),
      $                      Q( START+( IS+QSTART-2 )*N ),
      $                      WORK( WSTART ), IWORK, INFO )
-               IF( INFO.NE.0 ) THEN
-                  RETURN
-               END IF
+            END IF
+            IF( INFO.NE.0 ) THEN
+               RETURN
             END IF
             START = I + 1
          END IF

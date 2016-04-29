@@ -1,9 +1,9 @@
       SUBROUTINE DLATRZ( M, N, L, A, LDA, TAU, WORK )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            L, LDA, M, N
@@ -90,7 +90,7 @@
       INTEGER            I
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DLARFP, DLARZ
+      EXTERNAL           DLARFG, DLARZ
 *     ..
 *     .. Executable Statements ..
 *
@@ -112,7 +112,7 @@
 *        Generate elementary reflector H(i) to annihilate
 *        [ A(i,i) A(i,n-l+1:n) ]
 *
-         CALL DLARFP( L+1, A( I, I ), A( I, N-L+1 ), LDA, TAU( I ) )
+         CALL DLARFG( L+1, A( I, I ), A( I, N-L+1 ), LDA, TAU( I ) )
 *
 *        Apply H(i) to A(1:i-1,i:n) from the right
 *

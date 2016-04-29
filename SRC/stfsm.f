@@ -1,10 +1,10 @@
       SUBROUTINE STFSM( TRANSR, SIDE, UPLO, TRANS, DIAG, M, N, ALPHA, A,
      +                  B, LDB )
 *
-*  -- LAPACK routine (version 3.2.1)                                    --
+*  -- LAPACK routine (version 3.2.2)                                    --
 *
 *  -- Contributed by Fred Gustavson of the IBM Watson Research Center --
-*  -- April 2009                                                      --
+*  -- June 2010                                                       --
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -40,11 +40,11 @@
 *  Arguments
 *  ==========
 *
-*  TRANSR - (input) CHARACTER
+*  TRANSR  (input) CHARACTER
 *          = 'N':  The Normal Form of RFP A is stored;
 *          = 'T':  The Transpose Form of RFP A is stored.
 *
-*  SIDE   - (input) CHARACTER
+*  SIDE    (input) CHARACTER
 *           On entry, SIDE specifies whether op( A ) appears on the left
 *           or right of X as follows:
 *
@@ -54,7 +54,7 @@
 *
 *           Unchanged on exit.
 *
-*  UPLO   - (input) CHARACTER
+*  UPLO    (input) CHARACTER
 *           On entry, UPLO specifies whether the RFP matrix A came from
 *           an upper or lower triangular matrix as follows:
 *           UPLO = 'U' or 'u' RFP A came from an upper triangular matrix
@@ -62,7 +62,7 @@
 *
 *           Unchanged on exit.
 *
-*  TRANS  - (input) CHARACTER
+*  TRANS   (input) CHARACTER
 *           On entry, TRANS  specifies the form of op( A ) to be used
 *           in the matrix multiplication as follows:
 *
@@ -72,7 +72,7 @@
 *
 *           Unchanged on exit.
 *
-*  DIAG   - (input) CHARACTER
+*  DIAG    (input) CHARACTER
 *           On entry, DIAG specifies whether or not RFP A is unit
 *           triangular as follows:
 *
@@ -83,23 +83,23 @@
 *
 *           Unchanged on exit.
 *
-*  M      - (input) INTEGER.
+*  M       (input) INTEGER
 *           On entry, M specifies the number of rows of B. M must be at
 *           least zero.
 *           Unchanged on exit.
 *
-*  N      - (input) INTEGER.
+*  N       (input) INTEGER
 *           On entry, N specifies the number of columns of B.  N must be
 *           at least zero.
 *           Unchanged on exit.
 *
-*  ALPHA  - (input) REAL.
+*  ALPHA   (input) REAL
 *           On entry,  ALPHA specifies the scalar  alpha. When  alpha is
 *           zero then  A is not referenced and  B need not be set before
 *           entry.
 *           Unchanged on exit.
 *
-*  A      - (input) REAL array, dimension (NT);
+*  A       (input) REAL array, dimension (NT)
 *           NT = N*(N+1)/2. On entry, the matrix A in RFP Format.
 *           RFP Format is described by TRANSR, UPLO and N as follows:
 *           If TRANSR='N' then RFP A is (0:N,0:K-1) when N is even;
@@ -115,12 +115,12 @@
 *           even and is N when is odd.
 *           See the Note below for more details. Unchanged on exit.
 *
-*  B      - (input/ouptut) REAL array,  DIMENSION (LDB,N)
+*  B       (input/output) REAL array,  DIMENSION (LDB,N)
 *           Before entry,  the leading  m by n part of the array  B must
 *           contain  the  right-hand  side  matrix  B,  and  on exit  is
 *           overwritten by the solution matrix  X.
 *
-*  LDB    - (input) INTEGER.
+*  LDB     (input) INTEGER
 *           On entry, LDB specifies the first dimension of B as declared
 *           in  the  calling  (sub)  program.   LDB  must  be  at  least
 *           max( 1, m ).
@@ -172,7 +172,7 @@
 *     05 15 25 35 45 55 22    53 54 55 22 32 42 52
 *
 *
-*  We first consider Rectangular Full Packed (RFP) Format when N is
+*  We then consider Rectangular Full Packed (RFP) Format when N is
 *  odd. We give an example where N = 5.
 *
 *     AP is Upper                 AP is Lower
@@ -345,7 +345,7 @@
                      ELSE
                         CALL STRSM( 'L', 'U', 'N', DIAG, M2, N, ALPHA,
      +                              A( M ), M, B( M1, 0 ), LDB )
-                        CALL SGEMM( 'T', 'N', M1, N, M2, -ONE, A( M1 ), M,
+                        CALL SGEMM( 'T', 'N', M1, N, M2, -ONE, A( M1 ),
      +                              M, B( M1, 0 ), LDB, ALPHA, B, LDB )
                         CALL STRSM( 'L', 'L', 'T', DIAG, M1, N, ONE,
      +                              A( 0 ), M, B, LDB )

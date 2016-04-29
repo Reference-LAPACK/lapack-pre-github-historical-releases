@@ -1,6 +1,6 @@
       SUBROUTINE CPSTRF( UPLO, N, A, LDA, PIV, RANK, TOL, WORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.2.2) --
 *     Craig Lucas, University of Manchester / NAG Ltd.
 *     October, 2008
 *
@@ -69,7 +69,7 @@
 *          will be used. The algorithm terminates at the (K-1)st step
 *          if the pivot <= TOL.
 *
-*  WORK    REAL array, dimension (2*N)
+*  WORK    (workspace) REAL array, dimension (2*N)
 *          Work space.
 *
 *  INFO    (output) INTEGER

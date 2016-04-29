@@ -1,12 +1,12 @@
-      LOGICAL FUNCTION SLAISNAN(SIN1,SIN2)
+      LOGICAL FUNCTION SLAISNAN( SIN1, SIN2 )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
-      REAL SIN1,SIN2
+      REAL               SIN1, SIN2
 *     ..
 *
 *  Purpose
@@ -30,6 +30,7 @@
 *  =========
 *
 *  SIN1     (input) REAL
+*
 *  SIN2     (input) REAL
 *          Two numbers to compare for inequality.
 *

@@ -1,9 +1,9 @@
-      SUBROUTINE DLARFP( N, ALPHA, X, INCX, TAU )
+      SUBROUTINE DLARFGP( N, ALPHA, X, INCX, TAU )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            INCX, N
@@ -16,7 +16,7 @@
 *  Purpose
 *  =======
 *
-*  DLARFP generates a real elementary reflector H of order n, such
+*  DLARFGP generates a real elementary reflector H of order n, such
 *  that
 *
 *        H * ( alpha ) = ( beta ),   H' * H = I.
@@ -33,8 +33,6 @@
 *
 *  If the elements of x are all zero, then tau = 0 and H is taken to be
 *  the unit matrix.
-*
-*  Otherwise  1 <= tau <= 2.
 *
 *  Arguments
 *  =========
@@ -65,7 +63,7 @@
 *     ..
 *     .. Local Scalars ..
       INTEGER            J, KNT
-      DOUBLE PRECISION   BETA, RSAFMN, SAFMIN, XNORM
+      DOUBLE PRECISION   BETA, BIGNUM, SAVEALPHA, SMLNUM, XNORM
 *     ..
 *     .. External Functions ..
       DOUBLE PRECISION   DLAMCH, DLAPY2, DNRM2
@@ -91,13 +89,13 @@
 *        H  =  [+/-1, 0; I], sign chosen so ALPHA >= 0
 *
          IF( ALPHA.GE.ZERO ) THEN
-!           When TAU.eq.ZERO, the vector is special-cased to be
-!           all zeros in the application routines.  We do not need
-!           to clear it.
+*           When TAU.eq.ZERO, the vector is special-cased to be
+*           all zeros in the application routines.  We do not need
+*           to clear it.
             TAU = ZERO
          ELSE
-!           However, the application routines rely on explicit
-!           zero checks when TAU.ne.ZERO, and we must clear X.
+*           However, the application routines rely on explicit
+*           zero checks when TAU.ne.ZERO, and we must clear X.
             TAU = TWO
             DO J = 1, N-1
                X( 1 + (J-1)*INCX ) = 0
@@ -109,26 +107,27 @@
 *        general case
 *
          BETA = SIGN( DLAPY2( ALPHA, XNORM ), ALPHA )
-         SAFMIN = DLAMCH( 'S' ) / DLAMCH( 'E' )
+         SMLNUM = DLAMCH( 'S' ) / DLAMCH( 'E' )
          KNT = 0
-         IF( ABS( BETA ).LT.SAFMIN ) THEN
+         IF( ABS( BETA ).LT.SMLNUM ) THEN
 *
 *           XNORM, BETA may be inaccurate; scale X and recompute them
 *
-            RSAFMN = ONE / SAFMIN
+            BIGNUM = ONE / SMLNUM
    10       CONTINUE
             KNT = KNT + 1
-            CALL DSCAL( N-1, RSAFMN, X, INCX )
-            BETA = BETA*RSAFMN
-            ALPHA = ALPHA*RSAFMN
-            IF( ABS( BETA ).LT.SAFMIN )
+            CALL DSCAL( N-1, BIGNUM, X, INCX )
+            BETA = BETA*BIGNUM
+            ALPHA = ALPHA*BIGNUM
+            IF( ABS( BETA ).LT.SMLNUM )
      $         GO TO 10
 *
-*           New BETA is at most 1, at least SAFMIN
+*           New BETA is at most 1, at least SMLNUM
 *
             XNORM = DNRM2( N-1, X, INCX )
             BETA = SIGN( DLAPY2( ALPHA, XNORM ), ALPHA )
          END IF
+         SAVEALPHA = ALPHA
          ALPHA = ALPHA + BETA
          IF( BETA.LT.ZERO ) THEN
             BETA = -BETA
@@ -138,19 +137,44 @@
             TAU = ALPHA / BETA
             ALPHA = -ALPHA
          END IF
-         CALL DSCAL( N-1, ONE / ALPHA, X, INCX )
+*
+         IF ( ABS(TAU).LE.SMLNUM ) THEN
+*
+*           In the case where the computed TAU ends up being a denormalized number,
+*           it loses relative accuracy. This is a BIG problem. Solution: flush TAU 
+*           to ZERO. This explains the next IF statement.
+*
+*           (Bug report provided by Pat Quillen from MathWorks on Jul 29, 2009.)
+*           (Thanks Pat. Thanks MathWorks.)
+*
+            IF( SAVEALPHA.GE.ZERO ) THEN
+               TAU = ZERO
+            ELSE
+               TAU = TWO
+               DO J = 1, N-1
+                  X( 1 + (J-1)*INCX ) = 0
+               END DO
+               BETA = -SAVEALPHA
+            END IF
+*
+         ELSE 
+*
+*           This is the general case.
+*
+            CALL DSCAL( N-1, ONE / ALPHA, X, INCX )
+*
+         END IF
 *
 *        If BETA is subnormal, it may lose relative accuracy
 *
          DO 20 J = 1, KNT
-            BETA = BETA*SAFMIN
+            BETA = BETA*SMLNUM
  20      CONTINUE
          ALPHA = BETA
       END IF
 *
       RETURN
 *
-*     End of DLARFP
+*     End of DLARFGP
 *
       END
-

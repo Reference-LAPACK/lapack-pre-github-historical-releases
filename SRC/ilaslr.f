@@ -1,9 +1,9 @@
-      INTEGER FUNCTION ILASLR(M, N, A, LDA)
+      INTEGER FUNCTION ILASLR( M, N, A, LDA )
       IMPLICIT NONE
 *
-*  -- LAPACK auxiliary routine (version 3.2.1)                        --
+*  -- LAPACK auxiliary routine (version 3.2.2)                        --
 *
-*  -- April 2009                                                      --
+*  -- June 2010                                                       --
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -29,7 +29,7 @@
 *  N       (input) INTEGER
 *          The number of columns of the matrix A.
 *
-*  A       (input) REAL             array, dimension (LDA,N)
+*  A       (input) REAL array, dimension (LDA,N)
 *          The m by n matrix A.
 *
 *  LDA     (input) INTEGER
@@ -62,4 +62,4 @@
          END DO
       END IF
       RETURN
-      END FUNCTION
+      END

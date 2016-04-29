@@ -4,7 +4,7 @@
 *
 *  -- LAPACK test routine (version 3.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -103,7 +103,7 @@
 *
 *     .. Parameters ..
       INTEGER            NTESTS
-      PARAMETER          ( NTESTS = 8 )
+      PARAMETER          ( NTESTS = 9 )
       INTEGER            NTYPES
       PARAMETER          ( NTYPES = 8 )
       REAL               ZERO
@@ -121,14 +121,14 @@
       INTEGER            ISEED( 4 ), ISEEDY( 4 ), KVAL( 4 )
       REAL               RESULT( NTESTS )
 *     ..
-*     .. External Fuinctions ..
+*     .. External Functions ..
       LOGICAL            CGENND
       EXTERNAL           CGENND
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           ALAERH, ALAHD, ALASUM, CERRQR, CGEQRS, CGET02,
-     $                   CLACPY, CLARHS, CLATB4, CLATMS, CQRT01, CQRT02,
-     $                   CQRT03, XLAENV
+     $                   CLACPY, CLARHS, CLATB4, CLATMS, CQRT01,
+     $                   CQRT01P, CQRT02, CQRT03, XLAENV
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -244,10 +244,16 @@
 *
                         CALL CQRT01( M, N, A, AF, AQ, AR, LDA, TAU,
      $                               WORK, LWORK, RWORK, RESULT( 1 ) )
-                        IF( .NOT.CGENND( M, N, AF, LDA ) )
-     $                       RESULT( 8 ) = 2*THRESH
+*
+*                       Test CGEQRFP
+*
+                        CALL CQRT01P( M, N, A, AF, AQ, AR, LDA, TAU,
+     $                               WORK, LWORK, RWORK, RESULT( 8 ) )
+
+                         IF( .NOT. CGENND( M, N, AF, LDA ) )
+     $                       RESULT( 9 ) = 2*THRESH
                         NT = NT + 1
-                     ELSE IF( M.GE.N ) THEN
+                    ELSE IF( M.GE.N ) THEN
 *
 *                       Test CUNGQR, using factorization
 *                       returned by CQRT01

@@ -1,9 +1,9 @@
       SUBROUTINE DLA_LIN_BERR ( N, NZ, NRHS, RES, AYB, BERR )
 *
-*     -- LAPACK routine (version 3.2.1)                                 --
+*     -- LAPACK routine (version 3.2.2)                                 --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- April 2009                                                   --
+*     -- June 2010                                                    --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -21,10 +21,10 @@
 *  Purpose
 *  =======
 *
-*     DLA_LIN_BERR computes componentwise relative backward error from
+*     DLA_LIN_BERR computes component-wise relative backward error from
 *     the formula
 *         max(i) ( abs(R(i)) / ( abs(op(A_s))*abs(Y) + abs(B_s) )(i) )
-*     where abs(Z) is the componentwise absolute value of the matrix
+*     where abs(Z) is the component-wise absolute value of the matrix
 *     or vector Z.
 *
 *  Arguments
@@ -42,17 +42,17 @@
 *     The number of right hand sides, i.e., the number of columns
 *     of the matrices AYB, RES, and BERR.  NRHS >= 0.
 *
-*     RES    (input) DOUBLE PRECISION array, dimension (N,NRHS)
+*     RES     (input) DOUBLE PRECISION array, dimension (N,NRHS)
 *     The residual matrix, i.e., the matrix R in the relative backward
 *     error formula above.
 *
-*     AYB    (input) DOUBLE PRECISION array, dimension (N, NRHS)
+*     AYB     (input) DOUBLE PRECISION array, dimension (N, NRHS)
 *     The denominator in the relative backward error formula above, i.e.,
 *     the matrix abs(op(A_s))*abs(Y) + abs(B_s). The matrices A, Y, and B
 *     are from iterative refinement (see dla_gerfsx_extended.f).
 *     
-*     RES    (output) DOUBLE PRECISION array, dimension (NRHS)
-*     The componentwise relative backward error from the formula above.
+*     BERR    (output) DOUBLE PRECISION array, dimension (NRHS)
+*     The component-wise relative backward error from the formula above.
 *
 *  =====================================================================
 *
@@ -90,4 +90,4 @@
 *
          END DO
       END DO
-      END SUBROUTINE
+      END

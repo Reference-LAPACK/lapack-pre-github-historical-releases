@@ -3,7 +3,7 @@
 *
 *  -- LAPACK test routine (version 3.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            LDA, LDX, LDY, N, TYPE
@@ -86,6 +86,7 @@
 *          The leading dimension of Y.
 *
 *  ALPHA   (input) COMPLEX
+*
 *  BETA    (input) COMPLEX
 *          Weighting constants for matrix A.
 *

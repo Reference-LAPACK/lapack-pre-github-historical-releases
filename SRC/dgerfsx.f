@@ -3,10 +3,10 @@
      $                    ERR_BNDS_NORM, ERR_BNDS_COMP, NPARAMS, PARAMS,
      $                    WORK, IWORK, INFO )
 *
-*     -- LAPACK routine (version 3.2.1)                                 --
+*     -- LAPACK routine (version 3.2.2)                                 --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- April 2009                                                   --
+*     -- June 2010                                                    --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -95,14 +95,11 @@
 *     The pivot indices from DGETRF; for 1<=i<=N, row i of the
 *     matrix was interchanged with row IPIV(i).
 *
-*     R       (input or output) DOUBLE PRECISION array, dimension (N)
+*     R       (input) DOUBLE PRECISION array, dimension (N)
 *     The row scale factors for A.  If EQUED = 'R' or 'B', A is
 *     multiplied on the left by diag(R); if EQUED = 'N' or 'C', R
-*     is not accessed.  R is an input argument if FACT = 'F';
-*     otherwise, R is an output argument.  If FACT = 'F' and
-*     EQUED = 'R' or 'B', each element of R must be positive.
-*     If R is output, each element of R is a power of the radix.
-*     If R is input, each element of R should be a power of the radix
+*     is not accessed.  
+*     If R is accessed, each element of R should be a power of the radix
 *     to ensure a reliable solution and error estimates. Scaling by
 *     powers of the radix does not cause rounding errors unless the
 *     result underflows or overflows. Rounding errors during scaling
@@ -110,14 +107,11 @@
 *     input matrix, producing error estimates that may not be
 *     reliable.
 *
-*     C       (input or output) DOUBLE PRECISION array, dimension (N)
+*     C       (input) DOUBLE PRECISION array, dimension (N)
 *     The column scale factors for A.  If EQUED = 'C' or 'B', A is
 *     multiplied on the right by diag(C); if EQUED = 'N' or 'R', C
-*     is not accessed.  C is an input argument if FACT = 'F';
-*     otherwise, C is an output argument.  If FACT = 'F' and
-*     EQUED = 'C' or 'B', each element of C must be positive.
-*     If C is output, each element of C is a power of the radix.
-*     If C is input, each element of C should be a power of the radix
+*     is not accessed. 
+*     If C is accessed, each element of C should be a power of the radix
 *     to ensure a reliable solution and error estimates. Scaling by
 *     powers of the radix does not cause rounding errors unless the
 *     result underflows or overflows. Rounding errors during scaling
@@ -250,7 +244,7 @@
 *     Specifies the number of parameters set in PARAMS.  If .LE. 0, the
 *     PARAMS array is never referenced and default values are used.
 *
-*     PARAMS  (input / output) DOUBLE PRECISION array, dimension NPARAMS
+*     PARAMS  (input / output) DOUBLE PRECISION array, dimension (NPARAMS)
 *     Specifies algorithm parameters.  If an entry is .LT. 0.0, then
 *     that entry will be filled with default value used for that
 *     parameter.  Only positions up to NPARAMS are accessed; defaults
@@ -446,10 +440,12 @@
             IF ( N_ERR_BNDS .GE. 1 ) THEN
                ERR_BNDS_NORM( J, LA_LINRX_TRUST_I) = 1.0D+0
                ERR_BNDS_COMP( J, LA_LINRX_TRUST_I ) = 1.0D+0
-            ELSE IF ( N_ERR_BNDS .GE. 2 ) THEN
+            END IF
+            IF ( N_ERR_BNDS .GE. 2 ) THEN
                ERR_BNDS_NORM( J, LA_LINRX_ERR_I) = 0.0D+0
                ERR_BNDS_COMP( J, LA_LINRX_ERR_I ) = 0.0D+0
-            ELSE IF ( N_ERR_BNDS .GE. 3 ) THEN
+            END IF
+            IF ( N_ERR_BNDS .GE. 3 ) THEN
                ERR_BNDS_NORM( J, LA_LINRX_RCOND_I) = 1.0D+0
                ERR_BNDS_COMP( J, LA_LINRX_RCOND_I ) = 1.0D+0
             END IF
@@ -465,10 +461,12 @@
          IF ( N_ERR_BNDS .GE. 1 ) THEN
             ERR_BNDS_NORM( J, LA_LINRX_TRUST_I ) = 1.0D+0
             ERR_BNDS_COMP( J, LA_LINRX_TRUST_I ) = 1.0D+0
-         ELSE IF ( N_ERR_BNDS .GE. 2 ) THEN
+         END IF
+         IF ( N_ERR_BNDS .GE. 2 ) THEN
             ERR_BNDS_NORM( J, LA_LINRX_ERR_I ) = 1.0D+0
             ERR_BNDS_COMP( J, LA_LINRX_ERR_I ) = 1.0D+0
-         ELSE IF ( N_ERR_BNDS .GE. 3 ) THEN
+         END IF
+         IF ( N_ERR_BNDS .GE. 3 ) THEN
             ERR_BNDS_NORM( J, LA_LINRX_RCOND_I ) = 0.0D+0
             ERR_BNDS_COMP( J, LA_LINRX_RCOND_I ) = 0.0D+0
          END IF

@@ -3,10 +3,10 @@
      $                    ERR_BNDS_NORM, ERR_BNDS_COMP, NPARAMS, PARAMS,
      $                    WORK, IWORK, INFO )
 *
-*     -- LAPACK routine (version 3.2.1)                                 --
+*     -- LAPACK routine (version 3.2.2)                                 --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- April 2009                                                   --
+*     -- June 2010                                                    --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -235,7 +235,7 @@
 *     Specifies the number of parameters set in PARAMS.  If .LE. 0, the
 *     PARAMS array is never referenced and default values are used.
 *
-*     PARAMS  (input / output) DOUBLE PRECISION array, dimension NPARAMS
+*     PARAMS  (input / output) DOUBLE PRECISION array, dimension (NPARAMS)
 *     Specifies algorithm parameters.  If an entry is .LT. 0.0, then
 *     that entry will be filled with default value used for that
 *     parameter.  Only positions up to NPARAMS are accessed; defaults
@@ -426,10 +426,12 @@
             IF ( N_ERR_BNDS .GE. 1 ) THEN
                ERR_BNDS_NORM( J, LA_LINRX_TRUST_I ) = 1.0D+0
                ERR_BNDS_COMP( J, LA_LINRX_TRUST_I ) = 1.0D+0
-            ELSE IF ( N_ERR_BNDS .GE. 2 ) THEN
+            END IF
+            IF ( N_ERR_BNDS .GE. 2 ) THEN
                ERR_BNDS_NORM( J, LA_LINRX_ERR_I ) = 0.0D+0
                ERR_BNDS_COMP( J, LA_LINRX_ERR_I ) = 0.0D+0
-            ELSE IF ( N_ERR_BNDS .GE. 3 ) THEN
+            END IF
+            IF ( N_ERR_BNDS .GE. 3 ) THEN
                ERR_BNDS_NORM( J, LA_LINRX_RCOND_I ) = 1.0D+0
                ERR_BNDS_COMP( J, LA_LINRX_RCOND_I ) = 1.0D+0
             END IF
@@ -445,10 +447,12 @@
          IF ( N_ERR_BNDS .GE. 1 ) THEN
             ERR_BNDS_NORM( J, LA_LINRX_TRUST_I ) = 1.0D+0
             ERR_BNDS_COMP( J, LA_LINRX_TRUST_I ) = 1.0D+0
-         ELSE IF ( N_ERR_BNDS .GE. 2 ) THEN
+         END IF
+         IF ( N_ERR_BNDS .GE. 2 ) THEN
             ERR_BNDS_NORM( J, LA_LINRX_ERR_I ) = 1.0D+0
             ERR_BNDS_COMP( J, LA_LINRX_ERR_I ) = 1.0D+0
-         ELSE IF ( N_ERR_BNDS .GE. 3 ) THEN
+         END IF
+         IF ( N_ERR_BNDS .GE. 3 ) THEN
             ERR_BNDS_NORM( J, LA_LINRX_RCOND_I ) = 0.0D+0
             ERR_BNDS_COMP( J, LA_LINRX_RCOND_I ) = 0.0D+0
          END IF

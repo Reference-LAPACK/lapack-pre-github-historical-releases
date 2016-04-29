@@ -3,10 +3,10 @@
      $                    N_ERR_BNDS, ERR_BNDS_NORM, ERR_BNDS_COMP,
      $                    NPARAMS, PARAMS, WORK, IWORK, INFO )
 *
-*     -- LAPACK driver routine (version 3.2)                          --
+*     -- LAPACK driver routine (version 3.2.2)                          --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- November 2008                                                --
+*     -- June 2010                                                    --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -503,7 +503,7 @@
 *
       IF( NOFACT .OR. EQUIL ) THEN
 *
-*        Compute the LU factorization of A.
+*        Compute the Cholesky factorization of A.
 *
          CALL DLACPY( UPLO, N, N, A, LDA, AF, LDAF )
          CALL DPOTRF( UPLO, N, AF, LDAF, INFO )

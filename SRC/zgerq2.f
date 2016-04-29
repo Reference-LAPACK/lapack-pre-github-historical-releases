@@ -1,9 +1,9 @@
       SUBROUTINE ZGERQ2( M, N, A, LDA, TAU, WORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, M, N
@@ -76,7 +76,7 @@
       COMPLEX*16         ALPHA
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           XERBLA, ZLACGV, ZLARF, ZLARFP
+      EXTERNAL           XERBLA, ZLACGV, ZLARF, ZLARFG
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -107,7 +107,7 @@
 *
          CALL ZLACGV( N-K+I, A( M-K+I, 1 ), LDA )
          ALPHA = A( M-K+I, N-K+I )
-         CALL ZLARFP( N-K+I, ALPHA, A( M-K+I, 1 ), LDA, TAU( I ) )
+         CALL ZLARFG( N-K+I, ALPHA, A( M-K+I, 1 ), LDA, TAU( I ) )
 *
 *        Apply H(i) to A(1:m-k+i-1,1:n-k+i) from the right
 *

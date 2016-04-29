@@ -1,6 +1,6 @@
       SUBROUTINE ZPSTF2( UPLO, N, A, LDA, PIV, RANK, TOL, WORK, INFO )
 *
-*  -- LAPACK PROTOTYPE routine (version 3.2) --
+*  -- LAPACK PROTOTYPE routine (version 3.2.2) --
 *     Craig Lucas, University of Manchester / NAG Ltd.
 *     October, 2008
 *
@@ -69,7 +69,7 @@
 *  LDA     (input) INTEGER
 *          The leading dimension of the array A.  LDA >= max(1,N).
 *
-*  WORK    DOUBLE PRECISION array, dimension (2*N)
+*  WORK    (workspace) DOUBLE PRECISION array, dimension (2*N)
 *          Work space.
 *
 *  INFO    (output) INTEGER

@@ -6,10 +6,10 @@
      $                                RTHRESH, DZ_UB, IGNORE_CWISE,
      $                                INFO )
 *
-*     -- LAPACK routine (version 3.2.1)                                 --
+*     -- LAPACK routine (version 3.2.2)                                 --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- April 2009                                                   --
+*     -- June 2010                                                    --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -376,7 +376,7 @@
 
 !         XXX: RES is no longer needed.
             CALL SCOPY( N, RES, 1, DY, 1 )
-            CALL SPOTRS( UPLO, N, NRHS, AF, LDAF, DY, N, INFO )
+            CALL SPOTRS( UPLO, N, 1, AF, LDAF, DY, N, INFO )
 *
 *         Calculate relative changes DX_X, DZ_Z and ratios DXRAT, DZRAT.
 *

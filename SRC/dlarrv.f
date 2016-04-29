@@ -4,10 +4,10 @@
      $                   IBLOCK, INDEXW, GERS, Z, LDZ, ISUPPZ,
      $                   WORK, IWORK, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            DOL, DOU, INFO, LDZ, M, N
@@ -51,7 +51,7 @@
 *          is stored the corresponding shift as given by DLARRE.
 *          On exit, L is overwritten.
 *
-*  PIVMIN  (in) DOUBLE PRECISION
+*  PIVMIN  (input) DOUBLE PRECISION
 *          The minimum pivot allowed in the Sturm sequence.
 *
 *  ISPLIT  (input) INTEGER array, dimension (N)
@@ -429,8 +429,8 @@
 *                 within the current block
                   P = INDEXW( WBEGIN-1+OLDFST )
                   Q = INDEXW( WBEGIN-1+OLDLST )
-*                 Offset for the arrays WORK, WGAP and WERR, i.e., th P-OFFSET
-*                 thru' Q-OFFSET elements of these arrays are to be used.
+*                 Offset for the arrays WORK, WGAP and WERR, i.e., the P-OFFSET
+*                 through the Q-OFFSET elements of these arrays are to be used.
 C                  OFFSET = P-OLDFST
                   OFFSET = INDEXW( WBEGIN ) - 1
 *                 perform limited bisection (if necessary) to get approximate

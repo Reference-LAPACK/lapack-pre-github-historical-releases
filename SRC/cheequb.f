@@ -1,9 +1,9 @@
       SUBROUTINE CHEEQUB( UPLO, N, A, LDA, S, SCOND, AMAX, WORK, INFO )
 *
-*     -- LAPACK routine (version 3.2)                                 --
+*     -- LAPACK routine (version 3.2.2)                                 --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- November 2008                                                --
+*     -- June 2010                                                    --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -81,9 +81,13 @@
 *     .. External Functions ..
       REAL               SLAMCH
       LOGICAL            LSAME
+      EXTERNAL           LSAME, SLAMCH
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           CLASSQ
+*     ..
+*     .. Intrinsic Functions ..
+      INTRINSIC          ABS, AIMAG, INT, LOG, MAX, MIN, REAL, SQRT
 *     ..
 *     .. Statement Functions ..
       REAL               CABS1

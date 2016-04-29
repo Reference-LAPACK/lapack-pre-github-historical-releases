@@ -1,9 +1,9 @@
-      SUBROUTINE DLAHILB(N, NRHS, A, LDA, X, LDX, B, LDB, WORK, INFO)
+      SUBROUTINE DLAHILB( N, NRHS, A, LDA, X, LDX, B, LDB, WORK, INFO)
 !
-!  -- LAPACK auxiliary test routine (version 3.0) --
+!  -- LAPACK auxiliary test routine (version 3.2.2) --
 !     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,
 !     Courant Institute, Argonne National Lab, and Rice University
-!     28 August, 2006
+*     June 2010
 !
 !     David Vu <dtv@cs.berkeley.edu>      
 !     Yozo Hida <yozo@cs.berkeley.edu>      
@@ -45,7 +45,7 @@
 !  N       (input) INTEGER
 !          The dimension of the matrix A.
 !      
-!  NRHS    (input) NRHS
+!  NRHS    (input) INTEGER
 !          The requested number of right-hand sides.
 !
 !  A       (output) DOUBLE PRECISION array, dimension (LDA, N)

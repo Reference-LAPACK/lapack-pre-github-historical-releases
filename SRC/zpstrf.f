@@ -1,9 +1,9 @@
       SUBROUTINE ZPSTRF( UPLO, N, A, LDA, PIV, RANK, TOL, WORK, INFO )
 *
-*  -- LAPACK routine (version 3.2.1)                                  --
+*  -- LAPACK routine (version 3.2.2)                                  --
 *     
 *  -- Contributed by Craig Lucas, University of Manchester / NAG Ltd. --
-*  -- April 2009                                                      --
+*  -- June 2010                                                       --
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *
@@ -72,7 +72,7 @@
 *          will be used. The algorithm terminates at the (K-1)st step
 *          if the pivot <= TOL.
 *
-*  WORK    DOUBLE PRECISION array, dimension (2*N)
+*  WORK    (workspace) DOUBLE PRECISION array, dimension (2*N)
 *          Work space.
 *
 *  INFO    (output) INTEGER

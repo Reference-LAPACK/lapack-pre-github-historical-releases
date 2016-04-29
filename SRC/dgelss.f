@@ -1,10 +1,10 @@
       SUBROUTINE DGELSS( M, N, NRHS, A, LDA, B, LDB, S, RCOND, RANK,
      $                   WORK, LWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.2) --
+*  -- LAPACK driver routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, LDB, LWORK, M, N, NRHS, RANK
@@ -282,7 +282,7 @@
 *        Matrix all zero. Return zero solution.
 *
          CALL DLASET( 'F', MAX( M, N ), NRHS, ZERO, ZERO, B, LDB )
-         CALL DLASET( 'F', MINMN, 1, ZERO, ZERO, S, 1 )
+         CALL DLASET( 'F', MINMN, 1, ZERO, ZERO, S, MINMN )
          RANK = 0
          GO TO 70
       END IF

@@ -1,9 +1,9 @@
       SUBROUTINE DLARSCL2 ( M, N, D, X, LDX )
 *
-*     -- LAPACK routine (version 3.2.1)                               --
+*     -- LAPACK routine (version 3.2.2)                               --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- April 2009                                                   --
+*     -- June 2010                                                    --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -36,7 +36,7 @@
 *     N       (input) INTEGER
 *     The number of columns of D and X. N >= 0.
 *
-*     D       (input) DOUBLE PRECISION array, length M
+*     D       (input) DOUBLE PRECISION array, dimension (M)
 *     Diagonal matrix D, stored as a vector of length M.
 *
 *     X       (input/output) DOUBLE PRECISION array, dimension (LDX,N)

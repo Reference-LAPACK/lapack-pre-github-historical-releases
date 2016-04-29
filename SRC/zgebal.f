@@ -1,9 +1,9 @@
       SUBROUTINE ZGEBAL( JOB, N, A, LDA, ILO, IHI, SCALE, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.2.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       CHARACTER          JOB
@@ -118,10 +118,10 @@
       COMPLEX*16         CDUM
 *     ..
 *     .. External Functions ..
-      LOGICAL            LSAME
+      LOGICAL            DISNAN, LSAME
       INTEGER            IZAMAX
       DOUBLE PRECISION   DLAMCH
-      EXTERNAL           LSAME, IZAMAX, DLAMCH
+      EXTERNAL           DISNAN, LSAME, IZAMAX, DLAMCH
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           XERBLA, ZDSCAL, ZSWAP
@@ -274,6 +274,14 @@
   160    CONTINUE
          IF( C.GE.G .OR. MAX( F, C, CA ).GE.SFMAX2 .OR.
      $       MIN( R, G, RA ).LE.SFMIN2 )GO TO 170
+            IF( DISNAN( C+F+CA+R+G+RA ) ) THEN
+*
+*           Exit if NaN to avoid infinite loop
+*
+            INFO = -3
+            CALL XERBLA( 'ZGEBAL', -INFO )
+            RETURN
+         END IF
          F = F*SCLFAC
          C = C*SCLFAC
          CA = CA*SCLFAC

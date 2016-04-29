@@ -1,9 +1,9 @@
       SUBROUTINE ZCPOSV( UPLO, N, NRHS, A, LDA, B, LDB, X, LDX, WORK,
      +                   SWORK, RWORK, ITER, INFO )
 *
-*  -- LAPACK PROTOTYPE driver routine (version 3.2.1)                 --
+*  -- LAPACK PROTOTYPE driver routine (version 3.2.2)                 --
 *
-*  -- April 2009                                                      --
+*  -- June 2010                                                       --
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -69,7 +69,7 @@
 *          The number of right hand sides, i.e., the number of columns
 *          of the matrix B.  NRHS >= 0.
 *
-*  A       (input or input/ouptut) COMPLEX*16 array,
+*  A       (input/output) COMPLEX*16 array,
 *          dimension (LDA,N)
 *          On entry, the Hermitian matrix A. If UPLO = 'U', the leading
 *          N-by-N upper triangular part of A contains the upper

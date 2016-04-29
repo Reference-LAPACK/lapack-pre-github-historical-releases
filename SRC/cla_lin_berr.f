@@ -1,9 +1,9 @@
       SUBROUTINE CLA_LIN_BERR ( N, NZ, NRHS, RES, AYB, BERR )
 *
-*     -- LAPACK routine (version 3.2.1)                                 --
+*     -- LAPACK routine (version 3.2.2)                                 --
 *     -- Contributed by James Demmel, Deaglan Halligan, Yozo Hida and --
 *     -- Jason Riedy of Univ. of California Berkeley.                 --
-*     -- April 2009                                                   --
+*     -- June 2010                                                    --
 *
 *     -- LAPACK is a software package provided by Univ. of Tennessee, --
 *     -- Univ. of California Berkeley and NAG Ltd.                    --
@@ -48,7 +48,7 @@
 *     the matrix abs(op(A_s))*abs(Y) + abs(B_s). The matrices A, Y, and B
 *     are from iterative refinement (see cla_gerfsx_extended.f).
 *     
-*     RES    (output) COMPLEX array, dimension (NRHS)
+*     BERR   (output) COMPLEX array, dimension (NRHS)
 *     The componentwise relative backward error from the formula above.
 *
 *  =====================================================================
@@ -94,4 +94,4 @@
 *
          END DO
       END DO
-      END SUBROUTINE
+      END
