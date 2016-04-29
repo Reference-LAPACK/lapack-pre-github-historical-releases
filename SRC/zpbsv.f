@@ -1,9 +1,9 @@
       SUBROUTINE ZPBSV( UPLO, N, KD, NRHS, AB, LDAB, B, LDB, INFO )
 *
-*  -- LAPACK driver routine (version 3.2) --
+*  -- LAPACK driver routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -58,7 +58,7 @@
 *          See below for further details.
 *
 *          On exit, if INFO = 0, the triangular factor U or L from the
-*          Cholesky factorization A = U**H*U or A = L*L**H of the band
+*          Cholesky factorization A = U**H *U or A = L*L**H of the band
 *          matrix A, in the same storage format as A.
 *
 *  LDAB    (input) INTEGER
@@ -135,7 +135,7 @@
          RETURN
       END IF
 *
-*     Compute the Cholesky factorization A = U'*U or A = L*L'.
+*     Compute the Cholesky factorization A = U**H *U or A = L*L**H.
 *
       CALL ZPBTRF( UPLO, N, KD, AB, LDAB, INFO )
       IF( INFO.EQ.0 ) THEN

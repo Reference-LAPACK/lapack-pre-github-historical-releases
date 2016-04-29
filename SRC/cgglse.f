@@ -1,10 +1,10 @@
       SUBROUTINE CGGLSE( M, N, P, A, LDA, B, LDB, C, D, X, WORK, LWORK,
      $                   INFO )
 *
-*  -- LAPACK driver routine (version 3.2) --
+*  -- LAPACK driver routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, LDB, LWORK, M, N, P
@@ -183,9 +183,9 @@
 *
 *     Compute the GRQ factorization of matrices B and A:
 *
-*            B*Q' = (  0  T12 ) P   Z'*A*Q' = ( R11 R12 ) N-P
-*                     N-P  P                  (  0  R22 ) M+P-N
-*                                               N-P  P
+*            B*Q**H = (  0  T12 ) P   Z**H*A*Q**H = ( R11 R12 ) N-P
+*                        N-P  P                     (  0  R22 ) M+P-N
+*                                                      N-P  P
 *
 *     where T12 and R11 are upper triangular, and Q and Z are
 *     unitary.
@@ -194,7 +194,7 @@
      $             WORK( P+MN+1 ), LWORK-P-MN, INFO )
       LOPT = WORK( P+MN+1 )
 *
-*     Update c = Z'*c = ( c1 ) N-P
+*     Update c = Z**H *c = ( c1 ) N-P
 *                       ( c2 ) M+P-N
 *
       CALL CUNMQR( 'Left', 'Conjugate Transpose', M, 1, MN, A, LDA,
@@ -255,7 +255,7 @@
          CALL CAXPY( NR, -CONE, D, 1, C( N-P+1 ), 1 )
       END IF
 *
-*     Backward transformation x = Q'*x
+*     Backward transformation x = Q**H*x
 *
       CALL CUNMRQ( 'Left', 'Conjugate Transpose', N, 1, P, B, LDB,
      $             WORK( 1 ), X, N, WORK( P+MN+1 ), LWORK-P-MN, INFO )

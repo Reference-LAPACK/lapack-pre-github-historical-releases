@@ -1,10 +1,11 @@
       SUBROUTINE SSYSV( UPLO, N, NRHS, A, LDA, IPIV, B, LDB, WORK,
      $                  LWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.2.2) --
+*  -- LAPACK driver routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     May 2010
+*  -- April 2011                                                      --
+* @generated s
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -27,7 +28,7 @@
 *     A = U * D * U**T,  if UPLO = 'U', or
 *     A = L * D * L**T,  if UPLO = 'L',
 *  where U (or L) is a product of permutation and unit upper (lower)
-*  triangular matrices, and D is symmetric and block diagonal with 
+*  triangular matrices, and D is symmetric and block diagonal with
 *  1-by-1 and 2-by-2 diagonal blocks.  The factored form of A is then
 *  used to solve the system of equations A * X = B.
 *
@@ -88,6 +89,8 @@
 *          The length of WORK.  LWORK >= 1, and for best performance
 *          LWORK >= max(1,N*NB), where NB is the optimal blocksize for
 *          SSYTRF.
+*          for LWORK < N, TRS will be done with Level BLAS 2
+*          for LWORK >= N, TRS will be done with Level BLAS 3
 *
 *          If LWORK = -1, then a workspace query is assumed; the routine
 *          only calculates the optimal size of the WORK array, returns
@@ -110,10 +113,10 @@
 *     .. External Functions ..
       LOGICAL            LSAME
       INTEGER            ILAENV
-      EXTERNAL           ILAENV, LSAME
+      EXTERNAL           LSAME, ILAENV
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           SSYTRF, SSYTRS2, XERBLA
+      EXTERNAL           XERBLA, SSYTRF, SSYTRS, SSYTRS2
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX
@@ -142,8 +145,8 @@
          IF( N.EQ.0 ) THEN
             LWKOPT = 1
          ELSE
-            NB = ILAENV( 1, 'SSYTRF', UPLO, N, -1, -1, -1 )
-            LWKOPT = N*NB
+            CALL SSYTRF( UPLO, N, A, LDA, IPIV, WORK, -1, INFO )            
+            LWKOPT = WORK(1)
          END IF
          WORK( 1 ) = LWKOPT
       END IF
@@ -155,14 +158,26 @@
          RETURN
       END IF
 *
-*     Compute the factorization A = U*D*U' or A = L*D*L'.
+*     Compute the factorization A = U*D*U**T or A = L*D*L**T.
 *
       CALL SSYTRF( UPLO, N, A, LDA, IPIV, WORK, LWORK, INFO )
       IF( INFO.EQ.0 ) THEN
 *
 *        Solve the system A*X = B, overwriting B with X.
 *
-         CALL SSYTRS2( UPLO, N, NRHS, A, LDA, IPIV, B, LDB, WORK, INFO )
+         IF ( LWORK.LT.N ) THEN
+*
+*        Solve with TRS ( Use Level BLAS 2)
+*
+            CALL SSYTRS( UPLO, N, NRHS, A, LDA, IPIV, B, LDB, INFO )
+*
+         ELSE
+*
+*        Solve with TRS2 ( Use Level BLAS 3)
+*
+            CALL SSYTRS2( UPLO,N,NRHS,A,LDA,IPIV,B,LDB,WORK,INFO )
+*
+         END IF
 *
       END IF
 *

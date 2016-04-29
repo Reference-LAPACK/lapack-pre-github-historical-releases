@@ -4,10 +4,10 @@
      $                    WORK, IWORK, INFO )
       IMPLICIT NONE
 *
-*  -- LAPACK auxiliary routine (version 3.3.0) --
+*  -- LAPACK auxiliary routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2010
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          RANGE
@@ -532,6 +532,7 @@
 *           The initial SIGMA was to the outer end of the spectrum
 *           the matrix is definite and we need not retreat.
             TAU = SPDIAM*EPS*N + TWO*PIVMIN
+            TAU = MAX( TAU,TWO*EPS*ABS(SIGMA) )
          ELSE
             IF(MB.GT.1) THEN
                CLWDTH = W(WEND) + WERR(WEND) - W(WBEGIN) - WERR(WBEGIN)

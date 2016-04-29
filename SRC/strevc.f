@@ -1,10 +1,10 @@
       SUBROUTINE STREVC( SIDE, HOWMNY, SELECT, N, T, LDT, VL, LDVL, VR,
      $                   LDVR, MM, M, WORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          HOWMNY, SIDE
@@ -27,9 +27,9 @@
 *  The right eigenvector x and the left eigenvector y of T corresponding
 *  to an eigenvalue w are defined by:
 *  
-*     T*x = w*x,     (y**H)*T = w*(y**H)
+*     T*x = w*x,     (y**T)*T = w*(y**T)
 *  
-*  where y**H denotes the conjugate transpose of y.
+*  where y**T denotes the transpose of y.
 *  The eigenvalues are not input to this routine, but are read directly
 *  from the diagonal blocks of T.
 *  
@@ -652,7 +652,7 @@
   160          CONTINUE
 *
 *              Solve the quasi-triangular system:
-*                 (T(KI+1:N,KI+1:N) - WR)'*X = SCALE*WORK
+*                 (T(KI+1:N,KI+1:N) - WR)**T*X = SCALE*WORK
 *
                VMAX = ONE
                VCRIT = BIGNUM
@@ -689,7 +689,7 @@
      $                             SDOT( J-KI-1, T( KI+1, J ), 1,
      $                             WORK( KI+1+N ), 1 )
 *
-*                    Solve (T(J,J)-WR)'*X = WORK
+*                    Solve (T(J,J)-WR)**T*X = WORK
 *
                      CALL SLALN2( .FALSE., 1, 1, SMIN, ONE, T( J, J ),
      $                            LDT, ONE, ONE, WORK( J+N ), N, WR,
@@ -727,8 +727,8 @@
      $                               WORK( KI+1+N ), 1 )
 *
 *                    Solve
-*                      [T(J,J)-WR   T(J,J+1)     ]'* X = SCALE*( WORK1 )
-*                      [T(J+1,J)    T(J+1,J+1)-WR]             ( WORK2 )
+*                      [T(J,J)-WR   T(J,J+1)     ]**T* X = SCALE*( WORK1 )
+*                      [T(J+1,J)    T(J+1,J+1)-WR]               ( WORK2 )
 *
                      CALL SLALN2( .TRUE., 2, 1, SMIN, ONE, T( J, J ),
      $                            LDT, ONE, ONE, WORK( J+N ), N, WR,
@@ -779,7 +779,7 @@
 *              Complex left eigenvector.
 *
 *               Initial solve:
-*                 ((T(KI,KI)    T(KI,KI+1) )' - (WR - I* WI))*X = 0.
+*                 ((T(KI,KI)    T(KI,KI+1) )**T - (WR - I* WI))*X = 0.
 *                 ((T(KI+1,KI) T(KI+1,KI+1))                )
 *
                IF( ABS( T( KI, KI+1 ) ).GE.ABS( T( KI+1, KI ) ) ) THEN
@@ -892,8 +892,8 @@
      $                                WORK( KI+2+N2 ), 1 )
 *
 *                    Solve 2-by-2 complex linear equation
-*                      ([T(j,j)   T(j,j+1)  ]'-(wr-i*wi)*I)*X = SCALE*B
-*                      ([T(j+1,j) T(j+1,j+1)]             )
+*                      ([T(j,j)   T(j,j+1)  ]**T-(wr-i*wi)*I)*X = SCALE*B
+*                      ([T(j+1,j) T(j+1,j+1)]               )
 *
                      CALL SLALN2( .TRUE., 2, 2, SMIN, ONE, T( J, J ),
      $                            LDT, ONE, ONE, WORK( J+N ), N, WR,

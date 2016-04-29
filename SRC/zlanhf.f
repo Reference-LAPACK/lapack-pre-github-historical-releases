@@ -1,6 +1,6 @@
       DOUBLE PRECISION FUNCTION ZLANHF( NORM, TRANSR, UPLO, N, A, WORK )
 *
-*  -- LAPACK routine (version 3.2.1)                                    --
+*  -- LAPACK routine (version 3.3.1)                                    --
 *
 *  -- Contributed by Fred Gustavson of the IBM Watson Research Center --
 *  -- April 2009                                                      --
@@ -227,19 +227,19 @@
 *
       NOE = 1
       IF( MOD( N, 2 ).EQ.0 )
-     +   NOE = 0
+     $   NOE = 0
 *
 *     set ifm = 0 when form='C' or 'c' and 1 otherwise
 *
       IFM = 1
       IF( LSAME( TRANSR, 'C' ) )
-     +   IFM = 0
+     $   IFM = 0
 *
 *     set ilu = 0 when uplo='U or 'u' and 1 otherwise
 *
       ILU = 1
       IF( LSAME( UPLO, 'U' ) )
-     +   ILU = 0
+     $   ILU = 0
 *
 *     set lda = (n+1)/2 when ifm = 0
 *     set lda = n when ifm = 1 and noe = 1
@@ -498,7 +498,7 @@
             END IF
          END IF
       ELSE IF( ( LSAME( NORM, 'I' ) ) .OR. ( LSAME( NORM, 'O' ) ) .OR.
-     +         ( NORM.EQ.'1' ) ) THEN
+     $         ( NORM.EQ.'1' ) ) THEN
 *
 *       Find normI(A) ( = norm1(A), since A is Hermitian).
 *
@@ -524,7 +524,7 @@
 *                    -> A(j+k,j+k)
                      WORK( J+K ) = S + AA
                      IF( I.EQ.K+K )
-     +                  GO TO 10
+     $                  GO TO 10
                      I = I + 1
                      AA = ABS( DBLE( A( I+J*LDA ) ) )
 *                    -> A(j,j)
@@ -1026,7 +1026,7 @@
             ELSE
 *              A is xpose & A is k by n
                IF( ILU.EQ.0 ) THEN
-*                 A' is upper
+*                 A**H is upper
                   DO J = 1, K - 2
                      CALL ZLASSQ( J, A( 0+( K+J )*LDA ), 1, SCALE, S )
 *                    U at A(0,k)
@@ -1037,7 +1037,7 @@
                   END DO
                   DO J = 0, K - 2
                      CALL ZLASSQ( K-J-1, A( J+1+( J+K-1 )*LDA ), 1,
-     +                            SCALE, S )
+     $                            SCALE, S )
 *                    L at A(0,k-1)
                   END DO
                   S = S + S
@@ -1080,7 +1080,7 @@
                      L = L + LDA + 1
                   END DO
                ELSE
-*                 A' is lower
+*                 A**H is lower
                   DO J = 1, K - 1
                      CALL ZLASSQ( J, A( 0+J*LDA ), 1, SCALE, S )
 *                    U at A(0,0)
@@ -1215,7 +1215,7 @@
             ELSE
 *              A is xpose
                IF( ILU.EQ.0 ) THEN
-*                 A' is upper
+*                 A**H is upper
                   DO J = 1, K - 1
                      CALL ZLASSQ( J, A( 0+( K+1+J )*LDA ), 1, SCALE, S )
 *                 U at A(0,k+1)
@@ -1226,7 +1226,7 @@
                   END DO
                   DO J = 0, K - 2
                      CALL ZLASSQ( K-J-1, A( J+1+( J+K )*LDA ), 1, SCALE,
-     +                            S )
+     $                            S )
 *                 L at A(0,k)
                   END DO
                   S = S + S
@@ -1281,7 +1281,7 @@
                      END IF
                   END IF
                ELSE
-*                 A' is lower
+*                 A**H is lower
                   DO J = 1, K - 1
                      CALL ZLASSQ( J, A( 0+( J+1 )*LDA ), 1, SCALE, S )
 *                 U at A(0,1)

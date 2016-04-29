@@ -1,10 +1,10 @@
       SUBROUTINE ZTGEXC( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ, Z,
      $                   LDZ, IFST, ILST, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       LOGICAL            WANTQ, WANTZ
@@ -20,7 +20,7 @@
 *
 *  ZTGEXC reorders the generalized Schur decomposition of a complex
 *  matrix pair (A,B), using an unitary equivalence transformation
-*  (A, B) := Q * (A, B) * Z', so that the diagonal block of (A, B) with
+*  (A, B) := Q * (A, B) * Z**H, so that the diagonal block of (A, B) with
 *  row index IFST is moved to row ILST.
 *
 *  (A, B) must be in generalized Schur canonical form, that is, A and
@@ -29,8 +29,8 @@
 *  Optionally, the matrices Q and Z of generalized Schur vectors are
 *  updated.
 *
-*         Q(in) * A(in) * Z(in)' = Q(out) * A(out) * Z(out)'
-*         Q(in) * B(in) * Z(in)' = Q(out) * B(out) * Z(out)'
+*         Q(in) * A(in) * Z(in)**H = Q(out) * A(out) * Z(out)**H
+*         Q(in) * B(in) * Z(in)**H = Q(out) * B(out) * Z(out)**H
 *
 *  Arguments
 *  =========

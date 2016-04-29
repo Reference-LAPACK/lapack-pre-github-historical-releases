@@ -1,9 +1,9 @@
       SUBROUTINE CPTCON( N, D, E, ANORM, RCOND, RWORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, N
@@ -118,7 +118,7 @@
 *        m(i,j) =  abs(A(i,j)), i = j,
 *        m(i,j) = -abs(A(i,j)), i .ne. j,
 *
-*     and e = [ 1, 1, ..., 1 ]'.  Note M(A) = M(L)*D*M(L)'.
+*     and e = [ 1, 1, ..., 1 ]**T.  Note M(A) = M(L)*D*M(L)**H.
 *
 *     Solve M(L) * x = e.
 *
@@ -127,7 +127,7 @@
          RWORK( I ) = ONE + RWORK( I-1 )*ABS( E( I-1 ) )
    20 CONTINUE
 *
-*     Solve D * M(L)' * x = b.
+*     Solve D * M(L)**H * x = b.
 *
       RWORK( N ) = RWORK( N ) / D( N )
       DO 30 I = N - 1, 1, -1

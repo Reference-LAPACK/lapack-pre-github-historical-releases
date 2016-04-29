@@ -1,10 +1,10 @@
       SUBROUTINE DPOCON( UPLO, N, A, LDA, ANORM, RCOND, WORK, IWORK,
      $                   INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     Modified to call DLACN2 in place of DLACON, 5 Feb 03, SJH.
 *
@@ -129,7 +129,7 @@
       IF( KASE.NE.0 ) THEN
          IF( UPPER ) THEN
 *
-*           Multiply by inv(U').
+*           Multiply by inv(U**T).
 *
             CALL DLATRS( 'Upper', 'Transpose', 'Non-unit', NORMIN, N, A,
      $                   LDA, WORK, SCALEL, WORK( 2*N+1 ), INFO )
@@ -147,7 +147,7 @@
      $                   A, LDA, WORK, SCALEL, WORK( 2*N+1 ), INFO )
             NORMIN = 'Y'
 *
-*           Multiply by inv(L').
+*           Multiply by inv(L**T).
 *
             CALL DLATRS( 'Lower', 'Transpose', 'Non-unit', NORMIN, N, A,
      $                   LDA, WORK, SCALEU, WORK( 2*N+1 ), INFO )

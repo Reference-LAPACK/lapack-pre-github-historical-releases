@@ -1,10 +1,10 @@
       SUBROUTINE ZUNMRQ( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC,
      $                   WORK, LWORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          SIDE, TRANS
@@ -26,7 +26,7 @@
 *  where Q is a complex unitary matrix defined as the product of k
 *  elementary reflectors
 *
-*        Q = H(1)' H(2)' . . . H(k)'
+*        Q = H(1)**H H(2)**H . . . H(k)**H
 *
 *  as returned by ZGERQF. Q is of order M if SIDE = 'L' and of order N
 *  if SIDE = 'R'.
@@ -244,17 +244,17 @@
      $                   A( I, 1 ), LDA, TAU( I ), T, LDT )
             IF( LEFT ) THEN
 *
-*              H or H' is applied to C(1:m-k+i+ib-1,1:n)
+*              H or H**H is applied to C(1:m-k+i+ib-1,1:n)
 *
                MI = M - K + I + IB - 1
             ELSE
 *
-*              H or H' is applied to C(1:m,1:n-k+i+ib-1)
+*              H or H**H is applied to C(1:m,1:n-k+i+ib-1)
 *
                NI = N - K + I + IB - 1
             END IF
 *
-*           Apply H or H'
+*           Apply H or H**H
 *
             CALL ZLARFB( SIDE, TRANST, 'Backward', 'Rowwise', MI, NI,
      $                   IB, A( I, 1 ), LDA, T, LDT, C, LDC, WORK,

@@ -1,9 +1,9 @@
       SUBROUTINE ZLAIC1( JOB, J, X, SEST, W, GAMMA, SESTPR, S, C )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            J, JOB
@@ -28,20 +28,20 @@
 *                  [ s*x ]
 *           xhat = [  c  ]
 *  is an approximate singular vector of
-*                  [ L     0  ]
-*           Lhat = [ w' gamma ]
+*                  [ L       0  ]
+*           Lhat = [ w**H gamma ]
 *  in the sense that
 *           twonorm(Lhat*xhat) = sestpr.
 *
 *  Depending on JOB, an estimate for the largest or smallest singular
 *  value is computed.
 *
-*  Note that [s c]' and sestpr**2 is an eigenpair of the system
+*  Note that [s c]**H and sestpr**2 is an eigenpair of the system
 *
 *      diag(sest*sest, 0) + [alpha  gamma] * [ conjg(alpha) ]
 *                                            [ conjg(gamma) ]
 *
-*  where  alpha =  conjg(x)'*w.
+*  where  alpha =  x**H * w.
 *
 *  Arguments
 *  =========

@@ -1,9 +1,9 @@
       SUBROUTINE CUNGL2( M, N, K, A, LDA, TAU, WORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, K, LDA, M, N
@@ -19,7 +19,7 @@
 *  which is defined as the first m rows of a product of k elementary
 *  reflectors of order n
 *
-*        Q  =  H(k)' . . . H(2)' H(1)'
+*        Q  =  H(k)**H . . . H(2)**H H(1)**H
 *
 *  as returned by CGELQF.
 *
@@ -110,7 +110,7 @@
 *
       DO 40 I = K, 1, -1
 *
-*        Apply H(i)' to A(i:m,i:n) from the right
+*        Apply H(i)**H to A(i:m,i:n) from the right
 *
          IF( I.LT.N ) THEN
             CALL CLACGV( N-I, A( I, I+1 ), LDA )

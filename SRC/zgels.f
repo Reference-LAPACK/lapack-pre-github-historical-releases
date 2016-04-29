@@ -1,10 +1,10 @@
       SUBROUTINE ZGELS( TRANS, M, N, NRHS, A, LDA, B, LDB, WORK, LWORK,
      $                  INFO )
 *
-*  -- LAPACK driver routine (version 3.2) --
+*  -- LAPACK driver routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          TRANS
@@ -278,7 +278,7 @@
 *
 *           Least-Squares Problem min || A * X - B ||
 *
-*           B(1:M,1:NRHS) := Q' * B(1:M,1:NRHS)
+*           B(1:M,1:NRHS) := Q**H * B(1:M,1:NRHS)
 *
             CALL ZUNMQR( 'Left', 'Conjugate transpose', M, NRHS, N, A,
      $                   LDA, WORK( 1 ), B, LDB, WORK( MN+1 ), LWORK-MN,
@@ -299,9 +299,9 @@
 *
          ELSE
 *
-*           Overdetermined system of equations A' * X = B
+*           Overdetermined system of equations A**H * X = B
 *
-*           B(1:N,1:NRHS) := inv(R') * B(1:N,1:NRHS)
+*           B(1:N,1:NRHS) := inv(R**H) * B(1:N,1:NRHS)
 *
             CALL ZTRTRS( 'Upper', 'Conjugate transpose','Non-unit',
      $                   N, NRHS, A, LDA, B, LDB, INFO )
@@ -360,7 +360,7 @@
    30          CONTINUE
    40       CONTINUE
 *
-*           B(1:N,1:NRHS) := Q(1:N,:)' * B(1:M,1:NRHS)
+*           B(1:N,1:NRHS) := Q(1:N,:)**H * B(1:M,1:NRHS)
 *
             CALL ZUNMLQ( 'Left', 'Conjugate transpose', N, NRHS, M, A,
      $                   LDA, WORK( 1 ), B, LDB, WORK( MN+1 ), LWORK-MN,
@@ -372,7 +372,7 @@
 *
          ELSE
 *
-*           overdetermined system min || A' * X - B ||
+*           overdetermined system min || A**H * X - B ||
 *
 *           B(1:N,1:NRHS) := Q * B(1:N,1:NRHS)
 *
@@ -382,7 +382,7 @@
 *
 *           workspace at least NRHS, optimally NRHS*NB
 *
-*           B(1:M,1:NRHS) := inv(L') * B(1:M,1:NRHS)
+*           B(1:M,1:NRHS) := inv(L**H) * B(1:M,1:NRHS)
 *
             CALL ZTRTRS( 'Lower', 'Conjugate transpose', 'Non-unit',
      $                   M, NRHS, A, LDA, B, LDB, INFO )

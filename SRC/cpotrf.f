@@ -1,9 +1,9 @@
       SUBROUTINE CPOTRF( UPLO, N, A, LDA, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -117,7 +117,7 @@
 *
          IF( UPPER ) THEN
 *
-*           Compute the Cholesky factorization A = U'*U.
+*           Compute the Cholesky factorization A = U**H *U.
 *
             DO 10 J = 1, N, NB
 *
@@ -146,7 +146,7 @@
 *
          ELSE
 *
-*           Compute the Cholesky factorization A = L*L'.
+*           Compute the Cholesky factorization A = L*L**H.
 *
             DO 20 J = 1, N, NB
 *

@@ -4,9 +4,9 @@
      $                   WORK, NWORK, RWORK, IWORK, SELECT, RESULT,
      $                   INFO )
 *
-*  -- LAPACK test routine (version 3.1.1) --
+*  -- LAPACK test routine (version 3.3.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     February 2007
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, LDU, NOUNIT, NSIZES, NTYPES, NWORK
@@ -490,6 +490,8 @@
 *
       DO 260 JSIZE = 1, NSIZES
          N = NN( JSIZE )
+         IF( N.EQ.0 )
+     $      GO TO 260
          N1 = MAX( 1, N )
          ANINV = ONE / REAL( N1 )
 *

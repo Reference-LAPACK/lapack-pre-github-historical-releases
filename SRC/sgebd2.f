@@ -1,9 +1,9 @@
       SUBROUTINE SGEBD2( M, N, A, LDA, D, E, TAUQ, TAUP, WORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, M, N
@@ -17,7 +17,7 @@
 *  =======
 *
 *  SGEBD2 reduces a real general m by n matrix A to upper or lower
-*  bidiagonal form B by an orthogonal transformation: Q' * A * P = B.
+*  bidiagonal form B by an orthogonal transformation: Q**T * A * P = B.
 *
 *  If m >= n, B is upper bidiagonal; if m < n, B is lower bidiagonal.
 *
@@ -87,7 +87,7 @@
 *
 *  Each H(i) and G(i) has the form:
 *
-*     H(i) = I - tauq * v * v'  and G(i) = I - taup * u * u'
+*     H(i) = I - tauq * v * v**T  and G(i) = I - taup * u * u**T
 *
 *  where tauq and taup are real scalars, and v and u are real vectors;
 *  v(1:i-1) = 0, v(i) = 1, and v(i+1:m) is stored on exit in A(i+1:m,i);
@@ -100,7 +100,7 @@
 *
 *  Each H(i) and G(i) has the form:
 *
-*     H(i) = I - tauq * v * v'  and G(i) = I - taup * u * u'
+*     H(i) = I - tauq * v * v**T  and G(i) = I - taup * u * u**T
 *
 *  where tauq and taup are real scalars, and v and u are real vectors;
 *  v(1:i) = 0, v(i+1) = 1, and v(i+2:m) is stored on exit in A(i+2:m,i);

@@ -1,9 +1,9 @@
       INTEGER          FUNCTION IEEECK( ISPEC, ZERO, ONE )
 *
-*  -- LAPACK auxiliary routine (version 3.2.2) --
+*  -- LAPACK auxiliary routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     June 2010
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            ISPEC
@@ -38,6 +38,8 @@
 *  RETURN VALUE:  INTEGER
 *          = 0:  Arithmetic failed to produce the correct answers
 *          = 1:  Arithmetic produced the correct answers
+*
+*  =====================================================================
 *
 *     .. Local Scalars ..
       REAL               NAN1, NAN2, NAN3, NAN4, NAN5, NAN6, NEGINF,

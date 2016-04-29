@@ -1,9 +1,9 @@
       SUBROUTINE CPOTRI( UPLO, N, A, LDA, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -86,7 +86,7 @@
       IF( INFO.GT.0 )
      $   RETURN
 *
-*     Form inv(U)*inv(U)' or inv(L)'*inv(L).
+*     Form inv(U) * inv(U)**H or inv(L)**H * inv(L).
 *
       CALL CLAUUM( UPLO, N, A, LDA, INFO )
 *

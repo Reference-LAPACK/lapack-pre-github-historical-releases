@@ -1,10 +1,10 @@
       SUBROUTINE DPPSVX( FACT, UPLO, N, NRHS, AP, AFP, EQUED, S, B, LDB,
      $                   X, LDX, RCOND, FERR, BERR, WORK, IWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.2) --
+*  -- LAPACK driver routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          EQUED, FACT, UPLO
@@ -112,17 +112,18 @@
 *                            (N*(N+1)/2)
 *          If FACT = 'F', then AFP is an input argument and on entry
 *          contains the triangular factor U or L from the Cholesky
-*          factorization A = U'*U or A = L*L', in the same storage
+*          factorization A = U**T*U or A = L*L**T, in the same storage
 *          format as A.  If EQUED .ne. 'N', then AFP is the factored
 *          form of the equilibrated matrix A.
 *
 *          If FACT = 'N', then AFP is an output argument and on exit
 *          returns the triangular factor U or L from the Cholesky
-*          factorization A = U'*U or A = L*L' of the original matrix A.
+*          factorization A = U**T * U or A = L * L**T of the original
+*          matrix A.
 *
 *          If FACT = 'E', then AFP is an output argument and on exit
 *          returns the triangular factor U or L from the Cholesky
-*          factorization A = U'*U or A = L*L' of the equilibrated
+*          factorization A = U**T * U or A = L * L**T of the equilibrated
 *          matrix A (see the description of AP for the form of the
 *          equilibrated matrix).
 *
@@ -324,7 +325,7 @@
 *
       IF( NOFACT .OR. EQUIL ) THEN
 *
-*        Compute the Cholesky factorization A = U'*U or A = L*L'.
+*        Compute the Cholesky factorization A = U**T * U or A = L * L**T.
 *
          CALL DCOPY( N*( N+1 ) / 2, AP, 1, AFP, 1 )
          CALL DPPTRF( UPLO, N, AFP, INFO )

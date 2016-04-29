@@ -2,10 +2,10 @@
      $                   ALPHA, BETA, Q, LDQ, Z, LDZ, WORK, LWORK,
      $                   RWORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          COMPQ, COMPZ, JOB
@@ -300,7 +300,7 @@
 *
 *     Quick return if possible
 *
-c     WORK( 1 ) = CMPLX( 1 )
+*     WORK( 1 ) = CMPLX( 1 )
       IF( N.LE.0 ) THEN
          WORK( 1 ) = CMPLX( 1 )
          RETURN

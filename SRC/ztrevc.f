@@ -1,10 +1,10 @@
       SUBROUTINE ZTREVC( SIDE, HOWMNY, SELECT, N, T, LDT, VL, LDVL, VR,
      $                   LDVR, MM, M, WORK, RWORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          HOWMNY, SIDE
@@ -332,7 +332,7 @@
    90       CONTINUE
 *
 *           Solve the triangular system:
-*              (T(KI+1:N,KI+1:N) - T(KI,KI))'*X = SCALE*WORK.
+*              (T(KI+1:N,KI+1:N) - T(KI,KI))**H * X = SCALE*WORK.
 *
             DO 100 K = KI + 1, N
                T( K, K ) = T( K, K ) - T( KI, KI )

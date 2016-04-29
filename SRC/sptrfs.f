@@ -1,10 +1,10 @@
       SUBROUTINE SPTRFS( N, NRHS, D, E, DF, EF, B, LDB, X, LDX, FERR,
      $                   BERR, WORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDB, LDX, N, NRHS
@@ -263,7 +263,7 @@
 *           m(i,j) =  abs(A(i,j)), i = j,
 *           m(i,j) = -abs(A(i,j)), i .ne. j,
 *
-*        and e = [ 1, 1, ..., 1 ]'.  Note M(A) = M(L)*D*M(L)'.
+*        and e = [ 1, 1, ..., 1 ]**T.  Note M(A) = M(L)*D*M(L)**T.
 *
 *        Solve M(L) * x = e.
 *
@@ -272,7 +272,7 @@
             WORK( I ) = ONE + WORK( I-1 )*ABS( EF( I-1 ) )
    60    CONTINUE
 *
-*        Solve D * M(L)' * x = b.
+*        Solve D * M(L)**T * x = b.
 *
          WORK( N ) = WORK( N ) / DF( N )
          DO 70 I = N - 1, 1, -1

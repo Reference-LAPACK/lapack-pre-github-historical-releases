@@ -1,9 +1,9 @@
       SUBROUTINE DPTSV( N, NRHS, D, E, B, LDB, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDB, N, NRHS
@@ -84,7 +84,7 @@
          RETURN
       END IF
 *
-*     Compute the L*D*L' (or U'*D*U) factorization of A.
+*     Compute the L*D*L**T (or U**T*D*U) factorization of A.
 *
       CALL DPTTRF( N, D, E, INFO )
       IF( INFO.EQ.0 ) THEN

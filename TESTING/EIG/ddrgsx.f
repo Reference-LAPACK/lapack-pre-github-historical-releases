@@ -2,9 +2,9 @@
      $                   BI, Z, Q, ALPHAR, ALPHAI, BETA, C, LDC, S,
      $                   WORK, LWORK, IWORK, LIWORK, BWORK, INFO )
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.3.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, LDC, LIWORK, LWORK, NCMAX, NIN,
@@ -590,7 +590,7 @@
 *                       print a header to the data file.
 *
                         IF( NERRS.EQ.0 ) THEN
-                           WRITE( NOUT, FMT = 9995 )'SGX'
+                           WRITE( NOUT, FMT = 9995 )'DGX'
 *
 *                          Matrix types
 *
@@ -807,7 +807,7 @@
 *           print a header to the data file.
 *
             IF( NERRS.EQ.0 ) THEN
-               WRITE( NOUT, FMT = 9995 )'SGX'
+               WRITE( NOUT, FMT = 9995 )'DGX'
 *
 *              Matrix types
 *
@@ -837,7 +837,7 @@
 *
 *     Summary
 *
-      CALL ALASVM( 'SGX', NOUT, NERRS, NTESTT, 0 )
+      CALL ALASVM( 'DGX', NOUT, NERRS, NTESTT, 0 )
 *
       WORK( 1 ) = MAXWRK
 *
@@ -890,10 +890,10 @@
      $      ' 10 = 1/ULP  if PLEST/PLTRU > THRESH or ',
      $      'PLTRU/PLEST > THRESH', /
      $      '    ( Test 10 is only for input examples )', / )
- 9991 FORMAT( ' Matrix order=', I2, ', type=', I2, ', a=', D10.4,
+ 9991 FORMAT( ' Matrix order=', I2, ', type=', I2, ', a=', D10.3,
      $      ', order(A_11)=', I2, ', result ', I2, ' is ', 0P, F8.2 )
- 9990 FORMAT( ' Matrix order=', I2, ', type=', I2, ', a=', D10.4,
-     $      ', order(A_11)=', I2, ', result ', I2, ' is ', 0P, D10.4 )
+ 9990 FORMAT( ' Matrix order=', I2, ', type=', I2, ', a=', D10.3,
+     $      ', order(A_11)=', I2, ', result ', I2, ' is ', 0P, D10.3 )
  9989 FORMAT( ' Input example #', I2, ', matrix order=', I4, ',',
      $      ' result ', I2, ' is', 0P, F8.2 )
  9988 FORMAT( ' Input example #', I2, ', matrix order=', I4, ',',

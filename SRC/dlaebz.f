@@ -2,10 +2,10 @@
      $                   RELTOL, PIVMIN, D, E, E2, NVAL, AB, C, MOUT,
      $                   NAB, WORK, IWORK, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            IJOB, INFO, MINP, MMAX, MOUT, N, NBMIN, NITMAX
@@ -251,7 +251,6 @@
 *        Compute the number of eigenvalues in the initial intervals.
 *
          MOUT = 0
-*DIR$ NOVECTOR
          DO 30 JI = 1, MINP
             DO 20 JP = 1, 2
                TMP1 = D( 1 ) - AB( JI, JP )
@@ -407,21 +406,6 @@
                   TMP2 = MIN( TMP2, -PIVMIN )
                END IF
 *
-*              A series of compiler directives to defeat vectorization
-*              for the next loop
-*
-*$PL$ CMCHAR=' '
-CDIR$          NEXTSCALAR
-C$DIR          SCALAR
-CDIR$          NEXT SCALAR
-CVD$L          NOVECTOR
-CDEC$          NOVECTOR
-CVD$           NOVECTOR
-*VDIR          NOVECTOR
-*VOCL          LOOP,SCALAR
-CIBM           PREFER SCALAR
-*$PL$ CMCHAR='*'
-*
                DO 90 J = 2, N
                   TMP2 = D( J ) - E2( J-1 ) / TMP2 - TMP1
                   IF( TMP2.LE.PIVMIN ) THEN
@@ -486,8 +470,6 @@ CIBM           PREFER SCALAR
                END IF
   100       CONTINUE
             KL = KLNEW
-*
-*           End of Serial Version of the loop
 *
          END IF
 *

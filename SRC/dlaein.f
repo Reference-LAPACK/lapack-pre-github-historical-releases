@@ -1,10 +1,10 @@
       SUBROUTINE DLAEIN( RIGHTV, NOINIT, N, H, LDH, WR, WI, VR, VI, B,
      $                   LDB, WORK, EPS3, SMLNUM, BIGNUM, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.2.2) --
+*  -- LAPACK auxiliary routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     June 2010
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       LOGICAL            NOINIT, RIGHTV
@@ -232,7 +232,7 @@
          DO 110 ITS = 1, N
 *
 *           Solve U*x = scale*v for a right eigenvector
-*             or U'*x = scale*v for a left eigenvector,
+*             or U**T*x = scale*v for a left eigenvector,
 *           overwriting x on v.
 *
             CALL DLATRS( 'Upper', TRANS, 'Nonunit', NORMIN, N, B, LDB,
@@ -427,7 +427,7 @@
             VCRIT = BIGNUM
 *
 *           Solve U*(xr,xi) = scale*(vr,vi) for a right eigenvector,
-*             or U'*(xr,xi) = scale*(vr,vi) for a left eigenvector,
+*             or U**T*(xr,xi) = scale*(vr,vi) for a left eigenvector,
 *           overwriting (xr,xi) on (vr,vi).
 *
             DO 250 I = I1, I2, I3

@@ -1,10 +1,10 @@
       SUBROUTINE DLAQTR( LTRAN, LREAL, N, T, LDT, B, W, SCALE, X, WORK,
      $                   INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       LOGICAL            LREAL, LTRAN
@@ -36,7 +36,7 @@
 *                     [              .     ]
 *                     [                 w  ]
 *
-*  op(A) = A or A', A' denotes the conjugate transpose of
+*  op(A) = A or A**T, A**T denotes the transpose of
 *  matrix A.
 *
 *  On input, X = [ c ].  On output, X = [ p ].
@@ -51,7 +51,7 @@
 *  LTRAN   (input) LOGICAL
 *          On entry, LTRAN specifies the option of conjugate transpose:
 *             = .FALSE.,    op(T+i*B) = T+i*B,
-*             = .TRUE.,     op(T+i*B) = (T+i*B)'.
+*             = .TRUE.,     op(T+i*B) = (T+i*B)**T.
 *
 *  LREAL   (input) LOGICAL
 *          On entry, LREAL specifies the input matrix structure:
@@ -290,7 +290,7 @@
 *
          ELSE
 *
-*           Solve T'*p = scale*c
+*           Solve T**T*p = scale*c
 *
             JNEXT = 1
             DO 40 J = 1, N
@@ -532,7 +532,7 @@
 *
          ELSE
 *
-*           Solve (T + iB)'*(p+iq) = c+id
+*           Solve (T + iB)**T*(p+iq) = c+id
 *
             JNEXT = 1
             DO 80 J = 1, N

@@ -1,9 +1,9 @@
       SUBROUTINE CSYTRI2X( UPLO, N, A, LDA, IPIV, WORK, NB, INFO )
 *
-*  -- LAPACK routine (version 3.3.0) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2010
+*  -- April 2011                                                      --
 *
 *  -- Written by Julie Langou of the Univ. of TN    --
 *
@@ -154,7 +154,7 @@
 
       IF( UPPER ) THEN
 *
-*        invA = P * inv(U')*inv(D)*inv(U)*P'.
+*        invA = P * inv(U**T)*inv(D)*inv(U)*P**T.
 *
         CALL CTRTRI( UPLO, 'U', N, A, LDA, INFO )
 *
@@ -182,9 +182,9 @@
          END IF
         END DO
 *
-*       inv(U') = (inv(U))'
+*       inv(U**T) = (inv(U))**T
 *
-*       inv(U')*inv(D)*inv(U)
+*       inv(U**T)*inv(D)*inv(U)
 *
         CUT=N
         DO WHILE (CUT .GT. 0)
@@ -267,17 +267,23 @@
              END IF
            END DO
 *    
-*       U11T*invD1*U11->U11
+*       U11**T*invD1*U11->U11
 *
         CALL CTRMM('L','U','T','U',NNB, NNB,
      $             ONE,A(CUT+1,CUT+1),LDA,WORK(U11+1,1),N+NB+1)
 *
-*          U01'invD*U01->A(CUT+I,CUT+J)
+         DO I=1,NNB
+            DO J=I,NNB
+              A(CUT+I,CUT+J)=WORK(U11+I,J)
+            END DO
+         END DO
+*
+*          U01**T*invD*U01->A(CUT+I,CUT+J)
 *
          CALL CGEMM('T','N',NNB,NNB,CUT,ONE,A(1,CUT+1),LDA,
-     $              WORK,N+NB+1, ZERO, A(CUT+1,CUT+1), LDA)
+     $              WORK,N+NB+1, ZERO, WORK(U11+1,1), N+NB+1)
 *
-*        U11 =  U11T*invD1*U11 + U01'invD*U01
+*        U11 =  U11**T*invD1*U11 + U01**T*invD*U01
 *
          DO I=1,NNB
             DO J=I,NNB
@@ -285,7 +291,7 @@
             END DO
          END DO
 *
-*        U01 =  U00T*invD0*U01
+*        U01 =  U00**T*invD0*U01
 *
          CALL CTRMM('L',UPLO,'T','U',CUT, NNB,
      $             ONE,A,LDA,WORK,N+NB+1)
@@ -303,21 +309,21 @@
 *
        END DO
 *
-*        Apply PERMUTATIONS P and P': P * inv(U')*inv(D)*inv(U) *P'
+*        Apply PERMUTATIONS P and P**T: P * inv(U**T)*inv(D)*inv(U) *P**T
 *  
             I=1
             DO WHILE ( I .LE. N )
                IF( IPIV(I) .GT. 0 ) THEN
                   IP=IPIV(I)
-                 IF (I .LT. IP) CALL CSYSWAPR( UPLO, N, A, I ,IP )
-                 IF (I .GT. IP) CALL CSYSWAPR( UPLO, N, A, IP ,I )
+                 IF (I .LT. IP) CALL CSYSWAPR( UPLO, N, A, LDA, I ,IP )
+                 IF (I .GT. IP) CALL CSYSWAPR( UPLO, N, A, LDA, IP ,I )
                ELSE
                  IP=-IPIV(I)
                  I=I+1
                  IF ( (I-1) .LT. IP) 
-     $                  CALL CSYSWAPR( UPLO, N, A, I-1 ,IP )
+     $                  CALL CSYSWAPR( UPLO, N, A, LDA, I-1 ,IP )
                  IF ( (I-1) .GT. IP) 
-     $                  CALL CSYSWAPR( UPLO, N, A, IP ,I-1 )
+     $                  CALL CSYSWAPR( UPLO, N, A, LDA, IP ,I-1 )
               ENDIF
                I=I+1
             END DO
@@ -325,7 +331,7 @@
 *
 *        LOWER...
 *
-*        invA = P * inv(U')*inv(D)*inv(U)*P'.
+*        invA = P * inv(U**T)*inv(D)*inv(U)*P**T.
 *
          CALL CTRTRI( UPLO, 'U', N, A, LDA, INFO )
 *
@@ -353,9 +359,9 @@
          END IF
         END DO
 *
-*       inv(U') = (inv(U))'
+*       inv(U**T) = (inv(U))**T
 *
-*       inv(U')*inv(D)*inv(U)
+*       inv(U**T)*inv(D)*inv(U)
 *
         CUT=0
         DO WHILE (CUT .LT. N)
@@ -432,20 +438,26 @@
              END IF
            END DO
 *    
-*       L11T*invD1*L11->L11
+*       L11**T*invD1*L11->L11
 *
         CALL CTRMM('L',UPLO,'T','U',NNB, NNB,
      $             ONE,A(CUT+1,CUT+1),LDA,WORK(U11+1,1),N+NB+1)
-
+*
+         DO I=1,NNB
+            DO J=1,I
+              A(CUT+I,CUT+J)=WORK(U11+I,J)
+            END DO
+         END DO
+*
         IF ( (CUT+NNB) .LT. N ) THEN
 *
-*          L21T*invD2*L21->A(CUT+I,CUT+J)
+*          L21**T*invD2*L21->A(CUT+I,CUT+J)
 *
          CALL CGEMM('T','N',NNB,NNB,N-NNB-CUT,ONE,A(CUT+NNB+1,CUT+1)
-     $             ,LDA,WORK,N+NB+1, ZERO, A(CUT+1,CUT+1), LDA)
+     $             ,LDA,WORK,N+NB+1, ZERO, WORK(U11+1,1), N+NB+1)
        
 *
-*        L11 =  L11T*invD1*L11 + U01'invD*U01
+*        L11 =  L11**T*invD1*L11 + U01**T*invD*U01
 *
          DO I=1,NNB
             DO J=1,I
@@ -453,7 +465,7 @@
             END DO
          END DO
 *
-*        L01 =  L22T*invD2*L21
+*        L01 =  L22**T*invD2*L21
 *
          CALL CTRMM('L',UPLO,'T','U', N-NNB-CUT, NNB,
      $             ONE,A(CUT+NNB+1,CUT+NNB+1),LDA,WORK,N+NB+1)
@@ -466,7 +478,7 @@
          END DO
        ELSE
 *
-*        L11 =  L11T*invD1*L11
+*        L11 =  L11**T*invD1*L11
 *
          DO I=1,NNB
             DO J=1,I
@@ -480,18 +492,18 @@
            CUT=CUT+NNB
        END DO
 *
-*        Apply PERMUTATIONS P and P': P * inv(U')*inv(D)*inv(U) *P'
+*        Apply PERMUTATIONS P and P**T: P * inv(U**T)*inv(D)*inv(U) *P**T
 * 
             I=N
             DO WHILE ( I .GE. 1 )
                IF( IPIV(I) .GT. 0 ) THEN
                   IP=IPIV(I)
-                 IF (I .LT. IP) CALL CSYSWAPR( UPLO, N, A, I ,IP  )
-                 IF (I .GT. IP) CALL CSYSWAPR( UPLO, N, A, IP ,I )
+                 IF (I .LT. IP) CALL CSYSWAPR( UPLO, N, A, LDA, I ,IP  )
+                 IF (I .GT. IP) CALL CSYSWAPR( UPLO, N, A, LDA, IP ,I )
                ELSE
                  IP=-IPIV(I)
-                 IF ( I .LT. IP) CALL CSYSWAPR( UPLO, N, A, I ,IP )
-                 IF ( I .GT. IP) CALL CSYSWAPR(  UPLO, N, A, IP ,I )
+                 IF ( I .LT. IP) CALL CSYSWAPR( UPLO, N, A, LDA, I ,IP )
+                 IF ( I .GT. IP) CALL CSYSWAPR( UPLO, N, A, LDA, IP ,I )
                  I=I-1
                ENDIF
                I=I-1

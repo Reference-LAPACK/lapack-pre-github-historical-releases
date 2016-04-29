@@ -1,9 +1,9 @@
       SUBROUTINE CHETRI( UPLO, N, A, LDA, IPIV, WORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -130,7 +130,7 @@
 *
       IF( UPPER ) THEN
 *
-*        Compute inv(A) from the factorization A = U*D*U'.
+*        Compute inv(A) from the factorization A = U*D*U**H.
 *
 *        K is the main loop index, increasing from 1 to N in steps of
 *        1 or 2, depending on the size of the diagonal blocks.
@@ -225,7 +225,7 @@
 *
       ELSE
 *
-*        Compute inv(A) from the factorization A = L*D*L'.
+*        Compute inv(A) from the factorization A = L*D*L**H.
 *
 *        K is the main loop index, increasing from 1 to N in steps of
 *        1 or 2, depending on the size of the diagonal blocks.

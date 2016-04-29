@@ -1,10 +1,10 @@
       SUBROUTINE DTRSEN( JOB, COMPQ, SELECT, N, T, LDT, Q, LDQ, WR, WI,
      $                   M, S, SEP, WORK, LWORK, IWORK, LIWORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          COMPQ, JOB
@@ -156,16 +156,16 @@
 *  In other words, the selected eigenvalues are the eigenvalues of T11
 *  in:
 *
-*                Z'*T*Z = ( T11 T12 ) n1
+*          Z**T * T * Z = ( T11 T12 ) n1
 *                         (  0  T22 ) n2
 *                            n1  n2
 *
-*  where N = n1+n2 and Z' means the transpose of Z. The first n1 columns
+*  where N = n1+n2 and Z**T means the transpose of Z. The first n1 columns
 *  of Z span the specified invariant subspace of T.
 *
 *  If T has been obtained from the real Schur factorization of a matrix
-*  A = Q*T*Q', then the reordered real Schur factorization of A is given
-*  by A = (Q*Z)*(Z'*T*Z)*(Q*Z)', and the first n1 columns of Q*Z span
+*  A = Q*T*Q**T, then the reordered real Schur factorization of A is given
+*  by A = (Q*Z)*(Z**T*T*Z)*(Q*Z)**T, and the first n1 columns of Q*Z span
 *  the corresponding invariant subspace of A.
 *
 *  The reciprocal condition number of the average of the eigenvalues of
@@ -422,7 +422,7 @@
      $                      IERR )
             ELSE
 *
-*              Solve  T11'*R - R*T22' = scale*X.
+*              Solve T11**T*R - R*T22**T = scale*X.
 *
                CALL DTRSYL( 'T', 'T', -1, N1, N2, T, LDT,
      $                      T( N1+1, N1+1 ), LDT, WORK, N1, SCALE,

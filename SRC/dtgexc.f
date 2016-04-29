@@ -1,10 +1,10 @@
       SUBROUTINE DTGEXC( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ, Z,
      $                   LDZ, IFST, ILST, WORK, LWORK, INFO )
 *
-*  -- LAPACK routine (version 3.2.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     June 2010
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       LOGICAL            WANTQ, WANTZ
@@ -21,7 +21,7 @@
 *  DTGEXC reorders the generalized real Schur decomposition of a real
 *  matrix pair (A,B) using an orthogonal equivalence transformation
 *
-*                 (A, B) = Q * (A, B) * Z',
+*                 (A, B) = Q * (A, B) * Z**T,
 *
 *  so that the diagonal block of (A, B) with row index IFST is moved
 *  to row ILST.
@@ -33,8 +33,8 @@
 *  Optionally, the matrices Q and Z of generalized Schur vectors are
 *  updated.
 *
-*         Q(in) * A(in) * Z(in)' = Q(out) * A(out) * Z(out)'
-*         Q(in) * B(in) * Z(in)' = Q(out) * B(out) * Z(out)'
+*         Q(in) * A(in) * Z(in)**T = Q(out) * A(out) * Z(out)**T
+*         Q(in) * B(in) * Z(in)**T = Q(out) * B(out) * Z(out)**T
 *
 *
 *  Arguments

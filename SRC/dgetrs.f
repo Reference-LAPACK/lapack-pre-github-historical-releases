@@ -1,9 +1,9 @@
       SUBROUTINE DGETRS( TRANS, N, NRHS, A, LDA, IPIV, B, LDB, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          TRANS
@@ -18,7 +18,7 @@
 *  =======
 *
 *  DGETRS solves a system of linear equations
-*     A * X = B  or  A' * X = B
+*     A * X = B  or  A**T * X = B
 *  with a general N-by-N matrix A using the LU factorization computed
 *  by DGETRF.
 *
@@ -28,8 +28,8 @@
 *  TRANS   (input) CHARACTER*1
 *          Specifies the form of the system of equations:
 *          = 'N':  A * X = B  (No transpose)
-*          = 'T':  A'* X = B  (Transpose)
-*          = 'C':  A'* X = B  (Conjugate transpose = Transpose)
+*          = 'T':  A**T* X = B  (Transpose)
+*          = 'C':  A**T* X = B  (Conjugate transpose = Transpose)
 *
 *  N       (input) INTEGER
 *          The order of the matrix A.  N >= 0.
@@ -126,14 +126,14 @@
      $               NRHS, ONE, A, LDA, B, LDB )
       ELSE
 *
-*        Solve A' * X = B.
+*        Solve A**T * X = B.
 *
-*        Solve U'*X = B, overwriting B with X.
+*        Solve U**T *X = B, overwriting B with X.
 *
          CALL DTRSM( 'Left', 'Upper', 'Transpose', 'Non-unit', N, NRHS,
      $               ONE, A, LDA, B, LDB )
 *
-*        Solve L'*X = B, overwriting B with X.
+*        Solve L**T *X = B, overwriting B with X.
 *
          CALL DTRSM( 'Left', 'Lower', 'Transpose', 'Unit', N, NRHS, ONE,
      $               A, LDA, B, LDB )

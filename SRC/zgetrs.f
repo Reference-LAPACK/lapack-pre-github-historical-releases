@@ -1,9 +1,9 @@
       SUBROUTINE ZGETRS( TRANS, N, NRHS, A, LDA, IPIV, B, LDB, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          TRANS
@@ -128,12 +128,12 @@
 *
 *        Solve A**T * X = B  or A**H * X = B.
 *
-*        Solve U'*X = B, overwriting B with X.
+*        Solve U**T *X = B or U**H *X = B, overwriting B with X.
 *
          CALL ZTRSM( 'Left', 'Upper', TRANS, 'Non-unit', N, NRHS, ONE,
      $               A, LDA, B, LDB )
 *
-*        Solve L'*X = B, overwriting B with X.
+*        Solve L**T *X = B, or L**H *X = B overwriting B with X.
 *
          CALL ZTRSM( 'Left', 'Lower', TRANS, 'Unit', N, NRHS, ONE, A,
      $               LDA, B, LDB )

@@ -1,10 +1,10 @@
       SUBROUTINE STRRFS( UPLO, TRANS, DIAG, N, NRHS, A, LDA, B, LDB, X,
      $                   LDX, FERR, BERR, WORK, IWORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     Modified to call SLACN2 in place of SLACON, 7 Feb 03, SJH.
 *
@@ -190,7 +190,7 @@
       DO 250 J = 1, NRHS
 *
 *        Compute residual R = B - op(A) * X,
-*        where op(A) = A or A', depending on TRANS.
+*        where op(A) = A or A**T, depending on TRANS.
 *
          CALL SCOPY( N, X( 1, J ), 1, WORK( N+1 ), 1 )
          CALL STRMV( UPLO, TRANS, DIAG, N, A, LDA, WORK( N+1 ), 1 )
@@ -250,7 +250,7 @@
             END IF
          ELSE
 *
-*           Compute abs(A')*abs(X) + abs(B).
+*           Compute abs(A**T)*abs(X) + abs(B).
 *
             IF( UPPER ) THEN
                IF( NOUNIT ) THEN
@@ -338,7 +338,7 @@
          IF( KASE.NE.0 ) THEN
             IF( KASE.EQ.1 ) THEN
 *
-*              Multiply by diag(W)*inv(op(A)').
+*              Multiply by diag(W)*inv(op(A)**T).
 *
                CALL STRSV( UPLO, TRANST, DIAG, N, A, LDA, WORK( N+1 ),
      $                     1 )

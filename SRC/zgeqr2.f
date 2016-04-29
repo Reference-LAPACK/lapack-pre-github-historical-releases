@@ -1,9 +1,9 @@
       SUBROUTINE ZGEQR2( M, N, A, LDA, TAU, WORK, INFO )
 *
-*  -- LAPACK routine (version 3.2.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     June 2010
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, M, N
@@ -57,7 +57,7 @@
 *
 *  Each H(i) has the form
 *
-*     H(i) = I - tau * v * v'
+*     H(i) = I - tau * v * v**H
 *
 *  where tau is a complex scalar, and v is a complex vector with
 *  v(1:i-1) = 0 and v(i) = 1; v(i+1:m) is stored on exit in A(i+1:m,i),
@@ -106,7 +106,7 @@
      $                TAU( I ) )
          IF( I.LT.N ) THEN
 *
-*           Apply H(i)' to A(i:m,i+1:n) from the left
+*           Apply H(i)**H to A(i:m,i+1:n) from the left
 *
             ALPHA = A( I, I )
             A( I, I ) = ONE

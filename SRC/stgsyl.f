@@ -2,10 +2,10 @@
      $                   LDD, E, LDE, F, LDF, SCALE, DIF, WORK, LWORK,
      $                   IWORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          TRANS
@@ -40,17 +40,17 @@
 *  In matrix notation (1) is equivalent to solve  Zx = scale b, where
 *  Z is defined as
 *
-*             Z = [ kron(In, A)  -kron(B', Im) ]         (2)
-*                 [ kron(In, D)  -kron(E', Im) ].
+*             Z = [ kron(In, A)  -kron(B**T, Im) ]         (2)
+*                 [ kron(In, D)  -kron(E**T, Im) ].
 *
-*  Here Ik is the identity matrix of size k and X' is the transpose of
+*  Here Ik is the identity matrix of size k and X**T is the transpose of
 *  X. kron(X, Y) is the Kronecker product between the matrices X and Y.
 *
-*  If TRANS = 'T', STGSYL solves the transposed system Z'*y = scale*b,
+*  If TRANS = 'T', STGSYL solves the transposed system Z**T*y = scale*b,
 *  which is equivalent to solve for R and L in
 *
-*              A' * R  + D' * L   = scale *  C           (3)
-*              R  * B' + L  * E'  = scale * (-F)
+*              A**T * R + D**T * L = scale * C           (3)
+*              R * B**T + L * E**T = scale * -F
 *
 *  This case (TRANS = 'T') is used to compute an one-norm-based estimate
 *  of Dif[(A,D), (B,E)], the separation between the matrix pairs (A,D)
@@ -485,8 +485,8 @@
       ELSE
 *
 *        Solve transposed (I, J)-subsystem
-*             A(I, I)' * R(I, J)  + D(I, I)' * L(I, J)  =  C(I, J)
-*             R(I, J)  * B(J, J)' + L(I, J)  * E(J, J)' = -F(I, J)
+*             A(I, I)**T * R(I, J)  + D(I, I)**T * L(I, J)  =  C(I, J)
+*             R(I, J)  * B(J, J)**T + L(I, J)  * E(J, J)**T = -F(I, J)
 *        for I = 1,2,..., P; J = Q, Q-1,..., 1
 *
          SCALE = ONE

@@ -1,9 +1,9 @@
       SUBROUTINE DORGRQ( M, N, K, A, LDA, TAU, WORK, LWORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, K, LDA, LWORK, M, N
@@ -193,14 +193,14 @@
                CALL DLARFT( 'Backward', 'Rowwise', N-K+I+IB-1, IB,
      $                      A( II, 1 ), LDA, TAU( I ), WORK, LDWORK )
 *
-*              Apply H' to A(1:m-k+i-1,1:n-k+i+ib-1) from the right
+*              Apply H**T to A(1:m-k+i-1,1:n-k+i+ib-1) from the right
 *
                CALL DLARFB( 'Right', 'Transpose', 'Backward', 'Rowwise',
      $                      II-1, N-K+I+IB-1, IB, A( II, 1 ), LDA, WORK,
      $                      LDWORK, A, LDA, WORK( IB+1 ), LDWORK )
             END IF
 *
-*           Apply H' to columns 1:n-k+i+ib-1 of current block
+*           Apply H**T to columns 1:n-k+i+ib-1 of current block
 *
             CALL DORGR2( IB, N-K+I+IB-1, IB, A( II, 1 ), LDA, TAU( I ),
      $                   WORK, IINFO )

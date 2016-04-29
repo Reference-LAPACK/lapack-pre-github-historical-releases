@@ -1,10 +1,10 @@
       SUBROUTINE SPTSVX( FACT, N, NRHS, D, E, DF, EF, B, LDB, X, LDX,
      $                   RCOND, FERR, BERR, WORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          FACT
@@ -188,7 +188,7 @@
 *
       IF( NOFACT ) THEN
 *
-*        Compute the L*D*L' (or U'*D*U) factorization of A.
+*        Compute the L*D*L**T (or U**T*D*U) factorization of A.
 *
          CALL SCOPY( N, D, 1, DF, 1 )
          IF( N.GT.1 )

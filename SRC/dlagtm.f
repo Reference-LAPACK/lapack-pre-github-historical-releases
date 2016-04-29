@@ -1,10 +1,10 @@
       SUBROUTINE DLAGTM( TRANS, N, NRHS, ALPHA, DL, D, DU, X, LDX, BETA,
      $                   B, LDB )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          TRANS
@@ -128,7 +128,7 @@
    60       CONTINUE
          ELSE
 *
-*           Compute B := B + A'*X
+*           Compute B := B + A**T*X
 *
             DO 80 J = 1, NRHS
                IF( N.EQ.1 ) THEN
@@ -166,7 +166,7 @@
   100       CONTINUE
          ELSE
 *
-*           Compute B := B - A'*X
+*           Compute B := B - A**T*X
 *
             DO 120 J = 1, NRHS
                IF( N.EQ.1 ) THEN

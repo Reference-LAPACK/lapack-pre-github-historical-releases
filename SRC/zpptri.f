@@ -1,9 +1,9 @@
       SUBROUTINE ZPPTRI( UPLO, N, AP, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -97,7 +97,7 @@
      $   RETURN
       IF( UPPER ) THEN
 *
-*        Compute the product inv(U) * inv(U)'.
+*        Compute the product inv(U) * inv(U)**H.
 *
          JJ = 0
          DO 10 J = 1, N
@@ -111,7 +111,7 @@
 *
       ELSE
 *
-*        Compute the product inv(L)' * inv(L).
+*        Compute the product inv(L)**H * inv(L).
 *
          JJ = 1
          DO 20 J = 1, N

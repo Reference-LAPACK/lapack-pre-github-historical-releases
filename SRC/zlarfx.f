@@ -1,10 +1,10 @@
       SUBROUTINE ZLARFX( SIDE, M, N, V, TAU, C, LDC, WORK )
       IMPLICIT NONE
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          SIDE
@@ -22,7 +22,7 @@
 *  matrix C, from either the left or the right. H is represented in the
 *  form
 *
-*        H = I - tau * v * v'
+*        H = I - tau * v * v**H
 *
 *  where tau is a complex scalar and v is a complex vector.
 *

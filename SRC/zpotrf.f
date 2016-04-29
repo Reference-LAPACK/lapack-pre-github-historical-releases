@@ -1,9 +1,9 @@
       SUBROUTINE ZPOTRF( UPLO, N, A, LDA, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -46,7 +46,7 @@
 *          triangular part of A is not referenced.
 *
 *          On exit, if INFO = 0, the factor U or L from the Cholesky
-*          factorization A = U**H*U or A = L*L**H.
+*          factorization A = U**H *U or A = L*L**H.
 *
 *  LDA     (input) INTEGER
 *          The leading dimension of the array A.  LDA >= max(1,N).
@@ -117,7 +117,7 @@
 *
          IF( UPPER ) THEN
 *
-*           Compute the Cholesky factorization A = U'*U.
+*           Compute the Cholesky factorization A = U**H *U.
 *
             DO 10 J = 1, N, NB
 *
@@ -146,7 +146,7 @@
 *
          ELSE
 *
-*           Compute the Cholesky factorization A = L*L'.
+*           Compute the Cholesky factorization A = L*L**H.
 *
             DO 20 J = 1, N, NB
 *

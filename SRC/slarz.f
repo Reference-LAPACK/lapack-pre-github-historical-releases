@@ -1,9 +1,9 @@
       SUBROUTINE SLARZ( SIDE, M, N, L, V, INCV, TAU, C, LDC, WORK )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          SIDE
@@ -21,7 +21,7 @@
 *  matrix C, from either the left or the right. H is represented in the
 *  form
 *
-*        H = I - tau * v * v'
+*        H = I - tau * v * v**T
 *
 *  where tau is a real scalar and v is a real vector.
 *
@@ -101,7 +101,7 @@
 *
             CALL SCOPY( N, C, LDC, WORK, 1 )
 *
-*           w( 1:n ) = w( 1:n ) + C( m-l+1:m, 1:n )' * v( 1:l )
+*           w( 1:n ) = w( 1:n ) + C( m-l+1:m, 1:n )**T * v( 1:l )
 *
             CALL SGEMV( 'Transpose', L, N, ONE, C( M-L+1, 1 ), LDC, V,
      $                  INCV, ONE, WORK, 1 )
@@ -111,7 +111,7 @@
             CALL SAXPY( N, -TAU, WORK, 1, C, LDC )
 *
 *           C( m-l+1:m, 1:n ) = C( m-l+1:m, 1:n ) - ...
-*                               tau * v( 1:l ) * w( 1:n )'
+*                               tau * v( 1:l ) * w( 1:n )**T
 *
             CALL SGER( L, N, -TAU, V, INCV, WORK, 1, C( M-L+1, 1 ),
      $                 LDC )
@@ -137,7 +137,7 @@
             CALL SAXPY( M, -TAU, WORK, 1, C, 1 )
 *
 *           C( 1:m, n-l+1:n ) = C( 1:m, n-l+1:n ) - ...
-*                               tau * w( 1:m ) * v( 1:l )'
+*                               tau * w( 1:m ) * v( 1:l )**T
 *
             CALL SGER( M, L, -TAU, WORK, 1, V, INCV, C( 1, N-L+1 ),
      $                 LDC )

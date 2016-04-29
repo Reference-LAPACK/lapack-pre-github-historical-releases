@@ -1,9 +1,9 @@
       SUBROUTINE DPPTRS( UPLO, N, NRHS, AP, B, LDB, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -96,11 +96,11 @@
 *
       IF( UPPER ) THEN
 *
-*        Solve A*X = B where A = U'*U.
+*        Solve A*X = B where A = U**T * U.
 *
          DO 10 I = 1, NRHS
 *
-*           Solve U'*X = B, overwriting B with X.
+*           Solve U**T *X = B, overwriting B with X.
 *
             CALL DTPSV( 'Upper', 'Transpose', 'Non-unit', N, AP,
      $                  B( 1, I ), 1 )
@@ -112,7 +112,7 @@
    10    CONTINUE
       ELSE
 *
-*        Solve A*X = B where A = L*L'.
+*        Solve A*X = B where A = L * L**T.
 *
          DO 20 I = 1, NRHS
 *
@@ -121,7 +121,7 @@
             CALL DTPSV( 'Lower', 'No transpose', 'Non-unit', N, AP,
      $                  B( 1, I ), 1 )
 *
-*           Solve L'*X = Y, overwriting B with X.
+*           Solve L**T *X = Y, overwriting B with X.
 *
             CALL DTPSV( 'Lower', 'Transpose', 'Non-unit', N, AP,
      $                  B( 1, I ), 1 )

@@ -1,9 +1,9 @@
       SUBROUTINE CGEQPF( M, N, A, LDA, JPVT, TAU, WORK, RWORK, INFO )
 *
-*  -- LAPACK deprecated computational routine (version 3.2.2) --
+*  -- LAPACK deprecated computational routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     June 2010
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, M, N
@@ -69,7 +69,7 @@
 *
 *  Each H(i) has the form
 *
-*     H = I - tau * v * v'
+*     H = I - tau * v * v**H
 *
 *  where tau is a complex scalar, and v is a complex vector with
 *  v(1:i-1) = 0 and v(i) = 1; v(i+1:m) is stored on exit in A(i+1:m,i).
@@ -81,7 +81,7 @@
 *  Partial column norm updating strategy modified by
 *    Z. Drmac and Z. Bujanovic, Dept. of Mathematics,
 *    University of Zagreb, Croatia.
-*     June 2010
+*  -- April 2011                                                      --
 *  For more details see LAPACK Working Note 176.
 *
 *  =====================================================================

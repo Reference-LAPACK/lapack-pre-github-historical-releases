@@ -1,10 +1,10 @@
       SUBROUTINE DBDSDC( UPLO, COMPQ, N, D, E, U, LDU, VT, LDVT, Q, IQ,
      $                   WORK, IWORK, INFO )
 *
-*  -- LAPACK routine (version 3.2.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     June 2010
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          COMPQ, UPLO
@@ -77,7 +77,7 @@
 *
 *  VT      (output) DOUBLE PRECISION array, dimension (LDVT,N)
 *          If  COMPQ = 'I', then:
-*             On exit, if INFO = 0, VT' contains the right singular
+*             On exit, if INFO = 0, VT**T contains the right singular
 *             vectors of the bidiagonal matrix.
 *          For other values of COMPQ, VT is not referenced.
 *
@@ -287,7 +287,7 @@
       CALL DLASCL( 'G', 0, 0, ORGNRM, ONE, N, 1, D, N, IERR )
       CALL DLASCL( 'G', 0, 0, ORGNRM, ONE, NM1, 1, E, NM1, IERR )
 *
-      EPS = DLAMCH( 'Epsilon' )
+      EPS = (0.9D+0)*DLAMCH( 'Epsilon' )
 *
       MLVL = INT( LOG( DBLE( N ) / DBLE( SMLSIZ+1 ) ) / LOG( TWO ) ) + 1
       SMLSZP = SMLSIZ + 1

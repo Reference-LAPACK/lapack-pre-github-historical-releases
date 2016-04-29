@@ -1,9 +1,9 @@
       SUBROUTINE DPPSV( UPLO, N, NRHS, AP, B, LDB, INFO )
 *
-*  -- LAPACK driver routine (version 3.2) --
+*  -- LAPACK driver routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -117,7 +117,7 @@
          RETURN
       END IF
 *
-*     Compute the Cholesky factorization A = U'*U or A = L*L'.
+*     Compute the Cholesky factorization A = U**T*U or A = L*L**T.
 *
       CALL DPPTRF( UPLO, N, AP, INFO )
       IF( INFO.EQ.0 ) THEN

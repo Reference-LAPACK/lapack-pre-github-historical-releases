@@ -1,10 +1,10 @@
       SUBROUTINE SPBCON( UPLO, N, KD, AB, LDAB, ANORM, RCOND, WORK,
      $                   IWORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     Modified to call SLACN2 in place of SLACON, 7 Feb 03, SJH.
 *
@@ -139,7 +139,7 @@
       IF( KASE.NE.0 ) THEN
          IF( UPPER ) THEN
 *
-*           Multiply by inv(U').
+*           Multiply by inv(U**T).
 *
             CALL SLATBS( 'Upper', 'Transpose', 'Non-unit', NORMIN, N,
      $                   KD, AB, LDAB, WORK, SCALEL, WORK( 2*N+1 ),
@@ -160,7 +160,7 @@
      $                   INFO )
             NORMIN = 'Y'
 *
-*           Multiply by inv(L').
+*           Multiply by inv(L**T).
 *
             CALL SLATBS( 'Lower', 'Transpose', 'Non-unit', NORMIN, N,
      $                   KD, AB, LDAB, WORK, SCALEU, WORK( 2*N+1 ),

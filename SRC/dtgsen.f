@@ -2,10 +2,10 @@
      $                   ALPHAR, ALPHAI, BETA, Q, LDQ, Z, LDZ, M, PL,
      $                   PR, DIF, WORK, LWORK, IWORK, LIWORK, INFO )
 *
-*  -- LAPACK routine (version 3.2.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     January 2007
+*  -- April 2011                                                      --
 *
 *     Modified to call DLACN2 in place of DLACON, 5 Feb 03, SJH.
 *
@@ -28,7 +28,7 @@
 *
 *  DTGSEN reorders the generalized real Schur decomposition of a real
 *  matrix pair (A, B) (in terms of an orthonormal equivalence trans-
-*  formation Q' * (A, B) * Z), so that a selected cluster of eigenvalues
+*  formation Q**T * (A, B) * Z), so that a selected cluster of eigenvalues
 *  appears in the leading diagonal blocks of the upper quasi-triangular
 *  matrix A and the upper triangular B. The leading columns of Q and
 *  Z form orthonormal bases of the corresponding left and right eigen-
@@ -208,19 +208,19 @@
 *  In other words, the selected eigenvalues are the eigenvalues of
 *  (A11, B11) in:
 *
-*                U'*(A, B)*W = (A11 A12) (B11 B12) n1
+*              U**T*(A, B)*W = (A11 A12) (B11 B12) n1
 *                              ( 0  A22),( 0  B22) n2
 *                                n1  n2    n1  n2
 *
-*  where N = n1+n2 and U' means the transpose of U. The first n1 columns
+*  where N = n1+n2 and U**T means the transpose of U. The first n1 columns
 *  of U and W span the specified pair of left and right eigenspaces
 *  (deflating subspaces) of (A, B).
 *
 *  If (A, B) has been obtained from the generalized real Schur
-*  decomposition of a matrix pair (C, D) = Q*(A, B)*Z', then the
+*  decomposition of a matrix pair (C, D) = Q*(A, B)*Z**T, then the
 *  reordered generalized real Schur form of (C, D) is given by
 *
-*           (C, D) = (Q*U)*(U'*(A, B)*W)*(Z*W)',
+*           (C, D) = (Q*U)*(U**T*(A, B)*W)*(Z*W)**T,
 *
 *  and the first n1 columns of Q*U and Z*W span the corresponding
 *  deflating subspaces of (C, D) (Q and Z store Q*U and Z*W, resp.).
@@ -242,10 +242,10 @@
 *  where sigma-min(Zu) is the smallest singular value of the
 *  (2*n1*n2)-by-(2*n1*n2) matrix
 *
-*       Zu = [ kron(In2, A11)  -kron(A22', In1) ]
-*            [ kron(In2, B11)  -kron(B22', In1) ].
+*       Zu = [ kron(In2, A11)  -kron(A22**T, In1) ]
+*            [ kron(In2, B11)  -kron(B22**T, In1) ].
 *
-*  Here, Inx is the identity matrix of size nx and A22' is the
+*  Here, Inx is the identity matrix of size nx and A22**T is the
 *  transpose of A22. kron(X, Y) is the Kronecker product between
 *  the matrices X and Y.
 *

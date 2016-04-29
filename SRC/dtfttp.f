@@ -1,9 +1,9 @@
       SUBROUTINE DTFTTP( TRANSR, UPLO, N, ARF, AP, INFO )
 *
-*  -- LAPACK routine (version 3.3.0)                                    --
+*  -- LAPACK routine (version 3.3.1)                                    --
 *
 *  -- Contributed by Fred Gustavson of the IBM Watson Research Center --
-*     November 2010
+*  -- April 2011                                                      --
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -175,7 +175,7 @@
 *     Quick return if possible
 *
       IF( N.EQ.0 )
-     +   RETURN
+     $   RETURN
 *
       IF( N.EQ.1 ) THEN
          IF( NORMALTRANSR ) THEN
@@ -218,7 +218,7 @@
 *     ARF^C has lda rows and n+1-noe cols
 *
       IF( .NOT.NORMALTRANSR )
-     +   LDA = ( N+1 ) / 2
+     $   LDA = ( N+1 ) / 2
 *
 *     start execution: there are eight cases
 *

@@ -1,9 +1,9 @@
       SUBROUTINE CPBTRS( UPLO, N, KD, NRHS, AB, LDAB, B, LDB, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -107,11 +107,11 @@
 *
       IF( UPPER ) THEN
 *
-*        Solve A*X = B where A = U'*U.
+*        Solve A*X = B where A = U**H *U.
 *
          DO 10 J = 1, NRHS
 *
-*           Solve U'*X = B, overwriting B with X.
+*           Solve U**H *X = B, overwriting B with X.
 *
             CALL CTBSV( 'Upper', 'Conjugate transpose', 'Non-unit', N,
      $                  KD, AB, LDAB, B( 1, J ), 1 )
@@ -123,7 +123,7 @@
    10    CONTINUE
       ELSE
 *
-*        Solve A*X = B where A = L*L'.
+*        Solve A*X = B where A = L*L**H.
 *
          DO 20 J = 1, NRHS
 *
@@ -132,7 +132,7 @@
             CALL CTBSV( 'Lower', 'No transpose', 'Non-unit', N, KD, AB,
      $                  LDAB, B( 1, J ), 1 )
 *
-*           Solve L'*X = B, overwriting B with X.
+*           Solve L**H *X = B, overwriting B with X.
 *
             CALL CTBSV( 'Lower', 'Conjugate transpose', 'Non-unit', N,
      $                  KD, AB, LDAB, B( 1, J ), 1 )

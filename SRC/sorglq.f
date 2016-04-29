@@ -1,9 +1,9 @@
       SUBROUTINE SORGLQ( M, N, K, A, LDA, TAU, WORK, LWORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, K, LDA, LWORK, M, N
@@ -185,7 +185,7 @@
                CALL SLARFT( 'Forward', 'Rowwise', N-I+1, IB, A( I, I ),
      $                      LDA, TAU( I ), WORK, LDWORK )
 *
-*              Apply H' to A(i+ib:m,i:n) from the right
+*              Apply H**T to A(i+ib:m,i:n) from the right
 *
                CALL SLARFB( 'Right', 'Transpose', 'Forward', 'Rowwise',
      $                      M-I-IB+1, N-I+1, IB, A( I, I ), LDA, WORK,
@@ -193,7 +193,7 @@
      $                      LDWORK )
             END IF
 *
-*           Apply H' to columns i:n of current block
+*           Apply H**T to columns i:n of current block
 *
             CALL SORGL2( IB, N-I+1, IB, A( I, I ), LDA, TAU( I ), WORK,
      $                   IINFO )

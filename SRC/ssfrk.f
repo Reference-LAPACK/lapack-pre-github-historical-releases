@@ -1,10 +1,10 @@
       SUBROUTINE SSFRK( TRANSR, UPLO, TRANS, N, K, ALPHA, A, LDA, BETA,
-     +                  C )
+     $                  C )
 *
-*  -- LAPACK routine (version 3.3.0)                                    --
+*  -- LAPACK routine (version 3.3.1)                                    --
 *
 *  -- Contributed by Julien Langou of the Univ. of Colorado Denver    --
-*     November 2010
+*  -- April 2011                                                      --
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -26,11 +26,11 @@
 *
 *  SSFRK performs one of the symmetric rank--k operations
 *
-*     C := alpha*A*A' + beta*C,
+*     C := alpha*A*A**T + beta*C,
 *
 *  or
 *
-*     C := alpha*A'*A + beta*C,
+*     C := alpha*A**T*A + beta*C,
 *
 *  where alpha and beta are real scalars, C is an n--by--n symmetric
 *  matrix and A is an n--by--k matrix in the first case and a k--by--n
@@ -60,9 +60,9 @@
 *           On entry, TRANS specifies the operation to be performed as
 *           follows:
 *
-*              TRANS = 'N' or 'n'   C := alpha*A*A' + beta*C.
+*              TRANS = 'N' or 'n'   C := alpha*A*A**T + beta*C.
 *
-*              TRANS = 'T' or 't'   C := alpha*A'*A + beta*C.
+*              TRANS = 'T' or 't'   C := alpha*A**T*A + beta*C.
 *
 *           Unchanged on exit.
 *
@@ -106,10 +106,8 @@
 *           NT = N*(N+1)/2. On entry, the symmetric matrix C in RFP
 *           Format. RFP Format is described by TRANSR, UPLO and N.
 *
-*  Arguments
-*  ==========
+*  =====================================================================
 *
-*     ..
 *     .. Parameters ..
       REAL               ONE, ZERO
       PARAMETER          ( ONE = 1.0E+0, ZERO = 0.0E+0 )
@@ -167,7 +165,7 @@
 *     done (it is in SSYRK for example) and left in the general case.
 *
       IF( ( N.EQ.0 ) .OR. ( ( ( ALPHA.EQ.ZERO ) .OR. ( K.EQ.0 ) ) .AND.
-     +    ( BETA.EQ.ONE ) ) )RETURN
+     $    ( BETA.EQ.ONE ) ) )RETURN
 *
       IF( ( ALPHA.EQ.ZERO ) .AND. ( BETA.EQ.ZERO ) ) THEN
          DO J = 1, ( ( N*( N+1 ) ) / 2 )
@@ -211,22 +209,22 @@
 *                 N is odd, TRANSR = 'N', UPLO = 'L', and TRANS = 'N'
 *
                   CALL SSYRK( 'L', 'N', N1, K, ALPHA, A( 1, 1 ), LDA,
-     +                        BETA, C( 1 ), N )
+     $                        BETA, C( 1 ), N )
                   CALL SSYRK( 'U', 'N', N2, K, ALPHA, A( N1+1, 1 ), LDA,
-     +                        BETA, C( N+1 ), N )
+     $                        BETA, C( N+1 ), N )
                   CALL SGEMM( 'N', 'T', N2, N1, K, ALPHA, A( N1+1, 1 ),
-     +                        LDA, A( 1, 1 ), LDA, BETA, C( N1+1 ), N )
+     $                        LDA, A( 1, 1 ), LDA, BETA, C( N1+1 ), N )
 *
                ELSE
 *
 *                 N is odd, TRANSR = 'N', UPLO = 'L', and TRANS = 'T'
 *
                   CALL SSYRK( 'L', 'T', N1, K, ALPHA, A( 1, 1 ), LDA,
-     +                        BETA, C( 1 ), N )
+     $                        BETA, C( 1 ), N )
                   CALL SSYRK( 'U', 'T', N2, K, ALPHA, A( 1, N1+1 ), LDA,
-     +                        BETA, C( N+1 ), N )
+     $                        BETA, C( N+1 ), N )
                   CALL SGEMM( 'T', 'N', N2, N1, K, ALPHA, A( 1, N1+1 ),
-     +                        LDA, A( 1, 1 ), LDA, BETA, C( N1+1 ), N )
+     $                        LDA, A( 1, 1 ), LDA, BETA, C( N1+1 ), N )
 *
                END IF
 *
@@ -239,22 +237,22 @@
 *                 N is odd, TRANSR = 'N', UPLO = 'U', and TRANS = 'N'
 *
                   CALL SSYRK( 'L', 'N', N1, K, ALPHA, A( 1, 1 ), LDA,
-     +                        BETA, C( N2+1 ), N )
+     $                        BETA, C( N2+1 ), N )
                   CALL SSYRK( 'U', 'N', N2, K, ALPHA, A( N2, 1 ), LDA,
-     +                        BETA, C( N1+1 ), N )
+     $                        BETA, C( N1+1 ), N )
                   CALL SGEMM( 'N', 'T', N1, N2, K, ALPHA, A( 1, 1 ),
-     +                        LDA, A( N2, 1 ), LDA, BETA, C( 1 ), N )
+     $                        LDA, A( N2, 1 ), LDA, BETA, C( 1 ), N )
 *
                ELSE
 *
 *                 N is odd, TRANSR = 'N', UPLO = 'U', and TRANS = 'T'
 *
                   CALL SSYRK( 'L', 'T', N1, K, ALPHA, A( 1, 1 ), LDA,
-     +                        BETA, C( N2+1 ), N )
+     $                        BETA, C( N2+1 ), N )
                   CALL SSYRK( 'U', 'T', N2, K, ALPHA, A( 1, N2 ), LDA,
-     +                        BETA, C( N1+1 ), N )
+     $                        BETA, C( N1+1 ), N )
                   CALL SGEMM( 'T', 'N', N1, N2, K, ALPHA, A( 1, 1 ),
-     +                        LDA, A( 1, N2 ), LDA, BETA, C( 1 ), N )
+     $                        LDA, A( 1, N2 ), LDA, BETA, C( 1 ), N )
 *
                END IF
 *
@@ -273,24 +271,24 @@
 *                 N is odd, TRANSR = 'T', UPLO = 'L', and TRANS = 'N'
 *
                   CALL SSYRK( 'U', 'N', N1, K, ALPHA, A( 1, 1 ), LDA,
-     +                        BETA, C( 1 ), N1 )
+     $                        BETA, C( 1 ), N1 )
                   CALL SSYRK( 'L', 'N', N2, K, ALPHA, A( N1+1, 1 ), LDA,
-     +                        BETA, C( 2 ), N1 )
+     $                        BETA, C( 2 ), N1 )
                   CALL SGEMM( 'N', 'T', N1, N2, K, ALPHA, A( 1, 1 ),
-     +                        LDA, A( N1+1, 1 ), LDA, BETA,
-     +                        C( N1*N1+1 ), N1 )
+     $                        LDA, A( N1+1, 1 ), LDA, BETA,
+     $                        C( N1*N1+1 ), N1 )
 *
                ELSE
 *
 *                 N is odd, TRANSR = 'T', UPLO = 'L', and TRANS = 'T'
 *
                   CALL SSYRK( 'U', 'T', N1, K, ALPHA, A( 1, 1 ), LDA,
-     +                        BETA, C( 1 ), N1 )
+     $                        BETA, C( 1 ), N1 )
                   CALL SSYRK( 'L', 'T', N2, K, ALPHA, A( 1, N1+1 ), LDA,
-     +                        BETA, C( 2 ), N1 )
+     $                        BETA, C( 2 ), N1 )
                   CALL SGEMM( 'T', 'N', N1, N2, K, ALPHA, A( 1, 1 ),
-     +                        LDA, A( 1, N1+1 ), LDA, BETA,
-     +                        C( N1*N1+1 ), N1 )
+     $                        LDA, A( 1, N1+1 ), LDA, BETA,
+     $                        C( N1*N1+1 ), N1 )
 *
                END IF
 *
@@ -303,22 +301,22 @@
 *                 N is odd, TRANSR = 'T', UPLO = 'U', and TRANS = 'N'
 *
                   CALL SSYRK( 'U', 'N', N1, K, ALPHA, A( 1, 1 ), LDA,
-     +                        BETA, C( N2*N2+1 ), N2 )
+     $                        BETA, C( N2*N2+1 ), N2 )
                   CALL SSYRK( 'L', 'N', N2, K, ALPHA, A( N1+1, 1 ), LDA,
-     +                        BETA, C( N1*N2+1 ), N2 )
+     $                        BETA, C( N1*N2+1 ), N2 )
                   CALL SGEMM( 'N', 'T', N2, N1, K, ALPHA, A( N1+1, 1 ),
-     +                        LDA, A( 1, 1 ), LDA, BETA, C( 1 ), N2 )
+     $                        LDA, A( 1, 1 ), LDA, BETA, C( 1 ), N2 )
 *
                ELSE
 *
 *                 N is odd, TRANSR = 'T', UPLO = 'U', and TRANS = 'T'
 *
                   CALL SSYRK( 'U', 'T', N1, K, ALPHA, A( 1, 1 ), LDA,
-     +                        BETA, C( N2*N2+1 ), N2 )
+     $                        BETA, C( N2*N2+1 ), N2 )
                   CALL SSYRK( 'L', 'T', N2, K, ALPHA, A( 1, N1+1 ), LDA,
-     +                        BETA, C( N1*N2+1 ), N2 )
+     $                        BETA, C( N1*N2+1 ), N2 )
                   CALL SGEMM( 'T', 'N', N2, N1, K, ALPHA, A( 1, N1+1 ),
-     +                        LDA, A( 1, 1 ), LDA, BETA, C( 1 ), N2 )
+     $                        LDA, A( 1, 1 ), LDA, BETA, C( 1 ), N2 )
 *
                END IF
 *
@@ -343,24 +341,24 @@
 *                 N is even, TRANSR = 'N', UPLO = 'L', and TRANS = 'N'
 *
                   CALL SSYRK( 'L', 'N', NK, K, ALPHA, A( 1, 1 ), LDA,
-     +                        BETA, C( 2 ), N+1 )
+     $                        BETA, C( 2 ), N+1 )
                   CALL SSYRK( 'U', 'N', NK, K, ALPHA, A( NK+1, 1 ), LDA,
-     +                        BETA, C( 1 ), N+1 )
+     $                        BETA, C( 1 ), N+1 )
                   CALL SGEMM( 'N', 'T', NK, NK, K, ALPHA, A( NK+1, 1 ),
-     +                        LDA, A( 1, 1 ), LDA, BETA, C( NK+2 ),
-     +                        N+1 )
+     $                        LDA, A( 1, 1 ), LDA, BETA, C( NK+2 ),
+     $                        N+1 )
 *
                ELSE
 *
 *                 N is even, TRANSR = 'N', UPLO = 'L', and TRANS = 'T'
 *
                   CALL SSYRK( 'L', 'T', NK, K, ALPHA, A( 1, 1 ), LDA,
-     +                        BETA, C( 2 ), N+1 )
+     $                        BETA, C( 2 ), N+1 )
                   CALL SSYRK( 'U', 'T', NK, K, ALPHA, A( 1, NK+1 ), LDA,
-     +                        BETA, C( 1 ), N+1 )
+     $                        BETA, C( 1 ), N+1 )
                   CALL SGEMM( 'T', 'N', NK, NK, K, ALPHA, A( 1, NK+1 ),
-     +                        LDA, A( 1, 1 ), LDA, BETA, C( NK+2 ),
-     +                        N+1 )
+     $                        LDA, A( 1, 1 ), LDA, BETA, C( NK+2 ),
+     $                        N+1 )
 *
                END IF
 *
@@ -373,24 +371,24 @@
 *                 N is even, TRANSR = 'N', UPLO = 'U', and TRANS = 'N'
 *
                   CALL SSYRK( 'L', 'N', NK, K, ALPHA, A( 1, 1 ), LDA,
-     +                        BETA, C( NK+2 ), N+1 )
+     $                        BETA, C( NK+2 ), N+1 )
                   CALL SSYRK( 'U', 'N', NK, K, ALPHA, A( NK+1, 1 ), LDA,
-     +                        BETA, C( NK+1 ), N+1 )
+     $                        BETA, C( NK+1 ), N+1 )
                   CALL SGEMM( 'N', 'T', NK, NK, K, ALPHA, A( 1, 1 ),
-     +                        LDA, A( NK+1, 1 ), LDA, BETA, C( 1 ),
-     +                        N+1 )
+     $                        LDA, A( NK+1, 1 ), LDA, BETA, C( 1 ),
+     $                        N+1 )
 *
                ELSE
 *
 *                 N is even, TRANSR = 'N', UPLO = 'U', and TRANS = 'T'
 *
                   CALL SSYRK( 'L', 'T', NK, K, ALPHA, A( 1, 1 ), LDA,
-     +                        BETA, C( NK+2 ), N+1 )
+     $                        BETA, C( NK+2 ), N+1 )
                   CALL SSYRK( 'U', 'T', NK, K, ALPHA, A( 1, NK+1 ), LDA,
-     +                        BETA, C( NK+1 ), N+1 )
+     $                        BETA, C( NK+1 ), N+1 )
                   CALL SGEMM( 'T', 'N', NK, NK, K, ALPHA, A( 1, 1 ),
-     +                        LDA, A( 1, NK+1 ), LDA, BETA, C( 1 ),
-     +                        N+1 )
+     $                        LDA, A( 1, NK+1 ), LDA, BETA, C( 1 ),
+     $                        N+1 )
 *
                END IF
 *
@@ -409,24 +407,24 @@
 *                 N is even, TRANSR = 'T', UPLO = 'L', and TRANS = 'N'
 *
                   CALL SSYRK( 'U', 'N', NK, K, ALPHA, A( 1, 1 ), LDA,
-     +                        BETA, C( NK+1 ), NK )
+     $                        BETA, C( NK+1 ), NK )
                   CALL SSYRK( 'L', 'N', NK, K, ALPHA, A( NK+1, 1 ), LDA,
-     +                        BETA, C( 1 ), NK )
+     $                        BETA, C( 1 ), NK )
                   CALL SGEMM( 'N', 'T', NK, NK, K, ALPHA, A( 1, 1 ),
-     +                        LDA, A( NK+1, 1 ), LDA, BETA,
-     +                        C( ( ( NK+1 )*NK )+1 ), NK )
+     $                        LDA, A( NK+1, 1 ), LDA, BETA,
+     $                        C( ( ( NK+1 )*NK )+1 ), NK )
 *
                ELSE
 *
 *                 N is even, TRANSR = 'T', UPLO = 'L', and TRANS = 'T'
 *
                   CALL SSYRK( 'U', 'T', NK, K, ALPHA, A( 1, 1 ), LDA,
-     +                        BETA, C( NK+1 ), NK )
+     $                        BETA, C( NK+1 ), NK )
                   CALL SSYRK( 'L', 'T', NK, K, ALPHA, A( 1, NK+1 ), LDA,
-     +                        BETA, C( 1 ), NK )
+     $                        BETA, C( 1 ), NK )
                   CALL SGEMM( 'T', 'N', NK, NK, K, ALPHA, A( 1, 1 ),
-     +                        LDA, A( 1, NK+1 ), LDA, BETA,
-     +                        C( ( ( NK+1 )*NK )+1 ), NK )
+     $                        LDA, A( 1, NK+1 ), LDA, BETA,
+     $                        C( ( ( NK+1 )*NK )+1 ), NK )
 *
                END IF
 *
@@ -439,22 +437,22 @@
 *                 N is even, TRANSR = 'T', UPLO = 'U', and TRANS = 'N'
 *
                   CALL SSYRK( 'U', 'N', NK, K, ALPHA, A( 1, 1 ), LDA,
-     +                        BETA, C( NK*( NK+1 )+1 ), NK )
+     $                        BETA, C( NK*( NK+1 )+1 ), NK )
                   CALL SSYRK( 'L', 'N', NK, K, ALPHA, A( NK+1, 1 ), LDA,
-     +                        BETA, C( NK*NK+1 ), NK )
+     $                        BETA, C( NK*NK+1 ), NK )
                   CALL SGEMM( 'N', 'T', NK, NK, K, ALPHA, A( NK+1, 1 ),
-     +                        LDA, A( 1, 1 ), LDA, BETA, C( 1 ), NK )
+     $                        LDA, A( 1, 1 ), LDA, BETA, C( 1 ), NK )
 *
                ELSE
 *
 *                 N is even, TRANSR = 'T', UPLO = 'U', and TRANS = 'T'
 *
                   CALL SSYRK( 'U', 'T', NK, K, ALPHA, A( 1, 1 ), LDA,
-     +                        BETA, C( NK*( NK+1 )+1 ), NK )
+     $                        BETA, C( NK*( NK+1 )+1 ), NK )
                   CALL SSYRK( 'L', 'T', NK, K, ALPHA, A( 1, NK+1 ), LDA,
-     +                        BETA, C( NK*NK+1 ), NK )
+     $                        BETA, C( NK*NK+1 ), NK )
                   CALL SGEMM( 'T', 'N', NK, NK, K, ALPHA, A( 1, NK+1 ),
-     +                        LDA, A( 1, 1 ), LDA, BETA, C( 1 ), NK )
+     $                        LDA, A( 1, 1 ), LDA, BETA, C( 1 ), NK )
 *
                END IF
 *

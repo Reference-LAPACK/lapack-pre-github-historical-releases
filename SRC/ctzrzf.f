@@ -1,9 +1,10 @@
       SUBROUTINE CTZRZF( M, N, A, LDA, TAU, WORK, LWORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
+* @generated c
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, LWORK, M, N
@@ -80,7 +81,7 @@
 *
 *  where
 *
-*     T( k ) = I - tau*u( k )*u( k )',   u( k ) = (   1    ),
+*     T( k ) = I - tau*u( k )*u( k )**H,   u( k ) = (   1    ),
 *                                                 (   0    )
 *                                                 ( z( k ) )
 *
@@ -105,11 +106,11 @@
 *     ..
 *     .. Local Scalars ..
       LOGICAL            LQUERY
-      INTEGER            I, IB, IWS, KI, KK, LDWORK, LWKOPT, M1, MU, NB,
-     $                   NBMIN, NX
+      INTEGER            I, IB, IWS, KI, KK, LDWORK, LWKMIN, LWKOPT,
+     $                   M1, MU, NB, NBMIN, NX
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           CLARZB, CLARZT, CLATRZ, XERBLA
+      EXTERNAL           XERBLA, CLARZB, CLARZT, CLATRZ
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -130,23 +131,23 @@
          INFO = -2
       ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
          INFO = -4
-      ELSE IF( LWORK.LT.MAX( 1, M ) .AND. .NOT.LQUERY ) THEN
-         INFO = -7
       END IF
 *
       IF( INFO.EQ.0 ) THEN
          IF( M.EQ.0 .OR. M.EQ.N ) THEN
             LWKOPT = 1
+            LWKMIN = 1
          ELSE
 *
 *           Determine the block size.
 *
             NB = ILAENV( 1, 'CGERQF', ' ', M, N, -1, -1 )
             LWKOPT = M*NB
+            LWKMIN = MAX( 1, M )
          END IF
          WORK( 1 ) = LWKOPT
 *
-         IF( LWORK.LT.MAX( 1, M ) .AND. .NOT.LQUERY ) THEN
+         IF( LWORK.LT.LWKMIN .AND. .NOT.LQUERY ) THEN
             INFO = -7
          END IF
       END IF

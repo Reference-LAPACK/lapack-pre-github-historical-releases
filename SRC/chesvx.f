@@ -2,10 +2,10 @@
      $                   LDB, X, LDX, RCOND, FERR, BERR, WORK, LWORK,
      $                   RWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.2) --
+*  -- LAPACK driver routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          FACT, UPLO
@@ -255,7 +255,7 @@
 *
       IF( NOFACT ) THEN
 *
-*        Compute the factorization A = U*D*U' or A = L*D*L'.
+*        Compute the factorization A = U*D*U**H or A = L*D*L**H.
 *
          CALL CLACPY( UPLO, N, N, A, LDA, AF, LDAF )
          CALL CHETRF( UPLO, N, AF, LDAF, IPIV, WORK, LWORK, INFO )

@@ -1,12 +1,12 @@
       SUBROUTINE SGEJSV( JOBA, JOBU, JOBV, JOBR, JOBT, JOBP,
-     &                   M, N, A, LDA, SVA, U, LDU, V, LDV,
-     &                   WORK, LWORK, IWORK, INFO )
+     $                   M, N, A, LDA, SVA, U, LDU, V, LDV,
+     $                   WORK, LWORK, IWORK, INFO )
 *
-*  -- LAPACK routine (version 3.3.0)                                    --
+*  -- LAPACK routine (version 3.3.1)                                  --
 *
 *  -- Contributed by Zlatko Drmac of the University of Zagreb and     --
 *  -- Kresimir Veselic of the Fernuniversitaet Hagen                  --
-*     November 2010
+*  -- April 2011                                                      --
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -17,20 +17,19 @@
 * eigenvalue problems Hx = lambda M x, H M x = lambda x with H, M > 0.
 *
 *     .. Scalar Arguments ..
-*
       IMPLICIT    NONE
       INTEGER     INFO, LDA, LDU, LDV, LWORK, M, N
-*
+*     ..
 *     .. Array Arguments ..
-*
       REAL        A( LDA, * ), SVA( N ), U( LDU, * ), V( LDV, * ),
-     &            WORK( LWORK )
+     $            WORK( LWORK )
       INTEGER     IWORK( * )
       CHARACTER*1 JOBA, JOBP, JOBR, JOBT, JOBU, JOBV
 *     ..
 *
 *  Purpose
 *  =======
+*
 *  SGEJSV computes the singular value decomposition (SVD) of a real M-by-N
 *  matrix [A], where M >= N. The SVD of [A] is written as
 *
@@ -253,33 +252,50 @@
 *          LWORK depends on the job:
 *
 *          If only SIGMA is needed ( JOBU.EQ.'N', JOBV.EQ.'N' ) and
-*            -> .. no scaled condition estimate required ( JOBE.EQ.'N'):
+*            -> .. no scaled condition estimate required (JOBE.EQ.'N'):
 *               LWORK >= max(2*M+N,4*N+1,7). This is the minimal requirement.
-*               For optimal performance (blocked code) the optimal value
+*               ->> For optimal performance (blocked code) the optimal value
 *               is LWORK >= max(2*M+N,3*N+(N+1)*NB,7). Here NB is the optimal
-*               block size for xGEQP3/xGEQRF.
+*               block size for DGEQP3 and DGEQRF.
+*               In general, optimal LWORK is computed as 
+*               LWORK >= max(2*M+N,N+LWORK(DGEQP3),N+LWORK(DGEQRF), 7).        
 *            -> .. an estimate of the scaled condition number of A is
 *               required (JOBA='E', 'G'). In this case, LWORK is the maximum
-*               of the above and N*N+4*N, i.e. LWORK >= max(2*M+N,N*N+4N,7).
+*               of the above and N*N+4*N, i.e. LWORK >= max(2*M+N,N*N+4*N,7).
+*               ->> For optimal performance (blocked code) the optimal value 
+*               is LWORK >= max(2*M+N,3*N+(N+1)*NB, N*N+4*N, 7).
+*               In general, the optimal length LWORK is computed as
+*               LWORK >= max(2*M+N,N+LWORK(DGEQP3),N+LWORK(DGEQRF), 
+*                                                     N+N*N+LWORK(DPOCON),7).
 *
 *          If SIGMA and the right singular vectors are needed (JOBV.EQ.'V'),
-*            -> the minimal requirement is LWORK >= max(2*N+M,7).
-*            -> For optimal performance, LWORK >= max(2*N+M,2*N+N*NB,7),
-*               where NB is the optimal block size.
+*            -> the minimal requirement is LWORK >= max(2*M+N,4*N+1,7).
+*            -> For optimal performance, LWORK >= max(2*M+N,3*N+(N+1)*NB,7),
+*               where NB is the optimal block size for DGEQP3, DGEQRF, DGELQ,
+*               DORMLQ. In general, the optimal length LWORK is computed as
+*               LWORK >= max(2*M+N,N+LWORK(DGEQP3), N+LWORK(DPOCON), 
+*                       N+LWORK(DGELQ), 2*N+LWORK(DGEQRF), N+LWORK(DORMLQ)).
 *
 *          If SIGMA and the left singular vectors are needed
-*            -> the minimal requirement is LWORK >= max(2*N+M,7).
-*            -> For optimal performance, LWORK >= max(2*N+M,2*N+N*NB,7),
-*               where NB is the optimal block size.
-*
-*          If full SVD is needed ( JOBU.EQ.'U' or 'F', JOBV.EQ.'V' ) and
-*            -> .. the singular vectors are computed without explicit
-*               accumulation of the Jacobi rotations, LWORK >= 6*N+2*N*N
-*            -> .. in the iterative part, the Jacobi rotations are
-*               explicitly accumulated (option, see the description of JOBV),
-*               then the minimal requirement is LWORK >= max(M+3*N+N*N,7).
-*               For better performance, if NB is the optimal block size,
-*               LWORK >= max(3*N+N*N+M,3*N+N*N+N*NB,7).
+*            -> the minimal requirement is LWORK >= max(2*M+N,4*N+1,7).
+*            -> For optimal performance:
+*               if JOBU.EQ.'U' :: LWORK >= max(2*M+N,3*N+(N+1)*NB,7),
+*               if JOBU.EQ.'F' :: LWORK >= max(2*M+N,3*N+(N+1)*NB,N+M*NB,7),
+*               where NB is the optimal block size for DGEQP3, DGEQRF, DORMQR.
+*               In general, the optimal length LWORK is computed as
+*               LWORK >= max(2*M+N,N+LWORK(DGEQP3),N+LWORK(DPOCON),
+*                        2*N+LWORK(DGEQRF), N+LWORK(DORMQR)). 
+*               Here LWORK(DORMQR) equals N*NB (for JOBU.EQ.'U') or 
+*               M*NB (for JOBU.EQ.'F').
+*               
+*          If the full SVD is needed: (JOBU.EQ.'U' or JOBU.EQ.'F') and 
+*            -> if JOBV.EQ.'V'  
+*               the minimal requirement is LWORK >= max(2*M+N,6*N+2*N*N). 
+*            -> if JOBV.EQ.'J' the minimal requirement is 
+*               LWORK >= max(2*M+N, 4*N+N*N,2*N+N*N+6).
+*            -> For optimal performance, LWORK should be additionally
+*               larger than N+M*NB, where NB is the optimal block size
+*               for DORMQR.
 *
 *  IWORK   (workspace/output) INTEGER array, dimension M+3*N.
 *          On exit,
@@ -373,16 +389,16 @@
 *     ..
 *     .. Local Scalars ..
       REAL    AAPP,   AAQQ,   AATMAX, AATMIN, BIG,    BIG1,   COND_OK,
-     &        CONDR1, CONDR2, ENTRA,  ENTRAT, EPSLN,  MAXPRJ, SCALEM,
-     &        SCONDA, SFMIN,  SMALL,  TEMP1,  USCAL1, USCAL2, XSC
+     $        CONDR1, CONDR2, ENTRA,  ENTRAT, EPSLN,  MAXPRJ, SCALEM,
+     $        SCONDA, SFMIN,  SMALL,  TEMP1,  USCAL1, USCAL2, XSC
       INTEGER IERR,   N1,     NR,     NUMRANK,        p, q,   WARNING
       LOGICAL ALMORT, DEFR,   ERREST, GOSCAL, JRACC,  KILL,   LSVEC,
-     &        L2ABER, L2KILL, L2PERT, L2RANK, L2TRAN,
-     &        NOSCAL, ROWPIV, RSVEC,  TRANSP
+     $        L2ABER, L2KILL, L2PERT, L2RANK, L2TRAN,
+     $        NOSCAL, ROWPIV, RSVEC,  TRANSP
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC ABS,  ALOG, AMAX1, AMIN1, FLOAT,
-     &          MAX0, MIN0, NINT,  SIGN,  SQRT
+     $          MAX0, MIN0, NINT,  SIGN,  SQRT
 *     ..
 *     .. External Functions ..
       REAL      SLAMCH, SNRM2
@@ -392,8 +408,8 @@
 *     ..
 *     .. External Subroutines ..
       EXTERNAL  SCOPY,  SGELQF, SGEQP3, SGEQRF, SLACPY, SLASCL,
-     &          SLASET, SLASSQ, SLASWP, SORGQR, SORMLQ,
-     &          SORMQR, SPOCON, SSCAL,  SSWAP,  STRSM,  XERBLA
+     $          SLASET, SLASSQ, SLASWP, SORGQR, SORMLQ,
+     $          SORMQR, SPOCON, SSCAL,  SSWAP,  STRSM,  XERBLA
 *
       EXTERNAL  SGESVJ
 *     ..
@@ -413,13 +429,13 @@
       L2PERT = LSAME( JOBP, 'P' )
 *
       IF ( .NOT.(ROWPIV .OR. L2RANK .OR. L2ABER .OR.
-     &     ERREST .OR. LSAME( JOBA, 'C' ) )) THEN
+     $     ERREST .OR. LSAME( JOBA, 'C' ) )) THEN
          INFO = - 1
       ELSE IF ( .NOT.( LSVEC  .OR. LSAME( JOBU, 'N' ) .OR.
-     &                             LSAME( JOBU, 'W' )) ) THEN
+     $                             LSAME( JOBU, 'W' )) ) THEN
          INFO = - 2
       ELSE IF ( .NOT.( RSVEC .OR. LSAME( JOBV, 'N' ) .OR.
-     &   LSAME( JOBV, 'W' )) .OR. ( JRACC .AND. (.NOT.LSVEC) ) ) THEN
+     $   LSAME( JOBV, 'W' )) .OR. ( JRACC .AND. (.NOT.LSVEC) ) ) THEN
          INFO = - 3
       ELSE IF ( .NOT. ( L2KILL .OR. DEFR ) )    THEN
          INFO = - 4
@@ -438,14 +454,18 @@
       ELSE IF ( RSVEC .AND. ( LDV .LT. N ) ) THEN
          INFO = - 14
       ELSE IF ( (.NOT.(LSVEC .OR. RSVEC .OR. ERREST).AND.
-     &                           (LWORK .LT. MAX0(7,4*N+1,2*M+N))) .OR.
-     & (.NOT.(LSVEC .OR. LSVEC) .AND. ERREST .AND.
-     &                         (LWORK .LT. MAX0(7,4*N+N*N,2*M+N))) .OR.
-     & (LSVEC .AND. (.NOT.RSVEC) .AND. (LWORK .LT. MAX0(7,2*N+M))) .OR.
-     & (RSVEC .AND. (.NOT.LSVEC) .AND. (LWORK .LT. MAX0(7,2*N+M))) .OR.
-     & (LSVEC .AND. RSVEC .AND. .NOT.JRACC .AND. (LWORK.LT.6*N+2*N*N))
-     & .OR. (LSVEC.AND.RSVEC.AND.JRACC.AND.LWORK.LT.MAX0(7,M+3*N+N*N)))
-     &   THEN
+     $                           (LWORK .LT. MAX0(7,4*N+1,2*M+N))) .OR.
+     $ (.NOT.(LSVEC .OR. RSVEC) .AND. ERREST .AND.
+     $                         (LWORK .LT. MAX0(7,4*N+N*N,2*M+N))) .OR.
+     $ (LSVEC .AND. (.NOT.RSVEC) .AND. (LWORK .LT. MAX0(7,2*M+N,4*N+1)))
+     $ .OR.
+     $ (RSVEC .AND. (.NOT.LSVEC) .AND. (LWORK .LT. MAX0(7,2*M+N,4*N+1))) 
+     $ .OR.
+     $ (LSVEC .AND. RSVEC .AND. (.NOT.JRACC) .AND. 
+     $                          (LWORK.LT.MAX0(2*M+N,6*N+2*N*N)))
+     $ .OR. (LSVEC .AND. RSVEC .AND. JRACC .AND.
+     $                          LWORK.LT.MAX0(2*M+N,4*N+N*N,2*N+N*N+6)))
+     $   THEN
          INFO = - 17
       ELSE
 *        #:)
@@ -455,6 +475,7 @@
       IF ( INFO .NE. 0 ) THEN
 *       #:(
          CALL XERBLA( 'SGEJSV', - INFO )
+         RETURN
       END IF
 *
 *     Quick return for void matrix (Y3K safe)
@@ -476,6 +497,7 @@
       SFMIN = SLAMCH('SafeMinimum')
       SMALL = SFMIN / EPSLN
       BIG   = SLAMCH('O')
+*     BIG   = ONE / SFMIN
 *
 *     Initialize SVA(1:N) = diag( ||A e_i||_2 )_1^N
 *
@@ -535,6 +557,7 @@
          END IF
          IWORK(1) = 0
          IWORK(2) = 0
+         IWORK(3) = 0
          RETURN
       END IF
 *
@@ -833,8 +856,8 @@
          TEMP1 = SQRT(SFMIN)
          DO 3401 p = 2, N
             IF ( ( ABS(A(p,p)) .LT. (EPSLN*ABS(A(p-1,p-1))) ) .OR.
-     &           ( ABS(A(p,p)) .LT. SMALL ) .OR.
-     &           ( L2KILL .AND. (ABS(A(p,p)) .LT. TEMP1) ) ) GO TO 3402
+     $           ( ABS(A(p,p)) .LT. SMALL ) .OR.
+     $           ( L2KILL .AND. (ABS(A(p,p)) .LT. TEMP1) ) ) GO TO 3402
             NR = NR + 1
  3401    CONTINUE
  3402    CONTINUE
@@ -850,7 +873,7 @@
          TEMP1  = SQRT(SFMIN)
          DO 3301 p = 2, N
             IF ( ( ABS(A(p,p)) .LT. SMALL ) .OR.
-     &           ( L2KILL .AND. (ABS(A(p,p)) .LT. TEMP1) ) ) GO TO 3302
+     $           ( L2KILL .AND. (ABS(A(p,p)) .LT. TEMP1) ) ) GO TO 3302
             NR = NR + 1
  3301    CONTINUE
  3302    CONTINUE
@@ -882,7 +905,7 @@
                   CALL SSCAL( p, ONE/TEMP1, V(1,p), 1 )
  3053          CONTINUE
                CALL SPOCON( 'U', N, V, LDV, ONE, TEMP1,
-     &              WORK(N+1), IWORK(2*N+M+1), IERR )
+     $              WORK(N+1), IWORK(2*N+M+1), IERR )
             ELSE IF ( LSVEC ) THEN
 *              .. U is available as workspace
                CALL SLACPY( 'U', N, N, A, LDA, U, LDU )
@@ -891,7 +914,7 @@
                   CALL SSCAL( p, ONE/TEMP1, U(1,p), 1 )
  3054          CONTINUE
                CALL SPOCON( 'U', N, U, LDU, ONE, TEMP1,
-     &              WORK(N+1), IWORK(2*N+M+1), IERR )
+     $              WORK(N+1), IWORK(2*N+M+1), IERR )
             ELSE
                CALL SLACPY( 'U', N, N, A, LDA, WORK(N+1), N )
                DO 3052 p = 1, N
@@ -900,7 +923,7 @@
  3052          CONTINUE
 *           .. the columns of R are scaled to have unit Euclidean lengths.
                CALL SPOCON( 'U', N, WORK(N+1), N, ONE, TEMP1,
-     &              WORK(N+N*N+1), IWORK(2*N+M+1), IERR )
+     $              WORK(N+N*N+1), IWORK(2*N+M+1), IERR )
             END IF
             SCONDA = ONE / SQRT(TEMP1)
 *           SCONDA is an estimate of SQRT(||(R^t * R)^(-1)||_1).
@@ -945,8 +968,8 @@
                   TEMP1 = XSC*ABS(A(q,q))
                   DO 4949 p = 1, N
                      IF ( ( (p.GT.q) .AND. (ABS(A(p,q)).LE.TEMP1) )
-     &                    .OR. ( p .LT. q ) )
-     &                     A(p,q) = SIGN( TEMP1, A(p,q) )
+     $                    .OR. ( p .LT. q ) )
+     $                     A(p,q) = SIGN( TEMP1, A(p,q) )
  4949             CONTINUE
  4947          CONTINUE
             ELSE
@@ -975,8 +998,8 @@
                   TEMP1 = XSC*ABS(A(q,q))
                   DO 1949 p = 1, NR
                      IF ( ( (p.GT.q) .AND. (ABS(A(p,q)).LE.TEMP1) )
-     &                       .OR. ( p .LT. q ) )
-     &                   A(p,q) = SIGN( TEMP1, A(p,q) )
+     $                       .OR. ( p .LT. q ) )
+     $                   A(p,q) = SIGN( TEMP1, A(p,q) )
  1949             CONTINUE
  1947          CONTINUE
             ELSE
@@ -988,7 +1011,7 @@
 *           the part which destroys triangular form (confusing?!))
 *
             CALL SGESVJ( 'L', 'NoU', 'NoV', NR, NR, A, LDA, SVA,
-     &                      N, V, LDV, WORK, LWORK, INFO )
+     $                      N, V, LDV, WORK, LWORK, INFO )
 *
             SCALEM  = WORK(1)
             NUMRANK = NINT(WORK(2))
@@ -1007,7 +1030,7 @@
             CALL SLASET( 'Upper', NR-1, NR-1, ZERO, ZERO, V(1,2), LDV )
 *
             CALL SGESVJ( 'L','U','N', N, NR, V,LDV, SVA, NR, A,LDA,
-     &                  WORK, LWORK, INFO )
+     $                  WORK, LWORK, INFO )
             SCALEM  = WORK(1)
             NUMRANK = NINT(WORK(2))
 
@@ -1021,14 +1044,14 @@
             CALL SLACPY( 'Lower', NR, NR, A, LDA, V, LDV )
             CALL SLASET( 'Upper', NR-1, NR-1, ZERO, ZERO, V(1,2), LDV )
             CALL SGEQRF( NR, NR, V, LDV, WORK(N+1), WORK(2*N+1),
-     &                   LWORK-2*N, IERR )
+     $                   LWORK-2*N, IERR )
             DO 8998 p = 1, NR
                CALL SCOPY( NR-p+1, V(p,p), LDV, V(p,p), 1 )
  8998       CONTINUE
             CALL SLASET( 'Upper', NR-1, NR-1, ZERO, ZERO, V(1,2), LDV )
 *
             CALL SGESVJ( 'Lower', 'U','N', NR, NR, V,LDV, SVA, NR, U,
-     &                  LDU, WORK(N+1), LWORK, INFO )
+     $                  LDU, WORK(N+1), LWORK-N, INFO )
             SCALEM  = WORK(N+1)
             NUMRANK = NINT(WORK(N+2))
             IF ( NR .LT. N ) THEN
@@ -1038,7 +1061,7 @@
             END IF
 *
          CALL SORMLQ( 'Left', 'Transpose', N, N, NR, A, LDA, WORK,
-     &               V, LDV, WORK(N+1), LWORK-N, IERR )
+     $               V, LDV, WORK(N+1), LWORK-N, IERR )
 *
          END IF
 *
@@ -1063,7 +1086,7 @@
          CALL SLASET( 'Upper', NR-1, NR-1, ZERO, ZERO, U(1,2), LDU )
 *
          CALL SGEQRF( N, NR, U, LDU, WORK(N+1), WORK(2*N+1),
-     &              LWORK-2*N, IERR )
+     $              LWORK-2*N, IERR )
 *
          DO 1967 p = 1, NR - 1
             CALL SCOPY( NR-p, U(p,p+1), LDU, U(p+1,p), 1 )
@@ -1071,7 +1094,7 @@
          CALL SLASET( 'Upper', NR-1, NR-1, ZERO, ZERO, U(1,2), LDU )
 *
          CALL SGESVJ( 'Lower', 'U', 'N', NR,NR, U, LDU, SVA, NR, A,
-     &        LDA, WORK(N+1), LWORK-N, INFO )
+     $        LDA, WORK(N+1), LWORK-N, INFO )
          SCALEM  = WORK(N+1)
          NUMRANK = NINT(WORK(N+2))
 *
@@ -1084,10 +1107,10 @@
          END IF
 *
          CALL SORMQR( 'Left', 'No Tr', M, N1, N, A, LDA, WORK, U,
-     &               LDU, WORK(N+1), LWORK-N, IERR )
+     $               LDU, WORK(N+1), LWORK-N, IERR )
 *
          IF ( ROWPIV )
-     &       CALL SLASWP( N1, U, LDU, 1, M-1, IWORK(2*N+1), -1 )
+     $       CALL SLASWP( N1, U, LDU, 1, M-1, IWORK(2*N+1), -1 )
 *
          DO 1974 p = 1, N1
             XSC = ONE / SNRM2( M, U(1,p), 1 )
@@ -1135,9 +1158,9 @@
                   TEMP1 = XSC*ABS( V(q,q) )
                   DO 2968 p = 1, N
                      IF ( ( p .GT. q ) .AND. ( ABS(V(p,q)) .LE. TEMP1 )
-     &                   .OR. ( p .LT. q ) )
-     &                   V(p,q) = SIGN( TEMP1, V(p,q) )
-                     IF ( p. LT. q ) V(p,q) = - V(p,q)
+     $                   .OR. ( p .LT. q ) )
+     $                   V(p,q) = SIGN( TEMP1, V(p,q) )
+                     IF ( p .LT. q ) V(p,q) = - V(p,q)
  2968             CONTINUE
  2969          CONTINUE
             ELSE
@@ -1154,7 +1177,7 @@
                CALL SSCAL(NR-p+1,ONE/TEMP1,WORK(2*N+(p-1)*NR+p),1)
  3950       CONTINUE
             CALL SPOCON('Lower',NR,WORK(2*N+1),NR,ONE,TEMP1,
-     &                   WORK(2*N+NR*NR+1),IWORK(M+2*N+1),IERR)
+     $                   WORK(2*N+NR*NR+1),IWORK(M+2*N+1),IERR)
             CONDR1 = ONE / SQRT(TEMP1)
 *           .. here need a second oppinion on the condition number
 *           .. then assume worst case scenario
@@ -1170,7 +1193,7 @@
 *              of a lower triangular matrix.
 *              R1^t = Q2 * R2
                CALL SGEQRF( N, NR, V, LDV, WORK(N+1), WORK(2*N+1),
-     &              LWORK-2*N, IERR )
+     $              LWORK-2*N, IERR )
 *
                IF ( L2PERT ) THEN
                   XSC = SQRT(SMALL)/EPSLN
@@ -1178,14 +1201,14 @@
                      DO 3958 q = 1, p - 1
                         TEMP1 = XSC * AMIN1(ABS(V(p,p)),ABS(V(q,q)))
                         IF ( ABS(V(q,p)) .LE. TEMP1 )
-     &                     V(q,p) = SIGN( TEMP1, V(q,p) )
+     $                     V(q,p) = SIGN( TEMP1, V(q,p) )
  3958                CONTINUE
  3959             CONTINUE
                END IF
 *
                IF ( NR .NE. N )
+     $         CALL SLACPY( 'A', N, NR, V, LDV, WORK(2*N+1), N )
 *              .. save ...
-     &         CALL SLACPY( 'A', N, NR, V, LDV, WORK(2*N+1), N )
 *
 *           .. this transposed copy should be better than naive
                DO 1969 p = 1, NR - 1
@@ -1208,16 +1231,16 @@
                   IWORK(N+p) = 0
  3003          CONTINUE
                CALL SGEQP3( N, NR, V, LDV, IWORK(N+1), WORK(N+1),
-     &                  WORK(2*N+1), LWORK-2*N, IERR )
+     $                  WORK(2*N+1), LWORK-2*N, IERR )
 **               CALL SGEQRF( N, NR, V, LDV, WORK(N+1), WORK(2*N+1),
-**     &              LWORK-2*N, IERR )
+**     $              LWORK-2*N, IERR )
                IF ( L2PERT ) THEN
                   XSC = SQRT(SMALL)
                   DO 3969 p = 2, NR
                      DO 3968 q = 1, p - 1
                         TEMP1 = XSC * AMIN1(ABS(V(p,p)),ABS(V(q,q)))
                         IF ( ABS(V(q,p)) .LE. TEMP1 )
-     &                     V(q,p) = SIGN( TEMP1, V(q,p) )
+     $                     V(q,p) = SIGN( TEMP1, V(q,p) )
  3968                CONTINUE
  3969             CONTINUE
                END IF
@@ -1237,7 +1260,7 @@
                END IF
 *              Now, compute R2 = L3 * Q3, the LQ factorization.
                CALL SGELQF( NR, NR, V, LDV, WORK(2*N+N*NR+1),
-     &               WORK(2*N+N*NR+NR+1), LWORK-2*N-N*NR-NR, IERR )
+     $               WORK(2*N+N*NR+NR+1), LWORK-2*N-N*NR-NR, IERR )
 *              .. and estimate the condition number
                CALL SLACPY( 'L',NR,NR,V,LDV,WORK(2*N+N*NR+NR+1),NR )
                DO 4950 p = 1, NR
@@ -1245,7 +1268,7 @@
                   CALL SSCAL( p, ONE/TEMP1, WORK(2*N+N*NR+NR+p), NR )
  4950          CONTINUE
                CALL SPOCON( 'L',NR,WORK(2*N+N*NR+NR+1),NR,ONE,TEMP1,
-     &              WORK(2*N+N*NR+NR+NR*NR+1),IWORK(M+2*N+1),IERR )
+     $              WORK(2*N+N*NR+NR+NR*NR+1),IWORK(M+2*N+1),IERR )
                CONDR2 = ONE / SQRT(TEMP1)
 *
                IF ( CONDR2 .GE. COND_OK ) THEN
@@ -1282,7 +1305,7 @@
             IF ( CONDR1 .LT. COND_OK ) THEN
 *
                CALL SGESVJ( 'L','U','N',NR,NR,V,LDV,SVA,NR,U,
-     &              LDU,WORK(2*N+N*NR+NR+1),LWORK-2*N-N*NR-NR,INFO )
+     $              LDU,WORK(2*N+N*NR+NR+1),LWORK-2*N-N*NR-NR,INFO )
                SCALEM  = WORK(2*N+N*NR+NR+1)
                NUMRANK = NINT(WORK(2*N+N*NR+NR+2))
                DO 3970 p = 1, NR
@@ -1292,7 +1315,7 @@
 
 *        .. pick the right matrix equation and solve it
 *
-               IF ( NR. EQ. N ) THEN
+               IF ( NR .EQ. N ) THEN
 * :))             .. best case, R1 is inverted. The solution of this matrix
 *                 equation is Q2*V2 = the product of the Jacobi rotations
 *                 used in SGESVJ, premultiplied with the orthogonal matrix
@@ -1304,14 +1327,14 @@
 *                 used in SGESVJ. The Q-factor from the second QR
 *                 factorization is then built in explicitly.
                   CALL STRSM('L','U','T','N',NR,NR,ONE,WORK(2*N+1),
-     &                 N,V,LDV)
+     $                 N,V,LDV)
                   IF ( NR .LT. N ) THEN
                     CALL SLASET('A',N-NR,NR,ZERO,ZERO,V(NR+1,1),LDV)
                     CALL SLASET('A',NR,N-NR,ZERO,ZERO,V(1,NR+1),LDV)
                     CALL SLASET('A',N-NR,N-NR,ZERO,ONE,V(NR+1,NR+1),LDV)
                   END IF
                   CALL SORMQR('L','N',N,N,NR,WORK(2*N+1),N,WORK(N+1),
-     &                 V,LDV,WORK(2*N+N*NR+NR+1),LWORK-2*N-N*NR-NR,IERR)
+     $                 V,LDV,WORK(2*N+N*NR+NR+1),LWORK-2*N-N*NR-NR,IERR)
                END IF
 *
             ELSE IF ( CONDR2 .LT. COND_OK ) THEN
@@ -1323,7 +1346,7 @@
 *              the lower triangular L3 from the LQ factorization of
 *              R2=L3*Q3), pre-multiplied with the transposed Q3.
                CALL SGESVJ( 'L', 'U', 'N', NR, NR, V, LDV, SVA, NR, U,
-     &              LDU, WORK(2*N+N*NR+NR+1), LWORK-2*N-N*NR-NR, INFO )
+     $              LDU, WORK(2*N+N*NR+NR+1), LWORK-2*N-N*NR-NR, INFO )
                SCALEM  = WORK(2*N+N*NR+NR+1)
                NUMRANK = NINT(WORK(2*N+N*NR+NR+2))
                DO 3870 p = 1, NR
@@ -1346,7 +1369,7 @@
                   CALL SLASET( 'A',N-NR,N-NR,ZERO,ONE,V(NR+1,NR+1),LDV )
                END IF
                CALL SORMQR( 'L','N',N,N,NR,WORK(2*N+1),N,WORK(N+1),
-     &              V,LDV,WORK(2*N+N*NR+NR+1),LWORK-2*N-N*NR-NR,IERR )
+     $              V,LDV,WORK(2*N+N*NR+NR+1),LWORK-2*N-N*NR-NR,IERR )
             ELSE
 *              Last line of defense.
 * #:(          This is a rather pathological case: no scaled condition
@@ -1360,7 +1383,7 @@
 *              Compute the full SVD of L3 using SGESVJ with explicit
 *              accumulation of Jacobi rotations.
                CALL SGESVJ( 'L', 'U', 'V', NR, NR, V, LDV, SVA, NR, U,
-     &              LDU, WORK(2*N+N*NR+NR+1), LWORK-2*N-N*NR-NR, INFO )
+     $              LDU, WORK(2*N+N*NR+NR+1), LWORK-2*N-N*NR-NR, INFO )
                SCALEM  = WORK(2*N+N*NR+NR+1)
                NUMRANK = NINT(WORK(2*N+N*NR+NR+2))
                IF ( NR .LT. N ) THEN
@@ -1369,11 +1392,11 @@
                   CALL SLASET( 'A',N-NR,N-NR,ZERO,ONE,V(NR+1,NR+1),LDV )
                END IF
                CALL SORMQR( 'L','N',N,N,NR,WORK(2*N+1),N,WORK(N+1),
-     &              V,LDV,WORK(2*N+N*NR+NR+1),LWORK-2*N-N*NR-NR,IERR )
+     $              V,LDV,WORK(2*N+N*NR+NR+1),LWORK-2*N-N*NR-NR,IERR )
 *
                CALL SORMLQ( 'L', 'T', NR, NR, NR, WORK(2*N+1), N,
-     &              WORK(2*N+N*NR+1), U, LDU, WORK(2*N+N*NR+NR+1),
-     &              LWORK-2*N-N*NR-NR, IERR )
+     $              WORK(2*N+N*NR+1), U, LDU, WORK(2*N+N*NR+NR+1),
+     $              LWORK-2*N-N*NR-NR, IERR )
                DO 773 q = 1, NR
                   DO 772 p = 1, NR
                      WORK(2*N+N*NR+NR+IWORK(N+p)) = U(p,q)
@@ -1399,7 +1422,7 @@
   973          CONTINUE
                XSC = ONE / SNRM2( N, V(1,q), 1 )
                IF ( (XSC .LT. (ONE-TEMP1)) .OR. (XSC .GT. (ONE+TEMP1)) )
-     &           CALL SSCAL( N, XSC, V(1,q), 1 )
+     $           CALL SSCAL( N, XSC, V(1,q), 1 )
  1972       CONTINUE
 *           At this moment, V contains the right singular vectors of A.
 *           Next, assemble the left singular vector matrix U (M x N).
@@ -1415,21 +1438,21 @@
 *           matrix U. This applies to all cases.
 *
             CALL SORMQR( 'Left', 'No_Tr', M, N1, N, A, LDA, WORK, U,
-     &           LDU, WORK(N+1), LWORK-N, IERR )
+     $           LDU, WORK(N+1), LWORK-N, IERR )
 
 *           The columns of U are normalized. The cost is O(M*N) flops.
             TEMP1 = SQRT(FLOAT(M)) * EPSLN
             DO 1973 p = 1, NR
                XSC = ONE / SNRM2( M, U(1,p), 1 )
                IF ( (XSC .LT. (ONE-TEMP1)) .OR. (XSC .GT. (ONE+TEMP1)) )
-     &          CALL SSCAL( M, XSC, U(1,p), 1 )
+     $          CALL SSCAL( M, XSC, U(1,p), 1 )
  1973       CONTINUE
 *
 *           If the initial QRF is computed with row pivoting, the left
 *           singular vectors must be adjusted.
 *
             IF ( ROWPIV )
-     &          CALL SLASWP( N1, U, LDU, 1, M-1, IWORK(2*N+1), -1 )
+     $          CALL SLASWP( N1, U, LDU, 1, M-1, IWORK(2*N+1), -1 )
 *
          ELSE
 *
@@ -1450,7 +1473,7 @@
             END IF
 *
             CALL SGESVJ( 'Upper', 'U', 'N', N, N, WORK(N+1), N, SVA,
-     &           N, U, LDU, WORK(N+N*N+1), LWORK-N-N*N, INFO )
+     $           N, U, LDU, WORK(N+N*N+1), LWORK-N-N*N, INFO )
 *
             SCALEM  = WORK(N+N*N+1)
             NUMRANK = NINT(WORK(N+N*N+2))
@@ -1460,7 +1483,7 @@
  6970       CONTINUE
 *
             CALL STRSM( 'Left', 'Upper', 'NoTrans', 'No UD', N, N,
-     &           ONE, A, LDA, WORK(N+1), N )
+     $           ONE, A, LDA, WORK(N+1), N )
             DO 6972 p = 1, N
                CALL SCOPY( N, WORK(N+p), N, V(IWORK(p),1), LDV )
  6972       CONTINUE
@@ -1468,7 +1491,7 @@
             DO 6971 p = 1, N
                XSC = ONE / SNRM2( N, V(1,p), 1 )
                IF ( (XSC .LT. (ONE-TEMP1)) .OR. (XSC .GT. (ONE+TEMP1)) )
-     &            CALL SSCAL( N, XSC, V(1,p), 1 )
+     $            CALL SSCAL( N, XSC, V(1,p), 1 )
  6971       CONTINUE
 *
 *           Assemble the left singular vector matrix U (M x N).
@@ -1481,16 +1504,16 @@
                END IF
             END IF
             CALL SORMQR( 'Left', 'No Tr', M, N1, N, A, LDA, WORK, U,
-     &           LDU, WORK(N+1), LWORK-N, IERR )
+     $           LDU, WORK(N+1), LWORK-N, IERR )
             TEMP1 = SQRT(FLOAT(M))*EPSLN
             DO 6973 p = 1, N1
                XSC = ONE / SNRM2( M, U(1,p), 1 )
                IF ( (XSC .LT. (ONE-TEMP1)) .OR. (XSC .GT. (ONE+TEMP1)) )
-     &            CALL SSCAL( M, XSC, U(1,p), 1 )
+     $            CALL SSCAL( M, XSC, U(1,p), 1 )
  6973       CONTINUE
 *
             IF ( ROWPIV )
-     &         CALL SLASWP( N1, U, LDU, 1, M-1, IWORK(2*N+1), -1 )
+     $         CALL SLASWP( N1, U, LDU, 1, M-1, IWORK(2*N+1), -1 )
 *
          END IF
 *
@@ -1518,9 +1541,9 @@
                TEMP1 = XSC*ABS( V(q,q) )
                DO 5968 p = 1, N
                   IF ( ( p .GT. q ) .AND. ( ABS(V(p,q)) .LE. TEMP1 )
-     &                .OR. ( p .LT. q ) )
-     &                V(p,q) = SIGN( TEMP1, V(p,q) )
-                  IF ( p. LT. q ) V(p,q) = - V(p,q)
+     $                .OR. ( p .LT. q ) )
+     $                V(p,q) = SIGN( TEMP1, V(p,q) )
+                  IF ( p .LT. q ) V(p,q) = - V(p,q)
  5968          CONTINUE
  5969       CONTINUE
          ELSE
@@ -1528,7 +1551,7 @@
          END IF
 
          CALL SGEQRF( N, NR, V, LDV, WORK(N+1), WORK(2*N+1),
-     &        LWORK-2*N, IERR )
+     $        LWORK-2*N, IERR )
          CALL SLACPY( 'L', N, NR, V, LDV, WORK(2*N+1), N )
 *
          DO 7969 p = 1, NR
@@ -1548,7 +1571,7 @@
          END IF
 
          CALL SGESVJ( 'L', 'U', 'V', NR, NR, U, LDU, SVA,
-     &        N, V, LDV, WORK(2*N+N*NR+1), LWORK-2*N-N*NR, INFO )
+     $        N, V, LDV, WORK(2*N+N*NR+1), LWORK-2*N-N*NR, INFO )
          SCALEM  = WORK(2*N+N*NR+1)
          NUMRANK = NINT(WORK(2*N+N*NR+2))
 
@@ -1559,7 +1582,7 @@
          END IF
 
          CALL SORMQR( 'L','N',N,N,NR,WORK(2*N+1),N,WORK(N+1),
-     &        V,LDV,WORK(2*N+N*NR+NR+1),LWORK-2*N-N*NR-NR,IERR )
+     $        V,LDV,WORK(2*N+N*NR+NR+1),LWORK-2*N-N*NR-NR,IERR )
 *
 *           Permute the rows of V using the (column) permutation from the
 *           first QRF. Also, scale the columns to make them unit in
@@ -1575,7 +1598,7 @@
  8973          CONTINUE
                XSC = ONE / SNRM2( N, V(1,q), 1 )
                IF ( (XSC .LT. (ONE-TEMP1)) .OR. (XSC .GT. (ONE+TEMP1)) )
-     &           CALL SSCAL( N, XSC, V(1,q), 1 )
+     $           CALL SSCAL( N, XSC, V(1,q), 1 )
  7972       CONTINUE
 *
 *           At this moment, V contains the right singular vectors of A.
@@ -1590,10 +1613,10 @@
          END IF
 *
          CALL SORMQR( 'Left', 'No Tr', M, N1, N, A, LDA, WORK, U,
-     &        LDU, WORK(N+1), LWORK-N, IERR )
+     $        LDU, WORK(N+1), LWORK-N, IERR )
 *
             IF ( ROWPIV )
-     &         CALL SLASWP( N1, U, LDU, 1, M-1, IWORK(2*N+1), -1 )
+     $         CALL SLASWP( N1, U, LDU, 1, M-1, IWORK(2*N+1), -1 )
 *
 *
          END IF

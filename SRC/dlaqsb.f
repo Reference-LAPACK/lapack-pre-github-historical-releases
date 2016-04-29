@@ -1,9 +1,9 @@
       SUBROUTINE DLAQSB( UPLO, N, KD, AB, LDAB, S, SCOND, AMAX, EQUED )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          EQUED, UPLO
@@ -45,7 +45,7 @@
 *          if UPLO = 'L', AB(1+i-j,j)    = A(i,j) for j<=i<=min(n,j+kd).
 *
 *          On exit, if INFO = 0, the triangular factor U or L from the
-*          Cholesky factorization A = U'*U or A = L*L' of the band
+*          Cholesky factorization A = U**T*U or A = L*L**T of the band
 *          matrix A, in the same storage format as A.
 *
 *  LDAB    (input) INTEGER

@@ -1,10 +1,10 @@
       SUBROUTINE SSPCON( UPLO, N, AP, IPIV, ANORM, RCOND, WORK, IWORK,
      $                   INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     Modified to call SLACN2 in place of SLACON, 5 Feb 03, SJH.
 *
@@ -145,7 +145,7 @@
       CALL SLACN2( N, WORK( N+1 ), WORK, IWORK, AINVNM, KASE, ISAVE )
       IF( KASE.NE.0 ) THEN
 *
-*        Multiply by inv(L*D*L') or inv(U*D*U').
+*        Multiply by inv(L*D*L**T) or inv(U*D*U**T).
 *
          CALL SSPTRS( UPLO, N, 1, AP, IPIV, WORK, N, INFO )
          GO TO 30

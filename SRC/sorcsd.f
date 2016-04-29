@@ -5,13 +5,15 @@
      $                             LDV2T, WORK, LWORK, IWORK, INFO )
       IMPLICIT NONE
 *
-*  -- LAPACK routine (version 3.3.0) --
+*  -- LAPACK routine (version 3.3.1) --
 *
 *  -- Contributed by Brian Sutton of the Randolph-Macon College --
 *  -- November 2010
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--     
+*
+* @generated s
 *
 *     .. Scalar Arguments ..
       CHARACTER          JOBU1, JOBU2, JOBV1T, JOBV2T, SIGNS, TRANS
@@ -144,7 +146,7 @@
 *          this value as the first entry of the work array, and no error
 *          message related to LWORK is issued by XERBLA.
 *
-*  IWORK   (workspace) INTEGER array, dimension (M-Q)
+*  IWORK   (workspace) INTEGER array, dimension (M-MIN(P, M-P, Q, M-Q))
 *
 *  INFO    (output) INTEGER
 *          = 0:  successful exit.
@@ -162,11 +164,11 @@
 *
 *     .. Parameters ..
       REAL               REALONE
-      PARAMETER          ( REALONE = 1.0E0 )
+      PARAMETER          ( REALONE = 1.0E+0 )
       REAL               NEGONE, ONE, PIOVER2, ZERO
-      PARAMETER          ( NEGONE = -1.0E0, ONE = 1.0E0,
+      PARAMETER          ( NEGONE = -1.0E+0, ONE = 1.0E+0,
      $                     PIOVER2 = 1.57079632679489662E0,
-     $                     ZERO = 0.0E0 )
+     $                     ZERO = 0.0E+0 )
 *     ..
 *     .. Local Scalars ..
       CHARACTER          TRANST, SIGNST
@@ -302,7 +304,7 @@
      $              IORBDB + LORBDBWORKOPT, IBBCSD + LBBCSDWORKOPT ) - 1
          LWORKMIN = MAX( IORGQR + LORGQRWORKMIN, IORGLQ + LORGLQWORKMIN,
      $              IORBDB + LORBDBWORKOPT, IBBCSD + LBBCSDWORKMIN ) - 1
-         WORK(1) = LWORKOPT
+         WORK(1) = MAX(LWORKOPT,LWORKMIN)
 *
          IF( LWORK .LT. LWORKMIN .AND. .NOT. LQUERY ) THEN
             INFO = -22

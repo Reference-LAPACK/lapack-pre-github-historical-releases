@@ -12,7 +12,7 @@
 *
 *  DTRMV  performs one of the matrix-vector operations
 *
-*     x := A*x,   or   x := A'*x,
+*     x := A*x,   or   x := A**T*x,
 *
 *  where x is an n element vector and  A is an n by n unit, or non-unit,
 *  upper or lower triangular matrix.
@@ -36,9 +36,9 @@
 *
 *              TRANS = 'N' or 'n'   x := A*x.
 *
-*              TRANS = 'T' or 't'   x := A'*x.
+*              TRANS = 'T' or 't'   x := A**T*x.
 *
-*              TRANS = 'C' or 'c'   x := A'*x.
+*              TRANS = 'C' or 'c'   x := A**T*x.
 *
 *           Unchanged on exit.
 *
@@ -92,6 +92,7 @@
 *  ===============
 *
 *  Level 2 Blas routine.
+*  The vector and matrix arguments are not referenced when N = 0, or M = 0
 *
 *  -- Written on 22-October-1986.
 *     Jack Dongarra, Argonne National Lab.
@@ -221,7 +222,7 @@
           END IF
       ELSE
 *
-*        Form  x := A'*x.
+*        Form  x := A**T*x.
 *
           IF (LSAME(UPLO,'U')) THEN
               IF (INCX.EQ.1) THEN

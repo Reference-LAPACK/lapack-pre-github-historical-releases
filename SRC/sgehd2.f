@@ -1,9 +1,9 @@
       SUBROUTINE SGEHD2( N, ILO, IHI, A, LDA, TAU, WORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            IHI, ILO, INFO, LDA, N
@@ -16,7 +16,7 @@
 *  =======
 *
 *  SGEHD2 reduces a real general matrix A to upper Hessenberg form H by
-*  an orthogonal similarity transformation:  Q' * A * Q = H .
+*  an orthogonal similarity transformation:  Q**T * A * Q = H .
 *
 *  Arguments
 *  =========
@@ -63,7 +63,7 @@
 *
 *  Each H(i) has the form
 *
-*     H(i) = I - tau * v * v'
+*     H(i) = I - tau * v * v**T
 *
 *  where tau is a real scalar, and v is a real vector with
 *  v(1:i) = 0, v(i+1) = 1 and v(ihi+1:n) = 0; v(i+2:ihi) is stored on

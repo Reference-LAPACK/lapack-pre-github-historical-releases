@@ -1,9 +1,9 @@
       SUBROUTINE SLARZT( DIRECT, STOREV, N, K, V, LDV, TAU, T, LDT )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          DIRECT, STOREV
@@ -27,12 +27,12 @@
 *  If STOREV = 'C', the vector which defines the elementary reflector
 *  H(i) is stored in the i-th column of the array V, and
 *
-*     H  =  I - V * T * V'
+*     H  =  I - V * T * V**T
 *
 *  If STOREV = 'R', the vector which defines the elementary reflector
 *  H(i) is stored in the i-th row of the array V, and
 *
-*     H  =  I - V' * T * V
+*     H  =  I - V**T * T * V
 *
 *  Currently, only STOREV = 'R' and DIRECT = 'B' are supported.
 *
@@ -164,7 +164,7 @@
 *
             IF( I.LT.K ) THEN
 *
-*              T(i+1:k,i) = - tau(i) * V(i+1:k,1:n) * V(i,1:n)'
+*              T(i+1:k,i) = - tau(i) * V(i+1:k,1:n) * V(i,1:n)**T
 *
                CALL SGEMV( 'No transpose', K-I, N, -TAU( I ),
      $                     V( I+1, 1 ), LDV, V( I, 1 ), LDV, ZERO,

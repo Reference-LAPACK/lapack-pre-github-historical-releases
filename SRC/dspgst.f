@@ -1,9 +1,9 @@
       SUBROUTINE DSPGST( ITYPE, UPLO, N, AP, BP, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -102,7 +102,7 @@
       IF( ITYPE.EQ.1 ) THEN
          IF( UPPER ) THEN
 *
-*           Compute inv(U')*A*inv(U)
+*           Compute inv(U**T)*A*inv(U)
 *
 *           J1 and JJ are the indices of A(1,j) and A(j,j)
 *
@@ -124,7 +124,7 @@
    10       CONTINUE
          ELSE
 *
-*           Compute inv(L)*A*inv(L')
+*           Compute inv(L)*A*inv(L**T)
 *
 *           KK and K1K1 are the indices of A(k,k) and A(k+1,k+1)
 *
@@ -154,7 +154,7 @@
       ELSE
          IF( UPPER ) THEN
 *
-*           Compute U*A*U'
+*           Compute U*A*U**T
 *
 *           K1 and KK are the indices of A(1,k) and A(k,k)
 *
@@ -179,7 +179,7 @@
    30       CONTINUE
          ELSE
 *
-*           Compute L'*A*L
+*           Compute L**T *A*L
 *
 *           JJ and J1J1 are the indices of A(j,j) and A(j+1,j+1)
 *

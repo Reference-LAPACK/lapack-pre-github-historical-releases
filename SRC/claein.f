@@ -1,10 +1,10 @@
       SUBROUTINE CLAEIN( RIGHTV, NOINIT, N, H, LDH, W, V, B, LDB, RWORK,
      $                   EPS3, SMLNUM, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       LOGICAL            NOINIT, RIGHTV
@@ -223,7 +223,7 @@
       DO 110 ITS = 1, N
 *
 *        Solve U*x = scale*v for a right eigenvector
-*          or U'*x = scale*v for a left eigenvector,
+*          or U**H *x = scale*v for a left eigenvector,
 *        overwriting x on v.
 *
          CALL CLATRS( 'Upper', TRANS, 'Nonunit', NORMIN, N, B, LDB, V,

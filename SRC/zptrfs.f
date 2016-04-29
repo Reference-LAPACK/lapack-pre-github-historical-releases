@@ -1,10 +1,10 @@
       SUBROUTINE ZPTRFS( UPLO, N, NRHS, D, E, DF, EF, B, LDB, X, LDX,
      $                   FERR, BERR, WORK, RWORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -327,7 +327,7 @@
 *           m(i,j) =  abs(A(i,j)), i = j,
 *           m(i,j) = -abs(A(i,j)), i .ne. j,
 *
-*        and e = [ 1, 1, ..., 1 ]'.  Note M(A) = M(L)*D*M(L)'.
+*        and e = [ 1, 1, ..., 1 ]**T.  Note M(A) = M(L)*D*M(L)**H.
 *
 *        Solve M(L) * x = e.
 *
@@ -336,7 +336,7 @@
             RWORK( I ) = ONE + RWORK( I-1 )*ABS( EF( I-1 ) )
    70    CONTINUE
 *
-*        Solve D * M(L)' * x = b.
+*        Solve D * M(L)**H * x = b.
 *
          RWORK( N ) = RWORK( N ) / DF( N )
          DO 80 I = N - 1, 1, -1

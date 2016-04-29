@@ -1,10 +1,10 @@
       SUBROUTINE SGBCON( NORM, N, KL, KU, AB, LDAB, IPIV, ANORM, RCOND,
      $                   WORK, IWORK, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     Modified to call SLACN2 in place of SLACON, 7 Feb 03, SJH.
 *
@@ -179,13 +179,13 @@
      $                   INFO )
          ELSE
 *
-*           Multiply by inv(U').
+*           Multiply by inv(U**T).
 *
             CALL SLATBS( 'Upper', 'Transpose', 'Non-unit', NORMIN, N,
      $                   KL+KU, AB, LDAB, WORK, SCALE, WORK( 2*N+1 ),
      $                   INFO )
 *
-*           Multiply by inv(L').
+*           Multiply by inv(L**T).
 *
             IF( LNOTI ) THEN
                DO 30 J = N - 1, 1, -1

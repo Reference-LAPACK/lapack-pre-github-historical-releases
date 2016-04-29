@@ -1,9 +1,9 @@
       SUBROUTINE DLAT2S( UPLO, N, A, LDA, SA, LDSA, INFO )
 *
-*  -- LAPACK PROTOTYPE auxiliary routine (version 3.1.2) --
+*  -- LAPACK PROTOTYPE auxiliary routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     May 2007
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -56,7 +56,7 @@
 *                PRECISION overflow threshold, in this case, the content
 *                of the UPLO part of SA in exit is unspecified.
 *
-*  =========
+*  =====================================================================
 *
 *     .. Local Scalars ..
       INTEGER            I, J
@@ -76,7 +76,7 @@
          DO 20 J = 1, N
             DO 10 I = 1, J
                IF( ( A( I, J ).LT.-RMAX ) .OR. ( A( I, J ).GT.RMAX ) )
-     +             THEN
+     $             THEN
                   INFO = 1
                   GO TO 50
                END IF
@@ -87,7 +87,7 @@
          DO 40 J = 1, N
             DO 30 I = J, N
                IF( ( A( I, J ).LT.-RMAX ) .OR. ( A( I, J ).GT.RMAX ) )
-     +             THEN
+     $             THEN
                   INFO = 1
                   GO TO 50
                END IF

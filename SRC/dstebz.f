@@ -2,10 +2,10 @@
      $                   M, NSPLIT, W, IBLOCK, ISPLIT, WORK, IWORK,
      $                   INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *     8-18-00:  Increase FUDGE factor for T3E (eca)
 *
 *     .. Scalar Arguments ..
@@ -301,7 +301,6 @@
       WORK( N ) = ZERO
       PIVMIN = ONE
 *
-*DIR$ NOVECTOR
       DO 10 J = 2, N
          TMP1 = E( J-1 )**2
          IF( ABS( D( J )*D( J-1 ) )*ULP**2+SAFEMN.GT.TMP1 ) THEN

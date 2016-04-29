@@ -1,9 +1,9 @@
       SUBROUTINE ZHEGST( ITYPE, UPLO, N, A, LDA, B, LDB, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -136,7 +136,7 @@
          IF( ITYPE.EQ.1 ) THEN
             IF( UPPER ) THEN
 *
-*              Compute inv(U')*A*inv(U)
+*              Compute inv(U**H)*A*inv(U)
 *
                DO 10 K = 1, N, NB
                   KB = MIN( N-K+1, NB )
@@ -167,7 +167,7 @@
    10          CONTINUE
             ELSE
 *
-*              Compute inv(L)*A*inv(L')
+*              Compute inv(L)*A*inv(L**H)
 *
                DO 20 K = 1, N, NB
                   KB = MIN( N-K+1, NB )
@@ -200,7 +200,7 @@
          ELSE
             IF( UPPER ) THEN
 *
-*              Compute U*A*U'
+*              Compute U*A*U**H
 *
                DO 30 K = 1, N, NB
                   KB = MIN( N-K+1, NB )
@@ -226,7 +226,7 @@
    30          CONTINUE
             ELSE
 *
-*              Compute L'*A*L
+*              Compute L**H*A*L
 *
                DO 40 K = 1, N, NB
                   KB = MIN( N-K+1, NB )

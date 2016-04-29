@@ -1,9 +1,9 @@
       SUBROUTINE CGTSV( N, NRHS, DL, D, DU, B, LDB, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDB, N, NRHS
@@ -22,7 +22,7 @@
 *  where A is an N-by-N tridiagonal matrix, by Gaussian elimination with
 *  partial pivoting.
 *
-*  Note that the equation  A'*X = B  may be solved by interchanging the
+*  Note that the equation  A**H *X = B  may be solved by interchanging the
 *  order of the arguments DU and DL.
 *
 *  Arguments

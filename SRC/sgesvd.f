@@ -1,10 +1,10 @@
       SUBROUTINE SGESVD( JOBU, JOBVT, M, N, A, LDA, S, U, LDU, VT, LDVT,
      $                   WORK, LWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.2) --
+*  -- LAPACK driver routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          JOBU, JOBVT
@@ -115,7 +115,10 @@
 *
 *  LWORK   (input) INTEGER
 *          The dimension of the array WORK.
-*          LWORK >= MAX(1,3*MIN(M,N)+MAX(M,N),5*MIN(M,N)).
+*          LWORK >= MAX(1,5*MIN(M,N)) for the paths (see comments inside code):
+*             - PATH 1  (M much larger than N, JOBU='N') 
+*             - PATH 1t (N much larger than M, JOBVT='N')
+*          LWORK >= MAX(1,3*MIN(M,N)+MAX(M,N),5*MIN(M,N)) for the other paths
 *          For good performance, LWORK should generally be larger.
 *
 *          If LWORK = -1, then a workspace query is assumed; the routine

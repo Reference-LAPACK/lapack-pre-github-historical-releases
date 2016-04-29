@@ -1,9 +1,9 @@
       SUBROUTINE DPFTRS( TRANSR, UPLO, N, NRHS, A, B, LDB, INFO )
 *
-*  -- LAPACK routine (version 3.3.0)                                    --
+*  -- LAPACK routine (version 3.3.1)                                    --
 *
 *  -- Contributed by Fred Gustavson of the IBM Watson Research Center --
-*     November 2010
+*  -- April 2011                                                      --
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -186,20 +186,20 @@
 *     Quick return if possible
 *
       IF( N.EQ.0 .OR. NRHS.EQ.0 )
-     +   RETURN
+     $   RETURN
 *
 *     start execution: there are two triangular solves
 *
       IF( LOWER ) THEN
          CALL DTFSM( TRANSR, 'L', UPLO, 'N', 'N', N, NRHS, ONE, A, B,
-     +               LDB )
+     $               LDB )
          CALL DTFSM( TRANSR, 'L', UPLO, 'T', 'N', N, NRHS, ONE, A, B,
-     +               LDB )
+     $               LDB )
       ELSE
          CALL DTFSM( TRANSR, 'L', UPLO, 'T', 'N', N, NRHS, ONE, A, B,
-     +               LDB )
+     $               LDB )
          CALL DTFSM( TRANSR, 'L', UPLO, 'N', 'N', N, NRHS, ONE, A, B,
-     +               LDB )
+     $               LDB )
       END IF
 *
       RETURN

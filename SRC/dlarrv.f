@@ -4,10 +4,10 @@
      $                   IBLOCK, INDEXW, GERS, Z, LDZ, ISUPPZ,
      $                   WORK, IWORK, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.2.2) --
+*  -- LAPACK auxiliary routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     June 2010
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            DOL, DOU, INFO, LDZ, M, N
@@ -25,7 +25,7 @@
 *  =======
 *
 *  DLARRV computes the eigenvectors of the tridiagonal matrix
-*  T = L D L^T given L, D and APPROXIMATIONS to the eigenvalues of L D L^T.
+*  T = L D L**T given L, D and APPROXIMATIONS to the eigenvalues of L D L**T.
 *  The input eigenvalues should have been computed by DLARRE.
 *
 *  Arguments
@@ -332,7 +332,7 @@
 *        high relative accuracy is required for the computation of the
 *        corresponding eigenvectors.
          CALL DCOPY( IM, W( WBEGIN ), 1,
-     &                   WORK( WBEGIN ), 1 )
+     $                   WORK( WBEGIN ), 1 )
 
 *        We store in W the eigenvalue approximations w.r.t. the original
 *        matrix T.
@@ -431,7 +431,7 @@
                   Q = INDEXW( WBEGIN-1+OLDLST )
 *                 Offset for the arrays WORK, WGAP and WERR, i.e., the P-OFFSET
 *                 through the Q-OFFSET elements of these arrays are to be used.
-C                  OFFSET = P-OLDFST
+*                  OFFSET = P-OLDFST
                   OFFSET = INDEXW( WBEGIN ) - 1
 *                 perform limited bisection (if necessary) to get approximate
 *                 eigenvalues to the precision needed.
@@ -570,7 +570,7 @@ C                  OFFSET = P-OLDFST
 *                    Compute RRR of child cluster.
 *                    Note that the new RRR is stored in Z
 *
-C                    DLARRF needs LWORK = 2*N
+*                    DLARRF needs LWORK = 2*N
                      CALL DLARRF( IN, D( IBEGIN ), L( IBEGIN ),
      $                         WORK(INDLD+IBEGIN-1),
      $                         NEWFST, NEWLST, WORK(WBEGIN),

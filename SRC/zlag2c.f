@@ -1,9 +1,9 @@
       SUBROUTINE ZLAG2C( M, N, A, LDA, SA, LDSA, INFO )
 *
-*  -- LAPACK PROTOTYPE auxiliary routine (version 3.1.2) --
+*  -- LAPACK PROTOTYPE auxiliary routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     August 2007
+*  -- April 2011                                                      --
 *
 *     ..
 *     .. Scalar Arguments ..
@@ -53,7 +53,7 @@
 *                PRECISION overflow threshold, in this case, the content
 *                of SA in exit is unspecified.
 *
-*  =========
+*  =====================================================================
 *
 *     .. Local Scalars ..
       INTEGER            I, J
@@ -72,9 +72,9 @@
       DO 20 J = 1, N
          DO 10 I = 1, M
             IF( ( DBLE( A( I, J ) ).LT.-RMAX ) .OR.
-     +          ( DBLE( A( I, J ) ).GT.RMAX ) .OR.
-     +          ( DIMAG( A( I, J ) ).LT.-RMAX ) .OR.
-     +          ( DIMAG( A( I, J ) ).GT.RMAX ) ) THEN
+     $          ( DBLE( A( I, J ) ).GT.RMAX ) .OR.
+     $          ( DIMAG( A( I, J ) ).LT.-RMAX ) .OR.
+     $          ( DIMAG( A( I, J ) ).GT.RMAX ) ) THEN
                INFO = 1
                GO TO 30
             END IF

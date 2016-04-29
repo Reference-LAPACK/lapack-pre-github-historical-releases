@@ -2,10 +2,10 @@
      $                   IL, IU, ABSTOL, M, W, Z, LDZ, WORK, RWORK,
      $                   IWORK, IFAIL, INFO )
 *
-*  -- LAPACK driver routine (version 3.2) --
+*  -- LAPACK driver routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          JOBZ, RANGE, UPLO
@@ -256,7 +256,7 @@
          IF( ITYPE.EQ.1 .OR. ITYPE.EQ.2 ) THEN
 *
 *           For A*x=(lambda)*B*x and A*B*x=(lambda)*x;
-*           backtransform eigenvectors: x = inv(L)'*y or inv(U)*y
+*           backtransform eigenvectors: x = inv(L)**H *y or inv(U)*y
 *
             IF( UPPER ) THEN
                TRANS = 'N'
@@ -272,7 +272,7 @@
          ELSE IF( ITYPE.EQ.3 ) THEN
 *
 *           For B*A*x=(lambda)*x;
-*           backtransform eigenvectors: x = L*y or U'*y
+*           backtransform eigenvectors: x = L*y or U**H *y
 *
             IF( UPPER ) THEN
                TRANS = 'C'

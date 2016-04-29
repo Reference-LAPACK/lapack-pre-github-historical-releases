@@ -2,10 +2,11 @@
      $                   Z, LDZ, WORK, LWORK, RWORK, LRWORK, IWORK,
      $                   LIWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.2) --
+*  -- LAPACK driver routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
+* @precisions normal z -> c
 *
 *     .. Scalar Arguments ..
       CHARACTER          JOBZ, UPLO
@@ -191,8 +192,8 @@
 *
       INFO = 0
       IF( N.LE.1 ) THEN
-         LWMIN = 1
-         LRWMIN = 1
+         LWMIN = 1+N
+         LRWMIN = 1+N
          LIWMIN = 1
       ELSE IF( WANTZ ) THEN
          LWMIN = 2*N**2

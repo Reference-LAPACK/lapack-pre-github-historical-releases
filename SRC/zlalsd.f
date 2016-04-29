@@ -1,10 +1,10 @@
       SUBROUTINE ZLALSD( UPLO, SMLSIZ, N, NRHS, D, E, B, LDB, RCOND,
      $                   RANK, WORK, RWORK, IWORK, INFO )
 *
-*  -- LAPACK routine (version 3.2.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     June 2010
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -245,7 +245,7 @@
          END IF
 *
 *        In the real version, B is passed to DLASDQ and multiplied
-*        internally by Q'. Here B is complex and that product is
+*        internally by Q**H. Here B is complex and that product is
 *        computed below in two steps (real and imaginary parts).
 *
          J = IRWB - 1
@@ -290,7 +290,7 @@
 *
 *        Since B is complex, the following call to DGEMM is performed
 *        in two steps (real and imaginary parts). That is for V * B
-*        (in the real version of the code V' is stored in WORK).
+*        (in the real version of the code V**H is stored in WORK).
 *
 *        CALL DGEMM( 'T', 'N', N, NRHS, N, ONE, WORK, N, B, LDB, ZERO,
 *    $               WORK( NWORK ), N )
@@ -431,7 +431,7 @@
                END IF
 *
 *              In the real version, B is passed to DLASDQ and multiplied
-*              internally by Q'. Here B is complex and that product is
+*              internally by Q**H. Here B is complex and that product is
 *              computed below in two steps (real and imaginary parts).
 *
                J = IRWB - 1

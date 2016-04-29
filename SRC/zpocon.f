@@ -1,10 +1,10 @@
       SUBROUTINE ZPOCON( UPLO, N, A, LDA, ANORM, RCOND, WORK, RWORK,
      $                   INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     Modified to call ZLACN2 in place of ZLACON, 10 Feb 03, SJH.
 *
@@ -136,7 +136,7 @@
       IF( KASE.NE.0 ) THEN
          IF( UPPER ) THEN
 *
-*           Multiply by inv(U').
+*           Multiply by inv(U**H).
 *
             CALL ZLATRS( 'Upper', 'Conjugate transpose', 'Non-unit',
      $                   NORMIN, N, A, LDA, WORK, SCALEL, RWORK, INFO )
@@ -154,7 +154,7 @@
      $                   A, LDA, WORK, SCALEL, RWORK, INFO )
             NORMIN = 'Y'
 *
-*           Multiply by inv(L').
+*           Multiply by inv(L**H).
 *
             CALL ZLATRS( 'Lower', 'Conjugate transpose', 'Non-unit',
      $                   NORMIN, N, A, LDA, WORK, SCALEU, RWORK, INFO )

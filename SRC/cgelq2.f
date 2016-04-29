@@ -1,9 +1,9 @@
       SUBROUTINE CGELQ2( M, N, A, LDA, TAU, WORK, INFO )
 *
-*  -- LAPACK routine (version 3.2.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     June 2010
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, M, N
@@ -53,11 +53,11 @@
 *
 *  The matrix Q is represented as a product of elementary reflectors
 *
-*     Q = H(k)' . . . H(2)' H(1)', where k = min(m,n).
+*     Q = H(k)**H . . . H(2)**H H(1)**H, where k = min(m,n).
 *
 *  Each H(i) has the form
 *
-*     H(i) = I - tau * v * v'
+*     H(i) = I - tau * v * v**H
 *
 *  where tau is a complex scalar, and v is a complex vector with
 *  v(1:i-1) = 0 and v(i) = 1; conjg(v(i+1:n)) is stored on exit in

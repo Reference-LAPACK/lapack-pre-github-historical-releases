@@ -1,9 +1,9 @@
       SUBROUTINE SSTERF( N, D, E, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, N
@@ -128,8 +128,10 @@
 *
 *     Scale submatrix in rows and columns L to LEND
 *
-      ANORM = SLANST( 'I', LEND-L+1, D( L ), E( L ) )
+      ANORM = SLANST( 'M', LEND-L+1, D( L ), E( L ) )
       ISCALE = 0
+      IF( ANORM.EQ.ZERO )
+     $   GO TO 10      
       IF( ANORM.GT.SSFMAX ) THEN
          ISCALE = 1
          CALL SLASCL( 'G', 0, 0, ANORM, SSFMAX, LEND-L+1, 1, D( L ), N,

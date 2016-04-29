@@ -1,9 +1,9 @@
       SUBROUTINE CTRTTF( TRANSR, UPLO, N, A, LDA, ARF, INFO )
 *
-*  -- LAPACK routine (version 3.3.0)                                    --
+*  -- LAPACK routine (version 3.3.1)                                    --
 *
 *  -- Contributed by Fred Gustavson of the IBM Watson Research Center --
-*     November 2010
+*  -- April 2011                                                      --
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -72,15 +72,15 @@
 *                  55       50 51 52 53 54 55
 *
 *
-*  Let TRANSR = `N'. RFP holds AP as follows:
-*  For UPLO = `U' the upper trapezoid A(0:5,0:2) consists of the last
+*  Let TRANSR = 'N'. RFP holds AP as follows:
+*  For UPLO = 'U' the upper trapezoid A(0:5,0:2) consists of the last
 *  three columns of AP upper. The lower triangle A(4:6,0:2) consists of
 *  conjugate-transpose of the first three columns of AP upper.
-*  For UPLO = `L' the lower trapezoid A(1:6,0:2) consists of the first
+*  For UPLO = 'L' the lower trapezoid A(1:6,0:2) consists of the first
 *  three columns of AP lower. The upper triangle A(0:2,0:2) consists of
 *  conjugate-transpose of the last three columns of AP lower.
 *  To denote conjugate we place -- above the element. This covers the
-*  case N even and TRANSR = `N'.
+*  case N even and TRANSR = 'N'.
 *
 *         RFP A                   RFP A
 *
@@ -99,7 +99,7 @@
 *        -- -- --
 *        02 12 22                50 51 52
 *
-*  Now let TRANSR = `C'. RFP A in both UPLO cases is just the conjugate-
+*  Now let TRANSR = 'C'. RFP A in both UPLO cases is just the conjugate-
 *  transpose of RFP A above. One therefore gets:
 *
 *
@@ -125,15 +125,15 @@
 *               44              40 41 42 43 44
 *
 *
-*  Let TRANSR = `N'. RFP holds AP as follows:
-*  For UPLO = `U' the upper trapezoid A(0:4,0:2) consists of the last
+*  Let TRANSR = 'N'. RFP holds AP as follows:
+*  For UPLO = 'U' the upper trapezoid A(0:4,0:2) consists of the last
 *  three columns of AP upper. The lower triangle A(3:4,0:1) consists of
 *  conjugate-transpose of the first two   columns of AP upper.
-*  For UPLO = `L' the lower trapezoid A(0:4,0:2) consists of the first
+*  For UPLO = 'L' the lower trapezoid A(0:4,0:2) consists of the first
 *  three columns of AP lower. The upper triangle A(0:1,1:2) consists of
 *  conjugate-transpose of the last two   columns of AP lower.
 *  To denote conjugate we place -- above the element. This covers the
-*  case N odd  and TRANSR = `N'.
+*  case N odd  and TRANSR = 'N'.
 *
 *         RFP A                   RFP A
 *
@@ -148,7 +148,7 @@
 *        -- --
 *        01 11 44                40 41 42
 *
-*  Now let TRANSR = `C'. RFP A in both UPLO cases is just the conjugate-
+*  Now let TRANSR = 'C'. RFP A in both UPLO cases is just the conjugate-
 *  transpose of RFP A above. One therefore gets:
 *
 *
@@ -235,11 +235,11 @@
          K = N / 2
          NISODD = .FALSE.
          IF( .NOT.LOWER )
-     +      NP1X2 = N + N + 2
+     $      NP1X2 = N + N + 2
       ELSE
          NISODD = .TRUE.
          IF( .NOT.LOWER )
-     +      NX2 = N + N
+     $      NX2 = N + N
       END IF
 *
       IF( NISODD ) THEN

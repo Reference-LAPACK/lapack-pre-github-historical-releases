@@ -1,9 +1,9 @@
       SUBROUTINE ZPPSV( UPLO, N, NRHS, AP, B, LDB, INFO )
 *
-*  -- LAPACK driver routine (version 3.2) --
+*  -- LAPACK driver routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -22,7 +22,7 @@
 *  packed format and X and B are N-by-NRHS matrices.
 *
 *  The Cholesky decomposition is used to factor A as
-*     A = U**H* U,  if UPLO = 'U', or
+*     A = U**H * U,  if UPLO = 'U', or
 *     A = L * L**H,  if UPLO = 'L',
 *  where U is an upper triangular matrix and L is a lower triangular
 *  matrix.  The factored form of A is then used to solve the system of
@@ -117,7 +117,7 @@
          RETURN
       END IF
 *
-*     Compute the Cholesky factorization A = U'*U or A = L*L'.
+*     Compute the Cholesky factorization A = U**H *U or A = L*L**H.
 *
       CALL ZPPTRF( UPLO, N, AP, INFO )
       IF( INFO.EQ.0 ) THEN

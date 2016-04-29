@@ -1,10 +1,10 @@
       SUBROUTINE ZSPSVX( FACT, UPLO, N, NRHS, AP, AFP, IPIV, B, LDB, X,
      $                   LDX, RCOND, FERR, BERR, WORK, RWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.2) --
+*  -- LAPACK driver routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       CHARACTER          FACT, UPLO
@@ -234,7 +234,7 @@
 *
       IF( NOFACT ) THEN
 *
-*        Compute the factorization A = U*D*U' or A = L*D*L'.
+*        Compute the factorization A = U*D*U**T or A = L*D*L**T.
 *
          CALL ZCOPY( N*( N+1 ) / 2, AP, 1, AFP, 1 )
          CALL ZSPTRF( UPLO, N, AFP, IPIV, INFO )

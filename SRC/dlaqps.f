@@ -1,10 +1,10 @@
       SUBROUTINE DLAQPS( M, N, OFFSET, NB, KB, A, LDA, JPVT, TAU, VN1,
      $                   VN2, AUXV, F, LDF )
 *
-*  -- LAPACK auxiliary routine (version 3.2.2) --
+*  -- LAPACK auxiliary routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     June 2010
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            KB, LDA, LDF, M, N, NB, OFFSET
@@ -76,7 +76,7 @@
 *          Auxiliar vector.
 *
 *  F       (input/output) DOUBLE PRECISION array, dimension (LDF,NB)
-*          Matrix F' = L*Y'*A.
+*          Matrix F**T = L*Y**T*A.
 *
 *  LDF     (input) INTEGER
 *          The leading dimension of the array F. LDF >= max(1,N).
@@ -91,7 +91,7 @@
 *  Partial column norm updating strategy modified by
 *    Z. Drmac and Z. Bujanovic, Dept. of Mathematics,
 *    University of Zagreb, Croatia.
-*     June 2010
+*  -- April 2011                                                      --
 *  For more details see LAPACK Working Note 176.
 *  =====================================================================
 *
@@ -142,7 +142,7 @@
          END IF
 *
 *        Apply previous Householder reflectors to column K:
-*        A(RK:M,K) := A(RK:M,K) - A(RK:M,1:K-1)*F(K,1:K-1)'.
+*        A(RK:M,K) := A(RK:M,K) - A(RK:M,1:K-1)*F(K,1:K-1)**T.
 *
          IF( K.GT.1 ) THEN
             CALL DGEMV( 'No transpose', M-RK+1, K-1, -ONE, A( RK, 1 ),
@@ -162,7 +162,7 @@
 *
 *        Compute Kth column of F:
 *
-*        Compute  F(K+1:N,K) := tau(K)*A(RK:M,K+1:N)'*A(RK:M,K).
+*        Compute  F(K+1:N,K) := tau(K)*A(RK:M,K+1:N)**T*A(RK:M,K).
 *
          IF( K.LT.N ) THEN
             CALL DGEMV( 'Transpose', M-RK+1, N-K, TAU( K ),
@@ -177,7 +177,7 @@
    20    CONTINUE
 *
 *        Incremental updating of F:
-*        F(1:N,K) := F(1:N,K) - tau(K)*F(1:N,1:K-1)*A(RK:M,1:K-1)'
+*        F(1:N,K) := F(1:N,K) - tau(K)*F(1:N,1:K-1)*A(RK:M,1:K-1)**T
 *                    *A(RK:M,K).
 *
          IF( K.GT.1 ) THEN
@@ -189,7 +189,7 @@
          END IF
 *
 *        Update the current row of A:
-*        A(RK,K+1:N) := A(RK,K+1:N) - A(RK,1:K)*F(K+1:N,1:K)'.
+*        A(RK,K+1:N) := A(RK,K+1:N) - A(RK,1:K)*F(K+1:N,1:K)**T.
 *
          IF( K.LT.N ) THEN
             CALL DGEMV( 'No transpose', N-K, K, -ONE, F( K+1, 1 ), LDF,
@@ -229,7 +229,7 @@
 *
 *     Apply the block reflector to the rest of the matrix:
 *     A(OFFSET+KB+1:M,KB+1:N) := A(OFFSET+KB+1:M,KB+1:N) -
-*                         A(OFFSET+KB+1:M,1:KB)*F(KB+1:N,1:KB)'.
+*                         A(OFFSET+KB+1:M,1:KB)*F(KB+1:N,1:KB)**T.
 *
       IF( KB.LT.MIN( N, M-OFFSET ) ) THEN
          CALL DGEMM( 'No transpose', 'Transpose', M-RK, N-KB, KB, -ONE,

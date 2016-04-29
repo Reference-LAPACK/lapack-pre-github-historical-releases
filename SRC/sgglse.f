@@ -1,10 +1,10 @@
       SUBROUTINE SGGLSE( M, N, P, A, LDA, B, LDB, C, D, X, WORK, LWORK,
      $                   INFO )
 *
-*  -- LAPACK driver routine (version 3.2) --
+*  -- LAPACK driver routine (version 3.3.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*  -- April 2011                                                      --
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, LDB, LWORK, M, N, P
@@ -183,9 +183,9 @@
 *
 *     Compute the GRQ factorization of matrices B and A:
 *
-*            B*Q' = (  0  T12 ) P   Z'*A*Q' = ( R11 R12 ) N-P
-*                     N-P  P                  (  0  R22 ) M+P-N
-*                                               N-P  P
+*            B*Q**T = (  0  T12 ) P   Z**T*A*Q**T = ( R11 R12 ) N-P
+*                        N-P  P                     (  0  R22 ) M+P-N
+*                                                      N-P  P
 *
 *     where T12 and R11 are upper triangular, and Q and Z are
 *     orthogonal.
@@ -194,8 +194,8 @@
      $             WORK( P+MN+1 ), LWORK-P-MN, INFO )
       LOPT = WORK( P+MN+1 )
 *
-*     Update c = Z'*c = ( c1 ) N-P
-*                       ( c2 ) M+P-N
+*     Update c = Z**T *c = ( c1 ) N-P
+*                          ( c2 ) M+P-N
 *
       CALL SORMQR( 'Left', 'Transpose', M, 1, MN, A, LDA, WORK( P+1 ),
      $             C, MAX( 1, M ), WORK( P+MN+1 ), LWORK-P-MN, INFO )
@@ -233,7 +233,7 @@
             RETURN
          END IF
 *
-*        Put the solution in X
+*        Put the solutions in X
 *
          CALL SCOPY( N-P, C, 1, X, 1 )
       END IF
@@ -254,7 +254,7 @@
          CALL SAXPY( NR, -ONE, D, 1, C( N-P+1 ), 1 )
       END IF
 *
-*     Backward transformation x = Q'*x
+*     Backward transformation x = Q**T*x
 *
       CALL SORMRQ( 'Left', 'Transpose', N, 1, P, B, LDB, WORK( 1 ), X,
      $             N, WORK( P+MN+1 ), LWORK-P-MN, INFO )
