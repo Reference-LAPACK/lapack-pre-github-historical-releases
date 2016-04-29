@@ -138,7 +138,7 @@
 C        ILAENV = 0
          ILAENV = 1
          IF( ILAENV.EQ.1 ) THEN
-            ILAENV = IEEECK( 0, 0.0, 1.0 )
+            ILAENV = IEEECK( 1, 0.0, 1.0 )
          END IF
 *
       ELSE IF( ISPEC.EQ.11 ) THEN
@@ -148,7 +148,7 @@ C        ILAENV = 0
 C        ILAENV = 0
          ILAENV = 1
          IF( ILAENV.EQ.1 ) THEN
-            ILAENV = IEEECK( 1, 0.0, 1.0 )
+            ILAENV = IEEECK( 0, 0.0, 1.0 )
          END IF
 *
       ELSE

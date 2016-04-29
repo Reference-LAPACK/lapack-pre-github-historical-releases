@@ -1,6 +1,6 @@
       SUBROUTINE ZGERQ2( M, N, A, LDA, TAU, WORK, INFO )
 *
-*  -- LAPACK routine (version 3.1) --
+*  -- LAPACK routine (version 3.2) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -75,7 +75,7 @@
       COMPLEX*16         ALPHA
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           XERBLA, ZLACGV, ZLARF, ZLARFG
+      EXTERNAL           XERBLA, ZLACGV, ZLARF, ZLARFP
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -106,7 +106,7 @@
 *
          CALL ZLACGV( N-K+I, A( M-K+I, 1 ), LDA )
          ALPHA = A( M-K+I, N-K+I )
-         CALL ZLARFG( N-K+I, ALPHA, A( M-K+I, 1 ), LDA, TAU( I ) )
+         CALL ZLARFP( N-K+I, ALPHA, A( M-K+I, 1 ), LDA, TAU( I ) )
 *
 *        Apply H(i) to A(1:m-k+i-1,1:n-k+i) from the right
 *

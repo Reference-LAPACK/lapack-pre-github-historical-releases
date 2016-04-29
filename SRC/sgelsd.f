@@ -1,7 +1,7 @@
       SUBROUTINE SGELSD( M, N, NRHS, A, LDA, B, LDB, S, RCOND,
      $                   RANK, WORK, LWORK, IWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.1) --
+*  -- LAPACK driver routine (version 3.2) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -246,6 +246,10 @@
                   MAXWRK = MAX( MAXWRK, M + NRHS*ILAENV( 1, 'SORMLQ',
      $                          'LT', N, NRHS, M, -1 ) )
                   MAXWRK = MAX( MAXWRK, M*M + 4*M + WLALSD )
+!     XXX: Ensure the Path 2a case below is triggered.  The workspace
+!     calculation should use queries for all routines eventually.
+                  MAXWRK = MAX( MAXWRK,
+     $                 4*M+M*M+MAX( M, 2*M-4, NRHS, N-3*M ) )
                ELSE
 *
 *                 Path 2 - remaining underdetermined cases.

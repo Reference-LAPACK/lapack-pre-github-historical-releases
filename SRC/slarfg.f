@@ -1,6 +1,6 @@
       SUBROUTINE SLARFG( N, ALPHA, X, INCX, TAU )
 *
-*  -- LAPACK auxiliary routine (version 3.1) --
+*  -- LAPACK auxiliary routine (version 3.2) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -96,12 +96,12 @@
 *
          BETA = -SIGN( SLAPY2( ALPHA, XNORM ), ALPHA )
          SAFMIN = SLAMCH( 'S' ) / SLAMCH( 'E' )
+         KNT = 0
          IF( ABS( BETA ).LT.SAFMIN ) THEN
 *
 *           XNORM, BETA may be inaccurate; scale X and recompute them
 *
             RSAFMN = ONE / SAFMIN
-            KNT = 0
    10       CONTINUE
             KNT = KNT + 1
             CALL SSCAL( N-1, RSAFMN, X, INCX )
@@ -114,20 +114,16 @@
 *
             XNORM = SNRM2( N-1, X, INCX )
             BETA = -SIGN( SLAPY2( ALPHA, XNORM ), ALPHA )
-            TAU = ( BETA-ALPHA ) / BETA
-            CALL SSCAL( N-1, ONE / ( ALPHA-BETA ), X, INCX )
-*
-*           If ALPHA is subnormal, it may lose relative accuracy
-*
-            ALPHA = BETA
-            DO 20 J = 1, KNT
-               ALPHA = ALPHA*SAFMIN
-   20       CONTINUE
-         ELSE
-            TAU = ( BETA-ALPHA ) / BETA
-            CALL SSCAL( N-1, ONE / ( ALPHA-BETA ), X, INCX )
-            ALPHA = BETA
          END IF
+         TAU = ( BETA-ALPHA ) / BETA
+         CALL SSCAL( N-1, ONE / ( ALPHA-BETA ), X, INCX )
+*
+*        If ALPHA is subnormal, it may lose relative accuracy
+*
+         DO 20 J = 1, KNT
+            BETA = BETA*SAFMIN
+ 20      CONTINUE
+         ALPHA = BETA
       END IF
 *
       RETURN

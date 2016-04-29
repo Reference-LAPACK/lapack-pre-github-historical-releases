@@ -985,7 +985,7 @@
      $                   TSTDRV, TSTERR
       CHARACTER          C1
       CHARACTER*3        C3, PATH
-      CHARACTER*6        VNAME
+      CHARACTER*32       VNAME
       CHARACTER*10       INTSTR
       CHARACTER*80       LINE
       INTEGER            I, I1, IC, INFO, ITMP, K, LENP, MAXTYP, NEWSD,
@@ -1027,7 +1027,7 @@
 *     ..
 *     .. Scalars in Common ..
       LOGICAL            LERR, OK
-      CHARACTER*6        SRNAMT
+      CHARACTER*32       SRNAMT
       INTEGER            INFOT, MAXB, NPROC, NSHIFT, NUNIT, SELDIM,
      $                   SELOPT
 *     ..
@@ -2294,19 +2294,19 @@
  9991 FORMAT( / / ' *** Invalid integer value in column ', I2,
      $      ' of input', ' line:', / A79 )
  9990 FORMAT( / / 1X, A3, ' routines were not tested' )
- 9989 FORMAT( ' Invalid input value: ', A6, '=', I6, '; must be >=',
+ 9989 FORMAT( ' Invalid input value: ', A, '=', I6, '; must be >=',
      $      I6 )
- 9988 FORMAT( ' Invalid input value: ', A6, '=', I6, '; must be <=',
+ 9988 FORMAT( ' Invalid input value: ', A, '=', I6, '; must be <=',
      $      I6 )
  9987 FORMAT( ' Tests of the Nonsymmetric Eigenvalue Problem routines' )
  9986 FORMAT( ' Tests of the Hermitian Eigenvalue Problem routines' )
  9985 FORMAT( ' Tests of the Singular Value Decomposition routines' )
  9984 FORMAT( / ' The following parameter values will be used:' )
- 9983 FORMAT( 4X, A6, 10I6, / 10X, 10I6 )
+ 9983 FORMAT( 4X, A, 10I6, / 10X, 10I6 )
  9982 FORMAT( / ' Routines pass computational tests if test ratio is ',
      $      'less than', F8.2, / )
  9981 FORMAT( ' Relative machine ', A, ' is taken to be', E16.6 )
- 9980 FORMAT( ' *** Error code from ', A6, ' = ', I4 )
+ 9980 FORMAT( ' *** Error code from ', A, ' = ', I4 )
  9979 FORMAT( / ' Tests of the Nonsymmetric Eigenvalue Problem Driver',
      $      / '    CGEEV (eigenvalues and eigevectors)' )
  9978 FORMAT( / ' Tests of the Nonsymmetric Eigenvalue Problem Driver',

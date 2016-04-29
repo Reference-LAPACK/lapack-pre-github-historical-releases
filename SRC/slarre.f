@@ -4,7 +4,7 @@
      $                    WORK, IWORK, INFO )
       IMPLICIT NONE
 *
-*  -- LAPACK auxiliary routine (version 3.1) --
+*  -- LAPACK auxiliary routine (version 3.2) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -306,6 +306,10 @@
 *     Can force use of bisection instead of faster DQDS.
 *     Option left in the code for future multisection work.
       FORCEB = .FALSE.
+
+*     Initialize USEDQD, DQDS should be used for ALLRNG unless someone
+*     explicitly wants bisection.
+      USEDQD = (( IRANGE.EQ.ALLRNG ) .AND. (.NOT.FORCEB))
 
       IF( (IRANGE.EQ.ALLRNG) .AND. (.NOT. FORCEB) ) THEN
 *        Set interval [VL,VU] that contains all eigenvalues

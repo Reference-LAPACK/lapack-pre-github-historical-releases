@@ -89,7 +89,7 @@
       INTEGER           ICASE, INCX, INCY, MODE, N
       LOGICAL           PASS
 *     .. Local Scalars ..
-      DOUBLE PRECISION  D12, SA, SB, SC, SS
+      DOUBLE PRECISION  SA, SB, SC, SS
       INTEGER           K
 *     .. Local Arrays ..
       DOUBLE PRECISION  DA1(8), DATRUE(8), DB1(8), DBTRUE(8), DC1(8),
@@ -111,7 +111,6 @@
      +                  0.0D0, 1.0D0, 1.0D0/
       DATA              DBTRUE/0.0D0, 0.6D0, 0.0D0, -0.6D0, 0.0D0,
      +                  0.0D0, 1.0D0, 0.0D0/
-      DATA              D12/4096.0D0/
 *     .. Executable Statements ..
 *
 *     Compute true values which cannot be prestored
@@ -245,11 +244,11 @@
       INTEGER           ICASE, INCX, INCY, MODE, N
       LOGICAL           PASS
 *     .. Local Scalars ..
-      DOUBLE PRECISION  SA, SC, SS
+      DOUBLE PRECISION  SA
       INTEGER           I, J, KI, KN, KSIZE, LENX, LENY, MX, MY
 *     .. Local Arrays ..
       DOUBLE PRECISION  DT10X(7,4,4), DT10Y(7,4,4), DT7(4,4),
-     +                  DT8(7,4,4), DT9X(7,4,4), DT9Y(7,4,4), DX1(7),
+     +                  DT8(7,4,4), DX1(7),
      +                  DY1(7), SSIZE1(4), SSIZE2(14,2), STX(7), STY(7),
      +                  SX(7), SY(7)
       INTEGER           INCXS(4), INCYS(4), LENS(4,2), NS(4)
@@ -272,7 +271,6 @@
      +                  -0.4D0/
       DATA              DY1/0.5D0, -0.9D0, 0.3D0, 0.7D0, -0.6D0, 0.2D0,
      +                  0.8D0/
-      DATA              SC, SS/0.8D0, 0.6D0/
       DATA              DT7/0.0D0, 0.30D0, 0.21D0, 0.62D0, 0.0D0,
      +                  0.30D0, -0.07D0, 0.85D0, 0.0D0, 0.30D0, -0.79D0,
      +                  -0.74D0, 0.0D0, 0.30D0, 0.33D0, 1.27D0/
@@ -295,44 +293,6 @@
      +                  0.0D0, 0.68D0, -0.9D0, 0.33D0, 0.0D0, 0.0D0,
      +                  0.0D0, 0.0D0, 0.68D0, -0.9D0, 0.33D0, 0.7D0,
      +                  -0.75D0, 0.2D0, 1.04D0/
-      DATA              DT9X/0.6D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0,
-     +                  0.0D0, 0.78D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0,
-     +                  0.0D0, 0.0D0, 0.78D0, -0.46D0, 0.0D0, 0.0D0,
-     +                  0.0D0, 0.0D0, 0.0D0, 0.78D0, -0.46D0, -0.22D0,
-     +                  1.06D0, 0.0D0, 0.0D0, 0.0D0, 0.6D0, 0.0D0,
-     +                  0.0D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0, 0.78D0,
-     +                  0.0D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0,
-     +                  0.66D0, 0.1D0, -0.1D0, 0.0D0, 0.0D0, 0.0D0,
-     +                  0.0D0, 0.96D0, 0.1D0, -0.76D0, 0.8D0, 0.90D0,
-     +                  -0.3D0, -0.02D0, 0.6D0, 0.0D0, 0.0D0, 0.0D0,
-     +                  0.0D0, 0.0D0, 0.0D0, 0.78D0, 0.0D0, 0.0D0,
-     +                  0.0D0, 0.0D0, 0.0D0, 0.0D0, -0.06D0, 0.1D0,
-     +                  -0.1D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0, 0.90D0,
-     +                  0.1D0, -0.22D0, 0.8D0, 0.18D0, -0.3D0, -0.02D0,
-     +                  0.6D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0,
-     +                  0.78D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0,
-     +                  0.0D0, 0.78D0, 0.26D0, 0.0D0, 0.0D0, 0.0D0,
-     +                  0.0D0, 0.0D0, 0.78D0, 0.26D0, -0.76D0, 1.12D0,
-     +                  0.0D0, 0.0D0, 0.0D0/
-      DATA              DT9Y/0.5D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0,
-     +                  0.0D0, 0.04D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0,
-     +                  0.0D0, 0.0D0, 0.04D0, -0.78D0, 0.0D0, 0.0D0,
-     +                  0.0D0, 0.0D0, 0.0D0, 0.04D0, -0.78D0, 0.54D0,
-     +                  0.08D0, 0.0D0, 0.0D0, 0.0D0, 0.5D0, 0.0D0,
-     +                  0.0D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0, 0.04D0,
-     +                  0.0D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0, 0.7D0,
-     +                  -0.9D0, -0.12D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0,
-     +                  0.64D0, -0.9D0, -0.30D0, 0.7D0, -0.18D0, 0.2D0,
-     +                  0.28D0, 0.5D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0,
-     +                  0.0D0, 0.0D0, 0.04D0, 0.0D0, 0.0D0, 0.0D0,
-     +                  0.0D0, 0.0D0, 0.0D0, 0.7D0, -1.08D0, 0.0D0,
-     +                  0.0D0, 0.0D0, 0.0D0, 0.0D0, 0.64D0, -1.26D0,
-     +                  0.54D0, 0.20D0, 0.0D0, 0.0D0, 0.0D0, 0.5D0,
-     +                  0.0D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0,
-     +                  0.04D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0,
-     +                  0.0D0, 0.04D0, -0.9D0, 0.18D0, 0.0D0, 0.0D0,
-     +                  0.0D0, 0.0D0, 0.04D0, -0.9D0, 0.18D0, 0.7D0,
-     +                  -0.18D0, 0.2D0, 0.16D0/
       DATA              DT10X/0.6D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0,
      +                  0.0D0, 0.5D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0, 0.0D0,
      +                  0.0D0, 0.5D0, -0.9D0, 0.0D0, 0.0D0, 0.0D0,
@@ -439,7 +399,7 @@
       INTEGER           ICASE, INCX, INCY, MODE, N
       LOGICAL           PASS
 *     .. Local Scalars ..
-      DOUBLE PRECISION  SA, SC, SS
+      DOUBLE PRECISION  SC, SS
       INTEGER           I, K, KI, KN, KSIZE, LENX, LENY, MX, MY
 *     .. Local Arrays ..
       DOUBLE PRECISION  COPYX(5), COPYY(5), DT9X(7,4,4), DT9Y(7,4,4),
@@ -456,7 +416,6 @@
 *     .. Common blocks ..
       COMMON            /COMBLA/ICASE, N, INCX, INCY, MODE, PASS
 *     .. Data statements ..
-      DATA              SA/0.3D0/
       DATA              INCXS/1, 2, -2, -1/
       DATA              INCYS/1, -2, 1, -2/
       DATA              LENS/1, 1, 2, 4, 1, 1, 3, 7/

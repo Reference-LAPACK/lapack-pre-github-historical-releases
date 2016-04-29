@@ -1,6 +1,7 @@
       SUBROUTINE ZLARFX( SIDE, M, N, V, TAU, C, LDC, WORK )
+      IMPLICIT NONE
 *
-*  -- LAPACK auxiliary routine (version 3.1) --
+*  -- LAPACK auxiliary routine (version 3.2) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -77,7 +78,7 @@
       EXTERNAL           LSAME
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           ZGEMV, ZGERC
+      EXTERNAL           ZLARF
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          DCONJG
@@ -95,14 +96,7 @@
 *
 *        Code for general M
 *
-*        w := C'*v
-*
-         CALL ZGEMV( 'Conjugate transpose', M, N, ONE, C, LDC, V, 1,
-     $               ZERO, WORK, 1 )
-*
-*        C := C - tau * v * w'
-*
-         CALL ZGERC( M, N, -TAU, V, 1, WORK, 1, C, LDC )
+         CALL ZLARF( SIDE, M, N, V, 1, TAU, C, LDC, WORK )
          GO TO 410
    10    CONTINUE
 *
@@ -368,14 +362,7 @@
 *
 *        Code for general N
 *
-*        w := C * v
-*
-         CALL ZGEMV( 'No transpose', M, N, ONE, C, LDC, V, 1, ZERO,
-     $               WORK, 1 )
-*
-*        C := C - tau * w * v'
-*
-         CALL ZGERC( M, N, -TAU, WORK, 1, V, 1, C, LDC )
+         CALL ZLARF( SIDE, M, N, V, 1, TAU, C, LDC, WORK )
          GO TO 410
   210    CONTINUE
 *

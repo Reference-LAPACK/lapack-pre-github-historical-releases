@@ -103,7 +103,7 @@
 *
 *     .. Parameters ..
       INTEGER            NTESTS
-      PARAMETER          ( NTESTS = 7 )
+      PARAMETER          ( NTESTS = 8 )
       INTEGER            NTYPES
       PARAMETER          ( NTYPES = 8 )
       REAL               ZERO
@@ -121,6 +121,10 @@
       INTEGER            ISEED( 4 ), ISEEDY( 4 ), KVAL( 4 )
       REAL               RESULT( NTESTS )
 *     ..
+*     .. External Functions ..
+      LOGICAL            CGENND
+      EXTERNAL           CGENND
+*     ..
 *     .. External Subroutines ..
       EXTERNAL           ALAERH, ALAHD, ALASUM, CERRRQ, CGERQS, CGET02,
      $                   CLACPY, CLARHS, CLATB4, CLATMS, CRQT01, CRQT02,
@@ -131,7 +135,7 @@
 *     ..
 *     .. Scalars in Common ..
       LOGICAL            LERR, OK
-      CHARACTER*6        SRNAMT
+      CHARACTER*32       SRNAMT
       INTEGER            INFOT, NUNIT
 *     ..
 *     .. Common blocks ..
@@ -230,6 +234,9 @@
                      CALL XLAENV( 1, NB )
                      NX = NXVAL( INB )
                      CALL XLAENV( 3, NX )
+                     DO I = 1, NTESTS
+                        RESULT( I ) = ZERO
+                     END DO
                      NT = 2
                      IF( IK.EQ.1 ) THEN
 *
@@ -237,6 +244,16 @@
 *
                         CALL CRQT01( M, N, A, AF, AQ, AR, LDA, TAU,
      $                               WORK, LWORK, RWORK, RESULT( 1 ) )
+                        IF( M.LE.N ) THEN
+*                          Check the upper-right m-by-m corner
+                           IF( .NOT.CGENND(M, M, AF(1+LDA*(N-M)), LDA) )
+     $                       RESULT( 8 ) = 2*THRESH
+                        ELSE
+*                          Check the (m-n)th subdiagonal
+                           I = M - N
+                           IF( .NOT.CGENND(N, N, AF(I+1), LDA) )
+     $                       RESULT( 8 ) = 2*THRESH
+                        END IF
                      ELSE IF( M.LE.N ) THEN
 *
 *                       Test CUNGRQ, using factorization

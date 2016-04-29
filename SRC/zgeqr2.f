@@ -1,6 +1,6 @@
       SUBROUTINE ZGEQR2( M, N, A, LDA, TAU, WORK, INFO )
 *
-*  -- LAPACK routine (version 3.1) --
+*  -- LAPACK routine (version 3.2) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -73,7 +73,7 @@
       COMPLEX*16         ALPHA
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           XERBLA, ZLARF, ZLARFG
+      EXTERNAL           XERBLA, ZLARF, ZLARFP
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          DCONJG, MAX, MIN
@@ -101,7 +101,7 @@
 *
 *        Generate elementary reflector H(i) to annihilate A(i+1:m,i)
 *
-         CALL ZLARFG( M-I+1, A( I, I ), A( MIN( I+1, M ), I ), 1,
+         CALL ZLARFP( M-I+1, A( I, I ), A( MIN( I+1, M ), I ), 1,
      $                TAU( I ) )
          IF( I.LT.N ) THEN
 *

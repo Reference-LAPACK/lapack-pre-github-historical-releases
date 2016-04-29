@@ -1,6 +1,6 @@
       SUBROUTINE ZLATRZ( M, N, L, A, LDA, TAU, WORK )
 *
-*  -- LAPACK routine (version 3.1) --
+*  -- LAPACK routine (version 3.2) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -90,7 +90,7 @@
       COMPLEX*16         ALPHA
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           ZLACGV, ZLARFG, ZLARZ
+      EXTERNAL           ZLACGV, ZLARFP, ZLARZ
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          DCONJG
@@ -115,7 +115,7 @@
 *
          CALL ZLACGV( L, A( I, N-L+1 ), LDA )
          ALPHA = DCONJG( A( I, I ) )
-         CALL ZLARFG( L+1, ALPHA, A( I, N-L+1 ), LDA, TAU( I ) )
+         CALL ZLARFP( L+1, ALPHA, A( I, N-L+1 ), LDA, TAU( I ) )
          TAU( I ) = DCONJG( TAU( I ) )
 *
 *        Apply H(i) to A(1:i-1,i:n) from the right

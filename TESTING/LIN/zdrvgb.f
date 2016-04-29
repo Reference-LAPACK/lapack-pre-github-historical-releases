@@ -130,7 +130,7 @@
 *     ..
 *     .. Scalars in Common ..
       LOGICAL            LERR, OK
-      CHARACTER*6        SRNAMT
+      CHARACTER*32       SRNAMT
       INTEGER            INFOT, NUNIT
 *     ..
 *     .. Common blocks ..
@@ -720,11 +720,11 @@
  9998 FORMAT( ' *** In ZDRVGB, LAFB=', I5, ' is too small for N=', I5,
      $      ', KU=', I5, ', KL=', I5, /
      $      ' ==> Increase LAFB to at least ', I5 )
- 9997 FORMAT( 1X, A6, ', N=', I5, ', KL=', I5, ', KU=', I5, ', type ',
+ 9997 FORMAT( 1X, A, ', N=', I5, ', KL=', I5, ', KU=', I5, ', type ',
      $      I1, ', test(', I1, ')=', G12.5 )
- 9996 FORMAT( 1X, A6, '( ''', A1, ''',''', A1, ''',', I5, ',', I5, ',',
+ 9996 FORMAT( 1X, A, '( ''', A1, ''',''', A1, ''',', I5, ',', I5, ',',
      $      I5, ',...), type ', I1, ', test(', I1, ')=', G12.5 )
- 9995 FORMAT( 1X, A6, '( ''', A1, ''',''', A1, ''',', I5, ',', I5, ',',
+ 9995 FORMAT( 1X, A, '( ''', A1, ''',''', A1, ''',', I5, ',', I5, ',',
      $      I5, ',...), EQUED=''', A1, ''', type ', I1, ', test(', I1,
      $      ')=', G12.5 )
 *

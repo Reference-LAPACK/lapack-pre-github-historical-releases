@@ -1,6 +1,6 @@
       SUBROUTINE SGELQ2( M, N, A, LDA, TAU, WORK, INFO )
 *
-*  -- LAPACK routine (version 3.1) --
+*  -- LAPACK routine (version 3.2) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -73,7 +73,7 @@
       REAL               AII
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           SLARF, SLARFG, XERBLA
+      EXTERNAL           SLARF, SLARFP, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -101,7 +101,7 @@
 *
 *        Generate elementary reflector H(i) to annihilate A(i,i+1:n)
 *
-         CALL SLARFG( N-I+1, A( I, I ), A( I, MIN( I+1, N ) ), LDA,
+         CALL SLARFP( N-I+1, A( I, I ), A( I, MIN( I+1, N ) ), LDA,
      $                TAU( I ) )
          IF( I.LT.M ) THEN
 *

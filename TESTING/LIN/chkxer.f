@@ -12,12 +12,16 @@
 *
 *     .. Scalar Arguments ..
       LOGICAL            LERR, OK
-      CHARACTER*6        SRNAMT
+      CHARACTER*(*)      SRNAMT
       INTEGER            INFOT, NOUT
+*     ..
+*     .. Intrinsic Functions ..
+      INTRINSIC          LEN_TRIM
 *     ..
 *     .. Executable Statements ..
       IF( .NOT.LERR ) THEN
-         WRITE( NOUT, FMT = 9999 )INFOT, SRNAMT
+         WRITE( NOUT, FMT = 9999 )INFOT,
+     $        SRNAMT( 1:LEN_TRIM( SRNAMT ) )
          OK = .FALSE.
       END IF
       LERR = .FALSE.

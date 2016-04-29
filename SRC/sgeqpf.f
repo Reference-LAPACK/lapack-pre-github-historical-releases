@@ -1,6 +1,6 @@
       SUBROUTINE SGEQPF( M, N, A, LDA, JPVT, TAU, WORK, INFO )
 *
-*  -- LAPACK deprecated driver routine (version 3.1) --
+*  -- LAPACK deprecated driver routine (version 3.2) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -91,7 +91,7 @@
       REAL               AII, TEMP, TEMP2, TOL3Z
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           SGEQR2, SLARF, SLARFG, SORM2R, SSWAP, XERBLA
+      EXTERNAL           SGEQR2, SLARF, SLARFP, SORM2R, SSWAP, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX, MIN, SQRT
@@ -181,9 +181,9 @@
 *           Generate elementary reflector H(i)
 *
             IF( I.LT.M ) THEN
-               CALL SLARFG( M-I+1, A( I, I ), A( I+1, I ), 1, TAU( I ) )
+               CALL SLARFP( M-I+1, A( I, I ), A( I+1, I ), 1, TAU( I ) )
             ELSE
-               CALL SLARFG( 1, A( M, M ), A( M, M ), 1, TAU( M ) )
+               CALL SLARFP( 1, A( M, M ), A( M, M ), 1, TAU( M ) )
             END IF
 *
             IF( I.LT.N ) THEN

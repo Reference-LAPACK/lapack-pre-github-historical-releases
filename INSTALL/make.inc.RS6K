@@ -1,7 +1,7 @@
 ####################################################################
 #  LAPACK make include file.                                       #
-#  LAPACK, Version 3.1.1                                           #
-#  February 2007                                                   #
+#  LAPACK, Version 3.2                                           #
+#  November 2008                                                   #
 ####################################################################
 #
 SHELL = /bin/sh
@@ -43,6 +43,15 @@ TIMER    = EXT_ETIME_
 ARCH     = ar
 ARCHFLAGS= cr
 RANLIB   = ranlib
+#
+#  Location of the extended-precision BLAS (XBLAS) Fortran library
+#  used for building and testing extended-precision routines.  The
+#  relevant routines will be compiled and XBLAS will be linked only if
+#  USEXBLAS is defined.
+#
+# USEXBLAS    = Yes
+XBLASLIB     =
+# XBLASLIB    = -lxblas
 #
 #  The location of the libraries to which you will link.  (The 
 #  machine-specific, optimized BLAS library should be used whenever

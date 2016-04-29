@@ -103,7 +103,7 @@
 *
 *     .. Parameters ..
       INTEGER            NTESTS
-      PARAMETER          ( NTESTS = 7 )
+      PARAMETER          ( NTESTS = 8 )
       INTEGER            NTYPES
       PARAMETER          ( NTYPES = 8 )
       DOUBLE PRECISION   ZERO
@@ -121,6 +121,10 @@
       INTEGER            ISEED( 4 ), ISEEDY( 4 ), KVAL( 4 )
       DOUBLE PRECISION   RESULT( NTESTS )
 *     ..
+*     .. External Functions ..
+      LOGICAL            DGENND
+      EXTERNAL           DGENND
+*     ..
 *     .. External Subroutines ..
       EXTERNAL           ALAERH, ALAHD, ALASUM, DERRLQ, DGELQS, DGET02,
      $                   DLACPY, DLARHS, DLATB4, DLATMS, DLQT01, DLQT02,
@@ -131,7 +135,7 @@
 *     ..
 *     .. Scalars in Common ..
       LOGICAL            LERR, OK
-      CHARACTER*6        SRNAMT
+      CHARACTER*32       SRNAMT
       INTEGER            INFOT, NUNIT
 *     ..
 *     .. Common blocks ..
@@ -230,6 +234,9 @@
                      CALL XLAENV( 1, NB )
                      NX = NXVAL( INB )
                      CALL XLAENV( 3, NX )
+                     DO I = 1, NTESTS
+                        RESULT( I ) = ZERO
+                     END DO
                      NT = 2
                      IF( IK.EQ.1 ) THEN
 *
@@ -237,6 +244,9 @@
 *
                         CALL DLQT01( M, N, A, AF, AQ, AL, LDA, TAU,
      $                               WORK, LWORK, RWORK, RESULT( 1 ) )
+                        IF( .NOT.DGENND( M, N, AF, LDA ) )
+     $                       RESULT( 8 ) = 2*THRESH
+                        NT = NT + 1
                      ELSE IF( M.LE.N ) THEN
 *
 *                       Test DORGLQ, using factorization

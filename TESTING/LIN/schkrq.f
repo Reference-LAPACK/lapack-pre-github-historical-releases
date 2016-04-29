@@ -103,7 +103,7 @@
 *
 *     .. Parameters ..
       INTEGER            NTESTS
-      PARAMETER          ( NTESTS = 7 )
+      PARAMETER          ( NTESTS = 8 )
       INTEGER            NTYPES
       PARAMETER          ( NTYPES = 8 )
       REAL               ZERO
@@ -121,6 +121,10 @@
       INTEGER            ISEED( 4 ), ISEEDY( 4 ), KVAL( 4 )
       REAL               RESULT( NTESTS )
 *     ..
+*     .. External Functions ..
+      LOGICAL            SGENND
+      EXTERNAL           SGENND
+*     ..
 *     .. External Subroutines ..
       EXTERNAL           ALAERH, ALAHD, ALASUM, SERRRQ, SGERQS, SGET02,
      $                   SLACPY, SLARHS, SLATB4, SLATMS, SRQT01, SRQT02,
@@ -131,7 +135,7 @@
 *     ..
 *     .. Scalars in Common ..
       LOGICAL            LERR, OK
-      CHARACTER*6        SRNAMT
+      CHARACTER*32       SRNAMT
       INTEGER            INFOT, NUNIT
 *     ..
 *     .. Common blocks ..
@@ -230,6 +234,9 @@
                      CALL XLAENV( 1, NB )
                      NX = NXVAL( INB )
                      CALL XLAENV( 3, NX )
+                     DO I = 1, NTESTS
+                        RESULT( I ) = ZERO
+                     END DO
                      NT = 2
                      IF( IK.EQ.1 ) THEN
 *
@@ -237,6 +244,17 @@
 *
                         CALL SRQT01( M, N, A, AF, AQ, AR, LDA, TAU,
      $                               WORK, LWORK, RWORK, RESULT( 1 ) )
+                        IF( M.LE.N ) THEN
+*                          Check the upper-right m-by-m corner
+                           IF( .NOT.SGENND(M, M, AF(1+LDA*(N-M)), LDA) )
+     $                       RESULT( 8 ) = 2*THRESH
+                        ELSE
+*                          Check the (m-n)th subdiagonal
+                           I = M - N
+                           IF( .NOT.SGENND(N, N, AF(I+1), LDA) )
+     $                       RESULT( 8 ) = 2*THRESH
+                        END IF
+                        NT = NT + 1
                      ELSE IF( M.LE.N ) THEN
 *
 *                       Test SORGRQ, using factorization
@@ -244,9 +262,6 @@
 *
                         CALL SRQT02( M, N, K, A, AF, AQ, AR, LDA, TAU,
      $                               WORK, LWORK, RWORK, RESULT( 1 ) )
-                     ELSE
-                        RESULT( 1 ) = ZERO
-                        RESULT( 2 ) = ZERO
                      END IF
                      IF( M.GE.K ) THEN
 *
@@ -289,20 +304,13 @@
      $                                  LDA, X, LDA, B, LDA, RWORK,
      $                                  RESULT( 7 ) )
                            NT = NT + 1
-                        ELSE
-                           RESULT( 7 ) = ZERO
                         END IF
-                     ELSE
-                        RESULT( 3 ) = ZERO
-                        RESULT( 4 ) = ZERO
-                        RESULT( 5 ) = ZERO
-                        RESULT( 6 ) = ZERO
                      END IF
 *
 *                    Print information about the tests that did not
 *                    pass the threshold.
 *
-                     DO 20 I = 1, NT
+                     DO 20 I = 1, NTESTS
                         IF( RESULT( I ).GE.THRESH ) THEN
                            IF( NFAIL.EQ.0 .AND. NERRS.EQ.0 )
      $                        CALL ALAHD( NOUT, PATH )

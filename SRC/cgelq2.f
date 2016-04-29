@@ -1,6 +1,6 @@
       SUBROUTINE CGELQ2( M, N, A, LDA, TAU, WORK, INFO )
 *
-*  -- LAPACK routine (version 3.1) --
+*  -- LAPACK routine (version 3.2) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -73,7 +73,7 @@
       COMPLEX            ALPHA
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           CLACGV, CLARF, CLARFG, XERBLA
+      EXTERNAL           CLACGV, CLARF, CLARFP, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -103,7 +103,7 @@
 *
          CALL CLACGV( N-I+1, A( I, I ), LDA )
          ALPHA = A( I, I )
-         CALL CLARFG( N-I+1, ALPHA, A( I, MIN( I+1, N ) ), LDA,
+         CALL CLARFP( N-I+1, ALPHA, A( I, MIN( I+1, N ) ), LDA,
      $                TAU( I ) )
          IF( I.LT.M ) THEN
 *

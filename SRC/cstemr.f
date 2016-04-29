@@ -3,7 +3,7 @@
      $                   IWORK, LIWORK, INFO )
       IMPLICIT NONE
 *
-*  -- LAPACK computational routine (version 3.1) --
+*  -- LAPACK computational routine (version 3.2) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -273,7 +273,6 @@
 *
       LQUERY = ( ( LWORK.EQ.-1 ).OR.( LIWORK.EQ.-1 ) )
       ZQUERY = ( NZC.EQ.-1 )
-      TRYRAC = ( INFO.NE.0 )
 
 *     SSTEMR needs WORK of size 6*N, IWORK of size 3*N.
 *     In addition, SLARRE needs WORK of size 6*N, IWORK of size 5*N.

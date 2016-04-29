@@ -1,6 +1,6 @@
       SUBROUTINE ZGEQPF( M, N, A, LDA, JPVT, TAU, WORK, RWORK, INFO )
 *
-*  -- LAPACK deprecated driver routine (version 3.1) --
+*  -- LAPACK deprecated driver routine (version 3.2) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -95,7 +95,7 @@
       COMPLEX*16         AII
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           XERBLA, ZGEQR2, ZLARF, ZLARFG, ZSWAP, ZUNM2R
+      EXTERNAL           XERBLA, ZGEQR2, ZLARF, ZLARFP, ZSWAP, ZUNM2R
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, DCMPLX, DCONJG, MAX, MIN, SQRT
@@ -185,7 +185,7 @@
 *           Generate elementary reflector H(i)
 *
             AII = A( I, I )
-            CALL ZLARFG( M-I+1, AII, A( MIN( I+1, M ), I ), 1,
+            CALL ZLARFP( M-I+1, AII, A( MIN( I+1, M ), I ), 1,
      $                   TAU( I ) )
             A( I, I ) = AII
 *

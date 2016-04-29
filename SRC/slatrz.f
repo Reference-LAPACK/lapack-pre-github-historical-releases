@@ -1,6 +1,6 @@
       SUBROUTINE SLATRZ( M, N, L, A, LDA, TAU, WORK )
 *
-*  -- LAPACK routine (version 3.1) --
+*  -- LAPACK routine (version 3.2) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -89,7 +89,7 @@
       INTEGER            I
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           SLARFG, SLARZ
+      EXTERNAL           SLARFP, SLARZ
 *     ..
 *     .. Executable Statements ..
 *
@@ -111,7 +111,7 @@
 *        Generate elementary reflector H(i) to annihilate
 *        [ A(i,i) A(i,n-l+1:n) ]
 *
-         CALL SLARFG( L+1, A( I, I ), A( I, N-L+1 ), LDA, TAU( I ) )
+         CALL SLARFP( L+1, A( I, I ), A( I, N-L+1 ), LDA, TAU( I ) )
 *
 *        Apply H(i) to A(1:i-1,i:n) from the right
 *

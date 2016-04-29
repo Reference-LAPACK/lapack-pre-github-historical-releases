@@ -63,13 +63,16 @@
       LOGICAL            LSAMEN, ZSLECT
       EXTERNAL           LSAMEN, ZSLECT
 *     ..
+*     .. Intrinsic Functions ..
+      INTRINSIC          LEN_TRIM
+*     ..
 *     .. Arrays in Common ..
       LOGICAL            SELVAL( 20 )
       DOUBLE PRECISION   SELWI( 20 ), SELWR( 20 )
 *     ..
 *     .. Scalars in Common ..
       LOGICAL            LERR, OK
-      CHARACTER*6        SRNAMT
+      CHARACTER*32       SRNAMT
       INTEGER            INFOT, NOUT, SELDIM, SELOPT
 *     ..
 *     .. Common blocks ..
@@ -283,7 +286,8 @@
          CALL CHKXER( 'ZGESVD', INFOT, NOUT, LERR, OK )
          NT = NT + 8
          IF( OK ) THEN
-            WRITE( NOUT, FMT = 9999 )SRNAMT, NT
+            WRITE( NOUT, FMT = 9999 )SRNAMT( 1:LEN_TRIM( SRNAMT ) ),
+     $           NT
          ELSE
             WRITE( NOUT, FMT = 9998 )
          END IF
@@ -317,7 +321,8 @@
          CALL CHKXER( 'ZGESDD', INFOT, NOUT, LERR, OK )
          NT = NT - 2
          IF( OK ) THEN
-            WRITE( NOUT, FMT = 9999 )SRNAMT, NT
+            WRITE( NOUT, FMT = 9999 )SRNAMT( 1:LEN_TRIM( SRNAMT ) ),
+     $           NT
          ELSE
             WRITE( NOUT, FMT = 9998 )
          END IF
@@ -327,15 +332,16 @@
 *
       IF( .NOT.LSAMEN( 2, C2, 'BD' ) ) THEN
          IF( OK ) THEN
-            WRITE( NOUT, FMT = 9999 )SRNAMT, NT
+            WRITE( NOUT, FMT = 9999 )SRNAMT( 1:LEN_TRIM( SRNAMT ) ),
+     $           NT
          ELSE
             WRITE( NOUT, FMT = 9998 )
          END IF
       END IF
 *
- 9999 FORMAT( 1X, A6, ' passed the tests of the error exits (', I3,
+ 9999 FORMAT( 1X, A, ' passed the tests of the error exits (', I3,
      $      ' tests done)' )
- 9998 FORMAT( ' *** ', A6, ' failed the tests of the error exits ***' )
+ 9998 FORMAT( ' *** ', A, ' failed the tests of the error exits ***' )
       RETURN
 *
 *     End of ZERRED

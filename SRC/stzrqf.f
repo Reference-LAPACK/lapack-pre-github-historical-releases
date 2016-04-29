@@ -1,6 +1,6 @@
       SUBROUTINE STZRQF( M, N, A, LDA, TAU, INFO )
 *
-*  -- LAPACK routine (version 3.1) --
+*  -- LAPACK routine (version 3.2) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -95,7 +95,7 @@
       INTRINSIC          MAX, MIN
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           SAXPY, SCOPY, SGEMV, SGER, SLARFG, XERBLA
+      EXTERNAL           SAXPY, SCOPY, SGEMV, SGER, SLARFP, XERBLA
 *     ..
 *     .. Executable Statements ..
 *
@@ -129,7 +129,7 @@
 *           Use a Householder reflection to zero the kth row of A.
 *           First set up the reflection.
 *
-            CALL SLARFG( N-M+1, A( K, K ), A( K, M1 ), LDA, TAU( K ) )
+            CALL SLARFP( N-M+1, A( K, K ), A( K, M1 ), LDA, TAU( K ) )
 *
             IF( ( TAU( K ).NE.ZERO ) .AND. ( K.GT.1 ) ) THEN
 *

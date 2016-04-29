@@ -1,6 +1,6 @@
       LOGICAL FUNCTION DLAISNAN(DIN1,DIN2)
 *
-*  -- LAPACK auxiliary routine (version 3.1) --
+*  -- LAPACK auxiliary routine (version 3.2) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -19,8 +19,7 @@
 *  returns .TRUE.  To check for NaNs, pass the same variable as both
 *  arguments.
 *
-*  Strictly speaking, Fortran does not allow aliasing of function
-*  arguments. So a compiler must assume that the two arguments are
+*  A compiler must assume that the two arguments are
 *  not the same variable, and the test will not be optimized away.
 *  Interprocedural or whole-program optimization may delete this
 *  test.  The ISNAN functions will be replaced by the correct

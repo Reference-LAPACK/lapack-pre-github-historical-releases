@@ -1,6 +1,7 @@
       SUBROUTINE DLARFT( DIRECT, STOREV, N, K, V, LDV, TAU, T, LDT )
+      IMPLICIT NONE
 *
-*  -- LAPACK auxiliary routine (version 3.1) --
+*  -- LAPACK auxiliary routine (version 3.2) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -107,7 +108,7 @@
       PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
 *     ..
 *     .. Local Scalars ..
-      INTEGER            I, J
+      INTEGER            I, J, PREVLASTV, LASTV
       DOUBLE PRECISION   VII
 *     ..
 *     .. External Subroutines ..
@@ -125,7 +126,9 @@
      $   RETURN
 *
       IF( LSAME( DIRECT, 'F' ) ) THEN
+         PREVLASTV = N
          DO 20 I = 1, K
+            PREVLASTV = MAX( I, PREVLASTV )
             IF( TAU( I ).EQ.ZERO ) THEN
 *
 *              H(i)  =  I
@@ -140,17 +143,27 @@
                VII = V( I, I )
                V( I, I ) = ONE
                IF( LSAME( STOREV, 'C' ) ) THEN
+!                 Skip any trailing zeros.
+                  DO LASTV = N, I+1, -1
+                     IF( V( LASTV, I ).NE.ZERO ) EXIT
+                  END DO
+                  J = MIN( LASTV, PREVLASTV )
 *
-*                 T(1:i-1,i) := - tau(i) * V(i:n,1:i-1)' * V(i:n,i)
+*                 T(1:i-1,i) := - tau(i) * V(i:j,1:i-1)' * V(i:j,i)
 *
-                  CALL DGEMV( 'Transpose', N-I+1, I-1, -TAU( I ),
+                  CALL DGEMV( 'Transpose', J-I+1, I-1, -TAU( I ),
      $                        V( I, 1 ), LDV, V( I, I ), 1, ZERO,
      $                        T( 1, I ), 1 )
                ELSE
+!                 Skip any trailing zeros.
+                  DO LASTV = N, I+1, -1
+                     IF( V( I, LASTV ).NE.ZERO ) EXIT
+                  END DO
+                  J = MIN( LASTV, PREVLASTV )
 *
-*                 T(1:i-1,i) := - tau(i) * V(1:i-1,i:n) * V(i,i:n)'
+*                 T(1:i-1,i) := - tau(i) * V(1:i-1,i:j) * V(i,i:j)'
 *
-                  CALL DGEMV( 'No transpose', I-1, N-I+1, -TAU( I ),
+                  CALL DGEMV( 'No transpose', I-1, J-I+1, -TAU( I ),
      $                        V( 1, I ), LDV, V( I, I ), LDV, ZERO,
      $                        T( 1, I ), 1 )
                END IF
@@ -161,9 +174,15 @@
                CALL DTRMV( 'Upper', 'No transpose', 'Non-unit', I-1, T,
      $                     LDT, T( 1, I ), 1 )
                T( I, I ) = TAU( I )
+               IF( I.GT.1 ) THEN
+                  PREVLASTV = MAX( PREVLASTV, LASTV )
+               ELSE
+                  PREVLASTV = LASTV
+               END IF
             END IF
    20    CONTINUE
       ELSE
+         PREVLASTV = 1
          DO 40 I = K, 1, -1
             IF( TAU( I ).EQ.ZERO ) THEN
 *
@@ -180,24 +199,34 @@
                   IF( LSAME( STOREV, 'C' ) ) THEN
                      VII = V( N-K+I, I )
                      V( N-K+I, I ) = ONE
+!                    Skip any leading zeros.
+                     DO LASTV = 1, I-1
+                        IF( V( LASTV, I ).NE.ZERO ) EXIT
+                     END DO
+                     J = MAX( LASTV, PREVLASTV )
 *
 *                    T(i+1:k,i) :=
-*                            - tau(i) * V(1:n-k+i,i+1:k)' * V(1:n-k+i,i)
+*                            - tau(i) * V(j:n-k+i,i+1:k)' * V(j:n-k+i,i)
 *
-                     CALL DGEMV( 'Transpose', N-K+I, K-I, -TAU( I ),
-     $                           V( 1, I+1 ), LDV, V( 1, I ), 1, ZERO,
+                     CALL DGEMV( 'Transpose', N-K+I-J+1, K-I, -TAU( I ),
+     $                           V( J, I+1 ), LDV, V( J, I ), 1, ZERO,
      $                           T( I+1, I ), 1 )
                      V( N-K+I, I ) = VII
                   ELSE
                      VII = V( I, N-K+I )
                      V( I, N-K+I ) = ONE
+!                    Skip any leading zeros.
+                     DO LASTV = 1, I-1
+                        IF( V( I, LASTV ).NE.ZERO ) EXIT
+                     END DO
+                     J = MAX( LASTV, PREVLASTV )
 *
 *                    T(i+1:k,i) :=
-*                            - tau(i) * V(i+1:k,1:n-k+i) * V(i,1:n-k+i)'
+*                            - tau(i) * V(i+1:k,j:n-k+i) * V(i,j:n-k+i)'
 *
-                     CALL DGEMV( 'No transpose', K-I, N-K+I, -TAU( I ),
-     $                           V( I+1, 1 ), LDV, V( I, 1 ), LDV, ZERO,
-     $                           T( I+1, I ), 1 )
+                     CALL DGEMV( 'No transpose', K-I, N-K+I-J+1,
+     $                    -TAU( I ), V( I+1, J ), LDV, V( I, J ), LDV,
+     $                    ZERO, T( I+1, I ), 1 )
                      V( I, N-K+I ) = VII
                   END IF
 *
@@ -205,6 +234,11 @@
 *
                   CALL DTRMV( 'Lower', 'No transpose', 'Non-unit', K-I,
      $                        T( I+1, I+1 ), LDT, T( I+1, I ), 1 )
+                  IF( I.GT.1 ) THEN
+                     PREVLASTV = MIN( PREVLASTV, LASTV )
+                  ELSE
+                     PREVLASTV = LASTV
+                  END IF
                END IF
                T( I, I ) = TAU( I )
             END IF

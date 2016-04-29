@@ -1,6 +1,6 @@
       SUBROUTINE SLASCL( TYPE, KL, KU, CFROM, CTO, M, N, A, LDA, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.1) --
+*  -- LAPACK auxiliary routine (version 3.2) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -84,9 +84,9 @@
       REAL               BIGNUM, CFROM1, CFROMC, CTO1, CTOC, MUL, SMLNUM
 *     ..
 *     .. External Functions ..
-      LOGICAL            LSAME
+      LOGICAL            LSAME, SISNAN
       REAL               SLAMCH
-      EXTERNAL           LSAME, SLAMCH
+      EXTERNAL           LSAME, SLAMCH, SISNAN
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX, MIN
@@ -120,8 +120,10 @@
 *
       IF( ITYPE.EQ.-1 ) THEN
          INFO = -1
-      ELSE IF( CFROM.EQ.ZERO ) THEN
+      ELSE IF( CFROM.EQ.ZERO .OR. SISNAN(CFROM) ) THEN
          INFO = -4
+      ELSE IF( SISNAN(CTO) ) THEN
+         INFO = -5
       ELSE IF( M.LT.0 ) THEN
          INFO = -6
       ELSE IF( N.LT.0 .OR. ( ITYPE.EQ.4 .AND. N.NE.M ) .OR.
@@ -163,18 +165,32 @@
 *
    10 CONTINUE
       CFROM1 = CFROMC*SMLNUM
-      CTO1 = CTOC / BIGNUM
-      IF( ABS( CFROM1 ).GT.ABS( CTOC ) .AND. CTOC.NE.ZERO ) THEN
-         MUL = SMLNUM
-         DONE = .FALSE.
-         CFROMC = CFROM1
-      ELSE IF( ABS( CTO1 ).GT.ABS( CFROMC ) ) THEN
-         MUL = BIGNUM
-         DONE = .FALSE.
-         CTOC = CTO1
-      ELSE
+      IF( CFROM1.EQ.CFROMC ) THEN
+!        CFROMC is an inf.  Multiply by a correctly signed zero for
+!        finite CTOC, or a NaN if CTOC is infinite.
          MUL = CTOC / CFROMC
          DONE = .TRUE.
+         CTO1 = CTOC
+      ELSE
+         CTO1 = CTOC / BIGNUM
+         IF( CTO1.EQ.CTOC ) THEN
+!           CTOC is either 0 or an inf.  In both cases, CTOC itself
+!           serves as the correct multiplication factor.
+            MUL = CTOC
+            DONE = .TRUE.
+            CFROMC = ONE
+         ELSE IF( ABS( CFROM1 ).GT.ABS( CTOC ) .AND. CTOC.NE.ZERO ) THEN
+            MUL = SMLNUM
+            DONE = .FALSE.
+            CFROMC = CFROM1
+         ELSE IF( ABS( CTO1 ).GT.ABS( CFROMC ) ) THEN
+            MUL = BIGNUM
+            DONE = .FALSE.
+            CTOC = CTO1
+         ELSE
+            MUL = CTOC / CFROMC
+            DONE = .TRUE.
+         END IF
       END IF
 *
       IF( ITYPE.EQ.0 ) THEN
