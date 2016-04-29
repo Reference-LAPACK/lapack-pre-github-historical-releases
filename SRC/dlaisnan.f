@@ -1,4 +1,4 @@
-*> \brief \b DLAISNAN
+*> \brief \b DLAISNAN tests input for NaN by comparing two arguments for inequality.
 *
 *  =========== DOCUMENTATION ===========
 *
@@ -67,17 +67,17 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date September 2012
 *
 *> \ingroup auxOTHERauxiliary
 *
 *  =====================================================================
       LOGICAL FUNCTION DLAISNAN( DIN1, DIN2 )
 *
-*  -- LAPACK auxiliary routine (version 3.4.0) --
+*  -- LAPACK auxiliary routine (version 3.4.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     September 2012
 *
 *     .. Scalar Arguments ..
       DOUBLE PRECISION   DIN1, DIN2

@@ -39,11 +39,12 @@ lapack_int LAPACKE_ctprfb( int matrix_order, char side, char trans, char direct,
                            const lapack_complex_float* v, lapack_int ldv,
                            const lapack_complex_float* t, lapack_int ldt,
                            lapack_complex_float* a, lapack_int lda,
-                           lapack_complex_float* b, lapack_int ldb,
-                           lapack_int myldwork )
+                           lapack_complex_float* b, lapack_int ldb )
 {
     lapack_int info = 0;
-    float* mywork = NULL;
+    lapack_int ldwork;
+    lapack_int work_size;
+    float* work = NULL;
     if( matrix_order != LAPACK_COL_MAJOR && matrix_order != LAPACK_ROW_MAJOR ) {
         LAPACKE_xerbla( "LAPACKE_ctprfb", -1 );
         return -1;
@@ -63,19 +64,27 @@ lapack_int LAPACKE_ctprfb( int matrix_order, char side, char trans, char direct,
         return -10;
     }
 #endif
+    if (side=='l' ||  side=='L') {
+       ldwork = k;
+       work_size = MAX(1,ldwork) * MAX(1,n);
+       }
+    else {
+       ldwork = m;
+       work_size = MAX(1,ldwork) * MAX(1,k);
+       }    
     /* Allocate memory for working array(s) */
-    mywork = (float*)
-        LAPACKE_malloc( sizeof(float) * MAX(1,myldwork) * MAX(1,k) );
-    if( mywork == NULL ) {
+    work = (float*)
+        LAPACKE_malloc( sizeof(float) * MAX(1,ldwork) * MAX(n,k) );
+    if( work == NULL ) {
         info = LAPACK_WORK_MEMORY_ERROR;
         goto exit_level_0;
     }
     /* Call middle-level interface */
     info = LAPACKE_ctprfb_work( matrix_order, side, trans, direct, storev, m, n,
-                                k, l, v, ldv, t, ldt, a, lda, b, ldb, mywork,
-                                myldwork );
+                                k, l, v, ldv, t, ldt, a, lda, b, ldb, work,
+                                ldwork );
     /* Release memory and exit */
-    LAPACKE_free( mywork );
+    LAPACKE_free( work );
 exit_level_0:
     if( info == LAPACK_WORK_MEMORY_ERROR ) {
         LAPACKE_xerbla( "LAPACKE_ctprfb", info );

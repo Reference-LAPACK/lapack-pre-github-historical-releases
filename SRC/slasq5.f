@@ -1,4 +1,4 @@
-*> \brief \b SLASQ5
+*> \brief \b SLASQ5 computes one dqds transform in ping-pong form. Used by sbdsqr and sstegr.
 *
 *  =========== DOCUMENTATION ===========
 *
@@ -124,7 +124,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date April 2012
+*> \date September 2012
 *
 *> \ingroup auxOTHERcomputational
 *
@@ -132,10 +132,10 @@
       SUBROUTINE SLASQ5( I0, N0, Z, PP, TAU, SIGMA, DMIN, DMIN1, DMIN2,
      $                   DN, DNM1, DNM2, IEEE, EPS )
 *
-*  -- LAPACK computational routine (version 3.4.1) --
+*  -- LAPACK computational routine (version 3.4.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     April 2012
+*     September 2012
 *
 *     .. Scalar Arguments ..
       LOGICAL            IEEE

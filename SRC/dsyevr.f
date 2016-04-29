@@ -306,7 +306,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date September 2012
 *
 *> \ingroup doubleSYeigen
 *
@@ -325,10 +325,10 @@
      $                   ABSTOL, M, W, Z, LDZ, ISUPPZ, WORK, LWORK,
      $                   IWORK, LIWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.4.0) --
+*  -- LAPACK driver routine (version 3.4.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     September 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          JOBZ, RANGE, UPLO
@@ -539,7 +539,7 @@
 *     returns INFO > 0.
       INDIFL = INDISP + N
 *     INDIWO is the offset of the remaining integer workspace.
-      INDIWO = INDISP + N
+      INDIWO = INDIFL + N
 
 *
 *     Call DSYTRD to reduce symmetric matrix to tridiagonal form.

@@ -1,4 +1,4 @@
-*> \brief \b SLARRD
+*> \brief \b SLARRD computes the eigenvalues of a symmetric tridiagonal matrix to suitable accuracy.
 *
 *  =========== DOCUMENTATION ===========
 *
@@ -311,7 +311,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date September 2012
 *
 *> \ingroup auxOTHERauxiliary
 *
@@ -321,10 +321,10 @@
      $                    M, W, WERR, WL, WU, IBLOCK, INDEXW,
      $                    WORK, IWORK, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.4.0) --
+*  -- LAPACK auxiliary routine (version 3.4.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     September 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          ORDER, RANGE

@@ -1,4 +1,4 @@
-*> \brief \b SLA_LIN_BERR
+*> \brief \b SLA_LIN_BERR computes a component-wise relative backward error.
 *
 *  =========== DOCUMENTATION ===========
 *
@@ -94,17 +94,17 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date September 2012
 *
 *> \ingroup realOTHERcomputational
 *
 *  =====================================================================
       SUBROUTINE SLA_LIN_BERR ( N, NZ, NRHS, RES, AYB, BERR )
 *
-*  -- LAPACK computational routine (version 3.4.0) --
+*  -- LAPACK computational routine (version 3.4.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     September 2012
 *
 *     .. Scalar Arguments ..
       INTEGER            N, NZ, NRHS

@@ -1,4 +1,4 @@
-*> \brief \b DLAEV2
+*> \brief \b DLAEV2 computes the eigenvalues and eigenvectors of a 2-by-2 symmetric/Hermitian matrix.
 *
 *  =========== DOCUMENTATION ===========
 *
@@ -94,7 +94,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date September 2012
 *
 *> \ingroup auxOTHERauxiliary
 *
@@ -120,10 +120,10 @@
 *  =====================================================================
       SUBROUTINE DLAEV2( A, B, C, RT1, RT2, CS1, SN1 )
 *
-*  -- LAPACK auxiliary routine (version 3.4.0) --
+*  -- LAPACK auxiliary routine (version 3.4.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     September 2012
 *
 *     .. Scalar Arguments ..
       DOUBLE PRECISION   A, B, C, CS1, RT1, RT2, SN1

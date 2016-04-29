@@ -1,4 +1,4 @@
-*> \brief \b SLASD2
+*> \brief \b SLASD2 merges the two sets of singular values together into a single sorted set. Used by sbdsdc.
 *
 *  =========== DOCUMENTATION ===========
 *
@@ -254,7 +254,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date September 2012
 *
 *> \ingroup auxOTHERauxiliary
 *
@@ -269,10 +269,10 @@
      $                   LDVT, DSIGMA, U2, LDU2, VT2, LDVT2, IDXP, IDX,
      $                   IDXC, IDXQ, COLTYP, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.4.0) --
+*  -- LAPACK auxiliary routine (version 3.4.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     September 2012
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, K, LDU, LDU2, LDVT, LDVT2, NL, NR, SQRE

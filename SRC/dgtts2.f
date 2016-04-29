@@ -1,4 +1,4 @@
-*> \brief \b DGTTS2
+*> \brief \b DGTTS2 solves a system of linear equations with a tridiagonal matrix using the LU factorization computed by sgttrf.
 *
 *  =========== DOCUMENTATION ===========
 *
@@ -121,17 +121,17 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date September 2012
 *
-*> \ingroup doubleOTHERauxiliary
+*> \ingroup doubleGTcomputational
 *
 *  =====================================================================
       SUBROUTINE DGTTS2( ITRANS, N, NRHS, DL, D, DU, DU2, IPIV, B, LDB )
 *
-*  -- LAPACK auxiliary routine (version 3.4.0) --
+*  -- LAPACK computational routine (version 3.4.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     September 2012
 *
 *     .. Scalar Arguments ..
       INTEGER            ITRANS, LDB, N, NRHS

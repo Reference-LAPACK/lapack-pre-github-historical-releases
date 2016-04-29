@@ -1,4 +1,4 @@
-*> \brief \b DLAPY2
+*> \brief \b DLAPY2 returns sqrt(x2+y2).
 *
 *  =========== DOCUMENTATION ===========
 *
@@ -56,17 +56,17 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date September 2012
 *
 *> \ingroup auxOTHERauxiliary
 *
 *  =====================================================================
       DOUBLE PRECISION FUNCTION DLAPY2( X, Y )
 *
-*  -- LAPACK auxiliary routine (version 3.4.0) --
+*  -- LAPACK auxiliary routine (version 3.4.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     September 2012
 *
 *     .. Scalar Arguments ..
       DOUBLE PRECISION   X, Y

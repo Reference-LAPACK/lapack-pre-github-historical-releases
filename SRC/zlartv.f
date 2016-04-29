@@ -1,4 +1,4 @@
-*> \brief \b ZLARTV
+*> \brief \b ZLARTV applies a vector of plane rotations with real cosines and complex sines to the elements of a pair of vectors.
 *
 *  =========== DOCUMENTATION ===========
 *
@@ -100,17 +100,17 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date September 2012
 *
 *> \ingroup complex16OTHERauxiliary
 *
 *  =====================================================================
       SUBROUTINE ZLARTV( N, X, INCX, Y, INCY, C, S, INCC )
 *
-*  -- LAPACK auxiliary routine (version 3.4.0) --
+*  -- LAPACK auxiliary routine (version 3.4.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     September 2012
 *
 *     .. Scalar Arguments ..
       INTEGER            INCC, INCX, INCY, N

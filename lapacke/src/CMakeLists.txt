@@ -1959,6 +1959,7 @@ lapacke_zsyr.c
 lapacke_csyr.c
 lapacke_zsyr_work.c
 lapacke_csyr_work.c
+lapacke_ilaver.c
 )
 
 SET(SRCX_OBJ 

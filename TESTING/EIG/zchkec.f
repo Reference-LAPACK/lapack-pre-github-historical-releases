@@ -68,17 +68,17 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date September 2012
 *
 *> \ingroup complex16_eig
 *
 *  =====================================================================
       SUBROUTINE ZCHKEC( THRESH, TSTERR, NIN, NOUT )
 *
-*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK test routine (version 3.4.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     September 2012
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -166,7 +166,7 @@
  9995 FORMAT( / 1X, 'All tests for ', A3,
      $      ' routines passed the threshold ( ', I6, ' tests run)' )
  9994 FORMAT( ' Tests of the Nonsymmetric eigenproblem condition',
-     $      ' estimation routines', / ' ZTRSYL, CTREXC, CTRSNA, CTRSEN',
+     $      ' estimation routines', / ' ZTRSYL, ZTREXC, ZTRSNA, ZTRSEN',
      $      / )
  9993 FORMAT( ' Relative machine precision (EPS) = ', D16.6,
      $      / ' Safe minimum (SFMIN)             = ', D16.6, / )

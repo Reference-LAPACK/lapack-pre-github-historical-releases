@@ -1,4 +1,4 @@
-*> \brief \b ZPTSVX
+*> \brief <b> ZPTSVX computes the solution to system of linear equations A * X = B for PT matrices</b>
 *
 *  =========== DOCUMENTATION ===========
 *
@@ -226,18 +226,18 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date April 2012
+*> \date September 2012
 *
-*> \ingroup complex16OTHERcomputational
+*> \ingroup complex16PTsolve
 *
 *  =====================================================================
       SUBROUTINE ZPTSVX( FACT, N, NRHS, D, E, DF, EF, B, LDB, X, LDX,
      $                   RCOND, FERR, BERR, WORK, RWORK, INFO )
 *
-*  -- LAPACK computational routine (version 3.4.1) --
+*  -- LAPACK driver routine (version 3.4.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     April 2012
+*     September 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          FACT

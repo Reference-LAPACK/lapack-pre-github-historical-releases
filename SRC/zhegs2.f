@@ -1,4 +1,4 @@
-*> \brief \b ZHEGS2
+*> \brief \b ZHEGS2 reduces a Hermitian definite generalized eigenproblem to standard form, using the factorization results obtained from cpotrf (unblocked algorithm).
 *
 *  =========== DOCUMENTATION ===========
 *
@@ -92,7 +92,7 @@
 *>          The leading dimension of the array A.  LDA >= max(1,N).
 *> \endverbatim
 *>
-*> \param[in] B
+*> \param[in,out] B
 *> \verbatim
 *>          B is COMPLEX*16 array, dimension (LDB,N)
 *>          The triangular factor from the Cholesky factorization of B,
@@ -120,17 +120,17 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date September 2012
 *
 *> \ingroup complex16HEcomputational
 *
 *  =====================================================================
       SUBROUTINE ZHEGS2( ITYPE, UPLO, N, A, LDA, B, LDB, INFO )
 *
-*  -- LAPACK computational routine (version 3.4.0) --
+*  -- LAPACK computational routine (version 3.4.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     September 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO

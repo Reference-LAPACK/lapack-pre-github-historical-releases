@@ -1,4 +1,4 @@
-*> \brief \b ZLA_HERCOND_X
+*> \brief \b ZLA_HERCOND_X computes the infinity norm condition number of op(A)*diag(x) for Hermitian indefinite matrices.
 *
 *  =========== DOCUMENTATION ===========
 *
@@ -124,7 +124,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date September 2012
 *
 *> \ingroup complex16HEcomputational
 *
@@ -133,10 +133,10 @@
      $                                         LDAF, IPIV, X, INFO,
      $                                         WORK, RWORK )
 *
-*  -- LAPACK computational routine (version 3.4.0) --
+*  -- LAPACK computational routine (version 3.4.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     September 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO

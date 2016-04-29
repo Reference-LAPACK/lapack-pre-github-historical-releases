@@ -176,7 +176,7 @@
 *>                     max(max(M,N),5*min(M,N)*min(M,N)+4*min(M,N)).
 *>          If JOBZ = 'S' or 'A'
 *>            LWORK >= 3*min(M,N) +
-*>                     max(max(M,N),4*min(M,N)*min(M,N)+4*min(M,N)).
+*>                     max(max(M,N),4*min(M,N)*min(M,N)+3*min(M,N)+max(M,N)).
 *>          For good performance, LWORK should generally be larger.
 *>          If LWORK = -1 but other input arguments are legal, WORK(1)
 *>          returns the optimal LWORK.
@@ -203,7 +203,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date September 2012
 *
 *> \ingroup realGEsing
 *
@@ -217,10 +217,10 @@
       SUBROUTINE SGESDD( JOBZ, M, N, A, LDA, S, U, LDU, VT, LDVT, WORK,
      $                   LWORK, IWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.4.0) --
+*  -- LAPACK driver routine (version 3.4.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     September 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          JOBZ
@@ -372,7 +372,7 @@
      $                    ILAENV( 1, 'SORMBR', 'PRT', N, N, N, -1 ) )
                   WRKBL = MAX( WRKBL, BDSPAC+3*N )
                   MAXWRK = WRKBL + N*N
-                  MINWRK = BDSPAC + N*N + 3*N
+                  MINWRK = BDSPAC + N*N + 2*N + M
                END IF
             ELSE
 *
@@ -766,14 +766,14 @@
                NWORK = ITAU + N
 *
 *              Compute A=Q*R, copying result to U
-*              (Workspace: need N*N+2*N, prefer N*N+N+N*NB)
+*              (Workspace: need N*N+N+M, prefer N*N+N+M*NB)
 *
                CALL SGEQRF( M, N, A, LDA, WORK( ITAU ), WORK( NWORK ),
      $                      LWORK-NWORK+1, IERR )
                CALL SLACPY( 'L', M, N, A, LDA, U, LDU )
 *
 *              Generate Q in U
-*              (Workspace: need N*N+2*N, prefer N*N+N+N*NB)
+*              (Workspace: need N*N+N+M, prefer N*N+N+M*NB)
                CALL SORGQR( M, M, N, U, LDU, WORK( ITAU ),
      $                      WORK( NWORK ), LWORK-NWORK+1, IERR )
 *

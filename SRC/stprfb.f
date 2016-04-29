@@ -1,4 +1,4 @@
-*> \brief \b STPRFB
+*> \brief \b STPRFB applies a real or complex "triangular-pentagonal" blocked reflector to a real or complex matrix, which is composed of two blocks.
 *
 *  =========== DOCUMENTATION ===========
 *
@@ -194,7 +194,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date September 2012
 *
 *> \ingroup realOTHERauxiliary
 *
@@ -251,10 +251,10 @@
       SUBROUTINE STPRFB( SIDE, TRANS, DIRECT, STOREV, M, N, K, L, 
      $                   V, LDV, T, LDT, A, LDA, B, LDB, WORK, LDWORK )
 *
-*  -- LAPACK auxiliary routine (version 3.4.0) --
+*  -- LAPACK auxiliary routine (version 3.4.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     September 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER DIRECT, SIDE, STOREV, TRANS

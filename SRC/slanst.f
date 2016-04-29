@@ -1,4 +1,4 @@
-*> \brief \b SLANST
+*> \brief \b SLANST returns the value of the 1-norm, or the Frobenius norm, or the infinity norm, or the element of largest absolute value of a real symmetric tridiagonal matrix.
 *
 *  =========== DOCUMENTATION ===========
 *
@@ -93,17 +93,17 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date September 2012
 *
 *> \ingroup auxOTHERauxiliary
 *
 *  =====================================================================
       REAL             FUNCTION SLANST( NORM, N, D, E )
 *
-*  -- LAPACK auxiliary routine (version 3.4.0) --
+*  -- LAPACK auxiliary routine (version 3.4.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     September 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          NORM
@@ -124,14 +124,14 @@
       REAL               ANORM, SCALE, SUM
 *     ..
 *     .. External Functions ..
-      LOGICAL            LSAME
-      EXTERNAL           LSAME
+      LOGICAL            LSAME, SISNAN
+      EXTERNAL           LSAME, SISNAN
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           SLASSQ
 *     ..
 *     .. Intrinsic Functions ..
-      INTRINSIC          ABS, MAX, SQRT
+      INTRINSIC          ABS, SQRT
 *     ..
 *     .. Executable Statements ..
 *
@@ -143,8 +143,10 @@
 *
          ANORM = ABS( D( N ) )
          DO 10 I = 1, N - 1
-            ANORM = MAX( ANORM, ABS( D( I ) ) )
-            ANORM = MAX( ANORM, ABS( E( I ) ) )
+            SUM = ABS( D( I ) )
+            IF( ANORM .LT. SUM .OR. SISNAN( SUM ) ) ANORM = SUM
+            SUM = ABS( E( I ) )
+            IF( ANORM .LT. SUM .OR. SISNAN( SUM ) ) ANORM = SUM
    10    CONTINUE
       ELSE IF( LSAME( NORM, 'O' ) .OR. NORM.EQ.'1' .OR.
      $         LSAME( NORM, 'I' ) ) THEN
@@ -154,11 +156,12 @@
          IF( N.EQ.1 ) THEN
             ANORM = ABS( D( 1 ) )
          ELSE
-            ANORM = MAX( ABS( D( 1 ) )+ABS( E( 1 ) ),
-     $              ABS( E( N-1 ) )+ABS( D( N ) ) )
+            ANORM = ABS( D( 1 ) )+ABS( E( 1 ) )
+            SUM = ABS( E( N-1 ) )+ABS( D( N ) )
+            IF( ANORM .LT. SUM .OR. SISNAN( SUM ) ) ANORM = SUM
             DO 20 I = 2, N - 1
-               ANORM = MAX( ANORM, ABS( D( I ) )+ABS( E( I ) )+
-     $                 ABS( E( I-1 ) ) )
+               SUM = ABS( D( I ) )+ABS( E( I ) )+ABS( E( I-1 ) )
+               IF( ANORM .LT. SUM .OR. SISNAN( SUM ) ) ANORM = SUM
    20       CONTINUE
          END IF
       ELSE IF( ( LSAME( NORM, 'F' ) ) .OR. ( LSAME( NORM, 'E' ) ) ) THEN

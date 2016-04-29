@@ -1,4 +1,4 @@
-*> \brief \b DLANTP
+*> \brief \b DLANTP returns the value of the 1-norm, or the Frobenius norm, or the infinity norm, or the element of largest absolute value of a triangular matrix supplied in packed form.
 *
 *  =========== DOCUMENTATION ===========
 *
@@ -117,17 +117,17 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date September 2012
 *
 *> \ingroup doubleOTHERauxiliary
 *
 *  =====================================================================
       DOUBLE PRECISION FUNCTION DLANTP( NORM, UPLO, DIAG, N, AP, WORK )
 *
-*  -- LAPACK auxiliary routine (version 3.4.0) --
+*  -- LAPACK auxiliary routine (version 3.4.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     September 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          DIAG, NORM, UPLO
@@ -152,11 +152,11 @@
       EXTERNAL           DLASSQ
 *     ..
 *     .. External Functions ..
-      LOGICAL            LSAME
-      EXTERNAL           LSAME
+      LOGICAL            LSAME, DISNAN
+      EXTERNAL           LSAME, DISNAN
 *     ..
 *     .. Intrinsic Functions ..
-      INTRINSIC          ABS, MAX, SQRT
+      INTRINSIC          ABS, SQRT
 *     ..
 *     .. Executable Statements ..
 *
@@ -172,14 +172,16 @@
             IF( LSAME( UPLO, 'U' ) ) THEN
                DO 20 J = 1, N
                   DO 10 I = K, K + J - 2
-                     VALUE = MAX( VALUE, ABS( AP( I ) ) )
+                     SUM = ABS( AP( I ) )
+                     IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
    10             CONTINUE
                   K = K + J
    20          CONTINUE
             ELSE
                DO 40 J = 1, N
                   DO 30 I = K + 1, K + N - J
-                     VALUE = MAX( VALUE, ABS( AP( I ) ) )
+                     SUM = ABS( AP( I ) )
+                     IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
    30             CONTINUE
                   K = K + N - J + 1
    40          CONTINUE
@@ -189,14 +191,16 @@
             IF( LSAME( UPLO, 'U' ) ) THEN
                DO 60 J = 1, N
                   DO 50 I = K, K + J - 1
-                     VALUE = MAX( VALUE, ABS( AP( I ) ) )
+                     SUM = ABS( AP( I ) )
+                     IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
    50             CONTINUE
                   K = K + J
    60          CONTINUE
             ELSE
                DO 80 J = 1, N
                   DO 70 I = K, K + N - J
-                     VALUE = MAX( VALUE, ABS( AP( I ) ) )
+                     SUM = ABS( AP( I ) )
+                     IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
    70             CONTINUE
                   K = K + N - J + 1
    80          CONTINUE
@@ -223,7 +227,7 @@
   100             CONTINUE
                END IF
                K = K + J
-               VALUE = MAX( VALUE, SUM )
+               IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
   110       CONTINUE
          ELSE
             DO 140 J = 1, N
@@ -239,7 +243,7 @@
   130             CONTINUE
                END IF
                K = K + N - J + 1
-               VALUE = MAX( VALUE, SUM )
+               IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
   140       CONTINUE
          END IF
       ELSE IF( LSAME( NORM, 'I' ) ) THEN
@@ -296,7 +300,8 @@
          END IF
          VALUE = ZERO
          DO 270 I = 1, N
-            VALUE = MAX( VALUE, WORK( I ) )
+            SUM = WORK( I )
+            IF( VALUE .LT. SUM .OR. DISNAN( SUM ) ) VALUE = SUM
   270    CONTINUE
       ELSE IF( ( LSAME( NORM, 'F' ) ) .OR. ( LSAME( NORM, 'E' ) ) ) THEN
 *

@@ -1,4 +1,4 @@
-*> \brief \b SGTSVX
+*> \brief <b> SGTSVX computes the solution to system of linear equations A * X = B for GT matrices <b>
 *
 *  =========== DOCUMENTATION ===========
 *
@@ -284,19 +284,19 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date April 2012
+*> \date September 2012
 *
-*> \ingroup realOTHERcomputational
+*> \ingroup realGTsolve
 *
 *  =====================================================================
       SUBROUTINE SGTSVX( FACT, TRANS, N, NRHS, DL, D, DU, DLF, DF, DUF,
      $                   DU2, IPIV, B, LDB, X, LDX, RCOND, FERR, BERR,
      $                   WORK, IWORK, INFO )
 *
-*  -- LAPACK computational routine (version 3.4.1) --
+*  -- LAPACK driver routine (version 3.4.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     April 2012
+*     September 2012
 *
 *     .. Scalar Arguments ..
       CHARACTER          FACT, TRANS

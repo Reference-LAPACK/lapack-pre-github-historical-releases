@@ -1,4 +1,4 @@
-*> \brief \b CLA_GERCOND_C
+*> \brief \b CLA_GERCOND_C computes the infinity norm condition number of op(A)*inv(diag(c)) for general matrices.
 *
 *  =========== DOCUMENTATION ===========
 *
@@ -134,7 +134,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date September 2012
 *
 *> \ingroup complexGEcomputational
 *
@@ -142,10 +142,10 @@
       REAL FUNCTION CLA_GERCOND_C( TRANS, N, A, LDA, AF, LDAF, IPIV, C,
      $                             CAPPLY, INFO, WORK, RWORK )
 *
-*  -- LAPACK computational routine (version 3.4.0) --
+*  -- LAPACK computational routine (version 3.4.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     September 2012
 *
 *     .. Scalar Aguments ..
       CHARACTER          TRANS

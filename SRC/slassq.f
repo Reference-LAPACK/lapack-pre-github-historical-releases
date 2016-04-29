@@ -1,4 +1,4 @@
-*> \brief \b SLASSQ
+*> \brief \b SLASSQ updates a sum of squares represented in scaled form.
 *
 *  =========== DOCUMENTATION ===========
 *
@@ -96,17 +96,17 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date September 2012
 *
 *> \ingroup auxOTHERauxiliary
 *
 *  =====================================================================
       SUBROUTINE SLASSQ( N, X, INCX, SCALE, SUMSQ )
 *
-*  -- LAPACK auxiliary routine (version 3.4.0) --
+*  -- LAPACK auxiliary routine (version 3.4.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     September 2012
 *
 *     .. Scalar Arguments ..
       INTEGER            INCX, N
@@ -126,6 +126,10 @@
       INTEGER            IX
       REAL               ABSXI
 *     ..
+*     .. External Functions ..
+      LOGICAL            SISNAN
+      EXTERNAL           SISNAN
+*     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS
 *     ..
@@ -133,8 +137,8 @@
 *
       IF( N.GT.0 ) THEN
          DO 10 IX = 1, 1 + ( N-1 )*INCX, INCX
-            IF( X( IX ).NE.ZERO ) THEN
-               ABSXI = ABS( X( IX ) )
+            ABSXI = ABS( X( IX ) )
+            IF( ABSXI.GT.ZERO.OR.SISNAN( ABSXI ) ) THEN
                IF( SCALE.LT.ABSXI ) THEN
                   SUMSQ = 1 + SUMSQ*( SCALE / ABSXI )**2
                   SCALE = ABSXI

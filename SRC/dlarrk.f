@@ -1,4 +1,4 @@
-*> \brief \b DLARRK
+*> \brief \b DLARRK computes one eigenvalue of a symmetric tridiagonal matrix T to suitable accuracy.
 *
 *  =========== DOCUMENTATION ===========
 *
@@ -137,7 +137,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2011
+*> \date September 2012
 *
 *> \ingroup auxOTHERauxiliary
 *
@@ -145,10 +145,10 @@
       SUBROUTINE DLARRK( N, IW, GL, GU,
      $                    D, E2, PIVMIN, RELTOL, W, WERR, INFO)
 *
-*  -- LAPACK auxiliary routine (version 3.4.0) --
+*  -- LAPACK auxiliary routine (version 3.4.2) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2011
+*     September 2012
 *
 *     .. Scalar Arguments ..
       INTEGER   INFO, IW, N
