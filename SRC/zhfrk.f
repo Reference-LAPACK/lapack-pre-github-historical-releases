@@ -1,10 +1,10 @@
       SUBROUTINE ZHFRK( TRANSR, UPLO, TRANS, N, K, ALPHA, A, LDA, BETA,
      +                  C )
 *
-*  -- LAPACK routine (version 3.2.2)                                    --
+*  -- LAPACK routine (version 3.3.0)                                    --
 *
 *  -- Contributed by Julien Langou of the Univ. of Colorado Denver    --
-*  -- June 2010                                                       --
+*     November 2010
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -39,11 +39,11 @@
 *  Arguments
 *  ==========
 *
-*  TRANSR  (input) CHARACTER
+*  TRANSR  (input) CHARACTER*1
 *          = 'N':  The Normal Form of RFP A is stored;
 *          = 'C':  The Conjugate-transpose Form of RFP A is stored.
 *
-*  UPLO    (input) CHARACTER
+*  UPLO    (input) CHARACTER*1
 *           On  entry,   UPLO  specifies  whether  the  upper  or  lower
 *           triangular  part  of the  array  C  is to be  referenced  as
 *           follows:
@@ -56,7 +56,7 @@
 *
 *           Unchanged on exit.
 *
-*  TRANS   (input) CHARACTER
+*  TRANS   (input) CHARACTER*1
 *           On entry,  TRANS  specifies the operation to be performed as
 *           follows:
 *

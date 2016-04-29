@@ -1,9 +1,9 @@
       SUBROUTINE STPTTF( TRANSR, UPLO, N, AP, ARF, INFO )
 *
-*  -- LAPACK routine (version 3.2.2)                                    --
+*  -- LAPACK routine (version 3.3.0)                                    --
 *
 *  -- Contributed by Fred Gustavson of the IBM Watson Research Center --
-*  -- June 2010                                                       --
+*     November 2010
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -25,11 +25,11 @@
 *  Arguments
 *  =========
 *
-*  TRANSR   (input) CHARACTER
+*  TRANSR   (input) CHARACTER*1
 *          = 'N':  ARF in Normal format is wanted;
 *          = 'T':  ARF in Conjugate-transpose format is wanted.
 *
-*  UPLO    (input) CHARACTER
+*  UPLO    (input) CHARACTER*1
 *          = 'U':  A is upper triangular;
 *          = 'L':  A is lower triangular.
 *

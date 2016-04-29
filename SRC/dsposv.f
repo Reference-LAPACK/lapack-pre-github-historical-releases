@@ -1,9 +1,9 @@
       SUBROUTINE DSPOSV( UPLO, N, NRHS, A, LDA, B, LDB, X, LDX, WORK,
      +                   SWORK, ITER, INFO )
 *
-*  -- LAPACK PROTOTYPE driver routine (version 3.1.2) --
+*  -- LAPACK PROTOTYPE driver routine (version 3.3.0) --
 *     Univ. of Tennessee, Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..
-*     May 2007
+*     November 2010
 *
 *     ..
 *     .. Scalar Arguments ..
@@ -54,7 +54,7 @@
 *  Arguments
 *  =========
 *
-*  UPLO    (input) CHARACTER
+*  UPLO    (input) CHARACTER*1
 *          = 'U':  Upper triangle of A is stored;
 *          = 'L':  Lower triangle of A is stored.
 *

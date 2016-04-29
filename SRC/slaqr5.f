@@ -2,10 +2,10 @@
      $                   SR, SI, H, LDH, ILOZ, IHIZ, Z, LDZ, V, LDV, U,
      $                   LDU, NV, WV, LDWV, NH, WH, LDWH )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.3.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     November 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            IHIZ, ILOZ, KACC22, KBOT, KTOP, LDH, LDU, LDV,
@@ -453,29 +453,32 @@
 *           ==== Special case: 2-by-2 reflection (if needed) ====
 *
             K = KRCOL + 3*( M22-1 )
-            IF( BMP22 .AND. ( V( 1, M22 ).NE.ZERO ) ) THEN
-               DO 100 J = JTOP, MIN( KBOT, K+3 )
-                  REFSUM = V( 1, M22 )*( H( J, K+1 )+V( 2, M22 )*
-     $                     H( J, K+2 ) )
-                  H( J, K+1 ) = H( J, K+1 ) - REFSUM
-                  H( J, K+2 ) = H( J, K+2 ) - REFSUM*V( 2, M22 )
-  100          CONTINUE
+            IF( BMP22 ) THEN
+               IF ( V( 1, M22 ).NE.ZERO ) THEN
+                  DO 100 J = JTOP, MIN( KBOT, K+3 )
+                     REFSUM = V( 1, M22 )*( H( J, K+1 )+V( 2, M22 )*
+     $                        H( J, K+2 ) )
+                     H( J, K+1 ) = H( J, K+1 ) - REFSUM
+                     H( J, K+2 ) = H( J, K+2 ) - REFSUM*V( 2, M22 )
+  100             CONTINUE
 *
-               IF( ACCUM ) THEN
-                  KMS = K - INCOL
-                  DO 110 J = MAX( 1, KTOP-INCOL ), KDU
-                     REFSUM = V( 1, M22 )*( U( J, KMS+1 )+V( 2, M22 )*
-     $                        U( J, KMS+2 ) )
-                     U( J, KMS+1 ) = U( J, KMS+1 ) - REFSUM
-                     U( J, KMS+2 ) = U( J, KMS+2 ) - REFSUM*V( 2, M22 )
-  110             CONTINUE
-               ELSE IF( WANTZ ) THEN
-                  DO 120 J = ILOZ, IHIZ
-                     REFSUM = V( 1, M22 )*( Z( J, K+1 )+V( 2, M22 )*
-     $                        Z( J, K+2 ) )
-                     Z( J, K+1 ) = Z( J, K+1 ) - REFSUM
-                     Z( J, K+2 ) = Z( J, K+2 ) - REFSUM*V( 2, M22 )
-  120             CONTINUE
+                  IF( ACCUM ) THEN
+                     KMS = K - INCOL
+                     DO 110 J = MAX( 1, KTOP-INCOL ), KDU
+                        REFSUM = V( 1, M22 )*( U( J, KMS+1 )+
+     $                           V( 2, M22 )*U( J, KMS+2 ) )
+                        U( J, KMS+1 ) = U( J, KMS+1 ) - REFSUM
+                        U( J, KMS+2 ) = U( J, KMS+2 ) - REFSUM*
+     $                                  V( 2, M22 )
+  110                CONTINUE
+                  ELSE IF( WANTZ ) THEN
+                     DO 120 J = ILOZ, IHIZ
+                        REFSUM = V( 1, M22 )*( Z( J, K+1 )+V( 2, M22 )*
+     $                           Z( J, K+2 ) )
+                        Z( J, K+1 ) = Z( J, K+1 ) - REFSUM
+                        Z( J, K+2 ) = Z( J, K+2 ) - REFSUM*V( 2, M22 )
+  120                CONTINUE
+                  END IF
                END IF
             END IF
 *

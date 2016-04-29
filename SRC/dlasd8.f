@@ -1,10 +1,10 @@
       SUBROUTINE DLASD8( ICOMPQ, K, D, Z, VF, VL, DIFL, DIFR, LDDIFR,
      $                   DSIGMA, WORK, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.2.2) --
+*  -- LAPACK auxiliary routine (version 3.3.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     June 2010
+*     November 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            ICOMPQ, INFO, K, LDDIFR
@@ -195,6 +195,7 @@
 *        If the root finder fails, the computation is terminated.
 *
          IF( INFO.NE.0 ) THEN
+            CALL XERBLA( 'DLASD4', -INFO )
             RETURN
          END IF
          WORK( IWK3I+J ) = WORK( IWK3I+J )*WORK( J )*WORK( IWK2I+J )

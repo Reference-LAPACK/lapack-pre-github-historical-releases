@@ -1,8 +1,8 @@
       SUBROUTINE ALAHD( IOUNIT, PATH )
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.3.0) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     November 2010
 *
 *     .. Scalar Arguments ..
       CHARACTER*3        PATH
@@ -223,9 +223,35 @@
          WRITE( IOUNIT, FMT = 9955 )7
          WRITE( IOUNIT, FMT = '( '' Messages:'' )' )
 *
-      ELSE IF( LSAMEN( 2, P2, 'SY' ) .OR. LSAMEN( 2, P2, 'SP' ) ) THEN
+      ELSE IF( LSAMEN( 2, P2, 'SY' )  ) THEN
 *
 *        SY: Symmetric indefinite full
+*
+         IF( LSAME( C3, 'Y' ) ) THEN
+            WRITE( IOUNIT, FMT = 9992 )PATH, 'Symmetric'
+         ELSE
+            WRITE( IOUNIT, FMT = 9991 )PATH, 'Symmetric'
+         END IF
+         WRITE( IOUNIT, FMT = '( '' Matrix types:'' )' )
+         IF( SORD ) THEN
+            WRITE( IOUNIT, FMT = 9972 )
+         ELSE
+            WRITE( IOUNIT, FMT = 9971 )
+         END IF
+         WRITE( IOUNIT, FMT = '( '' Test ratios:'' )' )
+         WRITE( IOUNIT, FMT = 9953 )1
+         WRITE( IOUNIT, FMT = 9961 )2
+         WRITE( IOUNIT, FMT = 9960 )3
+         WRITE( IOUNIT, FMT = 9960 )4
+         WRITE( IOUNIT, FMT = 9959 )5
+         WRITE( IOUNIT, FMT = 9958 )6
+         WRITE( IOUNIT, FMT = 9956 )7
+         WRITE( IOUNIT, FMT = 9957 )8
+         WRITE( IOUNIT, FMT = 9955 )9
+         WRITE( IOUNIT, FMT = '( '' Messages:'' )' )
+*
+      ELSE IF( LSAMEN( 2, P2, 'SP' ) ) THEN
+*
 *        SP: Symmetric indefinite packed
 *
          IF( LSAME( C3, 'Y' ) ) THEN
@@ -250,9 +276,35 @@
          WRITE( IOUNIT, FMT = 9955 )8
          WRITE( IOUNIT, FMT = '( '' Messages:'' )' )
 *
-      ELSE IF( LSAMEN( 2, P2, 'HE' ) .OR. LSAMEN( 2, P2, 'HP' ) ) THEN
+      ELSE IF( LSAMEN( 2, P2, 'HE' )  ) THEN
 *
 *        HE: Hermitian indefinite full
+*
+         IF( LSAME( C3, 'E' ) ) THEN
+            WRITE( IOUNIT, FMT = 9992 )PATH, 'Hermitian'
+         ELSE
+            WRITE( IOUNIT, FMT = 9991 )PATH, 'Hermitian'
+         END IF
+         WRITE( IOUNIT, FMT = '( '' Matrix types:'' )' )
+         IF( SORD ) THEN
+            WRITE( IOUNIT, FMT = 9972 )
+         ELSE
+            WRITE( IOUNIT, FMT = 9971 )
+         END IF
+         WRITE( IOUNIT, FMT = '( '' Test ratios:'' )' )
+         WRITE( IOUNIT, FMT = 9953 )1
+         WRITE( IOUNIT, FMT = 9961 )2
+         WRITE( IOUNIT, FMT = 9960 )3
+         WRITE( IOUNIT, FMT = 9960 )4
+         WRITE( IOUNIT, FMT = 9959 )5
+         WRITE( IOUNIT, FMT = 9958 )6
+         WRITE( IOUNIT, FMT = 9956 )7
+         WRITE( IOUNIT, FMT = 9957 )8
+         WRITE( IOUNIT, FMT = 9955 )9
+         WRITE( IOUNIT, FMT = '( '' Messages:'' )' )
+*
+      ELSE IF( LSAMEN( 2, P2, 'HP' ) ) THEN
+*
 *        HP: Hermitian indefinite packed
 *
          IF( LSAME( C3, 'E' ) ) THEN
@@ -325,13 +377,14 @@
          WRITE( IOUNIT, FMT = 9970 )
          WRITE( IOUNIT, FMT = '( '' Test ratios:'' )' )
          WRITE( IOUNIT, FMT = 9950 )1
+         WRITE( IOUNIT, FMT = 6950 )8
          WRITE( IOUNIT, FMT = 9946 )2
          WRITE( IOUNIT, FMT = 9944 )3, 'M'
          WRITE( IOUNIT, FMT = 9943 )4, 'M'
          WRITE( IOUNIT, FMT = 9942 )5, 'M'
          WRITE( IOUNIT, FMT = 9941 )6, 'M'
          WRITE( IOUNIT, FMT = 9960 )7
-         WRITE( IOUNIT, FMT = 6660 )8
+         WRITE( IOUNIT, FMT = 6660 )9
          WRITE( IOUNIT, FMT = '( '' Messages:'' )' )
 *
       ELSE IF( LSAMEN( 2, P2, 'LQ' ) ) THEN
@@ -726,6 +779,8 @@
  9951 FORMAT( ' Test ratio for ', A, ':', / 3X, I2,
      $      ': norm( s*b - A*x )  / ( norm(A) * norm(x) * EPS )' )
  9950 FORMAT( 3X, I2, ': norm( R - Q'' * A ) / ( M * norm(A) * EPS )' )
+ 6950 FORMAT( 3X, I2, ': norm( R - Q'' * A ) / ( M * norm(A) * EPS )
+     $       [RFPG]' )
  9949 FORMAT( 3X, I2, ': norm( L - A * Q'' ) / ( N * norm(A) * EPS )' )
  9948 FORMAT( 3X, I2, ': norm( L - Q'' * A ) / ( M * norm(A) * EPS )' )
  9947 FORMAT( 3X, I2, ': norm( R - A * Q'' ) / ( N * norm(A) * EPS )' )

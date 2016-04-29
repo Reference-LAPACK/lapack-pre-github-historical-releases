@@ -1,9 +1,9 @@
       SUBROUTINE SPFTRS( TRANSR, UPLO, N, NRHS, A, B, LDB, INFO )
 *
-*  -- LAPACK routine (version 3.2.2)                                    --
+*  -- LAPACK routine (version 3.3.0)                                    --
 *
 *  -- Contributed by Fred Gustavson of the IBM Watson Research Center --
-*  -- June 2010                                                       --
+*     November 2010
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -26,11 +26,11 @@
 *  Arguments
 *  =========
 *
-*  TRANSR    (input) CHARACTER
+*  TRANSR    (input) CHARACTER*1
 *          = 'N':  The Normal TRANSR of RFP A is stored;
 *          = 'T':  The Transpose TRANSR of RFP A is stored.
 *
-*  UPLO    (input) CHARACTER
+*  UPLO    (input) CHARACTER*1
 *          = 'U':  Upper triangle of RFP A is stored;
 *          = 'L':  Lower triangle of RFP A is stored.
 *

@@ -1,9 +1,9 @@
       SUBROUTINE ZPFTRI( TRANSR, UPLO, N, A, INFO )
 *
-*  -- LAPACK routine (version 3.2.1)                                    --
+*  -- LAPACK routine (version 3.3.0)                                    --
 *
 *  -- Contributed by Fred Gustavson of the IBM Watson Research Center --
-*  -- April 2009                                                      --
+*     November 2010
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -25,11 +25,11 @@
 *  Arguments
 *  =========
 *
-*  TRANSR    (input) CHARACTER
+*  TRANSR    (input) CHARACTER*1
 *          = 'N':  The Normal TRANSR of RFP A is stored;
 *          = 'C':  The Conjugate-transpose TRANSR of RFP A is stored.
 *
-*  UPLO    (input) CHARACTER
+*  UPLO    (input) CHARACTER*1
 *          = 'U':  Upper triangle of A is stored;
 *          = 'L':  Lower triangle of A is stored.
 *

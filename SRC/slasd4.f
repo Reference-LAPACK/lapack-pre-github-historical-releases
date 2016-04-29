@@ -1,9 +1,9 @@
       SUBROUTINE SLASD4( N, I, D, Z, DELTA, RHO, SIGMA, WORK, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.3.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     November 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            I, INFO, N
@@ -95,7 +95,7 @@
 *
 *     .. Parameters ..
       INTEGER            MAXIT
-      PARAMETER          ( MAXIT = 20 )
+      PARAMETER          ( MAXIT = 200 )
       REAL               ZERO, ONE, TWO, THREE, FOUR, EIGHT, TEN
       PARAMETER          ( ZERO = 0.0E+0, ONE = 1.0E+0, TWO = 2.0E+0,
      $                   THREE = 3.0E+0, FOUR = 4.0E+0, EIGHT = 8.0E+0,

@@ -1,10 +1,10 @@
       SUBROUTINE CHESV( UPLO, N, NRHS, A, LDA, IPIV, B, LDB, WORK,
      $                  LWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.2) --
+*  -- LAPACK driver routine (version 3.3.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     November 2010
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -113,7 +113,7 @@
       EXTERNAL           ILAENV, LSAME
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           CHETRF, CHETRS, XERBLA
+      EXTERNAL           CHETRF, CHETRS2, XERBLA
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX
@@ -162,7 +162,7 @@
 *
 *        Solve the system A*X = B, overwriting B with X.
 *
-         CALL CHETRS( UPLO, N, NRHS, A, LDA, IPIV, B, LDB, INFO )
+         CALL CHETRS2( UPLO, N, NRHS, A, LDA, IPIV, B, LDB, WORK, INFO )
 *
       END IF
 *

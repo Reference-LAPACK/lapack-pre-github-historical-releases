@@ -3,10 +3,10 @@
      $                    M, W, WERR, WL, WU, IBLOCK, INDEXW,
      $                    WORK, IWORK, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.2.1)                        --
+*  -- LAPACK auxiliary routine (version 3.3.0)                        --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*  -- April 2009                                                      --
+*     November 2010
 *
 *     .. Scalar Arguments ..
       CHARACTER          ORDER, RANGE
@@ -42,14 +42,14 @@
 *  Arguments
 *  =========
 *
-*  RANGE   (input) CHARACTER
+*  RANGE   (input) CHARACTER*1
 *          = 'A': ("All")   all eigenvalues will be found.
 *          = 'V': ("Value") all eigenvalues in the half-open interval
 *                           (VL, VU] will be found.
 *          = 'I': ("Index") the IL-th through IU-th eigenvalues (of the
 *                           entire matrix) will be found.
 *
-*  ORDER   (input) CHARACTER
+*  ORDER   (input) CHARACTER*1
 *          = 'B': ("By Block") the eigenvalues will be grouped by
 *                              split-off block (see IBLOCK, ISPLIT) and
 *                              ordered from smallest to largest within

@@ -1,9 +1,9 @@
       SUBROUTINE ZCPOSV( UPLO, N, NRHS, A, LDA, B, LDB, X, LDX, WORK,
      +                   SWORK, RWORK, ITER, INFO )
 *
-*  -- LAPACK PROTOTYPE driver routine (version 3.2.2)                 --
+*  -- LAPACK PROTOTYPE driver routine (version 3.3.0)                 --
 *
-*  -- June 2010                                                       --
+*     November 2010
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -57,7 +57,7 @@
 *  Arguments
 *  =========
 *
-*  UPLO    (input) CHARACTER
+*  UPLO    (input) CHARACTER*1
 *          = 'U':  Upper triangle of A is stored;
 *          = 'L':  Lower triangle of A is stored.
 *

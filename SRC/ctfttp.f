@@ -1,9 +1,9 @@
       SUBROUTINE CTFTTP( TRANSR, UPLO, N, ARF, AP, INFO )
 *
-*  -- LAPACK routine (version 3.2.1)                                    --
+*  -- LAPACK routine (version 3.3.0)                                    --
 *
 *  -- Contributed by Fred Gustavson of the IBM Watson Research Center --
-*  -- April 2009                                                      --
+*     November 2010
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -26,11 +26,11 @@
 *  Arguments
 *  =========
 *
-*  TRANSR   (input) CHARACTER
+*  TRANSR   (input) CHARACTER*1
 *          = 'N':  ARF is in Normal format;
 *          = 'C':  ARF is in Conjugate-transpose format;
 *
-*  UPLO    (input) CHARACTER
+*  UPLO    (input) CHARACTER*1
 *          = 'U':  A is upper triangular;
 *          = 'L':  A is lower triangular.
 *

@@ -1,10 +1,10 @@
       SUBROUTINE STFSM( TRANSR, SIDE, UPLO, TRANS, DIAG, M, N, ALPHA, A,
      +                  B, LDB )
 *
-*  -- LAPACK routine (version 3.2.2)                                    --
+*  -- LAPACK routine (version 3.3.0)                                    --
 *
 *  -- Contributed by Fred Gustavson of the IBM Watson Research Center --
-*  -- June 2010                                                       --
+*     November 2010
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -40,11 +40,11 @@
 *  Arguments
 *  ==========
 *
-*  TRANSR  (input) CHARACTER
+*  TRANSR  (input) CHARACTER*1
 *          = 'N':  The Normal Form of RFP A is stored;
 *          = 'T':  The Transpose Form of RFP A is stored.
 *
-*  SIDE    (input) CHARACTER
+*  SIDE    (input) CHARACTER*1
 *           On entry, SIDE specifies whether op( A ) appears on the left
 *           or right of X as follows:
 *
@@ -54,7 +54,7 @@
 *
 *           Unchanged on exit.
 *
-*  UPLO    (input) CHARACTER
+*  UPLO    (input) CHARACTER*1
 *           On entry, UPLO specifies whether the RFP matrix A came from
 *           an upper or lower triangular matrix as follows:
 *           UPLO = 'U' or 'u' RFP A came from an upper triangular matrix
@@ -62,7 +62,7 @@
 *
 *           Unchanged on exit.
 *
-*  TRANS   (input) CHARACTER
+*  TRANS   (input) CHARACTER*1
 *           On entry, TRANS  specifies the form of op( A ) to be used
 *           in the matrix multiplication as follows:
 *
@@ -72,7 +72,7 @@
 *
 *           Unchanged on exit.
 *
-*  DIAG    (input) CHARACTER
+*  DIAG    (input) CHARACTER*1
 *           On entry, DIAG specifies whether or not RFP A is unit
 *           triangular as follows:
 *

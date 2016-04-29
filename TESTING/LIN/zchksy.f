@@ -4,7 +4,7 @@
 *
 *  -- LAPACK test routine (version 3.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -22,7 +22,7 @@
 *  Purpose
 *  =======
 *
-*  ZCHKSY tests ZSYTRF, -TRI, -TRS, -RFS, and -CON.
+*  ZCHKSY tests ZSYTRF, -TRI2, -TRS, -TRS2,  -RFS, and -CON.
 *
 *  Arguments
 *  =========
@@ -94,7 +94,7 @@
       INTEGER            NTYPES
       PARAMETER          ( NTYPES = 11 )
       INTEGER            NTESTS
-      PARAMETER          ( NTESTS = 8 )
+      PARAMETER          ( NTESTS = 9 )
 *     ..
 *     .. Local Scalars ..
       LOGICAL            TRFCON, ZEROT
@@ -118,7 +118,7 @@
       EXTERNAL           ALAERH, ALAHD, ALASUM, XLAENV, ZERRSY, ZGET04,
      $                   ZLACPY, ZLARHS, ZLATB4, ZLATMS, ZLATSY, ZPOT05,
      $                   ZSYCON, ZSYRFS, ZSYT01, ZSYT02, ZSYT03, ZSYTRF,
-     $                   ZSYTRI, ZSYTRS
+     $                   ZSYTRI2, ZSYTRS, ZSYTRS2
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
@@ -335,14 +335,15 @@
 *
                   IF( INB.EQ.1 .AND. .NOT.TRFCON ) THEN
                      CALL ZLACPY( UPLO, N, N, AFAC, LDA, AINV, LDA )
-                     SRNAMT = 'ZSYTRI'
-                     CALL ZSYTRI( UPLO, N, AINV, LDA, IWORK, WORK,
-     $                            INFO )
+                     SRNAMT = 'ZSYTRI2'
+                     LWORK = (N+NB+1)*(NB+3)
+                     CALL ZSYTRI2( UPLO, N, AINV, LDA, IWORK, WORK,
+     $                            LWORK, INFO )
 *
-*                 Check error code from ZSYTRI.
+*                 Check error code from ZSYTRI2.
 *
                      IF( INFO.NE.0 )
-     $                  CALL ALAERH( PATH, 'ZSYTRI', INFO, 0, UPLO, N,
+     $                  CALL ALAERH( PATH, 'ZSYTRI2', INFO, 0, UPLO, N,
      $                               N, -1, -1, -1, IMAT, NFAIL, NERRS,
      $                               NOUT )
 *
@@ -381,7 +382,7 @@
                   DO 130 IRHS = 1, NNS
                      NRHS = NSVAL( IRHS )
 *
-*+    TEST 3
+*+    TEST 3 (Using ZSYTRS)
 *                 Solve and compute residual for  A * X = B.
 *
                      SRNAMT = 'ZLARHS'
@@ -405,13 +406,38 @@
                      CALL ZSYT02( UPLO, N, NRHS, A, LDA, X, LDA, WORK,
      $                            LDA, RWORK, RESULT( 3 ) )
 *
-*+    TEST 4
+*+    TEST 4 (Using ZSYTRS2)
+*                 Solve and compute residual for  A * X = B.
+*
+                     SRNAMT = 'ZLARHS'
+                     CALL ZLARHS( PATH, XTYPE, UPLO, ' ', N, N, KL, KU,
+     $                            NRHS, A, LDA, XACT, LDA, B, LDA,
+     $                            ISEED, INFO )
+                     CALL ZLACPY( 'Full', N, NRHS, B, LDA, X, LDA )
+*
+                     SRNAMT = 'ZSYTRS2'
+                     CALL ZSYTRS2( UPLO, N, NRHS, AFAC, LDA, IWORK, X,
+     $                            LDA, WORK, INFO )
+*
+*                 Check error code from ZSYTRS.
+*
+                     IF( INFO.NE.0 )
+     $                  CALL ALAERH( PATH, 'ZSYTRS', INFO, 0, UPLO, N,
+     $                               N, -1, -1, NRHS, IMAT, NFAIL,
+     $                               NERRS, NOUT )
+*
+                     CALL ZLACPY( 'Full', N, NRHS, B, LDA, WORK, LDA )
+                     CALL ZSYT02( UPLO, N, NRHS, A, LDA, X, LDA, WORK,
+     $                            LDA, RWORK, RESULT( 4 ) )
+*
+*
+*+    TEST 5
 *                 Check solution from generated exact solution.
 *
                      CALL ZGET04( N, NRHS, X, LDA, XACT, LDA, RCONDC,
-     $                            RESULT( 4 ) )
+     $                            RESULT( 5 ) )
 *
-*+    TESTS 5, 6, and 7
+*+    TESTS 6, 7, and 8
 *                 Use iterative refinement to improve the solution.
 *
                      SRNAMT = 'ZSYRFS'
@@ -428,15 +454,15 @@
      $                               NERRS, NOUT )
 *
                      CALL ZGET04( N, NRHS, X, LDA, XACT, LDA, RCONDC,
-     $                            RESULT( 5 ) )
+     $                            RESULT( 6 ) )
                      CALL ZPOT05( UPLO, N, NRHS, A, LDA, B, LDA, X, LDA,
      $                            XACT, LDA, RWORK, RWORK( NRHS+1 ),
-     $                            RESULT( 6 ) )
+     $                            RESULT( 7 ) )
 *
 *                    Print information about the tests that did not pass
 *                    the threshold.
 *
-                     DO 120 K = 3, 7
+                     DO 120 K = 3, 8
                         IF( RESULT( K ).GE.THRESH ) THEN
                            IF( NFAIL.EQ.0 .AND. NERRS.EQ.0 )
      $                        CALL ALAHD( NOUT, PATH )
@@ -448,7 +474,7 @@
                      NRUN = NRUN + 5
   130             CONTINUE
 *
-*+    TEST 8
+*+    TEST 9
 *                 Get an estimate of RCOND = 1/CNDNUM.
 *
   140             CONTINUE
@@ -463,16 +489,16 @@
      $               CALL ALAERH( PATH, 'ZSYCON', INFO, 0, UPLO, N, N,
      $                            -1, -1, -1, IMAT, NFAIL, NERRS, NOUT )
 *
-                  RESULT( 8 ) = DGET06( RCOND, RCONDC )
+                  RESULT( 9 ) = DGET06( RCOND, RCONDC )
 *
 *                 Print information about the tests that did not pass
 *                 the threshold.
 *
-                  IF( RESULT( 8 ).GE.THRESH ) THEN
+                  IF( RESULT( 9 ).GE.THRESH ) THEN
                      IF( NFAIL.EQ.0 .AND. NERRS.EQ.0 )
      $                  CALL ALAHD( NOUT, PATH )
-                     WRITE( NOUT, FMT = 9997 )UPLO, N, IMAT, 8,
-     $                  RESULT( 8 )
+                     WRITE( NOUT, FMT = 9997 )UPLO, N, IMAT, 9,
+     $                  RESULT( 9 )
                      NFAIL = NFAIL + 1
                   END IF
                   NRUN = NRUN + 1

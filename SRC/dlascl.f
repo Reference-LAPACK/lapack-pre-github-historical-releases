@@ -1,9 +1,9 @@
       SUBROUTINE DLASCL( TYPE, KL, KU, CFROM, CTO, M, N, A, LDA, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.3.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     November 2010
 *
 *     .. Scalar Arguments ..
       CHARACTER          TYPE
@@ -39,7 +39,7 @@
 *                  and upper bandwidth KU and with the only the upper
 *                  half stored.
 *          = 'Z':  A is a band matrix with lower bandwidth KL and upper
-*                  bandwidth KU.
+*                  bandwidth KU. See DGBTRF for storage details.
 *
 *  KL      (input) INTEGER
 *          The lower bandwidth of A.  Referenced only if TYPE = 'B',

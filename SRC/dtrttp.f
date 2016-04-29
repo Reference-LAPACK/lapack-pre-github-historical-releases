@@ -1,9 +1,9 @@
       SUBROUTINE DTRTTP( UPLO, N, A, LDA, AP, INFO )
 *
-*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK routine (version 3.3.0) --
 *  -- Contributed by Fred Gustavson of the IBM Watson Research Center --
 *  --            and Julien Langou of the Univ. of Colorado Denver    --
-*  -- November 2008 --
+*     November 2010
 *
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
@@ -25,7 +25,7 @@
 *  Arguments
 *  =========
 *
-*  UPLO    (input) CHARACTER
+*  UPLO    (input) CHARACTER*1
 *          = 'U':  A is upper triangular.
 *          = 'L':  A is lower triangular.
 *
