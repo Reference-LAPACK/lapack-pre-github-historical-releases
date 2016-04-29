@@ -17,12 +17,29 @@ if (UNIX)
    endif ()
 endif ()
 
+
+# --------------------------------------------------
+
+# On Windows-GNU builds try to provide MS import libraries too.
+if(BUILD_SHARED_LIBS)
+  include(GNUtoMS)
+endif()
+
+if(GNUtoMS)
+  set(LAPACK_GNUtoMS_IMPORT ${LAPACK_SOURCE_DIR}/CMAKE/lapack-GNUtoMS.cmake)
+  set(LAPACK_GNUtoMS_INSTALL "include(\${_SELF_DIR}/lapack-GNUtoMS.cmake)")
+  set(LAPACK_GNUtoMS_BUILD "include(\"${LAPACK_GNUtoMS_IMPORT}\")")
+endif()
+
 macro(lapack_install_library lib)
   install(TARGETS ${lib} EXPORT lapack-targets
     ARCHIVE DESTINATION lib${LIB_SUFFIX}
     LIBRARY DESTINATION lib${LIB_SUFFIX}
     RUNTIME DESTINATION bin
   )
+  if(GNUtoMS)
+    install(FILES ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/lib${lib}.lib DESTINATION lib)
+  endif()
 endmacro()
 
 # --------------------------------------------------
@@ -63,29 +80,38 @@ set(libdir ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
 set(PKG_CONFIG_DIR ${libdir}/pkgconfig)
 
 # --------------------------------------------------
+# Precision to build
+# By default all precisions are generated
+
+option(BUILD_SINGLE "Build LAPACK Single Precision" ON)
+option(BUILD_DOUBLE "Build LAPACK Double Precision" ON)
+option(BUILD_COMPLEX "Build LAPACK Complex Precision" ON)
+option(BUILD_COMPLEX16 "Build LAPACK Double Complex Precision" ON)
+# --------------------------------------------------
 # Subdirectories that need to be processed
 
 option(USE_OPTIMIZED_BLAS "Whether or not to use an optimized BLAS library instead of included netlib BLAS" OFF)
 
+
 # Check the usage of the user provided BLAS libraries
-if(BLAS_LIBRAIRIES)
+if(BLAS_LIBRARIES)
   include(CheckFortranFunctionExists)
-  set(CMAKE_REQUIRED_LIBRARIES ${BLAS_LIBRAIRIES})
+  set(CMAKE_REQUIRED_LIBRARIES ${BLAS_LIBRARIES})
   CHECK_FORTRAN_FUNCTION_EXISTS("dgemm" BLAS_FOUND)
   unset( CMAKE_REQUIRED_LIBRARIES )
   if(BLAS_FOUND)
-    message(STATUS "--> BLAS supplied by user is WORKING, will use ${BLAS_LIBRAIRIES}.")
+    message(STATUS "--> BLAS supplied by user is WORKING, will use ${BLAS_LIBRARIES}.")
   else(BLAS_FOUND)
-    message(ERROR "--> BLAS supplied by user is not WORKING, CANNOT USE ${BLAS_LIBRAIRIES}.")
+    message(ERROR "--> BLAS supplied by user is not WORKING, CANNOT USE ${BLAS_LIBRARIES}.")
     message(ERROR "-->     Will use REFERENCE BLAS (by default)")
-    message(ERROR "-->     Or Correct your BLAS_LIBRAIRIES entry ")
+    message(ERROR "-->     Or Correct your BLAS_LIBRARIES entry ")
     message(ERROR "-->     Or Consider checking USE_OPTIMIZED_BLAS")
   endif(BLAS_FOUND)
 
 # User did not provide a BLAS Library but specified to search for one
 elseif( USE_OPTIMIZED_BLAS )
   find_package( BLAS )
-endif (BLAS_LIBRAIRIES)
+endif (BLAS_LIBRARIES)
 
 # Neither user specified or optimized BLAS libraries can be used
 if(NOT BLAS_FOUND)
@@ -103,6 +129,11 @@ else()
     "${CMAKE_SHARED_LINKER_FLAGS} ${BLAS_LINKER_FLAGS}" 
     CACHE STRING "Linker flags for shared libs" FORCE)
 endif( NOT BLAS_FOUND )
+
+option(USE_XBLAS "Build extended precision (needs XBLAS)" OFF)
+if (USE_XBLAS)
+  find_library(XBLAS_LIBRARY NAMES xblas)
+endif(USE_XBLAS)
    
 add_subdirectory(SRC)
 if(BUILD_TESTING)
@@ -115,10 +146,10 @@ endif(BUILD_TESTING)
 SET(CPACK_PACKAGE_NAME "LAPACK")
 SET(CPACK_PACKAGE_VENDOR "University of Tennessee, Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd")
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "LAPACK- Linear Algebra Package")
-set(LAPACK_VERSION 3.3.1)
+set(LAPACK_VERSION 3.4.0)
 set(CPACK_PACKAGE_VERSION_MAJOR 3)
-set(CPACK_PACKAGE_VERSION_MINOR 3)
-set(CPACK_PACKAGE_VERSION_PATCH 1)
+set(CPACK_PACKAGE_VERSION_MINOR 4)
+set(CPACK_PACKAGE_VERSION_PATCH 0)
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 SET(CPACK_PACKAGE_INSTALL_DIRECTORY "LAPACK")
 IF(WIN32 AND NOT UNIX)
@@ -164,6 +195,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/lapack.pc.in ${CMAKE_CURRENT_BINARY_D
 configure_file(${LAPACK_SOURCE_DIR}/CMAKE/lapack-config-install.cmake.in
   ${LAPACK_BINARY_DIR}/CMakeFiles/lapack-config.cmake @ONLY)
 install(FILES
+  ${LAPACK_GNUtoMS_IMPORT}
   ${LAPACK_BINARY_DIR}/CMakeFiles/lapack-config.cmake
   ${LAPACK_BINARY_DIR}/lapack-config-version.cmake
   DESTINATION lib/cmake/lapack-${LAPACK_VERSION}

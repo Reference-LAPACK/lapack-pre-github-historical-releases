@@ -1,27 +1,67 @@
+*> \brief \b SCHKGK
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE SCHKGK( NIN, NOUT )
+* 
+*       .. Scalar Arguments ..
+*       INTEGER            NIN, NOUT
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> SCHKGK tests SGGBAK, a routine for backward balancing  of
+*> a matrix pair (A, B).
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] NIN
+*> \verbatim
+*>          NIN is INTEGER
+*>          The logical unit number for input.  NIN > 0.
+*> \endverbatim
+*>
+*> \param[in] NOUT
+*> \verbatim
+*>          NOUT is INTEGER
+*>          The logical unit number for output.  NOUT > 0.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup single_eig
+*
+*  =====================================================================
       SUBROUTINE SCHKGK( NIN, NOUT )
 *
-*  -- LAPACK test routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       INTEGER            NIN, NOUT
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  SCHKGK tests SGGBAK, a routine for backward balancing  of
-*  a matrix pair (A, B).
-*
-*  Arguments
-*  =========
-*
-*  NIN     (input) INTEGER
-*          The logical unit number for input.  NIN > 0.
-*
-*  NOUT    (input) INTEGER
-*          The logical unit number for output.  NOUT > 0.
 *
 *  =====================================================================
 *

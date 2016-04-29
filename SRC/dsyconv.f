@@ -1,11 +1,121 @@
+*> \brief \b DSYCONV
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*> \htmlonly
+*> Download DSYCONV + dependencies 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dsyconv.f"> 
+*> [TGZ]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dsyconv.f"> 
+*> [ZIP]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dsyconv.f"> 
+*> [TXT]</a>
+*> \endhtmlonly 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE DSYCONV( UPLO, WAY, N, A, LDA, IPIV, WORK, INFO )
+* 
+*       .. Scalar Arguments ..
+*       CHARACTER          UPLO, WAY
+*       INTEGER            INFO, LDA, N
+*       ..
+*       .. Array Arguments ..
+*       INTEGER            IPIV( * )
+*       DOUBLE PRECISION   A( LDA, * ), WORK( * )
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> DSYCONV convert A given by TRF into L and D and vice-versa.
+*> Get Non-diag elements of D (returned in workspace) and 
+*> apply or reverse permutation done in TRF.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] UPLO
+*> \verbatim
+*>          UPLO is CHARACTER*1
+*>          Specifies whether the details of the factorization are stored
+*>          as an upper or lower triangular matrix.
+*>          = 'U':  Upper triangular, form is A = U*D*U**T;
+*>          = 'L':  Lower triangular, form is A = L*D*L**T.
+*> \endverbatim
+*>
+*> \param[in] WAY
+*> \verbatim
+*>          WAY is CHARACTER*1
+*>          = 'C': Convert 
+*>          = 'R': Revert
+*> \endverbatim
+*>
+*> \param[in] N
+*> \verbatim
+*>          N is INTEGER
+*>          The order of the matrix A.  N >= 0.
+*> \endverbatim
+*>
+*> \param[in] A
+*> \verbatim
+*>          A is DOUBLE PRECISION array, dimension (LDA,N)
+*>          The block diagonal matrix D and the multipliers used to
+*>          obtain the factor U or L as computed by DSYTRF.
+*> \endverbatim
+*>
+*> \param[in] LDA
+*> \verbatim
+*>          LDA is INTEGER
+*>          The leading dimension of the array A.  LDA >= max(1,N).
+*> \endverbatim
+*>
+*> \param[in] IPIV
+*> \verbatim
+*>          IPIV is INTEGER array, dimension (N)
+*>          Details of the interchanges and the block structure of D
+*>          as determined by DSYTRF.
+*> \endverbatim
+*>
+*> \param[out] WORK
+*> \verbatim
+*>          WORK is DOUBLE PRECISION array, dimension (N)
+*> \endverbatim
+*>
+*> \param[out] INFO
+*> \verbatim
+*>          INFO is INTEGER
+*>          = 0:  successful exit
+*>          < 0:  if INFO = -i, the i-th argument had an illegal value
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup doubleSYcomputational
+*
+*  =====================================================================
       SUBROUTINE DSYCONV( UPLO, WAY, N, A, LDA, IPIV, WORK, INFO )
 *
-*  -- LAPACK PROTOTYPE routine (version 3.3.0) --
+*  -- LAPACK computational routine (version 3.4.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2010
-*
-*  -- Written by Julie Langou of the Univ. of TN    --
+*     November 2011
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO, WAY
@@ -15,55 +125,6 @@
       INTEGER            IPIV( * )
       DOUBLE PRECISION   A( LDA, * ), WORK( * )
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  DSYCONV convert A given by TRF into L and D and vice-versa.
-*  Get Non-diag elements of D (returned in workspace) and 
-*  apply or reverse permutation done in TRF.
-*
-*  Arguments
-*  =========
-*
-*  UPLO    (input) CHARACTER*1
-*          Specifies whether the details of the factorization are stored
-*          as an upper or lower triangular matrix.
-*          = 'U':  Upper triangular, form is A = U*D*U**T;
-*          = 'L':  Lower triangular, form is A = L*D*L**T.
-* 
-*  WAY     (input) CHARACTER*1
-*          = 'C': Convert 
-*          = 'R': Revert
-*
-*  N       (input) INTEGER
-*          The order of the matrix A.  N >= 0.
-*
-*  A       (input) DOUBLE PRECISION array, dimension (LDA,N)
-*          The block diagonal matrix D and the multipliers used to
-*          obtain the factor U or L as computed by DSYTRF.
-*
-*  LDA     (input) INTEGER
-*          The leading dimension of the array A.  LDA >= max(1,N).
-*
-*  IPIV    (input) INTEGER array, dimension (N)
-*          Details of the interchanges and the block structure of D
-*          as determined by DSYTRF.
-*
-* WORK     (workspace) DOUBLE PRECISION array, dimension (N)
-*
-* LWORK    (input) INTEGER
-*          The length of WORK.  LWORK >=1. 
-*          LWORK = N
-*
-*          If LWORK = -1, then a workspace query is assumed; the routine
-*          only calculates the optimal size of the WORK array, returns
-*          this value as the first entry of the WORK array, and no error
-*          message related to LWORK is issued by XERBLA.
-*
-*  INFO    (output) INTEGER
-*          = 0:  successful exit
-*          < 0:  if INFO = -i, the i-th argument had an illegal value
 *
 *  =====================================================================
 *

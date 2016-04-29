@@ -1,43 +1,91 @@
+*> \brief \b DCHKEC
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE DCHKEC( THRESH, TSTERR, NIN, NOUT )
+* 
+*       .. Scalar Arguments ..
+*       LOGICAL            TSTERR
+*       INTEGER            NIN, NOUT
+*       DOUBLE PRECISION   THRESH
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> DCHKEC tests eigen- condition estimation routines
+*>        DLALN2, DLASY2, DLANV2, DLAQTR, DLAEXC,
+*>        DTRSYL, DTREXC, DTRSNA, DTRSEN
+*>
+*> In all cases, the routine runs through a fixed set of numerical
+*> examples, subjects them to various tests, and compares the test
+*> results to a threshold THRESH. In addition, DTREXC, DTRSNA and DTRSEN
+*> are tested by reading in precomputed examples from a file (on input
+*> unit NIN).  Output is written to output unit NOUT.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] THRESH
+*> \verbatim
+*>          THRESH is DOUBLE PRECISION
+*>          Threshold for residual tests.  A computed test ratio passes
+*>          the threshold if it is less than THRESH.
+*> \endverbatim
+*>
+*> \param[in] TSTERR
+*> \verbatim
+*>          TSTERR is LOGICAL
+*>          Flag that indicates whether error exits are to be tested.
+*> \endverbatim
+*>
+*> \param[in] NIN
+*> \verbatim
+*>          NIN is INTEGER
+*>          The logical unit number for input.
+*> \endverbatim
+*>
+*> \param[in] NOUT
+*> \verbatim
+*>          NOUT is INTEGER
+*>          The logical unit number for output.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup double_eig
+*
+*  =====================================================================
       SUBROUTINE DCHKEC( THRESH, TSTERR, NIN, NOUT )
 *
-*  -- LAPACK test routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
       INTEGER            NIN, NOUT
       DOUBLE PRECISION   THRESH
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  DCHKEC tests eigen- condition estimation routines
-*         DLALN2, DLASY2, DLANV2, DLAQTR, DLAEXC,
-*         DTRSYL, DTREXC, DTRSNA, DTRSEN
-*
-*  In all cases, the routine runs through a fixed set of numerical
-*  examples, subjects them to various tests, and compares the test
-*  results to a threshold THRESH. In addition, DTREXC, DTRSNA and DTRSEN
-*  are tested by reading in precomputed examples from a file (on input
-*  unit NIN).  Output is written to output unit NOUT.
-*
-*  Arguments
-*  =========
-*
-*  THRESH  (input) DOUBLE PRECISION
-*          Threshold for residual tests.  A computed test ratio passes
-*          the threshold if it is less than THRESH.
-*
-*  TSTERR  (input) LOGICAL
-*          Flag that indicates whether error exits are to be tested.
-*
-*  NIN     (input) INTEGER
-*          The logical unit number for input.
-*
-*  NOUT    (input) INTEGER
-*          The logical unit number for output.
 *
 *  =====================================================================
 *
@@ -167,7 +215,7 @@
  9991 FORMAT( ' Error in DLAQTR: RMAX =', D12.3, / ' LMAX = ', I8, ' N',
      $      'INFO=', I8, ' KNT=', I8 )
  9990 FORMAT( / 1X, 'All tests for ', A3, ' routines passed the thresh',
-     $      'old (', I6, ' tests run)' )
+     $      'old ( ', I6, ' tests run)' )
  9989 FORMAT( ' Tests of the Nonsymmetric eigenproblem condition estim',
      $      'ation routines', / ' DLALN2, DLASY2, DLANV2, DLAEXC, DTRS',
      $      'YL, DTREXC, DTRSNA, DTRSEN, DLAQTR', / )

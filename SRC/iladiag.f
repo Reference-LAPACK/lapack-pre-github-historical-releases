@@ -1,32 +1,72 @@
+*> \brief \b ILADIAG
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*> \htmlonly
+*> Download ILADIAG + dependencies 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/iladiag.f"> 
+*> [TGZ]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/iladiag.f"> 
+*> [ZIP]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/iladiag.f"> 
+*> [TXT]</a>
+*> \endhtmlonly 
+*
+*  Definition:
+*  ===========
+*
+*       INTEGER FUNCTION ILADIAG( DIAG )
+* 
+*       .. Scalar Arguments ..
+*       CHARACTER          DIAG
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> This subroutine translated from a character string specifying if a
+*> matrix has unit diagonal or not to the relevant BLAST-specified
+*> integer constant.
+*>
+*> ILADIAG returns an INTEGER.  If ILADIAG < 0, then the input is not a
+*> character indicating a unit or non-unit diagonal.  Otherwise ILADIAG
+*> returns the constant value corresponding to DIAG.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup auxOTHERcomputational
+*
+*  =====================================================================
       INTEGER FUNCTION ILADIAG( DIAG )
 *
-*  -- LAPACK routine (version 3.2.1)                                    --
-*
-*  -- April 2009                                                      --
-*
+*  -- LAPACK computational routine (version 3.4.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       CHARACTER          DIAG
 *     ..
 *
-*  Purpose
-*  =======
-*
-*  This subroutine translated from a character string specifying if a
-*  matrix has unit diagonal or not to the relevant BLAST-specified
-*  integer constant.
-*
-*  ILADIAG returns an INTEGER.  If ILADIAG < 0, then the input is not a
-*  character indicating a unit or non-unit diagonal.  Otherwise ILADIAG
-*  returns the constant value corresponding to DIAG.
-*
-*  Arguments
-*  =========
-*  DIAG    (input) CHARACTER*1
-*          = 'N':  A is non-unit triangular;
-*          = 'U':  A is unit triangular.
 *  =====================================================================
 *
 *     .. Parameters ..

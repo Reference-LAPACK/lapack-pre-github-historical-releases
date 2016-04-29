@@ -1,32 +1,72 @@
+*> \brief \b CHLA_TRANSTYPE
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*> \htmlonly
+*> Download CHLA_TRANSTYPE + dependencies 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/chla_transtype.f"> 
+*> [TGZ]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/chla_transtype.f"> 
+*> [ZIP]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/chla_transtype.f"> 
+*> [TXT]</a>
+*> \endhtmlonly 
+*
+*  Definition:
+*  ===========
+*
+*       CHARACTER*1 FUNCTION CHLA_TRANSTYPE( TRANS )
+* 
+*       .. Scalar Arguments ..
+*       INTEGER            TRANS
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> This subroutine translates from a BLAST-specified integer constant to
+*> the character string specifying a transposition operation.
+*>
+*> CHLA_TRANSTYPE returns an CHARACTER*1.  If CHLA_TRANSTYPE is 'X',
+*> then input is not an integer indicating a transposition operator.
+*> Otherwise CHLA_TRANSTYPE returns the constant value corresponding to
+*> TRANS.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup auxOTHERcomputational
+*
+*  =====================================================================
       CHARACTER*1 FUNCTION CHLA_TRANSTYPE( TRANS )
 *
-*  -- LAPACK routine (version 3.2.2) --
+*  -- LAPACK computational routine (version 3.4.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     October 2008
+*     November 2011
 *
 *     .. Scalar Arguments ..
       INTEGER            TRANS
 *     ..
 *
-*  Purpose
-*  =======
-*
-*  This subroutine translates from a BLAST-specified integer constant to
-*  the character string specifying a transposition operation.
-*
-*  CHLA_TRANSTYPE returns an CHARACTER*1.  If CHLA_TRANSTYPE is 'X',
-*  then input is not an integer indicating a transposition operator.
-*  Otherwise CHLA_TRANSTYPE returns the constant value corresponding to
-*  TRANS.
-*
-*  Arguments
-*  =========
-*  TRANS   (input) INTEGER
-*          Specifies the form of the system of equations:
-*          = BLAS_NO_TRANS   = 111 :  No Transpose
-*          = BLAS_TRANS      = 112 :  Transpose
-*          = BLAS_CONJ_TRANS = 113 :  Conjugate Transpose
 *  =====================================================================
 *
 *     .. Parameters ..

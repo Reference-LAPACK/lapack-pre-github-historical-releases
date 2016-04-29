@@ -1,10 +1,179 @@
+*> \brief \b SLATB9
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE SLATB9( PATH, IMAT, M, P, N, TYPE, KLA, KUA,
+*                          KLB, KUB, ANORM, BNORM, MODEA, MODEB,
+*                          CNDNMA, CNDNMB, DISTA, DISTB )
+* 
+*       .. Scalar Arguments ..
+*       CHARACTER          DISTA, DISTB, TYPE
+*       CHARACTER*3        PATH
+*       INTEGER            IMAT, KLA, KUA, KLB, KUB, M, P, MODEA, MODEB, N
+*       REAL               ANORM, BNORM, CNDNMA, CNDNMB
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> SLATB9 sets parameters for the matrix generator based on the type of
+*> matrix to be generated.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] PATH
+*> \verbatim
+*>          PATH is CHARACTER*3
+*>          The LAPACK path name.
+*> \endverbatim
+*>
+*> \param[in] IMAT
+*> \verbatim
+*>          IMAT is INTEGER
+*>          An integer key describing which matrix to generate for this
+*>          path.
+*>          = 1:   A: diagonal, B: upper triangular
+*>          = 2:   A: upper triangular, B: upper triangular
+*>          = 3:   A: lower triangular, B: upper triangular
+*>          Else:  A: general dense, B: general dense
+*> \endverbatim
+*>
+*> \param[in] M
+*> \verbatim
+*>          M is INTEGER
+*>          The number of rows in the matrix to be generated.
+*> \endverbatim
+*>
+*> \param[in] P
+*> \verbatim
+*>          P is INTEGER
+*> \endverbatim
+*>
+*> \param[in] N
+*> \verbatim
+*>          N is INTEGER
+*>          The number of columns in the matrix to be generated.
+*> \endverbatim
+*>
+*> \param[out] TYPE
+*> \verbatim
+*>          TYPE is CHARACTER*1
+*>          The type of the matrix to be generated:
+*>          = 'S':  symmetric matrix;
+*>          = 'P':  symmetric positive (semi)definite matrix;
+*>          = 'N':  nonsymmetric matrix.
+*> \endverbatim
+*>
+*> \param[out] KLA
+*> \verbatim
+*>          KLA is INTEGER
+*>          The lower band width of the matrix to be generated.
+*> \endverbatim
+*>
+*> \param[out] KUA
+*> \verbatim
+*>          KUA is INTEGER
+*>          The upper band width of the matrix to be generated.
+*> \endverbatim
+*>
+*> \param[out] KLB
+*> \verbatim
+*>          KLB is INTEGER
+*>          The lower band width of the matrix to be generated.
+*> \endverbatim
+*>
+*> \param[out] KUB
+*> \verbatim
+*>          KUA is INTEGER
+*>          The upper band width of the matrix to be generated.
+*> \endverbatim
+*>
+*> \param[out] ANORM
+*> \verbatim
+*>          ANORM is REAL
+*>          The desired norm of the matrix to be generated.  The diagonal
+*>          matrix of singular values or eigenvalues is scaled by this
+*>          value.
+*> \endverbatim
+*>
+*> \param[out] BNORM
+*> \verbatim
+*>          BNORM is REAL
+*>          The desired norm of the matrix to be generated.  The diagonal
+*>          matrix of singular values or eigenvalues is scaled by this
+*>          value.
+*> \endverbatim
+*>
+*> \param[out] MODEA
+*> \verbatim
+*>          MODEA is INTEGER
+*>          A key indicating how to choose the vector of eigenvalues.
+*> \endverbatim
+*>
+*> \param[out] MODEB
+*> \verbatim
+*>          MODEB is INTEGER
+*>          A key indicating how to choose the vector of eigenvalues.
+*> \endverbatim
+*>
+*> \param[out] CNDNMA
+*> \verbatim
+*>          CNDNMA is REAL
+*>          The desired condition number.
+*> \endverbatim
+*>
+*> \param[out] CNDNMB
+*> \verbatim
+*>          CNDNMB is REAL
+*>          The desired condition number.
+*> \endverbatim
+*>
+*> \param[out] DISTA
+*> \verbatim
+*>          DISTA is CHARACTER*1
+*>          The type of distribution to be used by the random number
+*>          generator.
+*> \endverbatim
+*>
+*> \param[out] DISTB
+*> \verbatim
+*>          DISTB is CHARACTER*1
+*>          The type of distribution to be used by the random number
+*>          generator.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup single_eig
+*
+*  =====================================================================
       SUBROUTINE SLATB9( PATH, IMAT, M, P, N, TYPE, KLA, KUA,
      $                   KLB, KUB, ANORM, BNORM, MODEA, MODEB,
      $                   CNDNMA, CNDNMB, DISTA, DISTB )
 *
-*  -- LAPACK test routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       CHARACTER          DISTA, DISTB, TYPE
@@ -12,55 +181,6 @@
       INTEGER            IMAT, KLA, KUA, KLB, KUB, M, P, MODEA, MODEB, N
       REAL               ANORM, BNORM, CNDNMA, CNDNMB
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  SLATB9 sets parameters for the matrix generator based on the type of
-*  matrix to be generated.
-*
-*  Arguments
-*  =========
-*
-*  PATH    (input) CHARACTER*3
-*          The LAPACK path name.
-*
-*  IMAT    (input) INTEGER
-*          An integer key describing which matrix to generate for this
-*          path.
-*
-*  M       (input) INTEGER
-*          The number of rows in the matrix to be generated.
-*
-*  N       (input) INTEGER
-*          The number of columns in the matrix to be generated.
-*
-*  TYPE    (output) CHARACTER*1
-*          The type of the matrix to be generated:
-*          = 'S':  symmetric matrix;
-*          = 'P':  symmetric positive (semi)definite matrix;
-*          = 'N':  nonsymmetric matrix.
-*
-*  KL      (output) INTEGER
-*          The lower band width of the matrix to be generated.
-*
-*  KU      (output) INTEGER
-*          The upper band width of the matrix to be generated.
-*
-*  ANORM   (output) REAL
-*          The desired norm of the matrix to be generated.  The diagonal
-*          matrix of singular values or eigenvalues is scaled by this
-*          value.
-*
-*  MODE    (output) INTEGER
-*          A key indicating how to choose the vector of eigenvalues.
-*
-*  CNDNUM  (output) REAL
-*          The desired condition number.
-*
-*  DIST    (output) CHARACTER*1
-*          The type of distribution to be used by the random number
-*          generator.
 *
 *  =====================================================================
 *

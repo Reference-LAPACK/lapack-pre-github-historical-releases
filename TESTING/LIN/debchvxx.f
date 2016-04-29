@@ -1,70 +1,104 @@
+*> \brief \b DEBCHVXX
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*     SUBROUTINE DEBCHVXX( THRESH, PATH )
+*
+*     .. Scalar Arguments ..
+*      DOUBLE PRECISION  THRESH
+*      CHARACTER*3       PATH
+*       ..
+*
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*>  DEBCHVXX will run D**SVXX on a series of Hilbert matrices and then
+*>  compare the error bounds returned by D**SVXX to see if the returned
+*>  answer indeed falls within those bounds.
+*>
+*>  Eight test ratios will be computed.  The tests will pass if they are .LT.
+*>  THRESH.  There are two cases that are determined by 1 / (SQRT( N ) * EPS).
+*>  If that value is .LE. to the component wise reciprocal condition number,
+*>  it uses the guaranteed case, other wise it uses the unguaranteed case.
+*>
+*>  Test ratios:
+*>     Let Xc be X_computed and Xt be X_truth.
+*>     The norm used is the infinity norm.
+*>
+*>     Let A be the guaranteed case and B be the unguaranteed case.
+*>
+*>       1. Normwise guaranteed forward error bound.
+*>       A: norm ( abs( Xc - Xt ) / norm ( Xt ) .LE. ERRBND( *, nwise_i, bnd_i ) and
+*>          ERRBND( *, nwise_i, bnd_i ) .LE. MAX(SQRT(N),10) * EPS.
+*>          If these conditions are met, the test ratio is set to be
+*>          ERRBND( *, nwise_i, bnd_i ) / MAX(SQRT(N), 10).  Otherwise it is 1/EPS.
+*>       B: For this case, CGESVXX should just return 1.  If it is less than
+*>          one, treat it the same as in 1A.  Otherwise it fails. (Set test
+*>          ratio to ERRBND( *, nwise_i, bnd_i ) * THRESH?)
+*>
+*>       2. Componentwise guaranteed forward error bound.
+*>       A: norm ( abs( Xc(j) - Xt(j) ) ) / norm (Xt(j)) .LE. ERRBND( *, cwise_i, bnd_i )
+*>          for all j .AND. ERRBND( *, cwise_i, bnd_i ) .LE. MAX(SQRT(N), 10) * EPS.
+*>          If these conditions are met, the test ratio is set to be
+*>          ERRBND( *, cwise_i, bnd_i ) / MAX(SQRT(N), 10).  Otherwise it is 1/EPS.
+*>       B: Same as normwise test ratio.
+*>
+*>       3. Backwards error.
+*>       A: The test ratio is set to BERR/EPS.
+*>       B: Same test ratio.
+*>
+*>       4. Reciprocal condition number.
+*>       A: A condition number is computed with Xt and compared with the one
+*>          returned from CGESVXX.  Let RCONDc be the RCOND returned by D**SVXX
+*>          and RCONDt be the RCOND from the truth value.  Test ratio is set to
+*>          MAX(RCONDc/RCONDt, RCONDt/RCONDc).
+*>       B: Test ratio is set to 1 / (EPS * RCONDc).
+*>
+*>       5. Reciprocal normwise condition number.
+*>       A: The test ratio is set to
+*>          MAX(ERRBND( *, nwise_i, cond_i ) / NCOND, NCOND / ERRBND( *, nwise_i, cond_i )).
+*>       B: Test ratio is set to 1 / (EPS * ERRBND( *, nwise_i, cond_i )).
+*>
+*>       6. Reciprocal componentwise condition number.
+*>       A: Test ratio is set to
+*>          MAX(ERRBND( *, cwise_i, cond_i ) / CCOND, CCOND / ERRBND( *, cwise_i, cond_i )).
+*>       B: Test ratio is set to 1 / (EPS * ERRBND( *, cwise_i, cond_i )).
+*>
+*>     .. Parameters ..
+*>     NMAX is determined by the largest number in the inverse of the hilbert
+*>     matrix.  Precision is exhausted when the largest entry in it is greater
+*>     than 2 to the power of the number of bits in the fraction of the data
+*>     type used plus one, which is 24 for single precision.
+*>     NMAX should be 6 for single and 11 for double.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup double_lin
+*
+*  =====================================================================
       SUBROUTINE DEBCHVXX( THRESH, PATH )
       IMPLICIT NONE
 *     .. Scalar Arguments ..
       DOUBLE PRECISION  THRESH
       CHARACTER*3       PATH
-*
-*  Purpose
-*  ======
-*
-*  DEBCHVXX will run D**SVXX on a series of Hilbert matrices and then
-*  compare the error bounds returned by D**SVXX to see if the returned
-*  answer indeed falls within those bounds.
-*
-*  Eight test ratios will be computed.  The tests will pass if they are .LT.
-*  THRESH.  There are two cases that are determined by 1 / (SQRT( N ) * EPS).
-*  If that value is .LE. to the component wise reciprocal condition number,
-*  it uses the guaranteed case, other wise it uses the unguaranteed case.
-*
-*  Test ratios:
-*     Let Xc be X_computed and Xt be X_truth.
-*     The norm used is the infinity norm.
-
-*     Let A be the guaranteed case and B be the unguaranteed case.
-*
-*       1. Normwise guaranteed forward error bound.
-*       A: norm ( abs( Xc - Xt ) / norm ( Xt ) .LE. ERRBND( *, nwise_i, bnd_i ) and
-*          ERRBND( *, nwise_i, bnd_i ) .LE. MAX(SQRT(N),10) * EPS.
-*          If these conditions are met, the test ratio is set to be
-*          ERRBND( *, nwise_i, bnd_i ) / MAX(SQRT(N), 10).  Otherwise it is 1/EPS.
-*       B: For this case, CGESVXX should just return 1.  If it is less than
-*          one, treat it the same as in 1A.  Otherwise it fails. (Set test
-*          ratio to ERRBND( *, nwise_i, bnd_i ) * THRESH?)
-*
-*       2. Componentwise guaranteed forward error bound.
-*       A: norm ( abs( Xc(j) - Xt(j) ) ) / norm (Xt(j)) .LE. ERRBND( *, cwise_i, bnd_i )
-*          for all j .AND. ERRBND( *, cwise_i, bnd_i ) .LE. MAX(SQRT(N), 10) * EPS.
-*          If these conditions are met, the test ratio is set to be
-*          ERRBND( *, cwise_i, bnd_i ) / MAX(SQRT(N), 10).  Otherwise it is 1/EPS.
-*       B: Same as normwise test ratio.
-*
-*       3. Backwards error.
-*       A: The test ratio is set to BERR/EPS.
-*       B: Same test ratio.
-*
-*       4. Reciprocal condition number.
-*       A: A condition number is computed with Xt and compared with the one
-*          returned from CGESVXX.  Let RCONDc be the RCOND returned by D**SVXX
-*          and RCONDt be the RCOND from the truth value.  Test ratio is set to
-*          MAX(RCONDc/RCONDt, RCONDt/RCONDc).
-*       B: Test ratio is set to 1 / (EPS * RCONDc).
-*
-*       5. Reciprocal normwise condition number.
-*       A: The test ratio is set to
-*          MAX(ERRBND( *, nwise_i, cond_i ) / NCOND, NCOND / ERRBND( *, nwise_i, cond_i )).
-*       B: Test ratio is set to 1 / (EPS * ERRBND( *, nwise_i, cond_i )).
-*
-*       6. Reciprocal componentwise condition number.
-*       A: Test ratio is set to
-*          MAX(ERRBND( *, cwise_i, cond_i ) / CCOND, CCOND / ERRBND( *, cwise_i, cond_i )).
-*       B: Test ratio is set to 1 / (EPS * ERRBND( *, cwise_i, cond_i )).
-*
-*     .. Parameters ..
-*     NMAX is determined by the largest number in the inverse of the hilbert
-*     matrix.  Precision is exhausted when the largest entry in it is greater
-*     than 2 to the power of the number of bits in the fraction of the data
-*     type used plus one, which is 24 for single precision.
-*     NMAX should be 6 for single and 11 for double.
 
       INTEGER            NMAX, NPARAMS, NERRBND, NTESTS, KL, KU
       PARAMETER          (NMAX = 10, NPARAMS = 2, NERRBND = 3,

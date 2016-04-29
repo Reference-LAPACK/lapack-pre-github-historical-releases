@@ -1,50 +1,80 @@
+*> \brief \b SLAMCH
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*      REAL             FUNCTION SLAMCH( CMACH )
+*
+*     .. Scalar Arguments ..
+*      CHARACTER          CMACH
+*     ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> SLAMCH determines single precision machine parameters.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] CMACH
+*> \verbatim
+*>          Specifies the value to be returned by SLAMCH:
+*>          = 'E' or 'e',   SLAMCH := eps
+*>          = 'S' or 's ,   SLAMCH := sfmin
+*>          = 'B' or 'b',   SLAMCH := base
+*>          = 'P' or 'p',   SLAMCH := eps*base
+*>          = 'N' or 'n',   SLAMCH := t
+*>          = 'R' or 'r',   SLAMCH := rnd
+*>          = 'M' or 'm',   SLAMCH := emin
+*>          = 'U' or 'u',   SLAMCH := rmin
+*>          = 'L' or 'l',   SLAMCH := emax
+*>          = 'O' or 'o',   SLAMCH := rmax
+*>          where
+*>          eps   = relative machine precision
+*>          sfmin = safe minimum, such that 1/sfmin does not overflow
+*>          base  = base of the machine
+*>          prec  = eps*base
+*>          t     = number of (base) digits in the mantissa
+*>          rnd   = 1.0 when rounding occurs in addition, 0.0 otherwise
+*>          emin  = minimum exponent before (gradual) underflow
+*>          rmin  = underflow threshold - base**(emin-1)
+*>          emax  = largest exponent before overflow
+*>          rmax  = overflow threshold  - (base**emax)*(1-eps)
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup auxOTHERauxiliary
+*
+*  =====================================================================
       REAL             FUNCTION SLAMCH( CMACH )
 *
-*  -- LAPACK auxiliary routine (version 3.3.0) --
+*  -- LAPACK auxiliary routine (version 3.4.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     Based on LAPACK DLAMCH but with Fortran 95 query functions
-*     See: http://www.cs.utk.edu/~luszczek/lapack/lamch.html
-*     and  http://www.netlib.org/lapack-dev/lapack-coding/program-style.html#id2537289
-*     July 2010
+*     November 2011
 *
 *     .. Scalar Arguments ..
       CHARACTER          CMACH
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  SLAMCH determines single precision machine parameters.
-*
-*  Arguments
-*  =========
-*
-*  CMACH   (input) CHARACTER*1
-*          Specifies the value to be returned by SLAMCH:
-*          = 'E' or 'e',   SLAMCH := eps
-*          = 'S' or 's ,   SLAMCH := sfmin
-*          = 'B' or 'b',   SLAMCH := base
-*          = 'P' or 'p',   SLAMCH := eps*base
-*          = 'N' or 'n',   SLAMCH := t
-*          = 'R' or 'r',   SLAMCH := rnd
-*          = 'M' or 'm',   SLAMCH := emin
-*          = 'U' or 'u',   SLAMCH := rmin
-*          = 'L' or 'l',   SLAMCH := emax
-*          = 'O' or 'o',   SLAMCH := rmax
-*
-*          where
-*
-*          eps   = relative machine precision
-*          sfmin = safe minimum, such that 1/sfmin does not overflow
-*          base  = base of the machine
-*          prec  = eps*base
-*          t     = number of (base) digits in the mantissa
-*          rnd   = 1.0 when rounding occurs in addition, 0.0 otherwise
-*          emin  = minimum exponent before (gradual) underflow
-*          rmin  = underflow threshold - base**(emin-1)
-*          emax  = largest exponent before overflow
-*          rmax  = overflow threshold  - (base**emax)*(1-eps)
 *
 * =====================================================================
 *
@@ -116,31 +146,37 @@
 *
       END
 ************************************************************************
+*> \brief \b SLAMC3
+*> \details
+*> \b Purpose:
+*> \verbatim
+*> SLAMC3  is intended to force  A  and  B  to be stored prior to doing
+*> the addition of  A  and  B ,  for use in situations where optimizers
+*> might hold one of these in a register.
+*> \endverbatim
+*> \author LAPACK is a software package provided by Univ. of Tennessee, Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..
+*> \date November 2011
+*> \ingroup auxOTHERauxiliary
+*>
+*> \param[in] A
+*> \verbatim
+*> \endverbatim
+*>
+*> \param[in] B
+*> \verbatim
+*>          The values A and B.
+*> \endverbatim
+*>
 *
       REAL             FUNCTION SLAMC3( A, B )
 *
-*  -- LAPACK auxiliary routine (version 3.3.0) --
+*  -- LAPACK auxiliary routine (version 3.4.0) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2010
 *
 *     .. Scalar Arguments ..
       REAL               A, B
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  SLAMC3  is intended to force  A  and  B  to be stored prior to doing
-*  the addition of  A  and  B ,  for use in situations where optimizers
-*  might hold one of these in a register.
-*
-*  Arguments
-*  =========
-*
-*  A       (input) REAL
-*  B       (input) REAL
-*          The values A and B.
-*
 * =====================================================================
 *
 *     .. Executable Statements ..

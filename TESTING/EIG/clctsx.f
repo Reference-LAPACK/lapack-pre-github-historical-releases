@@ -1,28 +1,70 @@
+*> \brief \b CLCTSX
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*       LOGICAL          FUNCTION CLCTSX( ALPHA, BETA )
+* 
+*       .. Scalar Arguments ..
+*       COMPLEX            ALPHA, BETA
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> This function is used to determine what eigenvalues will be
+*> selected.  If this is part of the test driver CDRGSX, do not
+*> change the code UNLESS you are testing input examples and not
+*> using the built-in examples.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] ALPHA
+*> \verbatim
+*>          ALPHA is COMPLEX
+*> \endverbatim
+*>
+*> \param[in] BETA
+*> \verbatim
+*>          BETA is COMPLEX
+*>
+*>          parameters to decide whether the pair (ALPHA, BETA) is
+*>          selected.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup complex_eig
+*
+*  =====================================================================
       LOGICAL          FUNCTION CLCTSX( ALPHA, BETA )
 *
-*  -- LAPACK test routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       COMPLEX            ALPHA, BETA
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  This function is used to determine what eigenvalues will be
-*  selected.  If this is part of the test driver CDRGSX, do not
-*  change the code UNLESS you are testing input examples and not
-*  using the built-in examples.
-*
-*  Arguments
-*  =========
-*
-*  ALPHA   (input) COMPLEX
-*  BETA    (input) COMPLEX
-*          parameters to decide whether the pair (ALPHA, BETA) is
-*          selected.
 *
 *  =====================================================================
 *

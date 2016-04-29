@@ -1,10 +1,181 @@
+*> \brief <b> DGELSS solves overdetermined or underdetermined systems for GE matrices</b>
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*> \htmlonly
+*> Download DGELSS + dependencies 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dgelss.f"> 
+*> [TGZ]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dgelss.f"> 
+*> [ZIP]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dgelss.f"> 
+*> [TXT]</a>
+*> \endhtmlonly 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE DGELSS( M, N, NRHS, A, LDA, B, LDB, S, RCOND, RANK,
+*                          WORK, LWORK, INFO )
+* 
+*       .. Scalar Arguments ..
+*       INTEGER            INFO, LDA, LDB, LWORK, M, N, NRHS, RANK
+*       DOUBLE PRECISION   RCOND
+*       ..
+*       .. Array Arguments ..
+*       DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), S( * ), WORK( * )
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> DGELSS computes the minimum norm solution to a real linear least
+*> squares problem:
+*>
+*> Minimize 2-norm(| b - A*x |).
+*>
+*> using the singular value decomposition (SVD) of A. A is an M-by-N
+*> matrix which may be rank-deficient.
+*>
+*> Several right hand side vectors b and solution vectors x can be
+*> handled in a single call; they are stored as the columns of the
+*> M-by-NRHS right hand side matrix B and the N-by-NRHS solution matrix
+*> X.
+*>
+*> The effective rank of A is determined by treating as zero those
+*> singular values which are less than RCOND times the largest singular
+*> value.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] M
+*> \verbatim
+*>          M is INTEGER
+*>          The number of rows of the matrix A. M >= 0.
+*> \endverbatim
+*>
+*> \param[in] N
+*> \verbatim
+*>          N is INTEGER
+*>          The number of columns of the matrix A. N >= 0.
+*> \endverbatim
+*>
+*> \param[in] NRHS
+*> \verbatim
+*>          NRHS is INTEGER
+*>          The number of right hand sides, i.e., the number of columns
+*>          of the matrices B and X. NRHS >= 0.
+*> \endverbatim
+*>
+*> \param[in,out] A
+*> \verbatim
+*>          A is DOUBLE PRECISION array, dimension (LDA,N)
+*>          On entry, the M-by-N matrix A.
+*>          On exit, the first min(m,n) rows of A are overwritten with
+*>          its right singular vectors, stored rowwise.
+*> \endverbatim
+*>
+*> \param[in] LDA
+*> \verbatim
+*>          LDA is INTEGER
+*>          The leading dimension of the array A.  LDA >= max(1,M).
+*> \endverbatim
+*>
+*> \param[in,out] B
+*> \verbatim
+*>          B is DOUBLE PRECISION array, dimension (LDB,NRHS)
+*>          On entry, the M-by-NRHS right hand side matrix B.
+*>          On exit, B is overwritten by the N-by-NRHS solution
+*>          matrix X.  If m >= n and RANK = n, the residual
+*>          sum-of-squares for the solution in the i-th column is given
+*>          by the sum of squares of elements n+1:m in that column.
+*> \endverbatim
+*>
+*> \param[in] LDB
+*> \verbatim
+*>          LDB is INTEGER
+*>          The leading dimension of the array B. LDB >= max(1,max(M,N)).
+*> \endverbatim
+*>
+*> \param[out] S
+*> \verbatim
+*>          S is DOUBLE PRECISION array, dimension (min(M,N))
+*>          The singular values of A in decreasing order.
+*>          The condition number of A in the 2-norm = S(1)/S(min(m,n)).
+*> \endverbatim
+*>
+*> \param[in] RCOND
+*> \verbatim
+*>          RCOND is DOUBLE PRECISION
+*>          RCOND is used to determine the effective rank of A.
+*>          Singular values S(i) <= RCOND*S(1) are treated as zero.
+*>          If RCOND < 0, machine precision is used instead.
+*> \endverbatim
+*>
+*> \param[out] RANK
+*> \verbatim
+*>          RANK is INTEGER
+*>          The effective rank of A, i.e., the number of singular values
+*>          which are greater than RCOND*S(1).
+*> \endverbatim
+*>
+*> \param[out] WORK
+*> \verbatim
+*>          WORK is DOUBLE PRECISION array, dimension (MAX(1,LWORK))
+*>          On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
+*> \endverbatim
+*>
+*> \param[in] LWORK
+*> \verbatim
+*>          LWORK is INTEGER
+*>          The dimension of the array WORK. LWORK >= 1, and also:
+*>          LWORK >= 3*min(M,N) + max( 2*min(M,N), max(M,N), NRHS )
+*>          For good performance, LWORK should generally be larger.
+*>
+*>          If LWORK = -1, then a workspace query is assumed; the routine
+*>          only calculates the optimal size of the WORK array, returns
+*>          this value as the first entry of the WORK array, and no error
+*>          message related to LWORK is issued by XERBLA.
+*> \endverbatim
+*>
+*> \param[out] INFO
+*> \verbatim
+*>          INFO is INTEGER
+*>          = 0:  successful exit
+*>          < 0:  if INFO = -i, the i-th argument had an illegal value.
+*>          > 0:  the algorithm for computing the SVD failed to converge;
+*>                if INFO = i, i off-diagonal elements of an intermediate
+*>                bidiagonal form did not converge to zero.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup doubleGEsolve
+*
+*  =====================================================================
       SUBROUTINE DGELSS( M, N, NRHS, A, LDA, B, LDB, S, RCOND, RANK,
      $                   WORK, LWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.2.2) --
+*  -- LAPACK driver routine (version 3.4.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     June 2010
+*     November 2011
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, LDB, LWORK, M, N, NRHS, RANK
@@ -13,90 +184,6 @@
 *     .. Array Arguments ..
       DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), S( * ), WORK( * )
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  DGELSS computes the minimum norm solution to a real linear least
-*  squares problem:
-*
-*  Minimize 2-norm(| b - A*x |).
-*
-*  using the singular value decomposition (SVD) of A. A is an M-by-N
-*  matrix which may be rank-deficient.
-*
-*  Several right hand side vectors b and solution vectors x can be
-*  handled in a single call; they are stored as the columns of the
-*  M-by-NRHS right hand side matrix B and the N-by-NRHS solution matrix
-*  X.
-*
-*  The effective rank of A is determined by treating as zero those
-*  singular values which are less than RCOND times the largest singular
-*  value.
-*
-*  Arguments
-*  =========
-*
-*  M       (input) INTEGER
-*          The number of rows of the matrix A. M >= 0.
-*
-*  N       (input) INTEGER
-*          The number of columns of the matrix A. N >= 0.
-*
-*  NRHS    (input) INTEGER
-*          The number of right hand sides, i.e., the number of columns
-*          of the matrices B and X. NRHS >= 0.
-*
-*  A       (input/output) DOUBLE PRECISION array, dimension (LDA,N)
-*          On entry, the M-by-N matrix A.
-*          On exit, the first min(m,n) rows of A are overwritten with
-*          its right singular vectors, stored rowwise.
-*
-*  LDA     (input) INTEGER
-*          The leading dimension of the array A.  LDA >= max(1,M).
-*
-*  B       (input/output) DOUBLE PRECISION array, dimension (LDB,NRHS)
-*          On entry, the M-by-NRHS right hand side matrix B.
-*          On exit, B is overwritten by the N-by-NRHS solution
-*          matrix X.  If m >= n and RANK = n, the residual
-*          sum-of-squares for the solution in the i-th column is given
-*          by the sum of squares of elements n+1:m in that column.
-*
-*  LDB     (input) INTEGER
-*          The leading dimension of the array B. LDB >= max(1,max(M,N)).
-*
-*  S       (output) DOUBLE PRECISION array, dimension (min(M,N))
-*          The singular values of A in decreasing order.
-*          The condition number of A in the 2-norm = S(1)/S(min(m,n)).
-*
-*  RCOND   (input) DOUBLE PRECISION
-*          RCOND is used to determine the effective rank of A.
-*          Singular values S(i) <= RCOND*S(1) are treated as zero.
-*          If RCOND < 0, machine precision is used instead.
-*
-*  RANK    (output) INTEGER
-*          The effective rank of A, i.e., the number of singular values
-*          which are greater than RCOND*S(1).
-*
-*  WORK    (workspace/output) DOUBLE PRECISION array, dimension (MAX(1,LWORK))
-*          On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
-*
-*  LWORK   (input) INTEGER
-*          The dimension of the array WORK. LWORK >= 1, and also:
-*          LWORK >= 3*min(M,N) + max( 2*min(M,N), max(M,N), NRHS )
-*          For good performance, LWORK should generally be larger.
-*
-*          If LWORK = -1, then a workspace query is assumed; the routine
-*          only calculates the optimal size of the WORK array, returns
-*          this value as the first entry of the WORK array, and no error
-*          message related to LWORK is issued by XERBLA.
-*
-*  INFO    (output) INTEGER
-*          = 0:  successful exit
-*          < 0:  if INFO = -i, the i-th argument had an illegal value.
-*          > 0:  the algorithm for computing the SVD failed to converge;
-*                if INFO = i, i off-diagonal elements of an intermediate
-*                bidiagonal form did not converge to zero.
 *
 *  =====================================================================
 *
@@ -109,10 +196,13 @@
       INTEGER            BDSPAC, BL, CHUNK, I, IASCL, IBSCL, IE, IL,
      $                   ITAU, ITAUP, ITAUQ, IWORK, LDWORK, MAXMN,
      $                   MAXWRK, MINMN, MINWRK, MM, MNTHR
+      INTEGER            LWORK_DGEQRF, LWORK_DORMQR, LWORK_DGEBRD,
+     $                   LWORK_DORMBR, LWORK_DORGBR, LWORK_DORMLQ,
+     $                   LWORK_DGELQF
       DOUBLE PRECISION   ANRM, BIGNUM, BNRM, EPS, SFMIN, SMLNUM, THR
 *     ..
 *     .. Local Arrays ..
-      DOUBLE PRECISION   VDUM( 1 )
+      DOUBLE PRECISION   DUM( 1 )
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           DBDSQR, DCOPY, DGEBRD, DGELQF, DGEMM, DGEMV,
@@ -165,11 +255,16 @@
 *              Path 1a - overdetermined, with many more rows than
 *                        columns
 *
+*              Compute space needed for DGEQRF
+               CALL DGEQRF( M, N, A, LDA, DUM(1), DUM(1), -1, INFO )
+               LWORK_DGEQRF=DUM(1)
+*              Compute space needed for DORMQR
+               CALL DORMQR( 'L', 'T', M, NRHS, N, A, LDA, DUM(1), B,
+     $                   LDB, DUM(1), -1, INFO )
+               LWORK_DORMQR=DUM(1)
                MM = N
-               MAXWRK = MAX( MAXWRK, N + N*ILAENV( 1, 'DGEQRF', ' ', M,
-     $                       N, -1, -1 ) )
-               MAXWRK = MAX( MAXWRK, N + NRHS*ILAENV( 1, 'DORMQR', 'LT',
-     $                       M, NRHS, N, -1 ) )
+               MAXWRK = MAX( MAXWRK, N + LWORK_DGEQRF )
+               MAXWRK = MAX( MAXWRK, N + LWORK_DORMQR )
             END IF
             IF( M.GE.N ) THEN
 *
@@ -178,12 +273,22 @@
 *              Compute workspace needed for DBDSQR
 *
                BDSPAC = MAX( 1, 5*N )
-               MAXWRK = MAX( MAXWRK, 3*N + ( MM + N )*ILAENV( 1,
-     $                       'DGEBRD', ' ', MM, N, -1, -1 ) )
-               MAXWRK = MAX( MAXWRK, 3*N + NRHS*ILAENV( 1, 'DORMBR',
-     $                       'QLT', MM, NRHS, N, -1 ) )
-               MAXWRK = MAX( MAXWRK, 3*N + ( N - 1 )*ILAENV( 1,
-     $                       'DORGBR', 'P', N, N, N, -1 ) )
+*              Compute space needed for DGEBRD
+               CALL DGEBRD( MM, N, A, LDA, S, DUM(1), DUM(1),
+     $                      DUM(1), DUM(1), -1, INFO )
+               LWORK_DGEBRD=DUM(1)
+*              Compute space needed for DORMBR
+               CALL DORMBR( 'Q', 'L', 'T', MM, NRHS, N, A, LDA, DUM(1),
+     $                B, LDB, DUM(1), -1, INFO )
+               LWORK_DORMBR=DUM(1)
+*              Compute space needed for DORGBR
+               CALL DORGBR( 'P', N, N, N, A, LDA, DUM(1),
+     $                   DUM(1), -1, INFO )
+               LWORK_DORGBR=DUM(1)
+*              Compute total workspace needed 
+               MAXWRK = MAX( MAXWRK, 3*N + LWORK_DGEBRD )
+               MAXWRK = MAX( MAXWRK, 3*N + LWORK_DORMBR )
+               MAXWRK = MAX( MAXWRK, 3*N + LWORK_DORGBR )
                MAXWRK = MAX( MAXWRK, BDSPAC )
                MAXWRK = MAX( MAXWRK, N*NRHS )
                MINWRK = MAX( 3*N + MM, 3*N + NRHS, BDSPAC )
@@ -200,33 +305,57 @@
 *                 Path 2a - underdetermined, with many more columns
 *                 than rows
 *
-                  MAXWRK = M + M*ILAENV( 1, 'DGELQF', ' ', M, N, -1,
-     $                                  -1 )
-                  MAXWRK = MAX( MAXWRK, M*M + 4*M + 2*M*ILAENV( 1,
-     $                          'DGEBRD', ' ', M, M, -1, -1 ) )
-                  MAXWRK = MAX( MAXWRK, M*M + 4*M + NRHS*ILAENV( 1,
-     $                          'DORMBR', 'QLT', M, NRHS, M, -1 ) )
-                  MAXWRK = MAX( MAXWRK, M*M + 4*M +
-     $                          ( M - 1 )*ILAENV( 1, 'DORGBR', 'P', M,
-     $                          M, M, -1 ) )
+*                 Compute space needed for DGELQF
+                  CALL DGELQF( M, N, A, LDA, DUM(1), DUM(1),
+     $                -1, INFO )
+                  LWORK_DGELQF=DUM(1)
+*                 Compute space needed for DGEBRD
+                  CALL DGEBRD( M, M, A, LDA, S, DUM(1), DUM(1),
+     $                      DUM(1), DUM(1), -1, INFO )
+                  LWORK_DGEBRD=DUM(1)
+*                 Compute space needed for DORMBR
+                  CALL DORMBR( 'Q', 'L', 'T', M, NRHS, N, A, LDA, 
+     $                DUM(1), B, LDB, DUM(1), -1, INFO )
+                  LWORK_DORMBR=DUM(1)
+*                 Compute space needed for DORGBR
+                  CALL DORGBR( 'P', M, M, M, A, LDA, DUM(1),
+     $                   DUM(1), -1, INFO )
+                  LWORK_DORGBR=DUM(1)
+*                 Compute space needed for DORMLQ
+                  CALL DORMLQ( 'L', 'T', N, NRHS, M, A, LDA, DUM(1),
+     $                 B, LDB, DUM(1), -1, INFO )
+                  LWORK_DORMLQ=DUM(1)
+*                 Compute total workspace needed 
+                  MAXWRK = M + LWORK_DGELQF
+                  MAXWRK = MAX( MAXWRK, M*M + 4*M + LWORK_DGEBRD )
+                  MAXWRK = MAX( MAXWRK, M*M + 4*M + LWORK_DORMBR )
+                  MAXWRK = MAX( MAXWRK, M*M + 4*M + LWORK_DORGBR )
                   MAXWRK = MAX( MAXWRK, M*M + M + BDSPAC )
                   IF( NRHS.GT.1 ) THEN
                      MAXWRK = MAX( MAXWRK, M*M + M + M*NRHS )
                   ELSE
                      MAXWRK = MAX( MAXWRK, M*M + 2*M )
                   END IF
-                  MAXWRK = MAX( MAXWRK, M + NRHS*ILAENV( 1, 'DORMLQ',
-     $                          'LT', N, NRHS, M, -1 ) )
+                  MAXWRK = MAX( MAXWRK, M + LWORK_DORMLQ )
                ELSE
 *
 *                 Path 2 - underdetermined
 *
-                  MAXWRK = 3*M + ( N + M )*ILAENV( 1, 'DGEBRD', ' ', M,
-     $                     N, -1, -1 )
-                  MAXWRK = MAX( MAXWRK, 3*M + NRHS*ILAENV( 1, 'DORMBR',
-     $                          'QLT', M, NRHS, M, -1 ) )
-                  MAXWRK = MAX( MAXWRK, 3*M + M*ILAENV( 1, 'DORGBR',
-     $                          'P', M, N, M, -1 ) )
+*                 Compute space needed for DGEBRD
+                  CALL DGEBRD( M, N, A, LDA, S, DUM(1), DUM(1),
+     $                      DUM(1), DUM(1), -1, INFO )
+                  LWORK_DGEBRD=DUM(1)
+*                 Compute space needed for DORMBR
+                  CALL DORMBR( 'Q', 'L', 'T', M, NRHS, M, A, LDA, 
+     $                DUM(1), B, LDB, DUM(1), -1, INFO )
+                  LWORK_DORMBR=DUM(1)
+*                 Compute space needed for DORGBR
+                  CALL DORGBR( 'P', M, N, M, A, LDA, DUM(1),
+     $                   DUM(1), -1, INFO )
+                  LWORK_DORGBR=DUM(1)
+                  MAXWRK = 3*M + LWORK_DGEBRD
+                  MAXWRK = MAX( MAXWRK, 3*M + LWORK_DORMBR )
+                  MAXWRK = MAX( MAXWRK, 3*M + LWORK_DORGBR )
                   MAXWRK = MAX( MAXWRK, BDSPAC )
                   MAXWRK = MAX( MAXWRK, N*NRHS )
                END IF
@@ -368,7 +497,7 @@
 *          compute right singular vectors in A
 *        (Workspace: need BDSPAC)
 *
-         CALL DBDSQR( 'U', N, N, 0, NRHS, S, WORK( IE ), A, LDA, VDUM,
+         CALL DBDSQR( 'U', N, N, 0, NRHS, S, WORK( IE ), A, LDA, DUM,
      $                1, B, LDB, WORK( IWORK ), INFO )
          IF( INFO.NE.0 )
      $      GO TO 70
@@ -551,7 +680,7 @@
 *           multiplying B by transpose of left singular vectors
 *        (Workspace: need BDSPAC)
 *
-         CALL DBDSQR( 'L', M, N, 0, NRHS, S, WORK( IE ), A, LDA, VDUM,
+         CALL DBDSQR( 'L', M, N, 0, NRHS, S, WORK( IE ), A, LDA, DUM,
      $                1, B, LDB, WORK( IWORK ), INFO )
          IF( INFO.NE.0 )
      $      GO TO 70

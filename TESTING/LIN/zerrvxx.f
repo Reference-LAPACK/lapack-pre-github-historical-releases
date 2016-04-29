@@ -1,31 +1,69 @@
+*> \brief \b ZERRVXX
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE ZERRVX( PATH, NUNIT )
+* 
+*       .. Scalar Arguments ..
+*       CHARACTER*3        PATH
+*       INTEGER            NUNIT
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> ZERRVX tests the error exits for the COMPLEX*16 driver routines
+*> for solving linear systems of equations.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] PATH
+*> \verbatim
+*>          PATH is CHARACTER*3
+*>          The LAPACK path name for the routines to be tested.
+*> \endverbatim
+*>
+*> \param[in] NUNIT
+*> \verbatim
+*>          NUNIT is INTEGER
+*>          The unit number for output.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup complex16_lin
+*
+*  =====================================================================
       SUBROUTINE ZERRVX( PATH, NUNIT )
 *
-*  -- LAPACK test routine (version 3.2.1) --
-*
-*  -- April 2009                                                   --
-*
+*  -- LAPACK test routine (version 3.4.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       CHARACTER*3        PATH
       INTEGER            NUNIT
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  ZERRVX tests the error exits for the COMPLEX*16 driver routines
-*  for solving linear systems of equations.
-*
-*  Arguments
-*  =========
-*
-*  PATH    (input) CHARACTER*3
-*          The LAPACK path name for the routines to be tested.
-*
-*  NUNIT   (input) INTEGER
-*          The unit number for output.
 *
 *  =====================================================================
 *
@@ -43,7 +81,7 @@
       INTEGER            IP( NMAX )
       DOUBLE PRECISION   C( NMAX ), R( NMAX ), R1( NMAX ), R2( NMAX ),
      $                   RF( NMAX ), RW( NMAX ), ERR_BNDS_N( NMAX, 3 ),
-     $                   ERR_BNDS_C( NMAX, 3 ), PARAMS
+     $                   ERR_BNDS_C( NMAX, 3 ), PARAMS( 1 )
       COMPLEX*16         A( NMAX, NMAX ), AF( NMAX, NMAX ), B( NMAX ),
      $                   W( 2*NMAX ), X( NMAX )
 *     ..
@@ -169,7 +207,7 @@
 *        ZGESVXX
 *
          N_ERR_BNDS = 3
-         NPARAMS = 0
+         NPARAMS = 1
          SRNAMT = 'ZGESVXX'
          INFOT = 1
          CALL ZGESVXX( '/', 'N', 0, 0, A, 1, AF, 1, IP, EQ, R, C, B,
@@ -327,7 +365,7 @@
 *        ZGBSVXX
 *
          N_ERR_BNDS = 3
-         NPARAMS = 0
+         NPARAMS = 1
          SRNAMT = 'ZGBSVXX'
          INFOT = 1
          CALL ZGBSVXX( '/', 'N', 0, 0, 0, 0, A, 1, AF, 1, IP, EQ, R, C,
@@ -532,7 +570,7 @@
 *        ZPOSVXX
 *
          N_ERR_BNDS = 3
-         NPARAMS = 0
+         NPARAMS = 1
          SRNAMT = 'ZPOSVXX'
          INFOT = 1
          CALL ZPOSVXX( '/', 'U', 0, 0, A, 1, AF, 1, EQ, C, B, 1, X, 1,
@@ -820,7 +858,7 @@
 *        ZHESVXX
 *
          N_ERR_BNDS = 3
-         NPARAMS = 0
+         NPARAMS = 1
          SRNAMT = 'ZHESVXX'
          INFOT = 1
          CALL ZHESVXX( '/', 'U', 0, 0, A, 1, AF, 1, IP, EQ, C, B, 1, X,
@@ -982,7 +1020,7 @@
 *        ZSYSVXX
 *
          N_ERR_BNDS = 3
-         NPARAMS = 0
+         NPARAMS = 1
          SRNAMT = 'ZSYSVXX'
          INFOT = 1
          EQ = 'N'

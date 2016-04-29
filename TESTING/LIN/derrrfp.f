@@ -1,28 +1,65 @@
+*> \brief \b DERRRFP
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE DERRRFP( NUNIT )
+* 
+*       .. Scalar Arguments ..
+*       INTEGER            NUNIT
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> DERRRFP tests the error exits for the DOUBLE PRECISION driver routines
+*> for solving linear systems of equations.
+*>
+*> DDRVRFP tests the DOUBLE PRECISION LAPACK RFP routines:
+*>     DTFSM, DTFTRI, DSFRK, DTFTTP, DTFTTR, DPFTRF, DPFTRS, DTPTTF,
+*>     DTPTTR, DTRTTF, and DTRTTP
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] NUNIT
+*> \verbatim
+*>          NUNIT is INTEGER
+*>          The unit number for output.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup double_lin
+*
+*  =====================================================================
       SUBROUTINE DERRRFP( NUNIT )
 *
-*  -- LAPACK test routine (version 3.2.0) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2008
+*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       INTEGER            NUNIT
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  DERRRFP tests the error exits for the DOUBLE PRECISION driver routines
-*  for solving linear systems of equations.
-*
-*  DDRVRFP tests the DOUBLE PRECISION LAPACK RFP routines:
-*      DTFSM, DTFTRI, DSFRK, DTFTTP, DTFTTR, DPFTRF, DPFTRS, DTPTTF,
-*      DTPTTR, DTRTTF, and DTRTTP
-*
-*  Arguments
-*  =========
-*
-*  NUNIT   (input) INTEGER
-*          The unit number for output.
 *
 *  =====================================================================
 *

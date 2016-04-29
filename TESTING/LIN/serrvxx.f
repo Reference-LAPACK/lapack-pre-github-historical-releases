@@ -1,31 +1,69 @@
+*> \brief \b SERRVXX
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE SERRVX( PATH, NUNIT )
+* 
+*       .. Scalar Arguments ..
+*       CHARACTER*3        PATH
+*       INTEGER            NUNIT
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> SERRVX tests the error exits for the REAL driver routines
+*> for solving linear systems of equations.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] PATH
+*> \verbatim
+*>          PATH is CHARACTER*3
+*>          The LAPACK path name for the routines to be tested.
+*> \endverbatim
+*>
+*> \param[in] NUNIT
+*> \verbatim
+*>          NUNIT is INTEGER
+*>          The unit number for output.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup single_lin
+*
+*  =====================================================================
       SUBROUTINE SERRVX( PATH, NUNIT )
 *
-*  -- LAPACK test routine (version 3.2.1) --
-*
-*  -- April 2009                                                   --
-*
+*  -- LAPACK test routine (version 3.4.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       CHARACTER*3        PATH
       INTEGER            NUNIT
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  SERRVX tests the error exits for the REAL driver routines
-*  for solving linear systems of equations.
-*
-*  Arguments
-*  =========
-*
-*  PATH    (input) CHARACTER*3
-*          The LAPACK path name for the routines to be tested.
-*
-*  NUNIT   (input) INTEGER
-*          The unit number for output.
 *
 *  =====================================================================
 *
@@ -44,7 +82,7 @@
       REAL               A( NMAX, NMAX ), AF( NMAX, NMAX ), B( NMAX ),
      $                   C( NMAX ), R( NMAX ), R1( NMAX ), R2( NMAX ),
      $                   W( 2*NMAX ), X( NMAX ), ERR_BNDS_N( NMAX, 3 ),
-     $                   ERR_BNDS_C( NMAX, 3 ), PARAMS
+     $                   ERR_BNDS_C( NMAX, 3 ), PARAMS( 1 )
 *     ..
 *     .. External Functions ..
       LOGICAL            LSAMEN
@@ -165,7 +203,7 @@
 *        SGESVXX
 *
          N_ERR_BNDS = 3
-         NPARAMS = 0
+         NPARAMS = 1
          SRNAMT = 'SGESVXX'
          INFOT = 1
          CALL SGESVXX( '/', 'N', 0, 0, A, 1, AF, 1, IP, EQ, R, C, B, 1,
@@ -312,7 +350,7 @@
 *        SGBSVXX
 *
          N_ERR_BNDS = 3
-         NPARAMS = 0
+         NPARAMS = 1
          SRNAMT = 'SGBSVXX'
          INFOT = 1
          CALL SGBSVXX( '/', 'N', 0, 0, 0, 0, A, 1, AF, 1, IP, EQ, R, C,
@@ -517,7 +555,7 @@
 *        SPOSVXX
 *
          N_ERR_BNDS = 3
-         NPARAMS = 0
+         NPARAMS = 1
          SRNAMT = 'SPOSVXX'
          INFOT = 1
          CALL SPOSVXX( '/', 'U', 0, 0, A, 1, AF, 1, EQ, C, B, 1, X, 1,
@@ -802,7 +840,7 @@
 *        SSYSVXX
 *
          N_ERR_BNDS = 3
-         NPARAMS = 0
+         NPARAMS = 1
          SRNAMT = 'SSYSVXX'
          INFOT = 1
          EQ = 'N'

@@ -1,8 +1,37 @@
-      PROGRAM TEST5
+*> \brief \b DSECNDTST
 *
-*  -- LAPACK test routine (version 3.3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*  -- April 2011                                                      --
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*      PROGRAM DSECNDTST
+*  
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup auxOTHERauxiliary
+*
+*  =====================================================================      PROGRAM DSECNDTST
+*
+*  -- LAPACK test routine (version 3.4.0) --
+*
+*  -- LAPACK computational routine (version 3.4.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
+*
+* =====================================================================
 *
 *     .. Parameters ..
       INTEGER            NMAX, ITS

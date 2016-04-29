@@ -1,10 +1,223 @@
-      SUBROUTINE ZGESVD( JOBU, JOBVT, M, N, A, LDA, S, U, LDU, VT, LDVT,
-     $                   WORK, LWORK, RWORK, INFO )
+*> \brief <b> ZGESVD computes the singular value decomposition (SVD) for GE matrices</b>
 *
-*  -- LAPACK driver routine (version 3.2) --
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*> \htmlonly
+*> Download ZGESVD + dependencies 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/zgesvd.f"> 
+*> [TGZ]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/zgesvd.f"> 
+*> [ZIP]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/zgesvd.f"> 
+*> [TXT]</a>
+*> \endhtmlonly 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE ZGESVD( JOBU, JOBVT, M, N, A, LDA, S, U, LDU, VT, LDVT,
+*                          WORK, LWORK, RWORK, INFO )
+* 
+*       .. Scalar Arguments ..
+*       CHARACTER          JOBU, JOBVT
+*       INTEGER            INFO, LDA, LDU, LDVT, LWORK, M, N
+*       ..
+*       .. Array Arguments ..
+*       DOUBLE PRECISION   RWORK( * ), S( * )
+*       COMPLEX*16         A( LDA, * ), U( LDU, * ), VT( LDVT, * ),
+*      $                   WORK( * )
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> ZGESVD computes the singular value decomposition (SVD) of a complex
+*> M-by-N matrix A, optionally computing the left and/or right singular
+*> vectors. The SVD is written
+*>
+*>      A = U * SIGMA * conjugate-transpose(V)
+*>
+*> where SIGMA is an M-by-N matrix which is zero except for its
+*> min(m,n) diagonal elements, U is an M-by-M unitary matrix, and
+*> V is an N-by-N unitary matrix.  The diagonal elements of SIGMA
+*> are the singular values of A; they are real and non-negative, and
+*> are returned in descending order.  The first min(m,n) columns of
+*> U and V are the left and right singular vectors of A.
+*>
+*> Note that the routine returns V**H, not V.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] JOBU
+*> \verbatim
+*>          JOBU is CHARACTER*1
+*>          Specifies options for computing all or part of the matrix U:
+*>          = 'A':  all M columns of U are returned in array U:
+*>          = 'S':  the first min(m,n) columns of U (the left singular
+*>                  vectors) are returned in the array U;
+*>          = 'O':  the first min(m,n) columns of U (the left singular
+*>                  vectors) are overwritten on the array A;
+*>          = 'N':  no columns of U (no left singular vectors) are
+*>                  computed.
+*> \endverbatim
+*>
+*> \param[in] JOBVT
+*> \verbatim
+*>          JOBVT is CHARACTER*1
+*>          Specifies options for computing all or part of the matrix
+*>          V**H:
+*>          = 'A':  all N rows of V**H are returned in the array VT;
+*>          = 'S':  the first min(m,n) rows of V**H (the right singular
+*>                  vectors) are returned in the array VT;
+*>          = 'O':  the first min(m,n) rows of V**H (the right singular
+*>                  vectors) are overwritten on the array A;
+*>          = 'N':  no rows of V**H (no right singular vectors) are
+*>                  computed.
+*>
+*>          JOBVT and JOBU cannot both be 'O'.
+*> \endverbatim
+*>
+*> \param[in] M
+*> \verbatim
+*>          M is INTEGER
+*>          The number of rows of the input matrix A.  M >= 0.
+*> \endverbatim
+*>
+*> \param[in] N
+*> \verbatim
+*>          N is INTEGER
+*>          The number of columns of the input matrix A.  N >= 0.
+*> \endverbatim
+*>
+*> \param[in,out] A
+*> \verbatim
+*>          A is COMPLEX*16 array, dimension (LDA,N)
+*>          On entry, the M-by-N matrix A.
+*>          On exit,
+*>          if JOBU = 'O',  A is overwritten with the first min(m,n)
+*>                          columns of U (the left singular vectors,
+*>                          stored columnwise);
+*>          if JOBVT = 'O', A is overwritten with the first min(m,n)
+*>                          rows of V**H (the right singular vectors,
+*>                          stored rowwise);
+*>          if JOBU .ne. 'O' and JOBVT .ne. 'O', the contents of A
+*>                          are destroyed.
+*> \endverbatim
+*>
+*> \param[in] LDA
+*> \verbatim
+*>          LDA is INTEGER
+*>          The leading dimension of the array A.  LDA >= max(1,M).
+*> \endverbatim
+*>
+*> \param[out] S
+*> \verbatim
+*>          S is DOUBLE PRECISION array, dimension (min(M,N))
+*>          The singular values of A, sorted so that S(i) >= S(i+1).
+*> \endverbatim
+*>
+*> \param[out] U
+*> \verbatim
+*>          U is COMPLEX*16 array, dimension (LDU,UCOL)
+*>          (LDU,M) if JOBU = 'A' or (LDU,min(M,N)) if JOBU = 'S'.
+*>          If JOBU = 'A', U contains the M-by-M unitary matrix U;
+*>          if JOBU = 'S', U contains the first min(m,n) columns of U
+*>          (the left singular vectors, stored columnwise);
+*>          if JOBU = 'N' or 'O', U is not referenced.
+*> \endverbatim
+*>
+*> \param[in] LDU
+*> \verbatim
+*>          LDU is INTEGER
+*>          The leading dimension of the array U.  LDU >= 1; if
+*>          JOBU = 'S' or 'A', LDU >= M.
+*> \endverbatim
+*>
+*> \param[out] VT
+*> \verbatim
+*>          VT is COMPLEX*16 array, dimension (LDVT,N)
+*>          If JOBVT = 'A', VT contains the N-by-N unitary matrix
+*>          V**H;
+*>          if JOBVT = 'S', VT contains the first min(m,n) rows of
+*>          V**H (the right singular vectors, stored rowwise);
+*>          if JOBVT = 'N' or 'O', VT is not referenced.
+*> \endverbatim
+*>
+*> \param[in] LDVT
+*> \verbatim
+*>          LDVT is INTEGER
+*>          The leading dimension of the array VT.  LDVT >= 1; if
+*>          JOBVT = 'A', LDVT >= N; if JOBVT = 'S', LDVT >= min(M,N).
+*> \endverbatim
+*>
+*> \param[out] WORK
+*> \verbatim
+*>          WORK is COMPLEX*16 array, dimension (MAX(1,LWORK))
+*>          On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
+*> \endverbatim
+*>
+*> \param[in] LWORK
+*> \verbatim
+*>          LWORK is INTEGER
+*>          The dimension of the array WORK.
+*>          LWORK >=  MAX(1,2*MIN(M,N)+MAX(M,N)).
+*>          For good performance, LWORK should generally be larger.
+*>
+*>          If LWORK = -1, then a workspace query is assumed; the routine
+*>          only calculates the optimal size of the WORK array, returns
+*>          this value as the first entry of the WORK array, and no error
+*>          message related to LWORK is issued by XERBLA.
+*> \endverbatim
+*>
+*> \param[out] RWORK
+*> \verbatim
+*>          RWORK is DOUBLE PRECISION array, dimension (5*min(M,N))
+*>          On exit, if INFO > 0, RWORK(1:MIN(M,N)-1) contains the
+*>          unconverged superdiagonal elements of an upper bidiagonal
+*>          matrix B whose diagonal is in S (not necessarily sorted).
+*>          B satisfies A = U * B * VT, so it has the same singular
+*>          values as A, and singular vectors related by U and VT.
+*> \endverbatim
+*>
+*> \param[out] INFO
+*> \verbatim
+*>          INFO is INTEGER
+*>          = 0:  successful exit.
+*>          < 0:  if INFO = -i, the i-th argument had an illegal value.
+*>          > 0:  if ZBDSQR did not converge, INFO specifies how many
+*>                superdiagonals of an intermediate bidiagonal form B
+*>                did not converge to zero. See the description of RWORK
+*>                above for details.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup complex16GEsing
+*
+*  =====================================================================
+      SUBROUTINE ZGESVD( JOBU, JOBVT, M, N, A, LDA, S, U, LDU, 
+     $                   VT, LDVT, WORK, LWORK, RWORK, INFO )
+*
+*  -- LAPACK driver routine (version 3.4.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     November 2011
 *
 *     .. Scalar Arguments ..
       CHARACTER          JOBU, JOBVT
@@ -15,124 +228,6 @@
       COMPLEX*16         A( LDA, * ), U( LDU, * ), VT( LDVT, * ),
      $                   WORK( * )
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  ZGESVD computes the singular value decomposition (SVD) of a complex
-*  M-by-N matrix A, optionally computing the left and/or right singular
-*  vectors. The SVD is written
-*
-*       A = U * SIGMA * conjugate-transpose(V)
-*
-*  where SIGMA is an M-by-N matrix which is zero except for its
-*  min(m,n) diagonal elements, U is an M-by-M unitary matrix, and
-*  V is an N-by-N unitary matrix.  The diagonal elements of SIGMA
-*  are the singular values of A; they are real and non-negative, and
-*  are returned in descending order.  The first min(m,n) columns of
-*  U and V are the left and right singular vectors of A.
-*
-*  Note that the routine returns V**H, not V.
-*
-*  Arguments
-*  =========
-*
-*  JOBU    (input) CHARACTER*1
-*          Specifies options for computing all or part of the matrix U:
-*          = 'A':  all M columns of U are returned in array U:
-*          = 'S':  the first min(m,n) columns of U (the left singular
-*                  vectors) are returned in the array U;
-*          = 'O':  the first min(m,n) columns of U (the left singular
-*                  vectors) are overwritten on the array A;
-*          = 'N':  no columns of U (no left singular vectors) are
-*                  computed.
-*
-*  JOBVT   (input) CHARACTER*1
-*          Specifies options for computing all or part of the matrix
-*          V**H:
-*          = 'A':  all N rows of V**H are returned in the array VT;
-*          = 'S':  the first min(m,n) rows of V**H (the right singular
-*                  vectors) are returned in the array VT;
-*          = 'O':  the first min(m,n) rows of V**H (the right singular
-*                  vectors) are overwritten on the array A;
-*          = 'N':  no rows of V**H (no right singular vectors) are
-*                  computed.
-*
-*          JOBVT and JOBU cannot both be 'O'.
-*
-*  M       (input) INTEGER
-*          The number of rows of the input matrix A.  M >= 0.
-*
-*  N       (input) INTEGER
-*          The number of columns of the input matrix A.  N >= 0.
-*
-*  A       (input/output) COMPLEX*16 array, dimension (LDA,N)
-*          On entry, the M-by-N matrix A.
-*          On exit,
-*          if JOBU = 'O',  A is overwritten with the first min(m,n)
-*                          columns of U (the left singular vectors,
-*                          stored columnwise);
-*          if JOBVT = 'O', A is overwritten with the first min(m,n)
-*                          rows of V**H (the right singular vectors,
-*                          stored rowwise);
-*          if JOBU .ne. 'O' and JOBVT .ne. 'O', the contents of A
-*                          are destroyed.
-*
-*  LDA     (input) INTEGER
-*          The leading dimension of the array A.  LDA >= max(1,M).
-*
-*  S       (output) DOUBLE PRECISION array, dimension (min(M,N))
-*          The singular values of A, sorted so that S(i) >= S(i+1).
-*
-*  U       (output) COMPLEX*16 array, dimension (LDU,UCOL)
-*          (LDU,M) if JOBU = 'A' or (LDU,min(M,N)) if JOBU = 'S'.
-*          If JOBU = 'A', U contains the M-by-M unitary matrix U;
-*          if JOBU = 'S', U contains the first min(m,n) columns of U
-*          (the left singular vectors, stored columnwise);
-*          if JOBU = 'N' or 'O', U is not referenced.
-*
-*  LDU     (input) INTEGER
-*          The leading dimension of the array U.  LDU >= 1; if
-*          JOBU = 'S' or 'A', LDU >= M.
-*
-*  VT      (output) COMPLEX*16 array, dimension (LDVT,N)
-*          If JOBVT = 'A', VT contains the N-by-N unitary matrix
-*          V**H;
-*          if JOBVT = 'S', VT contains the first min(m,n) rows of
-*          V**H (the right singular vectors, stored rowwise);
-*          if JOBVT = 'N' or 'O', VT is not referenced.
-*
-*  LDVT    (input) INTEGER
-*          The leading dimension of the array VT.  LDVT >= 1; if
-*          JOBVT = 'A', LDVT >= N; if JOBVT = 'S', LDVT >= min(M,N).
-*
-*  WORK    (workspace/output) COMPLEX*16 array, dimension (MAX(1,LWORK))
-*          On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
-*
-*  LWORK   (input) INTEGER
-*          The dimension of the array WORK.
-*          LWORK >=  MAX(1,2*MIN(M,N)+MAX(M,N)).
-*          For good performance, LWORK should generally be larger.
-*
-*          If LWORK = -1, then a workspace query is assumed; the routine
-*          only calculates the optimal size of the WORK array, returns
-*          this value as the first entry of the WORK array, and no error
-*          message related to LWORK is issued by XERBLA.
-*
-*  RWORK   (workspace) DOUBLE PRECISION array, dimension (5*min(M,N))
-*          On exit, if INFO > 0, RWORK(1:MIN(M,N)-1) contains the
-*          unconverged superdiagonal elements of an upper bidiagonal
-*          matrix B whose diagonal is in S (not necessarily sorted).
-*          B satisfies A = U * B * VT, so it has the same singular
-*          values as A, and singular vectors related by U and VT.
-*
-*  INFO    (output) INTEGER
-*          = 0:  successful exit.
-*          < 0:  if INFO = -i, the i-th argument had an illegal value.
-*          > 0:  if ZBDSQR did not converge, INFO specifies how many
-*                superdiagonals of an intermediate bidiagonal form B
-*                did not converge to zero. See the description of RWORK
-*                above for details.
 *
 *  =====================================================================
 *
@@ -150,6 +245,9 @@
      $                   ITAU, ITAUP, ITAUQ, IU, IWORK, LDWRKR, LDWRKU,
      $                   MAXWRK, MINMN, MINWRK, MNTHR, NCU, NCVT, NRU,
      $                   NRVT, WRKBL
+      INTEGER            LWORK_ZGEQRF, LWORK_ZUNGQR_N, LWORK_ZUNGQR_M,
+     $                   LWORK_ZGEBRD, LWORK_ZUNGBR_P, LWORK_ZUNGBR_Q,
+     $                   LWORK_ZGELQF, LWORK_ZUNGLQ_N, LWORK_ZUNGLQ_M
       DOUBLE PRECISION   ANRM, BIGNUM, EPS, SMLNUM
 *     ..
 *     .. Local Arrays ..
@@ -222,30 +320,44 @@
 *           Space needed for ZBDSQR is BDSPAC = 5*N
 *
             MNTHR = ILAENV( 6, 'ZGESVD', JOBU // JOBVT, M, N, 0, 0 )
+*           Compute space needed for ZGEQRF
+            CALL ZGEQRF( M, N, A, LDA, DUM(1), DUM(1), -1, IERR )
+            LWORK_ZGEQRF=DUM(1)
+*           Compute space needed for ZUNGQR
+            CALL ZUNGQR( M, N, N, A, LDA, DUM(1), DUM(1), -1, IERR )
+            LWORK_ZUNGQR_N=DUM(1)
+            CALL ZUNGQR( M, M, N, A, LDA, DUM(1), DUM(1), -1, IERR )
+            LWORK_ZUNGQR_M=DUM(1)
+*           Compute space needed for ZGEBRD
+            CALL ZGEBRD( N, N, A, LDA, S, DUM(1), DUM(1),
+     $                   DUM(1), DUM(1), -1, IERR )
+            LWORK_ZGEBRD=DUM(1)
+*           Compute space needed for ZUNGBR
+            CALL ZUNGBR( 'P', N, N, N, A, LDA, DUM(1),
+     $                   DUM(1), -1, IERR )
+            LWORK_ZUNGBR_P=DUM(1)
+            CALL ZUNGBR( 'Q', N, N, N, A, LDA, DUM(1),
+     $                   DUM(1), -1, IERR )
+            LWORK_ZUNGBR_Q=DUM(1)
+*
             IF( M.GE.MNTHR ) THEN
                IF( WNTUN ) THEN
 *
 *                 Path 1 (M much larger than N, JOBU='N')
 *
-                  MAXWRK = N + N*ILAENV( 1, 'ZGEQRF', ' ', M, N, -1,
-     $                     -1 )
-                  MAXWRK = MAX( MAXWRK, 2*N+2*N*
-     $                     ILAENV( 1, 'ZGEBRD', ' ', N, N, -1, -1 ) )
+                  MAXWRK = N + LWORK_ZGEQRF
+                  MAXWRK = MAX( MAXWRK, 2*N+LWORK_ZGEBRD )
                   IF( WNTVO .OR. WNTVAS )
-     $               MAXWRK = MAX( MAXWRK, 2*N+( N-1 )*
-     $                        ILAENV( 1, 'ZUNGBR', 'P', N, N, N, -1 ) )
+     $               MAXWRK = MAX( MAXWRK, 2*N+LWORK_ZUNGBR_P )
                   MINWRK = 3*N
                ELSE IF( WNTUO .AND. WNTVN ) THEN
 *
 *                 Path 2 (M much larger than N, JOBU='O', JOBVT='N')
 *
-                  WRKBL = N + N*ILAENV( 1, 'ZGEQRF', ' ', M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, N+N*ILAENV( 1, 'ZUNGQR', ' ', M,
-     $                    N, N, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*N+2*N*
-     $                    ILAENV( 1, 'ZGEBRD', ' ', N, N, -1, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*N+N*
-     $                    ILAENV( 1, 'ZUNGBR', 'Q', N, N, N, -1 ) )
+                  WRKBL = N + LWORK_ZGEQRF
+                  WRKBL = MAX( WRKBL, N+LWORK_ZUNGQR_N )
+                  WRKBL = MAX( WRKBL, 2*N+LWORK_ZGEBRD )
+                  WRKBL = MAX( WRKBL, 2*N+LWORK_ZUNGBR_Q )
                   MAXWRK = MAX( N*N+WRKBL, N*N+M*N )
                   MINWRK = 2*N + M
                ELSE IF( WNTUO .AND. WNTVAS ) THEN
@@ -253,43 +365,32 @@
 *                 Path 3 (M much larger than N, JOBU='O', JOBVT='S' or
 *                 'A')
 *
-                  WRKBL = N + N*ILAENV( 1, 'ZGEQRF', ' ', M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, N+N*ILAENV( 1, 'ZUNGQR', ' ', M,
-     $                    N, N, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*N+2*N*
-     $                    ILAENV( 1, 'ZGEBRD', ' ', N, N, -1, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*N+N*
-     $                    ILAENV( 1, 'ZUNGBR', 'Q', N, N, N, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*N+( N-1 )*
-     $                    ILAENV( 1, 'ZUNGBR', 'P', N, N, N, -1 ) )
+                  WRKBL = N + LWORK_ZGEQRF
+                  WRKBL = MAX( WRKBL, N+LWORK_ZUNGQR_N )
+                  WRKBL = MAX( WRKBL, 2*N+LWORK_ZGEBRD )
+                  WRKBL = MAX( WRKBL, 2*N+LWORK_ZUNGBR_Q )
+                  WRKBL = MAX( WRKBL, 2*N+LWORK_ZUNGBR_P )
                   MAXWRK = MAX( N*N+WRKBL, N*N+M*N )
                   MINWRK = 2*N + M
                ELSE IF( WNTUS .AND. WNTVN ) THEN
 *
 *                 Path 4 (M much larger than N, JOBU='S', JOBVT='N')
 *
-                  WRKBL = N + N*ILAENV( 1, 'ZGEQRF', ' ', M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, N+N*ILAENV( 1, 'ZUNGQR', ' ', M,
-     $                    N, N, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*N+2*N*
-     $                    ILAENV( 1, 'ZGEBRD', ' ', N, N, -1, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*N+N*
-     $                    ILAENV( 1, 'ZUNGBR', 'Q', N, N, N, -1 ) )
+                  WRKBL = N + LWORK_ZGEQRF
+                  WRKBL = MAX( WRKBL, N+LWORK_ZUNGQR_N )
+                  WRKBL = MAX( WRKBL, 2*N+LWORK_ZGEBRD )
+                  WRKBL = MAX( WRKBL, 2*N+LWORK_ZUNGBR_Q )
                   MAXWRK = N*N + WRKBL
                   MINWRK = 2*N + M
                ELSE IF( WNTUS .AND. WNTVO ) THEN
 *
 *                 Path 5 (M much larger than N, JOBU='S', JOBVT='O')
 *
-                  WRKBL = N + N*ILAENV( 1, 'ZGEQRF', ' ', M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, N+N*ILAENV( 1, 'ZUNGQR', ' ', M,
-     $                    N, N, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*N+2*N*
-     $                    ILAENV( 1, 'ZGEBRD', ' ', N, N, -1, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*N+N*
-     $                    ILAENV( 1, 'ZUNGBR', 'Q', N, N, N, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*N+( N-1 )*
-     $                    ILAENV( 1, 'ZUNGBR', 'P', N, N, N, -1 ) )
+                  WRKBL = N + LWORK_ZGEQRF
+                  WRKBL = MAX( WRKBL, N+LWORK_ZUNGQR_N )
+                  WRKBL = MAX( WRKBL, 2*N+LWORK_ZGEBRD )
+                  WRKBL = MAX( WRKBL, 2*N+LWORK_ZUNGBR_Q )
+                  WRKBL = MAX( WRKBL, 2*N+LWORK_ZUNGBR_P )
                   MAXWRK = 2*N*N + WRKBL
                   MINWRK = 2*N + M
                ELSE IF( WNTUS .AND. WNTVAS ) THEN
@@ -297,43 +398,32 @@
 *                 Path 6 (M much larger than N, JOBU='S', JOBVT='S' or
 *                 'A')
 *
-                  WRKBL = N + N*ILAENV( 1, 'ZGEQRF', ' ', M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, N+N*ILAENV( 1, 'ZUNGQR', ' ', M,
-     $                    N, N, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*N+2*N*
-     $                    ILAENV( 1, 'ZGEBRD', ' ', N, N, -1, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*N+N*
-     $                    ILAENV( 1, 'ZUNGBR', 'Q', N, N, N, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*N+( N-1 )*
-     $                    ILAENV( 1, 'ZUNGBR', 'P', N, N, N, -1 ) )
+                  WRKBL = N + LWORK_ZGEQRF
+                  WRKBL = MAX( WRKBL, N+LWORK_ZUNGQR_N )
+                  WRKBL = MAX( WRKBL, 2*N+LWORK_ZGEBRD )
+                  WRKBL = MAX( WRKBL, 2*N+LWORK_ZUNGBR_Q )
+                  WRKBL = MAX( WRKBL, 2*N+LWORK_ZUNGBR_P )
                   MAXWRK = N*N + WRKBL
                   MINWRK = 2*N + M
                ELSE IF( WNTUA .AND. WNTVN ) THEN
 *
 *                 Path 7 (M much larger than N, JOBU='A', JOBVT='N')
 *
-                  WRKBL = N + N*ILAENV( 1, 'ZGEQRF', ' ', M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, N+M*ILAENV( 1, 'ZUNGQR', ' ', M,
-     $                    M, N, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*N+2*N*
-     $                    ILAENV( 1, 'ZGEBRD', ' ', N, N, -1, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*N+N*
-     $                    ILAENV( 1, 'ZUNGBR', 'Q', N, N, N, -1 ) )
+                  WRKBL = N + LWORK_ZGEQRF
+                  WRKBL = MAX( WRKBL, N+LWORK_ZUNGQR_M )
+                  WRKBL = MAX( WRKBL, 2*N+LWORK_ZGEBRD )
+                  WRKBL = MAX( WRKBL, 2*N+LWORK_ZUNGBR_Q )
                   MAXWRK = N*N + WRKBL
                   MINWRK = 2*N + M
                ELSE IF( WNTUA .AND. WNTVO ) THEN
 *
 *                 Path 8 (M much larger than N, JOBU='A', JOBVT='O')
 *
-                  WRKBL = N + N*ILAENV( 1, 'ZGEQRF', ' ', M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, N+M*ILAENV( 1, 'ZUNGQR', ' ', M,
-     $                    M, N, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*N+2*N*
-     $                    ILAENV( 1, 'ZGEBRD', ' ', N, N, -1, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*N+N*
-     $                    ILAENV( 1, 'ZUNGBR', 'Q', N, N, N, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*N+( N-1 )*
-     $                    ILAENV( 1, 'ZUNGBR', 'P', N, N, N, -1 ) )
+                  WRKBL = N + LWORK_ZGEQRF
+                  WRKBL = MAX( WRKBL, N+LWORK_ZUNGQR_M )
+                  WRKBL = MAX( WRKBL, 2*N+LWORK_ZGEBRD )
+                  WRKBL = MAX( WRKBL, 2*N+LWORK_ZUNGBR_Q )
+                  WRKBL = MAX( WRKBL, 2*N+LWORK_ZUNGBR_P )
                   MAXWRK = 2*N*N + WRKBL
                   MINWRK = 2*N + M
                ELSE IF( WNTUA .AND. WNTVAS ) THEN
@@ -341,15 +431,11 @@
 *                 Path 9 (M much larger than N, JOBU='A', JOBVT='S' or
 *                 'A')
 *
-                  WRKBL = N + N*ILAENV( 1, 'ZGEQRF', ' ', M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, N+M*ILAENV( 1, 'ZUNGQR', ' ', M,
-     $                    M, N, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*N+2*N*
-     $                    ILAENV( 1, 'ZGEBRD', ' ', N, N, -1, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*N+N*
-     $                    ILAENV( 1, 'ZUNGBR', 'Q', N, N, N, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*N+( N-1 )*
-     $                    ILAENV( 1, 'ZUNGBR', 'P', N, N, N, -1 ) )
+                  WRKBL = N + LWORK_ZGEQRF
+                  WRKBL = MAX( WRKBL, N+LWORK_ZUNGQR_M )
+                  WRKBL = MAX( WRKBL, 2*N+LWORK_ZGEBRD )
+                  WRKBL = MAX( WRKBL, 2*N+LWORK_ZUNGBR_Q )
+                  WRKBL = MAX( WRKBL, 2*N+LWORK_ZUNGBR_P )
                   MAXWRK = N*N + WRKBL
                   MINWRK = 2*N + M
                END IF
@@ -357,48 +443,70 @@
 *
 *              Path 10 (M at least N, but not much larger)
 *
-               MAXWRK = 2*N + ( M+N )*ILAENV( 1, 'ZGEBRD', ' ', M, N,
-     $                  -1, -1 )
-               IF( WNTUS .OR. WNTUO )
-     $            MAXWRK = MAX( MAXWRK, 2*N+N*
-     $                     ILAENV( 1, 'ZUNGBR', 'Q', M, N, N, -1 ) )
-               IF( WNTUA )
-     $            MAXWRK = MAX( MAXWRK, 2*N+M*
-     $                     ILAENV( 1, 'ZUNGBR', 'Q', M, M, N, -1 ) )
-               IF( .NOT.WNTVN )
-     $            MAXWRK = MAX( MAXWRK, 2*N+( N-1 )*
-     $                     ILAENV( 1, 'ZUNGBR', 'P', N, N, N, -1 ) )
+               CALL ZGEBRD( M, N, A, LDA, S, DUM(1), DUM(1),
+     $                   DUM(1), DUM(1), -1, IERR )
+               LWORK_ZGEBRD=DUM(1)
+               MAXWRK = 2*N + LWORK_ZGEBRD
+               IF( WNTUS .OR. WNTUO ) THEN
+                  CALL ZUNGBR( 'Q', M, N, N, A, LDA, DUM(1),
+     $                   DUM(1), -1, IERR )
+                  LWORK_ZUNGBR_Q=DUM(1)
+                  MAXWRK = MAX( MAXWRK, 2*N+LWORK_ZUNGBR_Q )
+               END IF
+               IF( WNTUA ) THEN
+                  CALL ZUNGBR( 'Q', M, M, N, A, LDA, DUM(1),
+     $                   DUM(1), -1, IERR )
+                  LWORK_ZUNGBR_Q=DUM(1)
+                  MAXWRK = MAX( MAXWRK, 2*N+LWORK_ZUNGBR_Q )
+               END IF
+               IF( .NOT.WNTVN ) THEN
+                  MAXWRK = MAX( MAXWRK, 2*N+LWORK_ZUNGBR_P )
                MINWRK = 2*N + M
+               END IF
             END IF
          ELSE IF( MINMN.GT.0 ) THEN
 *
 *           Space needed for ZBDSQR is BDSPAC = 5*M
 *
             MNTHR = ILAENV( 6, 'ZGESVD', JOBU // JOBVT, M, N, 0, 0 )
+*           Compute space needed for ZGELQF
+            CALL ZGELQF( M, N, A, LDA, DUM(1), DUM(1), -1, IERR )
+            LWORK_ZGELQF=DUM(1)
+*           Compute space needed for ZUNGLQ
+            CALL ZUNGLQ( N, N, M, VT, LDVT, DUM(1), DUM(1), -1, IERR )
+            LWORK_ZUNGLQ_N=DUM(1)
+            CALL ZUNGLQ( M, N, M, A, LDA, DUM(1), DUM(1), -1, IERR )
+            LWORK_ZUNGLQ_M=DUM(1)
+*           Compute space needed for ZGEBRD
+            CALL ZGEBRD( M, M, A, LDA, S, DUM(1), DUM(1),
+     $                   DUM(1), DUM(1), -1, IERR )
+            LWORK_ZGEBRD=DUM(1)
+*            Compute space needed for ZUNGBR P
+            CALL ZUNGBR( 'P', M, M, M, A, N, DUM(1),
+     $                   DUM(1), -1, IERR )
+            LWORK_ZUNGBR_P=DUM(1)
+*           Compute space needed for ZUNGBR Q
+            CALL ZUNGBR( 'Q', M, M, M, A, N, DUM(1),
+     $                   DUM(1), -1, IERR )
+            LWORK_ZUNGBR_Q=DUM(1)
             IF( N.GE.MNTHR ) THEN
                IF( WNTVN ) THEN
 *
 *                 Path 1t(N much larger than M, JOBVT='N')
 *
-                  MAXWRK = M + M*ILAENV( 1, 'ZGELQF', ' ', M, N, -1,
-     $                     -1 )
-                  MAXWRK = MAX( MAXWRK, 2*M+2*M*
-     $                     ILAENV( 1, 'ZGEBRD', ' ', M, M, -1, -1 ) )
+                  MAXWRK = M + LWORK_ZGELQF
+                  MAXWRK = MAX( MAXWRK, 2*M+LWORK_ZGEBRD )
                   IF( WNTUO .OR. WNTUAS )
-     $               MAXWRK = MAX( MAXWRK, 2*M+M*
-     $                        ILAENV( 1, 'ZUNGBR', 'Q', M, M, M, -1 ) )
+     $               MAXWRK = MAX( MAXWRK, 2*M+LWORK_ZUNGBR_Q )
                   MINWRK = 3*M
                ELSE IF( WNTVO .AND. WNTUN ) THEN
 *
 *                 Path 2t(N much larger than M, JOBU='N', JOBVT='O')
 *
-                  WRKBL = M + M*ILAENV( 1, 'ZGELQF', ' ', M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, M+M*ILAENV( 1, 'ZUNGLQ', ' ', M,
-     $                    N, M, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*M+2*M*
-     $                    ILAENV( 1, 'ZGEBRD', ' ', M, M, -1, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*M+( M-1 )*
-     $                    ILAENV( 1, 'ZUNGBR', 'P', M, M, M, -1 ) )
+                  WRKBL = M + LWORK_ZGELQF
+                  WRKBL = MAX( WRKBL, M+LWORK_ZUNGLQ_M )
+                  WRKBL = MAX( WRKBL, 2*M+LWORK_ZGEBRD )
+                  WRKBL = MAX( WRKBL, 2*M+LWORK_ZUNGBR_P )
                   MAXWRK = MAX( M*M+WRKBL, M*M+M*N )
                   MINWRK = 2*M + N
                ELSE IF( WNTVO .AND. WNTUAS ) THEN
@@ -406,43 +514,32 @@
 *                 Path 3t(N much larger than M, JOBU='S' or 'A',
 *                 JOBVT='O')
 *
-                  WRKBL = M + M*ILAENV( 1, 'ZGELQF', ' ', M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, M+M*ILAENV( 1, 'ZUNGLQ', ' ', M,
-     $                    N, M, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*M+2*M*
-     $                    ILAENV( 1, 'ZGEBRD', ' ', M, M, -1, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*M+( M-1 )*
-     $                    ILAENV( 1, 'ZUNGBR', 'P', M, M, M, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*M+M*
-     $                    ILAENV( 1, 'ZUNGBR', 'Q', M, M, M, -1 ) )
+                  WRKBL = M + LWORK_ZGELQF
+                  WRKBL = MAX( WRKBL, M+LWORK_ZUNGLQ_M )
+                  WRKBL = MAX( WRKBL, 2*M+LWORK_ZGEBRD )
+                  WRKBL = MAX( WRKBL, 2*M+LWORK_ZUNGBR_P )
+                  WRKBL = MAX( WRKBL, 2*M+LWORK_ZUNGBR_Q )
                   MAXWRK = MAX( M*M+WRKBL, M*M+M*N )
                   MINWRK = 2*M + N
                ELSE IF( WNTVS .AND. WNTUN ) THEN
 *
 *                 Path 4t(N much larger than M, JOBU='N', JOBVT='S')
 *
-                  WRKBL = M + M*ILAENV( 1, 'ZGELQF', ' ', M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, M+M*ILAENV( 1, 'ZUNGLQ', ' ', M,
-     $                    N, M, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*M+2*M*
-     $                    ILAENV( 1, 'ZGEBRD', ' ', M, M, -1, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*M+( M-1 )*
-     $                    ILAENV( 1, 'ZUNGBR', 'P', M, M, M, -1 ) )
+                  WRKBL = M + LWORK_ZGELQF
+                  WRKBL = MAX( WRKBL, M+LWORK_ZUNGLQ_M )
+                  WRKBL = MAX( WRKBL, 2*M+LWORK_ZGEBRD )
+                  WRKBL = MAX( WRKBL, 2*M+LWORK_ZUNGBR_P )
                   MAXWRK = M*M + WRKBL
                   MINWRK = 2*M + N
                ELSE IF( WNTVS .AND. WNTUO ) THEN
 *
 *                 Path 5t(N much larger than M, JOBU='O', JOBVT='S')
 *
-                  WRKBL = M + M*ILAENV( 1, 'ZGELQF', ' ', M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, M+M*ILAENV( 1, 'ZUNGLQ', ' ', M,
-     $                    N, M, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*M+2*M*
-     $                    ILAENV( 1, 'ZGEBRD', ' ', M, M, -1, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*M+( M-1 )*
-     $                    ILAENV( 1, 'ZUNGBR', 'P', M, M, M, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*M+M*
-     $                    ILAENV( 1, 'ZUNGBR', 'Q', M, M, M, -1 ) )
+                  WRKBL = M + LWORK_ZGELQF
+                  WRKBL = MAX( WRKBL, M+LWORK_ZUNGLQ_M )
+                  WRKBL = MAX( WRKBL, 2*M+LWORK_ZGEBRD )
+                  WRKBL = MAX( WRKBL, 2*M+LWORK_ZUNGBR_P )
+                  WRKBL = MAX( WRKBL, 2*M+LWORK_ZUNGBR_Q )
                   MAXWRK = 2*M*M + WRKBL
                   MINWRK = 2*M + N
                ELSE IF( WNTVS .AND. WNTUAS ) THEN
@@ -450,43 +547,32 @@
 *                 Path 6t(N much larger than M, JOBU='S' or 'A',
 *                 JOBVT='S')
 *
-                  WRKBL = M + M*ILAENV( 1, 'ZGELQF', ' ', M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, M+M*ILAENV( 1, 'ZUNGLQ', ' ', M,
-     $                    N, M, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*M+2*M*
-     $                    ILAENV( 1, 'ZGEBRD', ' ', M, M, -1, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*M+( M-1 )*
-     $                    ILAENV( 1, 'ZUNGBR', 'P', M, M, M, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*M+M*
-     $                    ILAENV( 1, 'ZUNGBR', 'Q', M, M, M, -1 ) )
+                  WRKBL = M + LWORK_ZGELQF
+                  WRKBL = MAX( WRKBL, M+LWORK_ZUNGLQ_M )
+                  WRKBL = MAX( WRKBL, 2*M+LWORK_ZGEBRD )
+                  WRKBL = MAX( WRKBL, 2*M+LWORK_ZUNGBR_P )
+                  WRKBL = MAX( WRKBL, 2*M+LWORK_ZUNGBR_Q )
                   MAXWRK = M*M + WRKBL
                   MINWRK = 2*M + N
                ELSE IF( WNTVA .AND. WNTUN ) THEN
 *
 *                 Path 7t(N much larger than M, JOBU='N', JOBVT='A')
 *
-                  WRKBL = M + M*ILAENV( 1, 'ZGELQF', ' ', M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, M+N*ILAENV( 1, 'ZUNGLQ', ' ', N,
-     $                    N, M, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*M+2*M*
-     $                    ILAENV( 1, 'ZGEBRD', ' ', M, M, -1, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*M+( M-1 )*
-     $                    ILAENV( 1, 'ZUNGBR', 'P', M, M, M, -1 ) )
+                  WRKBL = M + LWORK_ZGELQF
+                  WRKBL = MAX( WRKBL, M+LWORK_ZUNGLQ_N )
+                  WRKBL = MAX( WRKBL, 2*M+LWORK_ZGEBRD )
+                  WRKBL = MAX( WRKBL, 2*M+LWORK_ZUNGBR_P )
                   MAXWRK = M*M + WRKBL
                   MINWRK = 2*M + N
                ELSE IF( WNTVA .AND. WNTUO ) THEN
 *
 *                 Path 8t(N much larger than M, JOBU='O', JOBVT='A')
 *
-                  WRKBL = M + M*ILAENV( 1, 'ZGELQF', ' ', M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, M+N*ILAENV( 1, 'ZUNGLQ', ' ', N,
-     $                    N, M, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*M+2*M*
-     $                    ILAENV( 1, 'ZGEBRD', ' ', M, M, -1, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*M+( M-1 )*
-     $                    ILAENV( 1, 'ZUNGBR', 'P', M, M, M, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*M+M*
-     $                    ILAENV( 1, 'ZUNGBR', 'Q', M, M, M, -1 ) )
+                  WRKBL = M + LWORK_ZGELQF
+                  WRKBL = MAX( WRKBL, M+LWORK_ZUNGLQ_N )
+                  WRKBL = MAX( WRKBL, 2*M+LWORK_ZGEBRD )
+                  WRKBL = MAX( WRKBL, 2*M+LWORK_ZUNGBR_P )
+                  WRKBL = MAX( WRKBL, 2*M+LWORK_ZUNGBR_Q )
                   MAXWRK = 2*M*M + WRKBL
                   MINWRK = 2*M + N
                ELSE IF( WNTVA .AND. WNTUAS ) THEN
@@ -494,15 +580,11 @@
 *                 Path 9t(N much larger than M, JOBU='S' or 'A',
 *                 JOBVT='A')
 *
-                  WRKBL = M + M*ILAENV( 1, 'ZGELQF', ' ', M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, M+N*ILAENV( 1, 'ZUNGLQ', ' ', N,
-     $                    N, M, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*M+2*M*
-     $                    ILAENV( 1, 'ZGEBRD', ' ', M, M, -1, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*M+( M-1 )*
-     $                    ILAENV( 1, 'ZUNGBR', 'P', M, M, M, -1 ) )
-                  WRKBL = MAX( WRKBL, 2*M+M*
-     $                    ILAENV( 1, 'ZUNGBR', 'Q', M, M, M, -1 ) )
+                  WRKBL = M + LWORK_ZGELQF
+                  WRKBL = MAX( WRKBL, M+LWORK_ZUNGLQ_N )
+                  WRKBL = MAX( WRKBL, 2*M+LWORK_ZGEBRD )
+                  WRKBL = MAX( WRKBL, 2*M+LWORK_ZUNGBR_P )
+                  WRKBL = MAX( WRKBL, 2*M+LWORK_ZUNGBR_Q )
                   MAXWRK = M*M + WRKBL
                   MINWRK = 2*M + N
                END IF
@@ -510,18 +592,27 @@
 *
 *              Path 10t(N greater than M, but not much larger)
 *
-               MAXWRK = 2*M + ( M+N )*ILAENV( 1, 'ZGEBRD', ' ', M, N,
-     $                  -1, -1 )
-               IF( WNTVS .OR. WNTVO )
-     $            MAXWRK = MAX( MAXWRK, 2*M+M*
-     $                     ILAENV( 1, 'ZUNGBR', 'P', M, N, M, -1 ) )
-               IF( WNTVA )
-     $            MAXWRK = MAX( MAXWRK, 2*M+N*
-     $                     ILAENV( 1, 'ZUNGBR', 'P', N, N, M, -1 ) )
-               IF( .NOT.WNTUN )
-     $            MAXWRK = MAX( MAXWRK, 2*M+( M-1 )*
-     $                     ILAENV( 1, 'ZUNGBR', 'Q', M, M, M, -1 ) )
+               CALL ZGEBRD( M, N, A, LDA, S, DUM(1), DUM(1),
+     $                   DUM(1), DUM(1), -1, IERR )
+               LWORK_ZGEBRD=DUM(1)
+               MAXWRK = 2*M + LWORK_ZGEBRD
+               IF( WNTVS .OR. WNTVO ) THEN
+*                Compute space needed for ZUNGBR P
+                 CALL ZUNGBR( 'P', M, N, M, A, N, DUM(1),
+     $                   DUM(1), -1, IERR )
+                 LWORK_ZUNGBR_P=DUM(1)
+                 MAXWRK = MAX( MAXWRK, 2*M+LWORK_ZUNGBR_P )
+               END IF
+               IF( WNTVA ) THEN
+                 CALL ZUNGBR( 'P', N,  N, M, A, N, DUM(1),
+     $                   DUM(1), -1, IERR )
+                 LWORK_ZUNGBR_P=DUM(1)
+                 MAXWRK = MAX( MAXWRK, 2*M+LWORK_ZUNGBR_P )
+               END IF
+               IF( .NOT.WNTUN ) THEN
+                  MAXWRK = MAX( MAXWRK, 2*M+LWORK_ZUNGBR_Q )
                MINWRK = 2*M + N
+               END IF
             END IF
          END IF
          MAXWRK = MAX( MAXWRK, MINWRK )

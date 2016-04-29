@@ -1,23 +1,60 @@
+*> \brief \b ZERRAB
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE ZERRAB( NUNIT )
+* 
+*       .. Scalar Arguments ..
+*       INTEGER            NUNIT
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> DERRAB tests the error exits for ZCGESV.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] NUNIT
+*> \verbatim
+*>          NUNIT is INTEGER
+*>          The unit number for output.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup complex16_lin
+*
+*  =====================================================================
       SUBROUTINE ZERRAB( NUNIT )
 *
-*  -- LAPACK test routine (version 3.1.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     January 2007
+*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       INTEGER            NUNIT
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  DERRAB tests the error exits for ZCGESV.
-*
-*  Arguments
-*  =========
-*
-*  NUNIT   (input) INTEGER
-*          The unit number for output.
 *
 *  =====================================================================
 *

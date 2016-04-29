@@ -1,6 +1,26 @@
-      PROGRAM MAIN
+*> \brief \b TSTIEE
 *
-*  -- LAPACK test routine (version 3.2) --
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup auxOTHERauxiliary
+*
+*  =====================================================================
+      PROGRAM TSTIEE
+*
+*  -- LAPACK test routine (version 3.4.0) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -61,7 +81,7 @@
       INTEGER          FUNCTION ILAENV( ISPEC, NAME, OPTS, N1, N2, N3,
      $                 N4 )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.4.0) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -86,8 +106,8 @@
 *  This routine will not function correctly if it is converted to all
 *  lower case.  Converting it to all upper case is allowed.
 *
-*  Arguments
-*  =========
+*  Arguments:
+*  ==========
 *
 *  ISPEC   (input) INTEGER
 *          Specifies the parameter to be returned as the value of
@@ -604,7 +624,7 @@
       END
       INTEGER          FUNCTION IEEECK( ISPEC, ZERO, ONE ) 
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.4.0) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -619,8 +639,8 @@
 *  IEEECK is called from the ILAENV to verify that Inifinity and 
 *  possibly NaN arithmetic is safe (i.e. will not trap).
 *
-*  Arguments
-*  =========
+*  Arguments:
+*  ==========
 *
 *  ISPEC   (input) INTEGER
 *          Specifies whether to test just for inifinity arithmetic

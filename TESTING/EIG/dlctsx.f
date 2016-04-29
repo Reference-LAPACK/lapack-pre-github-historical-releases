@@ -1,35 +1,78 @@
+*> \brief \b DLCTSX
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*       LOGICAL          FUNCTION DLCTSX( AR, AI, BETA )
+* 
+*       .. Scalar Arguments ..
+*       DOUBLE PRECISION   AI, AR, BETA
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> This function is used to determine what eigenvalues will be
+*> selected.  If this is part of the test driver DDRGSX, do not
+*> change the code UNLESS you are testing input examples and not
+*> using the built-in examples.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] AR
+*> \verbatim
+*>          AR is DOUBLE PRECISION
+*>          The numerator of the real part of a complex eigenvalue
+*>          (AR/BETA) + i*(AI/BETA).
+*> \endverbatim
+*>
+*> \param[in] AI
+*> \verbatim
+*>          AI is DOUBLE PRECISION
+*>          The numerator of the imaginary part of a complex eigenvalue
+*>          (AR/BETA) + i*(AI).
+*> \endverbatim
+*>
+*> \param[in] BETA
+*> \verbatim
+*>          BETA is DOUBLE PRECISION
+*>          The denominator part of a complex eigenvalue
+*>          (AR/BETA) + i*(AI/BETA).
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup double_eig
+*
+*  =====================================================================
       LOGICAL          FUNCTION DLCTSX( AR, AI, BETA )
 *
-*  -- LAPACK test routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       DOUBLE PRECISION   AI, AR, BETA
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  This function is used to determine what eigenvalues will be
-*  selected.  If this is part of the test driver DDRGSX, do not
-*  change the code UNLESS you are testing input examples and not
-*  using the built-in examples.
-*
-*  Arguments
-*  =========
-*
-*  AR      (input) DOUBLE PRECISION
-*          The numerator of the real part of a complex eigenvalue
-*          (AR/BETA) + i*(AI/BETA).
-*
-*  AI      (input) DOUBLE PRECISION
-*          The numerator of the imaginary part of a complex eigenvalue
-*          (AR/BETA) + i*(AI).
-*
-*  BETA    (input) DOUBLE PRECISION
-*          The denominator part of a complex eigenvalue
-*          (AR/BETA) + i*(AI/BETA).
 *
 *  =====================================================================
 *

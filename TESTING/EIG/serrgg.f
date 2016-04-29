@@ -1,29 +1,70 @@
+*> \brief \b SERRGG
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE SERRGG( PATH, NUNIT )
+* 
+*       .. Scalar Arguments ..
+*       CHARACTER*3        PATH
+*       INTEGER            NUNIT
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> SERRGG tests the error exits for SGGES, SGGESX, SGGEV, SGGEVX,
+*> SGGGLM, SGGHRD, SGGLSE, SGGQRF, SGGRQF, SGGSVD, SGGSVP, SHGEQZ,
+*> SORCSD, STGEVC, STGEXC, STGSEN, STGSJA, STGSNA, and STGSYL.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] PATH
+*> \verbatim
+*>          PATH is CHARACTER*3
+*>          The LAPACK path name for the routines to be tested.
+*> \endverbatim
+*>
+*> \param[in] NUNIT
+*> \verbatim
+*>          NUNIT is INTEGER
+*>          The unit number for output.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup single_eig
+*
+*  =====================================================================
       SUBROUTINE SERRGG( PATH, NUNIT )
 *
-*  -- LAPACK test routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       CHARACTER*3        PATH
       INTEGER            NUNIT
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  SERRGG tests the error exits for SGGES, SGGESX, SGGEV, SGGEVX,
-*  SGGGLM, SGGHRD, SGGLSE, SGGQRF, SGGRQF, SGGSVD, SGGSVP, SHGEQZ,
-*  STGEVC, STGEXC, STGSEN, STGSJA, STGSNA, and STGSYL.
-*
-*  Arguments
-*  =========
-*
-*  PATH    (input) CHARACTER*3
-*          The LAPACK path name for the routines to be tested.
-*
-*  NUNIT   (input) INTEGER
-*          The unit number for output.
 *
 *  =====================================================================
 *
@@ -35,8 +76,8 @@
 *     ..
 *     .. Local Scalars ..
       CHARACTER*2        C2
-      INTEGER            DUMMYK, DUMMYL, I, IFST, ILST, INFO, J, M,
-     $                   NCYCLE, NT, SDIM
+      INTEGER            DUMMYK, DUMMYL, I, IFST, ILO, IHI, ILST, INFO,
+     $                   J, M, NCYCLE, NT, SDIM
       REAL               ANRM, BNRM, DIF, SCALE, TOLA, TOLB
 *     ..
 *     .. Local Arrays ..
@@ -55,8 +96,8 @@
 *     .. External Subroutines ..
       EXTERNAL           CHKXER, SGGES, SGGESX, SGGEV, SGGEVX, SGGGLM,
      $                   SGGHRD, SGGLSE, SGGQRF, SGGRQF, SGGSVD, SGGSVP,
-     $                   SHGEQZ, STGEVC, STGEXC, STGSEN, STGSJA, STGSNA,
-     $                   STGSYL
+     $                   SHGEQZ, SORCSD, STGEVC, STGEXC, STGSEN, STGSJA,
+     $                   STGSNA, STGSYL
 *     ..
 *     .. Scalars in Common ..
       LOGICAL            LERR, OK
@@ -450,6 +491,71 @@
          CALL CHKXER( 'SGGLSE', INFOT, NOUT, LERR, OK )
          NT = NT + 8
 *
+*     Test error exits for the CSD path.
+*
+      ELSE IF( LSAMEN( 3, PATH, 'CSD' ) ) THEN
+*
+*        SORCSD
+*
+         SRNAMT = 'SORCSD'
+         INFOT = 7
+         CALL SORCSD( 'Y', 'Y', 'Y', 'Y', 'N', 'N',
+     $                 -1, 0, 0, A, 1, A,
+     $                 1, A, 1, A, 1, A,
+     $                 A, 1, A, 1, A, 1, A,
+     $                 1, W, LW, IW, INFO )      
+         CALL CHKXER( 'SORCSD', INFOT, NOUT, LERR, OK )
+         INFOT = 8
+         CALL SORCSD( 'Y', 'Y', 'Y', 'Y', 'N', 'N',
+     $                 1, -1, 0, A, 1, A,
+     $                 1, A, 1, A, 1, A,
+     $                 A, 1, A, 1, A, 1, A,
+     $                 1, W, LW, IW, INFO )      
+         CALL CHKXER( 'SORCSD', INFOT, NOUT, LERR, OK )
+         INFOT = 9
+         CALL SORCSD( 'Y', 'Y', 'Y', 'Y', 'N', 'N',
+     $                 1, 1, -1, A, 1, A,
+     $                 1, A, 1, A, 1, A,
+     $                 A, 1, A, 1, A, 1, A,
+     $                 1, W, LW, IW, INFO )      
+         CALL CHKXER( 'SORCSD', INFOT, NOUT, LERR, OK )
+         INFOT = 11
+         CALL SORCSD( 'Y', 'Y', 'Y', 'Y', 'N', 'N',
+     $                 1, 1, 1, A, -1, A,
+     $                 1, A, 1, A, 1, A,
+     $                 A, 1, A, 1, A, 1, A,
+     $                 1, W, LW, IW, INFO )      
+         CALL CHKXER( 'SORCSD', INFOT, NOUT, LERR, OK )
+         INFOT = 20
+         CALL SORCSD( 'Y', 'Y', 'Y', 'Y', 'N', 'N',
+     $                 1, 1, 1, A, 1, A,
+     $                 1, A, 1, A, 1, A,
+     $                 A, -1, A, 1, A, 1, A,
+     $                 1, W, LW, IW, INFO )      
+         CALL CHKXER( 'SORCSD', INFOT, NOUT, LERR, OK )
+         INFOT = 22
+         CALL SORCSD( 'Y', 'Y', 'Y', 'Y', 'N', 'N',
+     $                 1, 1, 1, A, 1, A,
+     $                 1, A, 1, A, 1, A,
+     $                 A, 1, A, -1, A, 1, A,
+     $                 1, W, LW, IW, INFO )      
+         CALL CHKXER( 'SORCSD', INFOT, NOUT, LERR, OK )
+         INFOT = 24
+         CALL SORCSD( 'Y', 'Y', 'Y', 'Y', 'N', 'N',
+     $                 1, 1, 1, A, 1, A,
+     $                 1, A, 1, A, 1, A,
+     $                 A, 1, A, 1, A, -1, A,
+     $                 1, W, LW, IW, INFO )      
+         CALL CHKXER( 'SORCSD', INFOT, NOUT, LERR, OK )
+         INFOT = 26
+         CALL SORCSD( 'Y', 'Y', 'Y', 'Y', 'N', 'N',
+     $                 1, 1, 1, A, 1, A,
+     $                 1, A, 1, A, 1, A,
+     $                 A, 1, A, 1, A, 1, A,
+     $                 -1, W, LW, IW, INFO )      
+         CALL CHKXER( 'SORCSD', INFOT, NOUT, LERR, OK )
+         NT = NT + 8
+*
 *     Test error exits for the GQR path.
 *
       ELSE IF( LSAMEN( 3, PATH, 'GQR' ) ) THEN
@@ -676,63 +782,63 @@
          SRNAMT = 'SGGEVX'
          INFOT = 1
          CALL SGGEVX( '/', 'N', 'N', 'N', 1, A, 1, B, 1, R1, R2, R3, Q,
-     $                1, U, 1, 1, 1, LS, RS, ANRM, BNRM, RCE, RCV, W, 1,
-     $                IW, BW, INFO )
+     $                1, U, 1, ILO, IHI, LS, RS, ANRM, BNRM, RCE, RCV,
+     $                W, 1, IW, BW, INFO )
          CALL CHKXER( 'SGGEVX', INFOT, NOUT, LERR, OK )
          INFOT = 2
          CALL SGGEVX( 'N', '/', 'N', 'N', 1, A, 1, B, 1, R1, R2, R3, Q,
-     $                1, U, 1, 1, 1, LS, RS, ANRM, BNRM, RCE, RCV, W, 1,
-     $                IW, BW, INFO )
+     $                1, U, 1, ILO, IHI, LS, RS, ANRM, BNRM, RCE, RCV,
+     $                W, 1, IW, BW, INFO )
          CALL CHKXER( 'SGGEVX', INFOT, NOUT, LERR, OK )
          INFOT = 3
          CALL SGGEVX( 'N', 'N', '/', 'N', 1, A, 1, B, 1, R1, R2, R3, Q,
-     $                1, U, 1, 1, 1, LS, RS, ANRM, BNRM, RCE, RCV, W, 1,
-     $                IW, BW, INFO )
+     $                1, U, 1, ILO, IHI, LS, RS, ANRM, BNRM, RCE, RCV,
+     $                W, 1, IW, BW, INFO )
          CALL CHKXER( 'SGGEVX', INFOT, NOUT, LERR, OK )
          INFOT = 4
          CALL SGGEVX( 'N', 'N', 'N', '/', 1, A, 1, B, 1, R1, R2, R3, Q,
-     $                1, U, 1, 1, 1, LS, RS, ANRM, BNRM, RCE, RCV, W, 1,
-     $                IW, BW, INFO )
+     $                1, U, 1, ILO, IHI, LS, RS, ANRM, BNRM, RCE, RCV,
+     $                W, 1, IW, BW, INFO )
          CALL CHKXER( 'SGGEVX', INFOT, NOUT, LERR, OK )
          INFOT = 5
          CALL SGGEVX( 'N', 'N', 'N', 'N', -1, A, 1, B, 1, R1, R2, R3, Q,
-     $                1, U, 1, 1, 1, LS, RS, ANRM, BNRM, RCE, RCV, W, 1,
-     $                IW, BW, INFO )
+     $                1, U, 1, ILO, IHI, LS, RS, ANRM, BNRM, RCE, RCV,
+     $                W, 1, IW, BW, INFO )
          CALL CHKXER( 'SGGEVX', INFOT, NOUT, LERR, OK )
          INFOT = 7
          CALL SGGEVX( 'N', 'N', 'N', 'N', 1, A, 0, B, 1, R1, R2, R3, Q,
-     $                1, U, 1, 1, 1, LS, RS, ANRM, BNRM, RCE, RCV, W, 1,
-     $                IW, BW, INFO )
+     $                1, U, 1, ILO, IHI, LS, RS, ANRM, BNRM, RCE, RCV,
+     $                W, 1, IW, BW, INFO )
          CALL CHKXER( 'SGGEVX', INFOT, NOUT, LERR, OK )
          INFOT = 9
          CALL SGGEVX( 'N', 'N', 'N', 'N', 1, A, 1, B, 0, R1, R2, R3, Q,
-     $                1, U, 1, 1, 1, LS, RS, ANRM, BNRM, RCE, RCV, W, 1,
-     $                IW, BW, INFO )
+     $                1, U, 1, ILO, IHI, LS, RS, ANRM, BNRM, RCE, RCV,
+     $                W, 1, IW, BW, INFO )
          CALL CHKXER( 'SGGEVX', INFOT, NOUT, LERR, OK )
          INFOT = 14
          CALL SGGEVX( 'N', 'N', 'N', 'N', 1, A, 1, B, 1, R1, R2, R3, Q,
-     $                0, U, 1, 1, 1, LS, RS, ANRM, BNRM, RCE, RCV, W, 1,
-     $                IW, BW, INFO )
+     $                0, U, 1, ILO, IHI, LS, RS, ANRM, BNRM, RCE, RCV,
+     $                W, 1, IW, BW, INFO )
          CALL CHKXER( 'SGGEVX', INFOT, NOUT, LERR, OK )
          INFOT = 14
          CALL SGGEVX( 'N', 'V', 'N', 'N', 2, A, 2, B, 2, R1, R2, R3, Q,
-     $                1, U, 2, 1, 2, LS, RS, ANRM, BNRM, RCE, RCV, W, 1,
-     $                IW, BW, INFO )
+     $                1, U, 2, ILO, IHI, LS, RS, ANRM, BNRM, RCE, RCV,
+     $                W, 1, IW, BW, INFO )
          CALL CHKXER( 'SGGEVX', INFOT, NOUT, LERR, OK )
          INFOT = 16
          CALL SGGEVX( 'N', 'N', 'N', 'N', 1, A, 1, B, 1, R1, R2, R3, Q,
-     $                1, U, 0, 1, 1, LS, RS, ANRM, BNRM, RCE, RCV, W, 1,
-     $                IW, BW, INFO )
+     $                1, U, 0, ILO, IHI, LS, RS, ANRM, BNRM, RCE, RCV,
+     $                W, 1, IW, BW, INFO )
          CALL CHKXER( 'SGGEVX', INFOT, NOUT, LERR, OK )
          INFOT = 16
          CALL SGGEVX( 'N', 'N', 'V', 'N', 2, A, 2, B, 2, R1, R2, R3, Q,
-     $                2, U, 1, 1, 2, LS, RS, ANRM, BNRM, RCE, RCV, W, 1,
-     $                IW, BW, INFO )
+     $                2, U, 1, ILO, IHI, LS, RS, ANRM, BNRM, RCE, RCV,
+     $                W, 1, IW, BW, INFO )
          CALL CHKXER( 'SGGEVX', INFOT, NOUT, LERR, OK )
          INFOT = 26
          CALL SGGEVX( 'N', 'N', 'V', 'N', 2, A, 2, B, 2, R1, R2, R3, Q,
-     $                2, U, 2, 1, 2, LS, RS, ANRM, BNRM, RCE, RCV, W, 1,
-     $                IW, BW, INFO )
+     $                2, U, 2, ILO, IHI, LS, RS, ANRM, BNRM, RCE, RCV,
+     $                W, 1, IW, BW, INFO )
          CALL CHKXER( 'SGGEVX', INFOT, NOUT, LERR, OK )
          NT = NT + 12
 *

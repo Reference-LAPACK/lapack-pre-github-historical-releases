@@ -1,9 +1,112 @@
+*> \brief \b CROT
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*> \htmlonly
+*> Download CROT + dependencies 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/crot.f"> 
+*> [TGZ]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/crot.f"> 
+*> [ZIP]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/crot.f"> 
+*> [TXT]</a>
+*> \endhtmlonly 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE CROT( N, CX, INCX, CY, INCY, C, S )
+* 
+*       .. Scalar Arguments ..
+*       INTEGER            INCX, INCY, N
+*       REAL               C
+*       COMPLEX            S
+*       ..
+*       .. Array Arguments ..
+*       COMPLEX            CX( * ), CY( * )
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> CROT   applies a plane rotation, where the cos (C) is real and the
+*> sin (S) is complex, and the vectors CX and CY are complex.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] N
+*> \verbatim
+*>          N is INTEGER
+*>          The number of elements in the vectors CX and CY.
+*> \endverbatim
+*>
+*> \param[in,out] CX
+*> \verbatim
+*>          CX is COMPLEX array, dimension (N)
+*>          On input, the vector X.
+*>          On output, CX is overwritten with C*X + S*Y.
+*> \endverbatim
+*>
+*> \param[in] INCX
+*> \verbatim
+*>          INCX is INTEGER
+*>          The increment between successive values of CY.  INCX <> 0.
+*> \endverbatim
+*>
+*> \param[in,out] CY
+*> \verbatim
+*>          CY is COMPLEX array, dimension (N)
+*>          On input, the vector Y.
+*>          On output, CY is overwritten with -CONJG(S)*X + C*Y.
+*> \endverbatim
+*>
+*> \param[in] INCY
+*> \verbatim
+*>          INCY is INTEGER
+*>          The increment between successive values of CY.  INCX <> 0.
+*> \endverbatim
+*>
+*> \param[in] C
+*> \verbatim
+*>          C is REAL
+*> \endverbatim
+*>
+*> \param[in] S
+*> \verbatim
+*>          S is COMPLEX
+*>          C and S define a rotation
+*>             [  C          S  ]
+*>             [ -conjg(S)   C  ]
+*>          where C*C + S*CONJG(S) = 1.0.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup complexOTHERauxiliary
+*
+*  =====================================================================
       SUBROUTINE CROT( N, CX, INCX, CY, INCY, C, S )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.4.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     November 2011
 *
 *     .. Scalar Arguments ..
       INTEGER            INCX, INCY, N
@@ -13,39 +116,6 @@
 *     .. Array Arguments ..
       COMPLEX            CX( * ), CY( * )
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  CROT   applies a plane rotation, where the cos (C) is real and the
-*  sin (S) is complex, and the vectors CX and CY are complex.
-*
-*  Arguments
-*  =========
-*
-*  N       (input) INTEGER
-*          The number of elements in the vectors CX and CY.
-*
-*  CX      (input/output) COMPLEX array, dimension (N)
-*          On input, the vector X.
-*          On output, CX is overwritten with C*X + S*Y.
-*
-*  INCX    (input) INTEGER
-*          The increment between successive values of CY.  INCX <> 0.
-*
-*  CY      (input/output) COMPLEX array, dimension (N)
-*          On input, the vector Y.
-*          On output, CY is overwritten with -CONJG(S)*X + C*Y.
-*
-*  INCY    (input) INTEGER
-*          The increment between successive values of CY.  INCX <> 0.
-*
-*  C       (input) REAL
-*  S       (input) COMPLEX
-*          C and S define a rotation
-*             [  C          S  ]
-*             [ -conjg(S)   C  ]
-*          where C*C + S*CONJG(S) = 1.0.
 *
 * =====================================================================
 *

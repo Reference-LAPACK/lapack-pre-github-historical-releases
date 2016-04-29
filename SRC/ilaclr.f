@@ -1,10 +1,87 @@
-      INTEGER FUNCTION ILACLR( M, N, A, LDA )
-      IMPLICIT NONE
+*> \brief \b ILACLR
 *
-*  -- LAPACK auxiliary routine (version 3.3.1)                        --
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*> \htmlonly
+*> Download ILACLR + dependencies 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/ilaclr.f"> 
+*> [TGZ]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/ilaclr.f"> 
+*> [ZIP]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/ilaclr.f"> 
+*> [TXT]</a>
+*> \endhtmlonly 
+*
+*  Definition:
+*  ===========
+*
+*       INTEGER FUNCTION ILACLR( M, N, A, LDA )
+* 
+*       .. Scalar Arguments ..
+*       INTEGER            M, N, LDA
+*       ..
+*       .. Array Arguments ..
+*       COMPLEX            A( LDA, * )
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> ILACLR scans A for its last non-zero row.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] M
+*> \verbatim
+*>          M is INTEGER
+*>          The number of rows of the matrix A.
+*> \endverbatim
+*>
+*> \param[in] N
+*> \verbatim
+*>          N is INTEGER
+*>          The number of columns of the matrix A.
+*> \endverbatim
+*>
+*> \param[in] A
+*> \verbatim
+*>          A is array, dimension (LDA,N)
+*>          The m by n matrix A.
+*> \endverbatim
+*>
+*> \param[in] LDA
+*> \verbatim
+*>          LDA is INTEGER
+*>          The leading dimension of the array A. LDA >= max(1,M).
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup complexOTHERauxiliary
+*
+*  =====================================================================
+      INTEGER FUNCTION ILACLR( M, N, A, LDA )
+*
+*  -- LAPACK auxiliary routine (version 3.4.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*  -- April 2011                                                      --
+*     November 2011
 *
 *     .. Scalar Arguments ..
       INTEGER            M, N, LDA
@@ -12,26 +89,6 @@
 *     .. Array Arguments ..
       COMPLEX            A( LDA, * )
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  ILACLR scans A for its last non-zero row.
-*
-*  Arguments
-*  =========
-*
-*  M       (input) INTEGER
-*          The number of rows of the matrix A.
-*
-*  N       (input) INTEGER
-*          The number of columns of the matrix A.
-*
-*  A       (input) COMPLEX          array, dimension (LDA,N)
-*          The m by n matrix A.
-*
-*  LDA     (input) INTEGER
-*          The leading dimension of the array A. LDA >= max(1,M).
 *
 *  =====================================================================
 *
@@ -56,6 +113,9 @@
             I=M
             DO WHILE ((A(I,J).NE.ZERO).AND.(I.GE.1))
               I=I-1
+              IF (I.EQ.0) THEN
+                 EXIT
+              END IF
             ENDDO         
             ILACLR = MAX( ILACLR, I )
          END DO

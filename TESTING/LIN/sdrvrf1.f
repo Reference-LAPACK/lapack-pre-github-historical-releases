@@ -1,8 +1,103 @@
+*> \brief \b SDRVRF1
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE SDRVRF1( NOUT, NN, NVAL, THRESH, A, LDA, ARF, WORK )
+* 
+*       .. Scalar Arguments ..
+*       INTEGER            LDA, NN, NOUT
+*       REAL               THRESH
+*       ..
+*       .. Array Arguments ..
+*       INTEGER            NVAL( NN )
+*       REAL               A( LDA, * ), ARF( * ), WORK( * )
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> SDRVRF1 tests the LAPACK RFP routines:
+*>     SLANSF
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] NOUT
+*> \verbatim
+*>          NOUT is INTEGER
+*>                The unit number for output.
+*> \endverbatim
+*>
+*> \param[in] NN
+*> \verbatim
+*>          NN is INTEGER
+*>                The number of values of N contained in the vector NVAL.
+*> \endverbatim
+*>
+*> \param[in] NVAL
+*> \verbatim
+*>          NVAL is INTEGER array, dimension (NN)
+*>                The values of the matrix dimension N.
+*> \endverbatim
+*>
+*> \param[in] THRESH
+*> \verbatim
+*>          THRESH is REAL
+*>                The threshold value for the test ratios.  A result is
+*>                included in the output file if RESULT >= THRESH.  To have
+*>                every test ratio printed, use THRESH = 0.
+*> \endverbatim
+*>
+*> \param[out] A
+*> \verbatim
+*>          A is REAL array, dimension (LDA,NMAX)
+*> \endverbatim
+*>
+*> \param[in] LDA
+*> \verbatim
+*>          LDA is INTEGER
+*>                The leading dimension of the array A.  LDA >= max(1,NMAX).
+*> \endverbatim
+*>
+*> \param[out] ARF
+*> \verbatim
+*>          ARF is REAL array, dimension ((NMAX*(NMAX+1))/2).
+*> \endverbatim
+*>
+*> \param[out] WORK
+*> \verbatim
+*>          WORK is REAL array, dimension ( NMAX )
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup single_lin
+*
+*  =====================================================================
       SUBROUTINE SDRVRF1( NOUT, NN, NVAL, THRESH, A, LDA, ARF, WORK )
 *
-*  -- LAPACK test routine (version 3.2.0) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2008
+*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       INTEGER            LDA, NN, NOUT
@@ -12,38 +107,6 @@
       INTEGER            NVAL( NN )
       REAL               A( LDA, * ), ARF( * ), WORK( * )
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  SDRVRF1 tests the LAPACK RFP routines:
-*      SLANSF
-*
-*  Arguments
-*  =========
-*
-*  NOUT          (input) INTEGER
-*                The unit number for output.
-*
-*  NN            (input) INTEGER
-*                The number of values of N contained in the vector NVAL.
-*
-*  NVAL          (input) INTEGER array, dimension (NN)
-*                The values of the matrix dimension N.
-*
-*  THRESH        (input) REAL
-*                The threshold value for the test ratios.  A result is
-*                included in the output file if RESULT >= THRESH.  To have
-*                every test ratio printed, use THRESH = 0.
-*
-*  A             (workspace) REAL array, dimension (LDA,NMAX)
-*
-*  LDA           (input) INTEGER
-*                The leading dimension of the array A.  LDA >= max(1,NMAX).
-*
-*  ARF           (workspace) REAL array, dimension ((NMAX*(NMAX+1))/2).
-*
-*  WORK          (workspace) REAL array, dimension ( NMAX )
 *
 *  =====================================================================
 *     ..
@@ -105,7 +168,12 @@
 *
          N = NVAL( IIN )
 *
-         DO 120 IIT = 1, 3
+         DO 120 IIT = 1, 3         
+*           Nothing to do for N=0
+            IF ( N .EQ. 0 ) EXIT
+         
+*           Quick Return if possible
+            IF ( N .EQ. 0 ) EXIT
 *
 *           IIT = 1 : random matrix
 *           IIT = 2 : random matrix scaled near underflow
@@ -204,8 +272,8 @@
  9997 FORMAT( 1X, '     Failure in ',A6,' N=',I5,' TYPE=',I5,' UPLO=''',
      +        A1, ''', FORM =''',A1,''', NORM=''',A1,''', test=',G12.5)
  9996 FORMAT( 1X, 'All tests for ',A6,' auxiliary routine passed the ',
-     +        'threshold (',I5,' tests run)')
- 9995 FORMAT( 1X, A6, ' auxiliary routine:',I5,' out of ',I5,
+     +        'threshold ( ',I5,' tests run)')
+ 9995 FORMAT( 1X, A6, ' auxiliary routine: ',I5,' out of ',I5,
      +        ' tests failed to pass the threshold')
  9994 FORMAT( 26X, I5,' error message recorded (',A6,')')
 *

@@ -1,56 +1,97 @@
+*> \brief \b ALAHD
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE ALAHD( IOUNIT, PATH )
+* 
+*       .. Scalar Arguments ..
+*       CHARACTER*3        PATH
+*       INTEGER            IOUNIT
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> ALAHD prints header information for the different test paths.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] IOUNIT
+*> \verbatim
+*>          IOUNIT is INTEGER
+*>          The unit number to which the header information should be
+*>          printed.
+*> \endverbatim
+*>
+*> \param[in] PATH
+*> \verbatim
+*>          PATH is CHARACTER*3
+*>          The name of the path for which the header information is to
+*>          be printed.  Current paths are
+*>             _GE:  General matrices
+*>             _GB:  General band
+*>             _GT:  General Tridiagonal
+*>             _PO:  Symmetric or Hermitian positive definite
+*>             _PS:  Symmetric or Hermitian positive semi-definite
+*>             _PP:  Symmetric or Hermitian positive definite packed
+*>             _PB:  Symmetric or Hermitian positive definite band
+*>             _PT:  Symmetric or Hermitian positive definite tridiagonal
+*>             _SY:  Symmetric indefinite
+*>             _SP:  Symmetric indefinite packed
+*>             _HE:  (complex) Hermitian indefinite
+*>             _HP:  (complex) Hermitian indefinite packed
+*>             _TR:  Triangular
+*>             _TP:  Triangular packed
+*>             _TB:  Triangular band
+*>             _QR:  QR (general matrices)
+*>             _LQ:  LQ (general matrices)
+*>             _QL:  QL (general matrices)
+*>             _RQ:  RQ (general matrices)
+*>             _QP:  QR with column pivoting
+*>             _TZ:  Trapezoidal
+*>             _LS:  Least Squares driver routines
+*>             _LU:  LU variants
+*>             _CH:  Cholesky variants
+*>             _QS:  QR variants
+*>          The first character must be one of S, D, C, or Z (C or Z only
+*>          if complex).
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup aux_lin
+*
+*  =====================================================================
       SUBROUTINE ALAHD( IOUNIT, PATH )
 *
-*  -- LAPACK test routine (version 3.3.0) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2010
+*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       CHARACTER*3        PATH
       INTEGER            IOUNIT
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  ALAHD prints header information for the different test paths.
-*
-*  Arguments
-*  =========
-*
-*  IOUNIT  (input) INTEGER
-*          The unit number to which the header information should be
-*          printed.
-*
-*  PATH    (input) CHARACTER*3
-*          The name of the path for which the header information is to
-*          be printed.  Current paths are
-*             _GE:  General matrices
-*             _GB:  General band
-*             _GT:  General Tridiagonal
-*             _PO:  Symmetric or Hermitian positive definite
-*             _PS:  Symmetric or Hermitian positive semi-definite
-*             _PP:  Symmetric or Hermitian positive definite packed
-*             _PB:  Symmetric or Hermitian positive definite band
-*             _PT:  Symmetric or Hermitian positive definite tridiagonal
-*             _SY:  Symmetric indefinite
-*             _SP:  Symmetric indefinite packed
-*             _HE:  (complex) Hermitian indefinite
-*             _HP:  (complex) Hermitian indefinite packed
-*             _TR:  Triangular
-*             _TP:  Triangular packed
-*             _TB:  Triangular band
-*             _QR:  QR (general matrices)
-*             _LQ:  LQ (general matrices)
-*             _QL:  QL (general matrices)
-*             _RQ:  RQ (general matrices)
-*             _QP:  QR with column pivoting
-*             _TZ:  Trapezoidal
-*             _LS:  Least Squares driver routines
-*             _LU:  LU variants
-*             _CH:  Cholesky variants
-*             _QS:  QR variants
-*          The first character must be one of S, D, C, or Z (C or Z only
-*          if complex).
 *
 *  =====================================================================
 *
@@ -801,8 +842,6 @@
  9938 FORMAT( 3X, I2, ': norm( I - Q''*Q )      / ( M * EPS )' )
  9937 FORMAT( 3X, I2, ': norm( A - R*Q )       / ( M * norm(A) * EPS )'
      $       )
- 9936 FORMAT( ' Test ratios (1-2: ', A1, 'GELS, 3-6: ', A1,
-     $      'GELSS, 7-10: ', A1, 'GELSX):' )
  9935 FORMAT( 3X, I2, ': norm( B - A * X )   / ',
      $      '( max(M,N) * norm(A) * norm(X) * EPS )' )
  9934 FORMAT( 3X, I2, ': norm( (A*X-B)'' *A ) / ',
@@ -816,7 +855,6 @@
      $      'otherwise', / 7X,
      $      'check if X is in the row space of A or A'' ',
      $      '(overdetermined case)' )
- 9930 FORMAT( 3X, ' 7-10: same as 3-6' )
  9929 FORMAT( ' Test ratios (1-3: ', A1, 'TZRQF, 4-6: ', A1,
      $      'TZRZF):' )
  9920 FORMAT( 3X, ' 7-10: same as 3-6', 3X, ' 11-14: same as 3-6',

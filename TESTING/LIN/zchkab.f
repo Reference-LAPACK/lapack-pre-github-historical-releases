@@ -1,54 +1,81 @@
-      PROGRAM ZCHKAB
-      IMPLICIT NONE
+*> \brief \b ZCHKAB
 *
-*  -- LAPACK test routine (version 3.2.1) --
+*  =========== DOCUMENTATION ===========
 *
-*  -- April 2009                                                   --
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
 *
+*  Definition:
+*  ===========
+*
+*       PROGRAM ZCHKAB
+* 
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> ZCHKAB is the test program for the COMPLEX*16 LAPACK
+*> ZCGESV/ZCPOSV routine
+*>
+*> The program must be driven by a short data file. The first 5 records
+*> specify problem dimensions and program options using list-directed
+*> input. The remaining lines specify the LAPACK test paths and the
+*> number of matrix types to use in testing.  An annotated example of a
+*> data file can be obtained by deleting the first 3 characters from the
+*> following 9 lines:
+*> Data file for testing COMPLEX*16 LAPACK ZCGESV
+*> 7                      Number of values of M
+*> 0 1 2 3 5 10 16        Values of M (row dimension)
+*> 1                      Number of values of NRHS
+*> 2                      Values of NRHS (number of right hand sides)
+*> 20.0                   Threshold value of test ratio
+*> T                      Put T to test the LAPACK routine
+*> T                      Put T to test the error exits
+*> DGE    11              List types on next line if 0 < NTYPES < 11
+*> DPO    9               List types on next line if 0 < NTYPES <  9
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \verbatim
+*>  NMAX    INTEGER
+*>          The maximum allowable value for N
+*>
+*>  MAXIN   INTEGER
+*>          The number of different values that can be used for each of
+*>          M, N, NRHS, NB, and NX
+*>
+*>  MAXRHS  INTEGER
+*>          The maximum number of right hand sides
+*>
+*>  NIN     INTEGER
+*>          The unit number for input
+*>
+*>  NOUT    INTEGER
+*>          The unit number for output
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup complex16_lin
+*
+*  =====================================================================      PROGRAM ZCHKAB
+*
+*  -- LAPACK test routine (version 3.4.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*
-*  Purpose
-*  =======
-*
-*  ZCHKAB is the test program for the COMPLEX*16 LAPACK
-*  ZCGESV/ZCPOSV routine
-*
-*  The program must be driven by a short data file. The first 5 records
-*  specify problem dimensions and program options using list-directed
-*  input. The remaining lines specify the LAPACK test paths and the
-*  number of matrix types to use in testing.  An annotated example of a
-*  data file can be obtained by deleting the first 3 characters from the
-*  following 9 lines:
-*  Data file for testing COMPLEX*16 LAPACK ZCGESV
-*  7                      Number of values of M
-*  0 1 2 3 5 10 16        Values of M (row dimension)
-*  1                      Number of values of NRHS
-*  2                      Values of NRHS (number of right hand sides)
-*  20.0                   Threshold value of test ratio
-*  T                      Put T to test the LAPACK routine
-*  T                      Put T to test the error exits
-*  DGE    11              List types on next line if 0 < NTYPES < 11
-*  DPO    9               List types on next line if 0 < NTYPES <  9
-*
-*  Internal Parameters
-*  ===================
-*
-*  NMAX    INTEGER
-*          The maximum allowable value for N
-*
-*  MAXIN   INTEGER
-*          The number of different values that can be used for each of
-*          M, N, NRHS, NB, and NX
-*
-*  MAXRHS  INTEGER
-*          The maximum number of right hand sides
-*
-*  NIN     INTEGER
-*          The unit number for input
-*
-*  NOUT    INTEGER
-*          The unit number for output
+*     November 2011
 *
 *  =====================================================================
 *
@@ -333,7 +360,6 @@
  9991 FORMAT( ' Relative machine ', A, ' is taken to be', D16.6 )
  9990 FORMAT( / 1X, A6, ' routines were not tested' )
  9989 FORMAT( / 1X, A6, ' driver routines were not tested' )
- 9988 FORMAT( / 1X, A3, ':  Unrecognized path name' )
 *
 *     End of ZCHKAB
 *

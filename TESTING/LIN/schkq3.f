@@ -1,10 +1,162 @@
+*> \brief \b SCHKQ3
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE SCHKQ3( DOTYPE, NM, MVAL, NN, NVAL, NNB, NBVAL, NXVAL,
+*                          THRESH, A, COPYA, S, TAU, WORK, IWORK,
+*                          NOUT )
+* 
+*       .. Scalar Arguments ..
+*       INTEGER            NM, NN, NNB, NOUT
+*       REAL               THRESH
+*       ..
+*       .. Array Arguments ..
+*       LOGICAL            DOTYPE( * )
+*       INTEGER            IWORK( * ), MVAL( * ), NBVAL( * ), NVAL( * ),
+*      $                   NXVAL( * )
+*       REAL               A( * ), COPYA( * ), S( * ),
+*      $                   TAU( * ), WORK( * )
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> SCHKQ3 tests SGEQP3.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] DOTYPE
+*> \verbatim
+*>          DOTYPE is LOGICAL array, dimension (NTYPES)
+*>          The matrix types to be used for testing.  Matrices of type j
+*>          (for 1 <= j <= NTYPES) are used for testing if DOTYPE(j) =
+*>          .TRUE.; if DOTYPE(j) = .FALSE., then type j is not used.
+*> \endverbatim
+*>
+*> \param[in] NM
+*> \verbatim
+*>          NM is INTEGER
+*>          The number of values of M contained in the vector MVAL.
+*> \endverbatim
+*>
+*> \param[in] MVAL
+*> \verbatim
+*>          MVAL is INTEGER array, dimension (NM)
+*>          The values of the matrix row dimension M.
+*> \endverbatim
+*>
+*> \param[in] NN
+*> \verbatim
+*>          NN is INTEGER
+*>          The number of values of N contained in the vector NVAL.
+*> \endverbatim
+*>
+*> \param[in] NVAL
+*> \verbatim
+*>          NVAL is INTEGER array, dimension (NN)
+*>          The values of the matrix column dimension N.
+*> \endverbatim
+*>
+*> \param[in] NNB
+*> \verbatim
+*>          NNB is INTEGER
+*>          The number of values of NB and NX contained in the
+*>          vectors NBVAL and NXVAL.  The blocking parameters are used
+*>          in pairs (NB,NX).
+*> \endverbatim
+*>
+*> \param[in] NBVAL
+*> \verbatim
+*>          NBVAL is INTEGER array, dimension (NNB)
+*>          The values of the blocksize NB.
+*> \endverbatim
+*>
+*> \param[in] NXVAL
+*> \verbatim
+*>          NXVAL is INTEGER array, dimension (NNB)
+*>          The values of the crossover point NX.
+*> \endverbatim
+*>
+*> \param[in] THRESH
+*> \verbatim
+*>          THRESH is REAL
+*>          The threshold value for the test ratios.  A result is
+*>          included in the output file if RESULT >= THRESH.  To have
+*>          every test ratio printed, use THRESH = 0.
+*> \endverbatim
+*>
+*> \param[out] A
+*> \verbatim
+*>          A is REAL array, dimension (MMAX*NMAX)
+*>          where MMAX is the maximum value of M in MVAL and NMAX is the
+*>          maximum value of N in NVAL.
+*> \endverbatim
+*>
+*> \param[out] COPYA
+*> \verbatim
+*>          COPYA is REAL array, dimension (MMAX*NMAX)
+*> \endverbatim
+*>
+*> \param[out] S
+*> \verbatim
+*>          S is REAL array, dimension
+*>                      (min(MMAX,NMAX))
+*> \endverbatim
+*>
+*> \param[out] TAU
+*> \verbatim
+*>          TAU is REAL array, dimension (MMAX)
+*> \endverbatim
+*>
+*> \param[out] WORK
+*> \verbatim
+*>          WORK is REAL array, dimension
+*>                      (MMAX*NMAX + 4*NMAX + MMAX)
+*> \endverbatim
+*>
+*> \param[out] IWORK
+*> \verbatim
+*>          IWORK is INTEGER array, dimension (2*NMAX)
+*> \endverbatim
+*>
+*> \param[in] NOUT
+*> \verbatim
+*>          NOUT is INTEGER
+*>          The unit number for output.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup single_lin
+*
+*  =====================================================================
       SUBROUTINE SCHKQ3( DOTYPE, NM, MVAL, NN, NVAL, NNB, NBVAL, NXVAL,
-     $                   THRESH, A, COPYA, S, COPYS, TAU, WORK, IWORK,
+     $                   THRESH, A, COPYA, S, TAU, WORK, IWORK,
      $                   NOUT )
 *
-*  -- LAPACK test routine (version 3.1.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     January 2007
+*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       INTEGER            NM, NN, NNB, NOUT
@@ -14,72 +166,9 @@
       LOGICAL            DOTYPE( * )
       INTEGER            IWORK( * ), MVAL( * ), NBVAL( * ), NVAL( * ),
      $                   NXVAL( * )
-      REAL               A( * ), COPYA( * ), COPYS( * ), S( * ),
+      REAL               A( * ), COPYA( * ), S( * ),
      $                   TAU( * ), WORK( * )
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  SCHKQ3 tests SGEQP3.
-*
-*  Arguments
-*  =========
-*
-*  DOTYPE  (input) LOGICAL array, dimension (NTYPES)
-*          The matrix types to be used for testing.  Matrices of type j
-*          (for 1 <= j <= NTYPES) are used for testing if DOTYPE(j) =
-*          .TRUE.; if DOTYPE(j) = .FALSE., then type j is not used.
-*
-*  NM      (input) INTEGER
-*          The number of values of M contained in the vector MVAL.
-*
-*  MVAL    (input) INTEGER array, dimension (NM)
-*          The values of the matrix row dimension M.
-*
-*  NN      (input) INTEGER
-*          The number of values of N contained in the vector NVAL.
-*
-*  NVAL    (input) INTEGER array, dimension (NN)
-*          The values of the matrix column dimension N.
-*
-*  NNB     (input) INTEGER
-*          The number of values of NB and NX contained in the
-*          vectors NBVAL and NXVAL.  The blocking parameters are used
-*          in pairs (NB,NX).
-*
-*  NBVAL   (input) INTEGER array, dimension (NNB)
-*          The values of the blocksize NB.
-*
-*  NXVAL   (input) INTEGER array, dimension (NNB)
-*          The values of the crossover point NX.
-*
-*  THRESH  (input) REAL
-*          The threshold value for the test ratios.  A result is
-*          included in the output file if RESULT >= THRESH.  To have
-*          every test ratio printed, use THRESH = 0.
-*
-*  A       (workspace) REAL array, dimension (MMAX*NMAX)
-*          where MMAX is the maximum value of M in MVAL and NMAX is the
-*          maximum value of N in NVAL.
-*
-*  COPYA   (workspace) REAL array, dimension (MMAX*NMAX)
-*
-*  S       (workspace) REAL array, dimension
-*                      (min(MMAX,NMAX))
-*
-*  COPYS   (workspace) REAL array, dimension
-*                      (min(MMAX,NMAX))
-*
-*  TAU     (workspace) REAL array, dimension (MMAX)
-*
-*  WORK    (workspace) REAL array, dimension
-*                      (MMAX*NMAX + 4*NMAX + MMAX)
-*
-*  IWORK   (workspace) INTEGER array, dimension (2*NMAX)
-*
-*  NOUT    (input) INTEGER
-*          The unit number for output.
 *
 *  =====================================================================
 *
@@ -181,10 +270,10 @@
                IF( IMODE.EQ.1 ) THEN
                   CALL SLASET( 'Full', M, N, ZERO, ZERO, COPYA, LDA )
                   DO 30 I = 1, MNMIN
-                     COPYS( I ) = ZERO
+                     S( I ) = ZERO
    30             CONTINUE
                ELSE
-                  CALL SLATMS( M, N, 'Uniform', ISEED, 'Nonsymm', COPYS,
+                  CALL SLATMS( M, N, 'Uniform', ISEED, 'Nonsymm', S,
      $                         MODE, ONE / EPS, ONE, M, N, 'No packing',
      $                         COPYA, LDA, WORK, INFO )
                   IF( IMODE.GE.4 ) THEN
@@ -205,7 +294,7 @@
                         IWORK( I ) = 1
    40                CONTINUE
                   END IF
-                  CALL SLAORD( 'Decreasing', MNMIN, COPYS, 1 )
+                  CALL SLAORD( 'Decreasing', MNMIN, S, 1 )
                END IF
 *
                DO 60 INB = 1, NNB
@@ -235,7 +324,7 @@
 *
 *                 Compute norm(svd(a) - svd(r))
 *
-                  RESULT( 1 ) = SQRT12( M, N, A, LDA, COPYS, WORK,
+                  RESULT( 1 ) = SQRT12( M, N, A, LDA, S, WORK,
      $                          LWORK )
 *
 *                 Compute norm( A*P - Q*R )

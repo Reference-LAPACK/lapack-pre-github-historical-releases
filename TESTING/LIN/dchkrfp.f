@@ -1,37 +1,67 @@
-      PROGRAM DCHKRFP
-      IMPLICIT NONE
+*> \brief \b DCHKRFP
 *
-*  -- LAPACK test routine (version 3.2.0) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2008
+*  =========== DOCUMENTATION ===========
 *
-*  Purpose
-*  =======
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
 *
-*  DCHKRFP is the main test program for the DOUBLE PRECISION linear
-*  equation routines with RFP storage format
+*  Definition:
+*  ===========
 *
+*       PROGRAM DCHKRFP
+* 
 *
-*  Internal Parameters
-*  ===================
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> DCHKRFP is the main test program for the DOUBLE PRECISION linear
+*> equation routines with RFP storage format
+*>
+*> \endverbatim
 *
-*  MAXIN   INTEGER
-*          The number of different values that can be used for each of
-*          M, N, or NB
+*  Arguments:
+*  ==========
 *
-*  MAXRHS  INTEGER
-*          The maximum number of right hand sides
+*> \verbatim
+*>  MAXIN   INTEGER
+*>          The number of different values that can be used for each of
+*>          M, N, or NB
+*>
+*>  MAXRHS  INTEGER
+*>          The maximum number of right hand sides
+*>
+*>  NTYPES  INTEGER
+*>
+*>  NMAX    INTEGER
+*>          The maximum allowable value for N.
+*>
+*>  NIN     INTEGER
+*>          The unit number for input
+*>
+*>  NOUT    INTEGER
+*>          The unit number for output
+*> \endverbatim
 *
-*  NTYPES  INTEGER
+*  Authors:
+*  ========
 *
-*  NMAX    INTEGER
-*          The maximum allowable value for N.
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
 *
-*  NIN     INTEGER
-*          The unit number for input
+*> \date November 2011
 *
-*  NOUT    INTEGER
-*          The unit number for output
+*> \ingroup double_lin
+*
+*  =====================================================================      PROGRAM DCHKRFP
+*
+*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *  =====================================================================
 *

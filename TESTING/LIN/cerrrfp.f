@@ -1,28 +1,65 @@
+*> \brief \b CERRRFP
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE CERRRFP( NUNIT )
+* 
+*       .. Scalar Arguments ..
+*       INTEGER            NUNIT
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> CERRRFP tests the error exits for the COMPLEX driver routines
+*> for solving linear systems of equations.
+*>
+*> CDRVRFP tests the COMPLEX LAPACK RFP routines:
+*>     CTFSM, CTFTRI, CHFRK, CTFTTP, CTFTTR, CPFTRF, CPFTRS, CTPTTF,
+*>     CTPTTR, CTRTTF, and CTRTTP
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] NUNIT
+*> \verbatim
+*>          NUNIT is INTEGER
+*>          The unit number for output.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup complex_lin
+*
+*  =====================================================================
       SUBROUTINE CERRRFP( NUNIT )
 *
-*  -- LAPACK test routine (version 3.2.0) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2008
+*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       INTEGER            NUNIT
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  CERRRFP tests the error exits for the COMPLEX driver routines
-*  for solving linear systems of equations.
-*
-*  CDRVRFP tests the COMPLEX LAPACK RFP routines:
-*      CTFSM, CTFTRI, CHFRK, CTFTTP, CTFTTR, CPFTRF, CPFTRS, CTPTTF,
-*      CTPTTR, CTRTTF, and CTRTTP
-*
-*  Arguments
-*  =========
-*
-*  NUNIT   (input) INTEGER
-*          The unit number for output.
 *
 *  =====================================================================
 *

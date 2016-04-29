@@ -1,49 +1,103 @@
+*> \brief \b DLARTGS
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*> \htmlonly
+*> Download DLARTGS + dependencies 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlartgs.f"> 
+*> [TGZ]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlartgs.f"> 
+*> [ZIP]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlartgs.f"> 
+*> [TXT]</a>
+*> \endhtmlonly 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE DLARTGS( X, Y, SIGMA, CS, SN )
+* 
+*       .. Scalar Arguments ..
+*       DOUBLE PRECISION        CS, SIGMA, SN, X, Y
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> DLARTGS generates a plane rotation designed to introduce a bulge in
+*> Golub-Reinsch-style implicit QR iteration for the bidiagonal SVD
+*> problem. X and Y are the top-row entries, and SIGMA is the shift.
+*> The computed CS and SN define a plane rotation satisfying
+*>
+*>    [  CS  SN  ]  .  [ X^2 - SIGMA ]  =  [ R ],
+*>    [ -SN  CS  ]     [    X * Y    ]     [ 0 ]
+*>
+*> with R nonnegative.  If X^2 - SIGMA and X * Y are 0, then the
+*> rotation is by PI/2.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] X
+*> \verbatim
+*>          X is DOUBLE PRECISION
+*>          The (1,1) entry of an upper bidiagonal matrix.
+*> \endverbatim
+*>
+*> \param[in] Y
+*> \verbatim
+*>          Y is DOUBLE PRECISION
+*>          The (1,2) entry of an upper bidiagonal matrix.
+*> \endverbatim
+*>
+*> \param[in] SIGMA
+*> \verbatim
+*>          SIGMA is DOUBLE PRECISION
+*>          The shift.
+*> \endverbatim
+*>
+*> \param[out] CS
+*> \verbatim
+*>          CS is DOUBLE PRECISION
+*>          The cosine of the rotation.
+*> \endverbatim
+*>
+*> \param[out] SN
+*> \verbatim
+*>          SN is DOUBLE PRECISION
+*>          The sine of the rotation.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup auxOTHERcomputational
+*
+*  =====================================================================
       SUBROUTINE DLARTGS( X, Y, SIGMA, CS, SN )
-      IMPLICIT NONE
 *
-*  -- LAPACK routine (version 3.3.0) --
-*
-*  -- Contributed by Brian Sutton of the Randolph-Macon College --
-*  -- November 2010
-*
+*  -- LAPACK computational routine (version 3.4.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--     
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       DOUBLE PRECISION        CS, SIGMA, SN, X, Y
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  DLARTGS generates a plane rotation designed to introduce a bulge in
-*  Golub-Reinsch-style implicit QR iteration for the bidiagonal SVD
-*  problem. X and Y are the top-row entries, and SIGMA is the shift.
-*  The computed CS and SN define a plane rotation satisfying
-*
-*     [  CS  SN  ]  .  [ X^2 - SIGMA ]  =  [ R ],
-*     [ -SN  CS  ]     [    X * Y    ]     [ 0 ]
-*
-*  with R nonnegative.  If X^2 - SIGMA and X * Y are 0, then the
-*  rotation is by PI/2.
-*
-*  Arguments
-*  =========
-*
-*  X       (input) DOUBLE PRECISION
-*          The (1,1) entry of an upper bidiagonal matrix.
-*
-*  Y       (input) DOUBLE PRECISION
-*          The (1,2) entry of an upper bidiagonal matrix.
-*
-*  SIGMA   (input) DOUBLE PRECISION
-*          The shift.
-*
-*  CS      (output) DOUBLE PRECISION
-*          The cosine of the rotation.
-*
-*  SN      (output) DOUBLE PRECISION
-*          The sine of the rotation.
 *
 *  ===================================================================
 *

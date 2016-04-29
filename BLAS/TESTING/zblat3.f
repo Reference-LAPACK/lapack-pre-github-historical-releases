@@ -1,54 +1,96 @@
-      PROGRAM ZBLAT3
+*> \brief \b ZBLAT3
 *
-*  Test program for the COMPLEX*16       Level 3 Blas.
+*  =========== DOCUMENTATION ===========
 *
-*  The program must be driven by a short data file. The first 14 records
-*  of the file are read using list-directed input, the last 9 records
-*  are read using the format ( A6, L2 ). An annotated example of a data
-*  file can be obtained by deleting the first 3 characters from the
-*  following 23 lines:
-*  'zblat3.out'      NAME OF SUMMARY OUTPUT FILE
-*  6                 UNIT NUMBER OF SUMMARY FILE
-*  'ZBLAT3.SNAP'     NAME OF SNAPSHOT OUTPUT FILE
-*  -1                UNIT NUMBER OF SNAPSHOT FILE (NOT USED IF .LT. 0)
-*  F        LOGICAL FLAG, T TO REWIND SNAPSHOT FILE AFTER EACH RECORD.
-*  F        LOGICAL FLAG, T TO STOP ON FAILURES.
-*  T        LOGICAL FLAG, T TO TEST ERROR EXITS.
-*  16.0     THRESHOLD VALUE OF TEST RATIO
-*  6                 NUMBER OF VALUES OF N
-*  0 1 2 3 5 9       VALUES OF N
-*  3                 NUMBER OF VALUES OF ALPHA
-*  (0.0,0.0) (1.0,0.0) (0.7,-0.9)       VALUES OF ALPHA
-*  3                 NUMBER OF VALUES OF BETA
-*  (0.0,0.0) (1.0,0.0) (1.3,-1.1)       VALUES OF BETA
-*  ZGEMM  T PUT F FOR NO TEST. SAME COLUMNS.
-*  ZHEMM  T PUT F FOR NO TEST. SAME COLUMNS.
-*  ZSYMM  T PUT F FOR NO TEST. SAME COLUMNS.
-*  ZTRMM  T PUT F FOR NO TEST. SAME COLUMNS.
-*  ZTRSM  T PUT F FOR NO TEST. SAME COLUMNS.
-*  ZHERK  T PUT F FOR NO TEST. SAME COLUMNS.
-*  ZSYRK  T PUT F FOR NO TEST. SAME COLUMNS.
-*  ZHER2K T PUT F FOR NO TEST. SAME COLUMNS.
-*  ZSYR2K T PUT F FOR NO TEST. SAME COLUMNS.
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
 *
-*  See:
+*  Definition:
+*  ===========
 *
-*     Dongarra J. J., Du Croz J. J., Duff I. S. and Hammarling S.
-*     A Set of Level 3 Basic Linear Algebra Subprograms.
+*       PROGRAM ZBLAT3
+* 
 *
-*     Technical Memorandum No.88 (Revision 1), Mathematics and
-*     Computer Science Division, Argonne National Laboratory, 9700
-*     South Cass Avenue, Argonne, Illinois 60439, US.
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> Test program for the COMPLEX*16       Level 3 Blas.
+*>
+*> The program must be driven by a short data file. The first 14 records
+*> of the file are read using list-directed input, the last 9 records
+*> are read using the format ( A6, L2 ). An annotated example of a data
+*> file can be obtained by deleting the first 3 characters from the
+*> following 23 lines:
+*> 'zblat3.out'      NAME OF SUMMARY OUTPUT FILE
+*> 6                 UNIT NUMBER OF SUMMARY FILE
+*> 'ZBLAT3.SNAP'     NAME OF SNAPSHOT OUTPUT FILE
+*> -1                UNIT NUMBER OF SNAPSHOT FILE (NOT USED IF .LT. 0)
+*> F        LOGICAL FLAG, T TO REWIND SNAPSHOT FILE AFTER EACH RECORD.
+*> F        LOGICAL FLAG, T TO STOP ON FAILURES.
+*> T        LOGICAL FLAG, T TO TEST ERROR EXITS.
+*> 16.0     THRESHOLD VALUE OF TEST RATIO
+*> 6                 NUMBER OF VALUES OF N
+*> 0 1 2 3 5 9       VALUES OF N
+*> 3                 NUMBER OF VALUES OF ALPHA
+*> (0.0,0.0) (1.0,0.0) (0.7,-0.9)       VALUES OF ALPHA
+*> 3                 NUMBER OF VALUES OF BETA
+*> (0.0,0.0) (1.0,0.0) (1.3,-1.1)       VALUES OF BETA
+*> ZGEMM  T PUT F FOR NO TEST. SAME COLUMNS.
+*> ZHEMM  T PUT F FOR NO TEST. SAME COLUMNS.
+*> ZSYMM  T PUT F FOR NO TEST. SAME COLUMNS.
+*> ZTRMM  T PUT F FOR NO TEST. SAME COLUMNS.
+*> ZTRSM  T PUT F FOR NO TEST. SAME COLUMNS.
+*> ZHERK  T PUT F FOR NO TEST. SAME COLUMNS.
+*> ZSYRK  T PUT F FOR NO TEST. SAME COLUMNS.
+*> ZHER2K T PUT F FOR NO TEST. SAME COLUMNS.
+*> ZSYR2K T PUT F FOR NO TEST. SAME COLUMNS.
+*>
+*> 
+*> Further Details
+*> ===============
+*>
+*> See:
+*>
+*>    Dongarra J. J., Du Croz J. J., Duff I. S. and Hammarling S.
+*>    A Set of Level 3 Basic Linear Algebra Subprograms.
+*>
+*>    Technical Memorandum No.88 (Revision 1), Mathematics and
+*>    Computer Science Division, Argonne National Laboratory, 9700
+*>    South Cass Avenue, Argonne, Illinois 60439, US.
+*>
+*> -- Written on 8-February-1989.
+*>    Jack Dongarra, Argonne National Laboratory.
+*>    Iain Duff, AERE Harwell.
+*>    Jeremy Du Croz, Numerical Algorithms Group Ltd.
+*>    Sven Hammarling, Numerical Algorithms Group Ltd.
+*>
+*>    10-9-00:  Change STATUS='NEW' to 'UNKNOWN' so that the testers
+*>              can be run multiple times without deleting generated
+*>              output files (susan)
+*> \endverbatim
 *
-*  -- Written on 8-February-1989.
-*     Jack Dongarra, Argonne National Laboratory.
-*     Iain Duff, AERE Harwell.
-*     Jeremy Du Croz, Numerical Algorithms Group Ltd.
-*     Sven Hammarling, Numerical Algorithms Group Ltd.
+*  Authors:
+*  ========
 *
-*     10-9-00:  Change STATUS='NEW' to 'UNKNOWN' so that the testers
-*               can be run multiple times without deleting generated
-*               output files (susan)
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup complex16_blas_testing
+*
+*  =====================================================================      PROGRAM ZBLAT3
+*
+*  -- Reference BLAS test routine (version 3.4.0) --
+*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
+*
+*  =====================================================================
 *
 *     .. Parameters ..
       INTEGER            NIN
@@ -3296,7 +3338,6 @@
    50    CONTINUE
       END IF
 *
-   60 CONTINUE
       LZERES = .TRUE.
       GO TO 80
    70 CONTINUE
@@ -3306,7 +3347,7 @@
 *     End of LZERES.
 *
       END
-      DOUBLE COMPLEX     FUNCTION ZBEG( RESET )
+      COMPLEX*16     FUNCTION ZBEG( RESET )
 *
 *  Generates complex numbers as pairs of random numbers uniformly
 *  distributed between -0.5 and 0.5.

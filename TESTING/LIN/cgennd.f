@@ -1,9 +1,77 @@
-      LOGICAL FUNCTION CGENND (M, N, A, LDA)
-      IMPLICIT NONE
+*> \brief \b CGENND
 *
-*  -- LAPACK test routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     February 2008
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*       LOGICAL FUNCTION CGENND (M, N, A, LDA)
+* 
+*       .. Scalar Arguments ..
+*       INTEGER M, N, LDA
+*       ..
+*       .. Array Arguments ..
+*       COMPLEX A( LDA, * )
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*>    CGENND tests that its argument has a real, non-negative diagonal.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] M
+*> \verbatim
+*>          M is INTEGER
+*>          The number of rows in A.
+*> \endverbatim
+*>
+*> \param[in] N
+*> \verbatim
+*>          N is INTEGER
+*>          The number of columns in A.
+*> \endverbatim
+*>
+*> \param[in] A
+*> \verbatim
+*>          A is COMPLEX array, dimension (LDA, N)
+*>          The matrix.
+*> \endverbatim
+*>
+*> \param[in] LDA
+*> \verbatim
+*>          LDA is INTEGER
+*>          Leading dimension of A.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup complex_lin
+*
+*  =====================================================================
+      LOGICAL FUNCTION CGENND (M, N, A, LDA)
+*
+*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       INTEGER M, N, LDA
@@ -12,26 +80,6 @@
       COMPLEX A( LDA, * )
 *     ..
 *
-*  Purpose
-*  =======
-*
-*     CGENND tests that its argument has a real, non-negative diagonal.
-*
-*  Arguments
-*  =========
-*
-*  M       (input) INTEGER
-*          The number of rows in A.
-*
-*  N       (input) INTEGER
-*          The number of columns in A.
-*
-*  A       (input) COMPLEX array, dimension (LDA, N)
-*          The matrix.
-*
-*  LDA     (input) INTEGER
-*          Leading dimension of A.
-*
 *  =====================================================================
 *
 *     .. Parameters ..
@@ -39,7 +87,6 @@
       PARAMETER          ( ZERO = 0.0E0 )
 *     ..
 *     .. Local Scalars ..
-      LOGICAL OUT
       INTEGER I, K
       COMPLEX AII
 *     ..

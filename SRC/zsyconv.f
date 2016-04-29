@@ -1,12 +1,121 @@
+*> \brief \b ZSYCONV
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*> \htmlonly
+*> Download ZSYCONV + dependencies 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/zsyconv.f"> 
+*> [TGZ]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/zsyconv.f"> 
+*> [ZIP]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/zsyconv.f"> 
+*> [TXT]</a>
+*> \endhtmlonly 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE ZSYCONV( UPLO, WAY, N, A, LDA, IPIV, WORK, INFO )
+* 
+*       .. Scalar Arguments ..
+*       CHARACTER          UPLO, WAY
+*       INTEGER            INFO, LDA, N
+*       ..
+*       .. Array Arguments ..
+*       INTEGER            IPIV( * )
+*       COMPLEX*16         A( LDA, * ), WORK( * )
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> ZSYCONV converts A given by ZHETRF into L and D or vice-versa.
+*> Get nondiagonal elements of D (returned in workspace) and 
+*> apply or reverse permutation done in TRF.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] UPLO
+*> \verbatim
+*>          UPLO is CHARACTER*1
+*>          Specifies whether the details of the factorization are stored
+*>          as an upper or lower triangular matrix.
+*>          = 'U':  Upper triangular, form is A = U*D*U**T;
+*>          = 'L':  Lower triangular, form is A = L*D*L**T.
+*> \endverbatim
+*>
+*> \param[in] WAY
+*> \verbatim
+*>          WAY is CHARACTER*1
+*>          = 'C': Convert 
+*>          = 'R': Revert
+*> \endverbatim
+*>
+*> \param[in] N
+*> \verbatim
+*>          N is INTEGER
+*>          The order of the matrix A.  N >= 0.
+*> \endverbatim
+*>
+*> \param[in] A
+*> \verbatim
+*>          A is COMPLEX*16 array, dimension (LDA,N)
+*>          The block diagonal matrix D and the multipliers used to
+*>          obtain the factor U or L as computed by ZSYTRF.
+*> \endverbatim
+*>
+*> \param[in] LDA
+*> \verbatim
+*>          LDA is INTEGER
+*>          The leading dimension of the array A.  LDA >= max(1,N).
+*> \endverbatim
+*>
+*> \param[in] IPIV
+*> \verbatim
+*>          IPIV is INTEGER array, dimension (N)
+*>          Details of the interchanges and the block structure of D
+*>          as determined by ZSYTRF.
+*> \endverbatim
+*>
+*> \param[out] WORK
+*> \verbatim
+*>          WORK is COMPLEX*16 array, dimension (N)
+*> \endverbatim
+*>
+*> \param[out] INFO
+*> \verbatim
+*>          INFO is INTEGER
+*>          = 0:  successful exit
+*>          < 0:  if INFO = -i, the i-th argument had an illegal value
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup complex16SYcomputational
+*
+*  =====================================================================
       SUBROUTINE ZSYCONV( UPLO, WAY, N, A, LDA, IPIV, WORK, INFO )
 *
-*  -- LAPACK PROTOTYPE routine (version 3.2.2) --
-*
-*  -- Written by Julie Langou of the Univ. of TN    --
-*     May 2010
-*
+*  -- LAPACK computational routine (version 3.4.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO, WAY
@@ -14,62 +123,13 @@
 *     ..
 *     .. Array Arguments ..
       INTEGER            IPIV( * )
-      DOUBLE COMPLEX     A( LDA, * ), WORK( * )
+      COMPLEX*16         A( LDA, * ), WORK( * )
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  ZSYCONV converts A given by ZHETRF into L and D or vice-versa.
-*  Get nondiagonal elements of D (returned in workspace) and 
-*  apply or reverse permutation done in TRF.
-*
-*  Arguments
-*  =========
-*
-*  UPLO    (input) CHARACTER*1
-*          Specifies whether the details of the factorization are stored
-*          as an upper or lower triangular matrix.
-*          = 'U':  Upper triangular, form is A = U*D*U**T;
-*          = 'L':  Lower triangular, form is A = L*D*L**T.
-* 
-*  WAY     (input) CHARACTER*1
-*          = 'C': Convert 
-*          = 'R': Revert
-*
-*  N       (input) INTEGER
-*          The order of the matrix A.  N >= 0.
-*
-*  A       (input) DOUBLE COMPLEX array, dimension (LDA,N)
-*          The block diagonal matrix D and the multipliers used to
-*          obtain the factor U or L as computed by ZSYTRF.
-*
-*  LDA     (input) INTEGER
-*          The leading dimension of the array A.  LDA >= max(1,N).
-*
-*  IPIV    (input) INTEGER array, dimension (N)
-*          Details of the interchanges and the block structure of D
-*          as determined by ZSYTRF.
-*
-* WORK     (workspace) DOUBLE COMPLEX array, dimension (N)
-*
-* LWORK    (input) INTEGER
-*          The length of WORK.  LWORK >=1. 
-*          LWORK = N
-*
-*          If LWORK = -1, then a workspace query is assumed; the routine
-*          only calculates the optimal size of the WORK array, returns
-*          this value as the first entry of the WORK array, and no error
-*          message related to LWORK is issued by XERBLA.
-*
-*  INFO    (output) INTEGER
-*          = 0:  successful exit
-*          < 0:  if INFO = -i, the i-th argument had an illegal value
 *
 *  =====================================================================
 *
 *     .. Parameters ..
-      DOUBLE COMPLEX     ZERO
+      COMPLEX*16         ZERO
       PARAMETER          ( ZERO = (0.0D+0,0.0D+0) )
 *     ..
 *     .. External Functions ..
@@ -81,7 +141,7 @@
 *     .. Local Scalars ..
       LOGICAL            UPPER, CONVERT
       INTEGER            I, IP, J
-      DOUBLE COMPLEX     TEMP
+      COMPLEX*16         TEMP
 *     ..
 *     .. Executable Statements ..
 *

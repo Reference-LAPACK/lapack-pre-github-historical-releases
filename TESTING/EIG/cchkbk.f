@@ -1,28 +1,68 @@
+*> \brief \b CCHKBK
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE CCHKBK( NIN, NOUT )
+* 
+*       .. Scalar Arguments ..
+*       INTEGER            NIN, NOUT
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> CCHKBK tests CGEBAK, a routine for backward transformation of
+*> the computed right or left eigenvectors if the orginal matrix
+*> was preprocessed by balance subroutine CGEBAL.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] NIN
+*> \verbatim
+*>          NIN is INTEGER
+*>          The logical unit number for input.  NIN > 0.
+*> \endverbatim
+*>
+*> \param[in] NOUT
+*> \verbatim
+*>          NOUT is INTEGER
+*>          The logical unit number for output.  NOUT > 0.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup complex_eig
+*
+*  =====================================================================
       SUBROUTINE CCHKBK( NIN, NOUT )
 *
-*  -- LAPACK test routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       INTEGER            NIN, NOUT
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  CCHKBK tests CGEBAK, a routine for backward transformation of
-*  the computed right or left eigenvectors if the orginal matrix
-*  was preprocessed by balance subroutine CGEBAL.
-*
-*  Arguments
-*  =========
-*
-*  NIN     (input) INTEGER
-*          The logical unit number for input.  NIN > 0.
-*
-*  NOUT    (input) INTEGER
-*          The logical unit number for output.  NOUT > 0.
 *
 * ======================================================================
 *

@@ -1,9 +1,142 @@
+*> \brief \b SLAQSY
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*> \htmlonly
+*> Download SLAQSY + dependencies 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slaqsy.f"> 
+*> [TGZ]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slaqsy.f"> 
+*> [ZIP]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slaqsy.f"> 
+*> [TXT]</a>
+*> \endhtmlonly 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE SLAQSY( UPLO, N, A, LDA, S, SCOND, AMAX, EQUED )
+* 
+*       .. Scalar Arguments ..
+*       CHARACTER          EQUED, UPLO
+*       INTEGER            LDA, N
+*       REAL               AMAX, SCOND
+*       ..
+*       .. Array Arguments ..
+*       REAL               A( LDA, * ), S( * )
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> SLAQSY equilibrates a symmetric matrix A using the scaling factors
+*> in the vector S.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] UPLO
+*> \verbatim
+*>          UPLO is CHARACTER*1
+*>          Specifies whether the upper or lower triangular part of the
+*>          symmetric matrix A is stored.
+*>          = 'U':  Upper triangular
+*>          = 'L':  Lower triangular
+*> \endverbatim
+*>
+*> \param[in] N
+*> \verbatim
+*>          N is INTEGER
+*>          The order of the matrix A.  N >= 0.
+*> \endverbatim
+*>
+*> \param[in,out] A
+*> \verbatim
+*>          A is REAL array, dimension (LDA,N)
+*>          On entry, the symmetric matrix A.  If UPLO = 'U', the leading
+*>          n by n upper triangular part of A contains the upper
+*>          triangular part of the matrix A, and the strictly lower
+*>          triangular part of A is not referenced.  If UPLO = 'L', the
+*>          leading n by n lower triangular part of A contains the lower
+*>          triangular part of the matrix A, and the strictly upper
+*>          triangular part of A is not referenced.
+*>
+*>          On exit, if EQUED = 'Y', the equilibrated matrix:
+*>          diag(S) * A * diag(S).
+*> \endverbatim
+*>
+*> \param[in] LDA
+*> \verbatim
+*>          LDA is INTEGER
+*>          The leading dimension of the array A.  LDA >= max(N,1).
+*> \endverbatim
+*>
+*> \param[in] S
+*> \verbatim
+*>          S is REAL array, dimension (N)
+*>          The scale factors for A.
+*> \endverbatim
+*>
+*> \param[in] SCOND
+*> \verbatim
+*>          SCOND is REAL
+*>          Ratio of the smallest S(i) to the largest S(i).
+*> \endverbatim
+*>
+*> \param[in] AMAX
+*> \verbatim
+*>          AMAX is REAL
+*>          Absolute value of largest matrix entry.
+*> \endverbatim
+*>
+*> \param[out] EQUED
+*> \verbatim
+*>          EQUED is CHARACTER*1
+*>          Specifies whether or not equilibration was done.
+*>          = 'N':  No equilibration.
+*>          = 'Y':  Equilibration was done, i.e., A has been replaced by
+*>                  diag(S) * A * diag(S).
+*> \endverbatim
+*
+*> \par Internal Parameters:
+*  =========================
+*>
+*> \verbatim
+*>  THRESH is a threshold value used to decide if scaling should be done
+*>  based on the ratio of the scaling factors.  If SCOND < THRESH,
+*>  scaling is done.
+*>
+*>  LARGE and SMALL are threshold values used to decide if scaling should
+*>  be done based on the absolute size of the largest matrix element.
+*>  If AMAX > LARGE or AMAX < SMALL, scaling is done.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup realSYauxiliary
+*
+*  =====================================================================
       SUBROUTINE SLAQSY( UPLO, N, A, LDA, S, SCOND, AMAX, EQUED )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.4.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     November 2011
 *
 *     .. Scalar Arguments ..
       CHARACTER          EQUED, UPLO
@@ -13,65 +146,6 @@
 *     .. Array Arguments ..
       REAL               A( LDA, * ), S( * )
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  SLAQSY equilibrates a symmetric matrix A using the scaling factors
-*  in the vector S.
-*
-*  Arguments
-*  =========
-*
-*  UPLO    (input) CHARACTER*1
-*          Specifies whether the upper or lower triangular part of the
-*          symmetric matrix A is stored.
-*          = 'U':  Upper triangular
-*          = 'L':  Lower triangular
-*
-*  N       (input) INTEGER
-*          The order of the matrix A.  N >= 0.
-*
-*  A       (input/output) REAL array, dimension (LDA,N)
-*          On entry, the symmetric matrix A.  If UPLO = 'U', the leading
-*          n by n upper triangular part of A contains the upper
-*          triangular part of the matrix A, and the strictly lower
-*          triangular part of A is not referenced.  If UPLO = 'L', the
-*          leading n by n lower triangular part of A contains the lower
-*          triangular part of the matrix A, and the strictly upper
-*          triangular part of A is not referenced.
-*
-*          On exit, if EQUED = 'Y', the equilibrated matrix:
-*          diag(S) * A * diag(S).
-*
-*  LDA     (input) INTEGER
-*          The leading dimension of the array A.  LDA >= max(N,1).
-*
-*  S       (input) REAL array, dimension (N)
-*          The scale factors for A.
-*
-*  SCOND   (input) REAL
-*          Ratio of the smallest S(i) to the largest S(i).
-*
-*  AMAX    (input) REAL
-*          Absolute value of largest matrix entry.
-*
-*  EQUED   (output) CHARACTER*1
-*          Specifies whether or not equilibration was done.
-*          = 'N':  No equilibration.
-*          = 'Y':  Equilibration was done, i.e., A has been replaced by
-*                  diag(S) * A * diag(S).
-*
-*  Internal Parameters
-*  ===================
-*
-*  THRESH is a threshold value used to decide if scaling should be done
-*  based on the ratio of the scaling factors.  If SCOND < THRESH,
-*  scaling is done.
-*
-*  LARGE and SMALL are threshold values used to decide if scaling should
-*  be done based on the absolute size of the largest matrix element.
-*  If AMAX > LARGE or AMAX < SMALL, scaling is done.
 *
 *  =====================================================================
 *

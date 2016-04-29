@@ -1,10 +1,153 @@
+*> \brief \b DDRVAC
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE DDRVAC( DOTYPE, NM, MVAL, NNS, NSVAL, THRESH, NMAX,
+*                          A, AFAC, B, X, WORK,
+*                          RWORK, SWORK, NOUT )
+* 
+*       .. Scalar Arguments ..
+*       INTEGER            NMAX, NM, NNS, NOUT
+*       DOUBLE PRECISION   THRESH
+*       ..
+*       .. Array Arguments ..
+*       LOGICAL            DOTYPE( * )
+*       INTEGER            MVAL( * ), NSVAL( * )
+*       REAL               SWORK(*)
+*       DOUBLE PRECISION   A( * ), AFAC( * ), B( * ),
+*      $                   RWORK( * ), WORK( * ), X( * )
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> DDRVAC tests DSPOSV.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] DOTYPE
+*> \verbatim
+*>          DOTYPE is LOGICAL array, dimension (NTYPES)
+*>          The matrix types to be used for testing.  Matrices of type j
+*>          (for 1 <= j <= NTYPES) are used for testing if DOTYPE(j) =
+*>          .TRUE.; if DOTYPE(j) = .FALSE., then type j is not used.
+*> \endverbatim
+*>
+*> \param[in] NM
+*> \verbatim
+*>          NM is INTEGER
+*>          The number of values of N contained in the vector MVAL.
+*> \endverbatim
+*>
+*> \param[in] MVAL
+*> \verbatim
+*>          MVAL is INTEGER array, dimension (NM)
+*>          The values of the matrix dimension N.
+*> \endverbatim
+*>
+*> \param[in] NNS
+*> \verbatim
+*>          NNS is INTEGER
+*>          The number of values of NRHS contained in the vector NSVAL.
+*> \endverbatim
+*>
+*> \param[in] NSVAL
+*> \verbatim
+*>          NSVAL is INTEGER array, dimension (NNS)
+*>          The values of the number of right hand sides NRHS.
+*> \endverbatim
+*>
+*> \param[in] THRESH
+*> \verbatim
+*>          THRESH is DOUBLE PRECISION
+*>          The threshold value for the test ratios.  A result is
+*>          included in the output file if RESULT >= THRESH.  To have
+*>          every test ratio printed, use THRESH = 0.
+*> \endverbatim
+*>
+*> \param[in] NMAX
+*> \verbatim
+*>          NMAX is INTEGER
+*>          The maximum value permitted for N, used in dimensioning the
+*>          work arrays.
+*> \endverbatim
+*>
+*> \param[out] A
+*> \verbatim
+*>          A is DOUBLE PRECISION array, dimension (NMAX*NMAX)
+*> \endverbatim
+*>
+*> \param[out] AFAC
+*> \verbatim
+*>          AFAC is DOUBLE PRECISION array, dimension (NMAX*NMAX)
+*> \endverbatim
+*>
+*> \param[out] B
+*> \verbatim
+*>          B is DOUBLE PRECISION array, dimension (NMAX*NSMAX)
+*> \endverbatim
+*>
+*> \param[out] X
+*> \verbatim
+*>          X is DOUBLE PRECISION array, dimension (NMAX*NSMAX)
+*> \endverbatim
+*>
+*> \param[out] WORK
+*> \verbatim
+*>          WORK is DOUBLE PRECISION array, dimension
+*>                      (NMAX*max(3,NSMAX))
+*> \endverbatim
+*>
+*> \param[out] RWORK
+*> \verbatim
+*>          RWORK is DOUBLE PRECISION array, dimension
+*>                      (max(2*NMAX,2*NSMAX+NWORK))
+*> \endverbatim
+*>
+*> \param[out] SWORK
+*> \verbatim
+*>          SWORK is REAL array, dimension
+*>                      (NMAX*(NSMAX+NMAX))
+*> \endverbatim
+*>
+*> \param[in] NOUT
+*> \verbatim
+*>          NOUT is INTEGER
+*>          The unit number for output.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup double_lin
+*
+*  =====================================================================
       SUBROUTINE DDRVAC( DOTYPE, NM, MVAL, NNS, NSVAL, THRESH, NMAX,
      $                   A, AFAC, B, X, WORK,
      $                   RWORK, SWORK, NOUT )
 *
-*  -- LAPACK test routine (version 3.1.2) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     April 2007
+*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       INTEGER            NMAX, NM, NNS, NOUT
@@ -17,60 +160,6 @@
       DOUBLE PRECISION   A( * ), AFAC( * ), B( * ),
      $                   RWORK( * ), WORK( * ), X( * )
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  DDRVAC tests DSPOSV.
-*
-*  Arguments
-*  =========
-*
-*  DOTYPE  (input) LOGICAL array, dimension (NTYPES)
-*          The matrix types to be used for testing.  Matrices of type j
-*          (for 1 <= j <= NTYPES) are used for testing if DOTYPE(j) =
-*          .TRUE.; if DOTYPE(j) = .FALSE., then type j is not used.
-*
-*  NM      (input) INTEGER
-*          The number of values of N contained in the vector MVAL.
-*
-*  MVAL    (input) INTEGER array, dimension (NM)
-*          The values of the matrix dimension N.
-*
-*  NNS    (input) INTEGER
-*          The number of values of NRHS contained in the vector NSVAL.
-*
-*  NSVAL   (input) INTEGER array, dimension (NNS)
-*          The values of the number of right hand sides NRHS.
-*
-*  THRESH  (input) DOUBLE PRECISION
-*          The threshold value for the test ratios.  A result is
-*          included in the output file if RESULT >= THRESH.  To have
-*          every test ratio printed, use THRESH = 0.
-*
-*  NMAX    (input) INTEGER
-*          The maximum value permitted for N, used in dimensioning the
-*          work arrays.
-*
-*  A       (workspace) DOUBLE PRECISION array, dimension (NMAX*NMAX)
-*
-*  AFAC    (workspace) DOUBLE PRECISION array, dimension (NMAX*NMAX)
-*
-*  B       (workspace) DOUBLE PRECISION array, dimension (NMAX*NSMAX)
-*
-*  X       (workspace) DOUBLE PRECISION array, dimension (NMAX*NSMAX)
-*
-*  WORK    (workspace) DOUBLE PRECISION array, dimension
-*                      (NMAX*max(3,NSMAX))
-*
-*  RWORK   (workspace) DOUBLE PRECISION array, dimension
-*                      (max(2*NMAX,2*NSMAX+NWORK))
-*
-*  SWORK   (workspace) REAL array, dimension
-*                      (NMAX*(NSMAX+NMAX))
-*
-*  NOUT    (input) INTEGER
-*          The unit number for output.
 *
 *  =====================================================================
 *
@@ -319,8 +408,6 @@
   110    CONTINUE
   120 CONTINUE
 *
-  130 CONTINUE
-*
 *     Print a summary of the results.
 *
       IF( NFAIL.GT.0 ) THEN
@@ -337,7 +424,7 @@
  9996 FORMAT( 1X, A6, ': ', I6, ' out of ', I6,
      $      ' tests failed to pass the threshold' )
  9995 FORMAT( /1X, 'All tests for ', A6,
-     $      ' routines passed the threshold (', I6, ' tests run)' )
+     $      ' routines passed the threshold ( ', I6, ' tests run)' )
  9994 FORMAT( 6X, I6, ' error messages recorded' )
 *
 *     SUBNAM, INFO, INFOE, N, IMAT

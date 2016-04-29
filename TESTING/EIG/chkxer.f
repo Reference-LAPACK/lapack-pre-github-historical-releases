@@ -1,12 +1,50 @@
+*> \brief \b CHKXER
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE CHKXER( SRNAMT, INFOT, NOUT, LERR, OK )
+* 
+*       .. Scalar Arguments ..
+*       LOGICAL            LERR, OK
+*       CHARACTER*(*)      SRNAMT
+*       INTEGER            INFOT, NOUT
+*
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup complex_eig
+*
+*  =====================================================================
       SUBROUTINE CHKXER( SRNAMT, INFOT, NOUT, LERR, OK )
 *
-*  Tests whether XERBLA has detected an error when it should.
-*
-*  Auxiliary routine for test program for Level 2 Blas.
-*
-*  -- Written on 10-August-1987.
-*     Richard Hanson, Sandia National Labs.
-*     Jeremy Du Croz, NAG Central Office.
+*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       LOGICAL            LERR, OK

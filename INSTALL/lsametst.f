@@ -1,9 +1,37 @@
-      PROGRAM TEST1
+*> \brief \b LSAMETST
 *
-*  -- LAPACK test routine (version 3.2) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  =========== DOCUMENTATION ===========
 *
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*      PROGRAM LSAMETST
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup auxOTHERauxiliary
+*
+*  =====================================================================      PROGRAM LSAMETST
+*
+*  -- LAPACK test routine (version 3.4.0) --
+*
+*  -- LAPACK computational routine (version 3.4.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
+*
+*  =====================================================================
 *     .. Local Scalars ..
       INTEGER            I1, I2
 *     ..
@@ -29,13 +57,13 @@
 *
 *     Test LSAME.
 *
-      IF( .NOT.LSAME( 'A', 'A' ) )
+      IF( .NOT. LSAME( 'A', 'A' ) )
      $   WRITE( *, 9999 )'A', 'A'
-      IF( .NOT.LSAME( 'A', 'a' ) )
+      IF( .NOT. LSAME( 'A', 'a' ) )
      $   WRITE( *, 9999 )'A', 'a'
-      IF( .NOT.LSAME( 'a', 'A' ) )
+      IF( .NOT. LSAME( 'a', 'A' ) )
      $   WRITE( *, 9999 )'a', 'A'
-      IF( .NOT.LSAME( 'a', 'a' ) )
+      IF( .NOT. LSAME( 'a', 'a' ) )
      $   WRITE( *, 9999 )'a', 'a'
       IF( LSAME( 'A', 'B' ) )
      $   WRITE( *, 9998 )'A', 'B'
