@@ -132,8 +132,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.115"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.116"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="LSAME.117"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.117"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.116"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="LSAME.117"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.117"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           <a name="SLARFB.120"></a><a href="slarfb.f.html#SLARFB.1">SLARFB</a>, <a name="SLARFT.120"></a><a href="slarft.f.html#SLARFT.1">SLARFT</a>, <a name="SORMR2.120"></a><a href="sormr2.f.html#SORMR2.1">SORMR2</a>, <a name="XERBLA.120"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
@@ -183,7 +183,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">           Determine the block size.  NB may be at most NBMAX, where
 </span><span class="comment">*</span><span class="comment">           NBMAX is used to define the local array T.
 </span><span class="comment">*</span><span class="comment">
-</span>            NB = MIN( NBMAX, <a name="ILAENV.167"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORMRQ.167"></a><a href="sormrq.f.html#SORMRQ.1">SORMRQ</a>'</span>, SIDE // TRANS, M, N,
+</span>            NB = MIN( NBMAX, <a name="ILAENV.167"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORMRQ.167"></a><a href="sormrq.f.html#SORMRQ.1">SORMRQ</a>'</span>, SIDE // TRANS, M, N,
      $                               K, -1 ) )
             LWKOPT = NW*NB
          END IF
@@ -213,7 +213,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
          IWS = NW*NB
          IF( LWORK.LT.IWS ) THEN
             NB = LWORK / LDWORK
-            NBMIN = MAX( 2, <a name="ILAENV.197"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 2, <span class="string">'<a name="SORMRQ.197"></a><a href="sormrq.f.html#SORMRQ.1">SORMRQ</a>'</span>, SIDE // TRANS, M, N, K,
+            NBMIN = MAX( 2, <a name="ILAENV.197"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 2, <span class="string">'<a name="SORMRQ.197"></a><a href="sormrq.f.html#SORMRQ.1">SORMRQ</a>'</span>, SIDE // TRANS, M, N, K,
      $              -1 ) )
          END IF
       ELSE

@@ -1,8 +1,8 @@
-      SUBROUTINE ILAVER ( VERS_MAJOR, VERS_MINOR, VERS_PATCH )
+      SUBROUTINE ILAVER( VERS_MAJOR, VERS_MINOR, VERS_PATCH )
 *     
-*  -- LAPACK routine (version 3.1) --
+*  -- LAPACK routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     January 2007
 *     ..
 *
 *  Purpose
@@ -24,7 +24,7 @@
 *  =====================================================================
       VERS_MAJOR = 3
       VERS_MINOR = 1
-      VERS_PATCH = 0
+      VERS_PATCH = 1
 *  =====================================================================
 *
       RETURN

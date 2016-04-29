@@ -1,8 +1,8 @@
       LOGICAL          FUNCTION DSLECT( ZR, ZI )
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     February 2007
 *
 *     .. Scalar Arguments ..
       DOUBLE PRECISION   ZI, ZR
@@ -60,8 +60,9 @@
       IF( SELOPT.EQ.0 ) THEN
          DSLECT = ( ZR.LT.ZERO )
       ELSE
-         RMIN = ZERO
-         DO 10 I = 1, SELDIM
+         RMIN = DLAPY2( ZR-SELWR( 1 ), ZI-SELWI( 1 ) )
+         DSLECT = SELVAL( 1 )
+         DO 10 I = 2, SELDIM
             X = DLAPY2( ZR-SELWR( I ), ZI-SELWI( I ) )
             IF( X.LE.RMIN ) THEN
                RMIN = X

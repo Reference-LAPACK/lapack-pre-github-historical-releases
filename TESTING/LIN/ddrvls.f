@@ -2,9 +2,9 @@
      $                   NBVAL, NXVAL, THRESH, TSTERR, A, COPYA, B,
      $                   COPYB, C, S, COPYS, WORK, IWORK, NOUT )
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     January 2007
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -178,6 +178,8 @@
 *
 *     Test the error exits
 *
+      CALL XLAENV( 2, 2 )
+      CALL XLAENV( 9, SMLSIZ )
       IF( TSTERR )
      $   CALL DERRLS( PATH, NOUT )
 *

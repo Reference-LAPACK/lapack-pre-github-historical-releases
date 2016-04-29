@@ -21,9 +21,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $                   ALPHA, BETA, Q, LDQ, Z, LDZ, M, PL, PR, DIF,
      $                   WORK, LWORK, IWORK, LIWORK, INFO )
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1.1) --
 </span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">     January 2007
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     Modified to call <a name="CLACN2.9"></a><a href="clacn2.f.html#CLACN2.1">CLACN2</a> in place of <a name="CLACON.9"></a><a href="clacon.f.html#CLACON.1">CLACON</a>, 10 Feb 03, SJH.
 </span><span class="comment">*</span><span class="comment">
@@ -352,14 +352,15 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       INTEGER            I, IERR, IJB, K, KASE, KS, LIWMIN, LWMIN, MN2,
      $                   N1, N2
       REAL               DSCALE, DSUM, RDSCAL, SAFMIN
+      COMPLEX            TEMP1, TEMP2
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
 </span>      INTEGER            ISAVE( 3 )
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
-</span>      REAL               <a name="SLAMCH.341"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a> 
-      EXTERNAL           <a name="CLACN2.342"></a><a href="clacn2.f.html#CLACN2.1">CLACN2</a>, <a name="CLACPY.342"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>, <a name="CLASSQ.342"></a><a href="classq.f.html#CLASSQ.1">CLASSQ</a>, CSCAL, <a name="CTGEXC.342"></a><a href="ctgexc.f.html#CTGEXC.1">CTGEXC</a>, <a name="CTGSYL.342"></a><a href="ctgsyl.f.html#CTGSYL.1">CTGSYL</a>,
-     $                   <a name="SLAMCH.343"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="XERBLA.343"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+</span>      REAL               <a name="SLAMCH.342"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a> 
+      EXTERNAL           <a name="CLACN2.343"></a><a href="clacn2.f.html#CLACN2.1">CLACN2</a>, <a name="CLACPY.343"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>, <a name="CLASSQ.343"></a><a href="classq.f.html#CLASSQ.1">CLASSQ</a>, CSCAL, <a name="CTGEXC.343"></a><a href="ctgexc.f.html#CTGEXC.1">CTGEXC</a>, <a name="CTGSYL.343"></a><a href="ctgsyl.f.html#CTGSYL.1">CTGSYL</a>,
+     $                   <a name="SLAMCH.344"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="XERBLA.344"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
 </span>      INTRINSIC          ABS, CMPLX, CONJG, MAX, SQRT
@@ -386,7 +387,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      IF( INFO.NE.0 ) THEN
-         CALL <a name="XERBLA.370"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CTGSEN.370"></a><a href="ctgsen.f.html#CTGSEN.1">CTGSEN</a>'</span>, -INFO )
+         CALL <a name="XERBLA.371"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CTGSEN.371"></a><a href="ctgsen.f.html#CTGSEN.1">CTGSEN</a>'</span>, -INFO )
          RETURN
       END IF
 <span class="comment">*</span><span class="comment">
@@ -434,7 +435,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      IF( INFO.NE.0 ) THEN
-         CALL <a name="XERBLA.418"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CTGSEN.418"></a><a href="ctgsen.f.html#CTGSEN.1">CTGSEN</a>'</span>, -INFO )
+         CALL <a name="XERBLA.419"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CTGSEN.419"></a><a href="ctgsen.f.html#CTGSEN.1">CTGSEN</a>'</span>, -INFO )
          RETURN
       ELSE IF( LQUERY ) THEN
          RETURN
@@ -451,8 +452,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
             DSCALE = ZERO
             DSUM = ONE
             DO 20 I = 1, N
-               CALL <a name="CLASSQ.435"></a><a href="classq.f.html#CLASSQ.1">CLASSQ</a>( N, A( 1, I ), 1, DSCALE, DSUM )
-               CALL <a name="CLASSQ.436"></a><a href="classq.f.html#CLASSQ.1">CLASSQ</a>( N, B( 1, I ), 1, DSCALE, DSUM )
+               CALL <a name="CLASSQ.436"></a><a href="classq.f.html#CLASSQ.1">CLASSQ</a>( N, A( 1, I ), 1, DSCALE, DSUM )
+               CALL <a name="CLASSQ.437"></a><a href="classq.f.html#CLASSQ.1">CLASSQ</a>( N, B( 1, I ), 1, DSCALE, DSUM )
    20       CONTINUE
             DIF( 1 ) = DSCALE*SQRT( DSUM )
             DIF( 2 ) = DIF( 1 )
@@ -462,7 +463,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     Get machine constant
 </span><span class="comment">*</span><span class="comment">
-</span>      SAFMIN = <a name="SLAMCH.446"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'S'</span> )
+</span>      SAFMIN = <a name="SLAMCH.447"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'S'</span> )
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     Collect the selected blocks at the top-left corner of (A, B).
 </span><span class="comment">*</span><span class="comment">
@@ -476,7 +477,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">           and Z that will swap adjacent diagonal blocks in (A, B).
 </span><span class="comment">*</span><span class="comment">
 </span>            IF( K.NE.KS )
-     $         CALL <a name="CTGEXC.460"></a><a href="ctgexc.f.html#CTGEXC.1">CTGEXC</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ, Z,
+     $         CALL <a name="CTGEXC.461"></a><a href="ctgexc.f.html#CTGEXC.1">CTGEXC</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ, Z,
      $                      LDZ, K, KS, IERR )
 <span class="comment">*</span><span class="comment">
 </span>            IF( IERR.GT.0 ) THEN
@@ -505,11 +506,11 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>         N1 = M
          N2 = N - M
          I = N1 + 1
-         CALL <a name="CLACPY.489"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>( <span class="string">'Full'</span>, N1, N2, A( 1, I ), LDA, WORK, N1 )
-         CALL <a name="CLACPY.490"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>( <span class="string">'Full'</span>, N1, N2, B( 1, I ), LDB, WORK( N1*N2+1 ),
+         CALL <a name="CLACPY.490"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>( <span class="string">'Full'</span>, N1, N2, A( 1, I ), LDA, WORK, N1 )
+         CALL <a name="CLACPY.491"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>( <span class="string">'Full'</span>, N1, N2, B( 1, I ), LDB, WORK( N1*N2+1 ),
      $                N1 )
          IJB = 0
-         CALL <a name="CTGSYL.493"></a><a href="ctgsyl.f.html#CTGSYL.1">CTGSYL</a>( <span class="string">'N'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA, WORK,
+         CALL <a name="CTGSYL.494"></a><a href="ctgsyl.f.html#CTGSYL.1">CTGSYL</a>( <span class="string">'N'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA, WORK,
      $                N1, B, LDB, B( I, I ), LDB, WORK( N1*N2+1 ), N1,
      $                DSCALE, DIF( 1 ), WORK( N1*N2*2+1 ),
      $                LWORK-2*N1*N2, IWORK, IERR )
@@ -519,7 +520,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">
 </span>         RDSCAL = ZERO
          DSUM = ONE
-         CALL <a name="CLASSQ.503"></a><a href="classq.f.html#CLASSQ.1">CLASSQ</a>( N1*N2, WORK, 1, RDSCAL, DSUM )
+         CALL <a name="CLASSQ.504"></a><a href="classq.f.html#CLASSQ.1">CLASSQ</a>( N1*N2, WORK, 1, RDSCAL, DSUM )
          PL = RDSCAL*SQRT( DSUM )
          IF( PL.EQ.ZERO ) THEN
             PL = ONE
@@ -528,7 +529,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
          END IF
          RDSCAL = ZERO
          DSUM = ONE
-         CALL <a name="CLASSQ.512"></a><a href="classq.f.html#CLASSQ.1">CLASSQ</a>( N1*N2, WORK( N1*N2+1 ), 1, RDSCAL, DSUM )
+         CALL <a name="CLASSQ.513"></a><a href="classq.f.html#CLASSQ.1">CLASSQ</a>( N1*N2, WORK( N1*N2+1 ), 1, RDSCAL, DSUM )
          PR = RDSCAL*SQRT( DSUM )
          IF( PR.EQ.ZERO ) THEN
             PR = ONE
@@ -548,21 +549,21 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">           Frobenius norm-based Difu estimate.
 </span><span class="comment">*</span><span class="comment">
-</span>            CALL <a name="CTGSYL.532"></a><a href="ctgsyl.f.html#CTGSYL.1">CTGSYL</a>( <span class="string">'N'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA, WORK,
+</span>            CALL <a name="CTGSYL.533"></a><a href="ctgsyl.f.html#CTGSYL.1">CTGSYL</a>( <span class="string">'N'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA, WORK,
      $                   N1, B, LDB, B( I, I ), LDB, WORK( N1*N2+1 ),
      $                   N1, DSCALE, DIF( 1 ), WORK( N1*N2*2+1 ),
      $                   LWORK-2*N1*N2, IWORK, IERR )
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">           Frobenius norm-based Difl estimate.
 </span><span class="comment">*</span><span class="comment">
-</span>            CALL <a name="CTGSYL.539"></a><a href="ctgsyl.f.html#CTGSYL.1">CTGSYL</a>( <span class="string">'N'</span>, IJB, N2, N1, A( I, I ), LDA, A, LDA, WORK,
+</span>            CALL <a name="CTGSYL.540"></a><a href="ctgsyl.f.html#CTGSYL.1">CTGSYL</a>( <span class="string">'N'</span>, IJB, N2, N1, A( I, I ), LDA, A, LDA, WORK,
      $                   N2, B( I, I ), LDB, B, LDB, WORK( N1*N2+1 ),
      $                   N2, DSCALE, DIF( 2 ), WORK( N1*N2*2+1 ),
      $                   LWORK-2*N1*N2, IWORK, IERR )
          ELSE
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">           Compute 1-norm-based estimates of Difu and Difl using
-</span><span class="comment">*</span><span class="comment">           reversed communication with <a name="CLACN2.546"></a><a href="clacn2.f.html#CLACN2.1">CLACN2</a>. In each step a
+</span><span class="comment">*</span><span class="comment">           reversed communication with <a name="CLACN2.547"></a><a href="clacn2.f.html#CLACN2.1">CLACN2</a>. In each step a
 </span><span class="comment">*</span><span class="comment">           generalized Sylvester equation or a transposed variant
 </span><span class="comment">*</span><span class="comment">           is solved.
 </span><span class="comment">*</span><span class="comment">
@@ -576,14 +577,14 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">           1-norm-based estimate of Difu.
 </span><span class="comment">*</span><span class="comment">
 </span>   40       CONTINUE
-            CALL <a name="CLACN2.560"></a><a href="clacn2.f.html#CLACN2.1">CLACN2</a>( MN2, WORK( MN2+1 ), WORK, DIF( 1 ), KASE,
+            CALL <a name="CLACN2.561"></a><a href="clacn2.f.html#CLACN2.1">CLACN2</a>( MN2, WORK( MN2+1 ), WORK, DIF( 1 ), KASE,
      $                   ISAVE )
             IF( KASE.NE.0 ) THEN
                IF( KASE.EQ.1 ) THEN
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Solve generalized Sylvester equation
 </span><span class="comment">*</span><span class="comment">
-</span>                  CALL <a name="CTGSYL.567"></a><a href="ctgsyl.f.html#CTGSYL.1">CTGSYL</a>( <span class="string">'N'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA,
+</span>                  CALL <a name="CTGSYL.568"></a><a href="ctgsyl.f.html#CTGSYL.1">CTGSYL</a>( <span class="string">'N'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA,
      $                         WORK, N1, B, LDB, B( I, I ), LDB,
      $                         WORK( N1*N2+1 ), N1, DSCALE, DIF( 1 ),
      $                         WORK( N1*N2*2+1 ), LWORK-2*N1*N2, IWORK,
@@ -592,7 +593,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Solve the transposed variant.
 </span><span class="comment">*</span><span class="comment">
-</span>                  CALL <a name="CTGSYL.576"></a><a href="ctgsyl.f.html#CTGSYL.1">CTGSYL</a>( <span class="string">'C'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA,
+</span>                  CALL <a name="CTGSYL.577"></a><a href="ctgsyl.f.html#CTGSYL.1">CTGSYL</a>( <span class="string">'C'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA,
      $                         WORK, N1, B, LDB, B( I, I ), LDB,
      $                         WORK( N1*N2+1 ), N1, DSCALE, DIF( 1 ),
      $                         WORK( N1*N2*2+1 ), LWORK-2*N1*N2, IWORK,
@@ -605,14 +606,14 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">           1-norm-based estimate of Difl.
 </span><span class="comment">*</span><span class="comment">
 </span>   50       CONTINUE
-            CALL <a name="CLACN2.589"></a><a href="clacn2.f.html#CLACN2.1">CLACN2</a>( MN2, WORK( MN2+1 ), WORK, DIF( 2 ), KASE,
+            CALL <a name="CLACN2.590"></a><a href="clacn2.f.html#CLACN2.1">CLACN2</a>( MN2, WORK( MN2+1 ), WORK, DIF( 2 ), KASE,
      $                   ISAVE )
             IF( KASE.NE.0 ) THEN
                IF( KASE.EQ.1 ) THEN
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Solve generalized Sylvester equation
 </span><span class="comment">*</span><span class="comment">
-</span>                  CALL <a name="CTGSYL.596"></a><a href="ctgsyl.f.html#CTGSYL.1">CTGSYL</a>( <span class="string">'N'</span>, IJB, N2, N1, A( I, I ), LDA, A, LDA,
+</span>                  CALL <a name="CTGSYL.597"></a><a href="ctgsyl.f.html#CTGSYL.1">CTGSYL</a>( <span class="string">'N'</span>, IJB, N2, N1, A( I, I ), LDA, A, LDA,
      $                         WORK, N2, B( I, I ), LDB, B, LDB,
      $                         WORK( N1*N2+1 ), N2, DSCALE, DIF( 2 ),
      $                         WORK( N1*N2*2+1 ), LWORK-2*N1*N2, IWORK,
@@ -621,7 +622,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Solve the transposed variant.
 </span><span class="comment">*</span><span class="comment">
-</span>                  CALL <a name="CTGSYL.605"></a><a href="ctgsyl.f.html#CTGSYL.1">CTGSYL</a>( <span class="string">'C'</span>, IJB, N2, N1, A( I, I ), LDA, A, LDA,
+</span>                  CALL <a name="CTGSYL.606"></a><a href="ctgsyl.f.html#CTGSYL.1">CTGSYL</a>( <span class="string">'C'</span>, IJB, N2, N1, A( I, I ), LDA, A, LDA,
      $                         WORK, N2, B, LDB, B( I, I ), LDB,
      $                         WORK( N1*N2+1 ), N2, DSCALE, DIF( 2 ),
      $                         WORK( N1*N2*2+1 ), LWORK-2*N1*N2, IWORK,
@@ -640,13 +641,13 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>      DO 60 K = 1, N
          DSCALE = ABS( B( K, K ) )
          IF( DSCALE.GT.SAFMIN ) THEN
-            WORK( 1 ) = CONJG( B( K, K ) / DSCALE )
-            WORK( 2 ) = B( K, K ) / DSCALE
+            TEMP1 = CONJG( B( K, K ) / DSCALE )
+            TEMP2 = B( K, K ) / DSCALE
             B( K, K ) = DSCALE
-            CALL CSCAL( N-K, WORK( 1 ), B( K, K+1 ), LDB )
-            CALL CSCAL( N-K+1, WORK( 1 ), A( K, K ), LDA )
+            CALL CSCAL( N-K, TEMP1, B( K, K+1 ), LDB )
+            CALL CSCAL( N-K+1, TEMP1, A( K, K ), LDA )
             IF( WANTQ )
-     $         CALL CSCAL( N, WORK( 2 ), Q( 1, K ), 1 )
+     $         CALL CSCAL( N, TEMP2, Q( 1, K ), 1 )
          ELSE
             B( K, K ) = CMPLX( ZERO, ZERO )
          END IF
@@ -663,7 +664,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span>      RETURN
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">     End of <a name="CTGSEN.647"></a><a href="ctgsen.f.html#CTGSEN.1">CTGSEN</a>
+</span><span class="comment">*</span><span class="comment">     End of <a name="CTGSEN.648"></a><a href="ctgsen.f.html#CTGSEN.1">CTGSEN</a>
 </span><span class="comment">*</span><span class="comment">
 </span>      END
 

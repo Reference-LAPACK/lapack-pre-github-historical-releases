@@ -166,7 +166,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     ================================================================
 </span><span class="comment">*</span><span class="comment">             Default values supplied by
-</span><span class="comment">*</span><span class="comment">             <a name="ILAENV.150"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>(ISPEC,'<a name="CHSEQR.150"></a><a href="chseqr.f.html#CHSEQR.1">CHSEQR</a>',JOB(:1)//COMPZ(:1),N,ILO,IHI,LWORK).
+</span><span class="comment">*</span><span class="comment">             <a name="ILAENV.150"></a><a href="hfy-index.html#ILAENV">ILAENV</a>(ISPEC,'<a name="CHSEQR.150"></a><a href="chseqr.f.html#CHSEQR.1">CHSEQR</a>',JOB(:1)//COMPZ(:1),N,ILO,IHI,LWORK).
 </span><span class="comment">*</span><span class="comment">             It is suggested that these defaults be adjusted in order
 </span><span class="comment">*</span><span class="comment">             to attain best performance in each particular
 </span><span class="comment">*</span><span class="comment">             computational environment.
@@ -177,11 +177,11 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">            ISPEC=2:  Recommended deflation window size.
 </span><span class="comment">*</span><span class="comment">                      This depends on ILO, IHI and NS.  NS is the
 </span><span class="comment">*</span><span class="comment">                      number of simultaneous shifts returned
-</span><span class="comment">*</span><span class="comment">                      by <a name="ILAENV.161"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>(ISPEC=4).  (See ISPEC=4 below.)
+</span><span class="comment">*</span><span class="comment">                      by <a name="ILAENV.161"></a><a href="hfy-index.html#ILAENV">ILAENV</a>(ISPEC=4).  (See ISPEC=4 below.)
 </span><span class="comment">*</span><span class="comment">                      The default for (IHI-ILO+1).LE.500 is NS.
 </span><span class="comment">*</span><span class="comment">                      The default for (IHI-ILO+1).GT.500 is 3*NS/2.
 </span><span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">            ISPEC=3:  Nibble crossover point. (See <a name="ILAENV.165"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> for
+</span><span class="comment">*</span><span class="comment">            ISPEC=3:  Nibble crossover point. (See <a name="ILAENV.165"></a><a href="hfy-index.html#ILAENV">ILAENV</a> for
 </span><span class="comment">*</span><span class="comment">                      details.)  Default: 14% of deflation window
 </span><span class="comment">*</span><span class="comment">                      size.
 </span><span class="comment">*</span><span class="comment">
@@ -210,7 +210,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">                       function of N increasing from 10 to 64.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">            ISPEC=5:  Select structured matrix multiply.
-</span><span class="comment">*</span><span class="comment">                      (See <a name="ILAENV.194"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> for details.) Default: 3.
+</span><span class="comment">*</span><span class="comment">                      (See <a name="ILAENV.194"></a><a href="hfy-index.html#ILAENV">ILAENV</a> for details.) Default: 3.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     ================================================================
 </span><span class="comment">*</span><span class="comment">     Based on contributions by
@@ -237,7 +237,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     ==== NL allocates some local workspace to help small matrices
 </span><span class="comment">*</span><span class="comment">     .    through a rare <a name="CLAHQR.220"></a><a href="clahqr.f.html#CLAHQR.1">CLAHQR</a> failure.  NL .GT. NTINY = 11 is
-</span><span class="comment">*</span><span class="comment">     .    required and NL .LE. NMIN = <a name="ILAENV.221"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>(ISPEC=1,...) is recom-
+</span><span class="comment">*</span><span class="comment">     .    required and NL .LE. NMIN = <a name="ILAENV.221"></a><a href="hfy-index.html#ILAENV">ILAENV</a>(ISPEC=1,...) is recom-
 </span><span class="comment">*</span><span class="comment">     .    mended.  (The default value of NMIN is 75.)  Using NL = 49
 </span><span class="comment">*</span><span class="comment">     .    allows up to six simultaneous shifts and a 16-by-16
 </span><span class="comment">*</span><span class="comment">     .    deflation window.  ====
@@ -260,9 +260,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       LOGICAL            INITZ, LQUERY, WANTT, WANTZ
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      INTEGER            <a name="ILAENV.244"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+</span>      INTEGER            <a name="ILAENV.244"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       LOGICAL            <a name="LSAME.245"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      EXTERNAL           <a name="ILAENV.246"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="LSAME.246"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="ILAENV.246"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="LSAME.246"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           CCOPY, <a name="CLACPY.249"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>, <a name="CLAHQR.249"></a><a href="clahqr.f.html#CLAHQR.1">CLAHQR</a>, <a name="CLAQR0.249"></a><a href="claqr0.f.html#CLAQR0.1">CLAQR0</a>, <a name="CLASET.249"></a><a href="claset.f.html#CLASET.1">CLASET</a>, <a name="XERBLA.249"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
@@ -347,7 +347,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">        ==== <a name="CLAHQR.329"></a><a href="clahqr.f.html#CLAHQR.1">CLAHQR</a>/<a name="CLAQR0.329"></a><a href="claqr0.f.html#CLAQR0.1">CLAQR0</a> crossover point ====
 </span><span class="comment">*</span><span class="comment">
-</span>         NMIN = <a name="ILAENV.331"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CHSEQR.331"></a><a href="chseqr.f.html#CHSEQR.1">CHSEQR</a>'</span>, JOB( : 1 ) // COMPZ( : 1 ), N, ILO,
+</span>         NMIN = <a name="ILAENV.331"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CHSEQR.331"></a><a href="chseqr.f.html#CHSEQR.1">CHSEQR</a>'</span>, JOB( : 1 ) // COMPZ( : 1 ), N, ILO,
      $          IHI, LWORK )
          NMIN = MAX( NTINY, NMIN )
 <span class="comment">*</span><span class="comment">

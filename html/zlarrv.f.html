@@ -23,7 +23,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $                   IBLOCK, INDEXW, GERS, Z, LDZ, ISUPPZ,
      $                   WORK, IWORK, INFO )
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1.1) --
 </span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 </span><span class="comment">*</span><span class="comment">     November 2006
 </span><span class="comment">*</span><span class="comment">
@@ -216,14 +216,12 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $                   SIGMA, SPDIAM, SSIGMA, TAU, TMP, TOL, ZTZ
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      DOUBLE PRECISION  <a name="DLAMCH.200"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
-      DOUBLE PRECISION   DZNRM2
-      COMPLEX*16         ZDOTU
-      EXTERNAL  ZDOTU, <a name="DLAMCH.203"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, DZNRM2
+</span>      DOUBLE PRECISION   <a name="DLAMCH.200"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+      EXTERNAL           <a name="DLAMCH.201"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
-</span>      EXTERNAL           DCOPY, <a name="DLARRB.206"></a><a href="dlarrb.f.html#DLARRB.1">DLARRB</a>, <a name="DLARRF.206"></a><a href="dlarrf.f.html#DLARRF.1">DLARRF</a>, ZAXPY, ZDSCAL, <a name="ZLAR1V.206"></a><a href="zlar1v.f.html#ZLAR1V.1">ZLAR1V</a>,
-     $                   <a name="ZLASET.207"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>
+</span>      EXTERNAL           DCOPY, <a name="DLARRB.204"></a><a href="dlarrb.f.html#DLARRB.1">DLARRB</a>, <a name="DLARRF.204"></a><a href="dlarrf.f.html#DLARRF.1">DLARRF</a>, ZDSCAL, <a name="ZLAR1V.204"></a><a href="zlar1v.f.html#ZLAR1V.1">ZLAR1V</a>,
+     $                   <a name="ZLASET.205"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
 </span>      INTRINSIC ABS, DBLE, MAX, MIN
@@ -272,10 +270,10 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>      ZUSEDW = ZUSEDU - ZUSEDL + 1
 
 
-      CALL <a name="ZLASET.256"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'Full'</span>, N, ZUSEDW, CZERO, CZERO,
+      CALL <a name="ZLASET.254"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'Full'</span>, N, ZUSEDW, CZERO, CZERO,
      $                    Z(1,ZUSEDL), LDZ )
 
-      EPS = <a name="DLAMCH.259"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Precision'</span> )
+      EPS = <a name="DLAMCH.257"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Precision'</span> )
       RQTOL = TWO * EPS
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     Set expert flags for standard code.
@@ -443,7 +441,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
                   SIGMA = DBLE( Z( IEND, J+1 ) )
 
 <span class="comment">*</span><span class="comment">                 Set the corresponding entries in Z to zero
-</span>                  CALL <a name="ZLASET.427"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'Full'</span>, IN, 2, CZERO, CZERO,
+</span>                  CALL <a name="ZLASET.425"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'Full'</span>, IN, 2, CZERO, CZERO,
      $                         Z( IBEGIN, J), LDZ )
                END IF
 
@@ -465,7 +463,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
                   OFFSET = INDEXW( WBEGIN ) - 1
 <span class="comment">*</span><span class="comment">                 perform limited bisection (if necessary) to get approximate
 </span><span class="comment">*</span><span class="comment">                 eigenvalues to the precision needed.
-</span>                  CALL <a name="DLARRB.449"></a><a href="dlarrb.f.html#DLARRB.1">DLARRB</a>( IN, D( IBEGIN ),
+</span>                  CALL <a name="DLARRB.447"></a><a href="dlarrb.f.html#DLARRB.1">DLARRB</a>( IN, D( IBEGIN ),
      $                         WORK(INDLLD+IBEGIN-1),
      $                         P, Q, RTOL1, RTOL2, OFFSET,
      $                         WORK(WBEGIN),WGAP(WBEGIN),WERR(WBEGIN),
@@ -479,7 +477,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">                 of the unshifted matrix and must be used for computation
 </span><span class="comment">*</span><span class="comment">                 of WGAP, the entries of WORK might stem from RRRs with
 </span><span class="comment">*</span><span class="comment">                 different shifts. The gaps from WBEGIN-1+OLDFST to
-</span><span class="comment">*</span><span class="comment">                 WBEGIN-1+OLDLST are correctly computed in <a name="DLARRB.463"></a><a href="dlarrb.f.html#DLARRB.1">DLARRB</a>.
+</span><span class="comment">*</span><span class="comment">                 WBEGIN-1+OLDLST are correctly computed in <a name="DLARRB.461"></a><a href="dlarrb.f.html#DLARRB.1">DLARRB</a>.
 </span><span class="comment">*</span><span class="comment">                 However, we only allow the gaps to become greater since
 </span><span class="comment">*</span><span class="comment">                 this is what should happen when we decrease WERR
 </span>                  IF( OLDFST.GT.1) THEN
@@ -575,7 +573,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
                            P = INDEXW( WBEGIN-1+NEWLST )
                         ENDIF
                         OFFSET = INDEXW( WBEGIN ) - 1
-                        CALL <a name="DLARRB.559"></a><a href="dlarrb.f.html#DLARRB.1">DLARRB</a>( IN, D(IBEGIN),
+                        CALL <a name="DLARRB.557"></a><a href="dlarrb.f.html#DLARRB.1">DLARRB</a>( IN, D(IBEGIN),
      $                       WORK( INDLLD+IBEGIN-1 ),P,P,
      $                       RQTOL, RQTOL, OFFSET,
      $                       WORK(WBEGIN),WGAP(WBEGIN),
@@ -600,15 +598,15 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">                    Compute RRR of child cluster.
 </span><span class="comment">*</span><span class="comment">                    Note that the new RRR is stored in Z
 </span><span class="comment">*</span><span class="comment">
-</span>C                    <a name="DLARRF.584"></a><a href="dlarrf.f.html#DLARRF.1">DLARRF</a> needs LWORK = 2*N
-                     CALL <a name="DLARRF.585"></a><a href="dlarrf.f.html#DLARRF.1">DLARRF</a>( IN, D( IBEGIN ), L( IBEGIN ),
+</span>C                    <a name="DLARRF.582"></a><a href="dlarrf.f.html#DLARRF.1">DLARRF</a> needs LWORK = 2*N
+                     CALL <a name="DLARRF.583"></a><a href="dlarrf.f.html#DLARRF.1">DLARRF</a>( IN, D( IBEGIN ), L( IBEGIN ),
      $                         WORK(INDLD+IBEGIN-1),
      $                         NEWFST, NEWLST, WORK(WBEGIN),
      $                         WGAP(WBEGIN), WERR(WBEGIN),
      $                         SPDIAM, LGAP, RGAP, PIVMIN, TAU,
      $                         WORK( INDIN1 ), WORK( INDIN2 ),
      $                         WORK( INDWRK ), IINFO )
-<span class="comment">*</span><span class="comment">                    In the complex case, <a name="DLARRF.592"></a><a href="dlarrf.f.html#DLARRF.1">DLARRF</a> cannot write
+<span class="comment">*</span><span class="comment">                    In the complex case, <a name="DLARRF.590"></a><a href="dlarrf.f.html#DLARRF.1">DLARRF</a> cannot write
 </span><span class="comment">*</span><span class="comment">                    the new RRR directly into Z and needs an intermediate
 </span><span class="comment">*</span><span class="comment">                    workspace
 </span>                     DO 56 K = 1, IN-1
@@ -620,7 +618,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
                      Z( IEND, NEWFTT ) =
      $                  DCMPLX( WORK( INDIN1+IN-1 ), ZERO )
                      IF( IINFO.EQ.0 ) THEN
-<span class="comment">*</span><span class="comment">                       a new RRR for the cluster was found by <a name="DLARRF.604"></a><a href="dlarrf.f.html#DLARRF.1">DLARRF</a>
+<span class="comment">*</span><span class="comment">                       a new RRR for the cluster was found by <a name="DLARRF.602"></a><a href="dlarrf.f.html#DLARRF.1">DLARRF</a>
 </span><span class="comment">*</span><span class="comment">                       update shift and store it
 </span>                        SSIGMA = SIGMA + TAU
                         Z( IEND, NEWFTT+1 ) = DCMPLX( SSIGMA, ZERO )
@@ -741,7 +739,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>                        USEDBS = .TRUE.
                         ITMP1 = IWORK( IINDR+WINDEX )
                         OFFSET = INDEXW( WBEGIN ) - 1
-                        CALL <a name="DLARRB.725"></a><a href="dlarrb.f.html#DLARRB.1">DLARRB</a>( IN, D(IBEGIN),
+                        CALL <a name="DLARRB.723"></a><a href="dlarrb.f.html#DLARRB.1">DLARRB</a>( IN, D(IBEGIN),
      $                       WORK(INDLLD+IBEGIN-1),INDEIG,INDEIG,
      $                       ZERO, TWO*EPS, OFFSET,
      $                       WORK(WBEGIN),WGAP(WBEGIN),
@@ -758,7 +756,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>                        IWORK( IINDR+WINDEX ) = 0
                      ENDIF
 <span class="comment">*</span><span class="comment">                    Given LAMBDA, compute the eigenvector.
-</span>                     CALL <a name="ZLAR1V.742"></a><a href="zlar1v.f.html#ZLAR1V.1">ZLAR1V</a>( IN, 1, IN, LAMBDA, D( IBEGIN ),
+</span>                     CALL <a name="ZLAR1V.740"></a><a href="zlar1v.f.html#ZLAR1V.1">ZLAR1V</a>( IN, 1, IN, LAMBDA, D( IBEGIN ),
      $                    L( IBEGIN ), WORK(INDLD+IBEGIN-1),
      $                    WORK(INDLLD+IBEGIN-1),
      $                    PIVMIN, GAPTOL, Z( IBEGIN, WINDEX ),
@@ -858,7 +856,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
                         ENDIF
                         IF (STP2II) THEN
 <span class="comment">*</span><span class="comment">                          improve error angle by second step
-</span>                           CALL <a name="ZLAR1V.842"></a><a href="zlar1v.f.html#ZLAR1V.1">ZLAR1V</a>( IN, 1, IN, LAMBDA,
+</span>                           CALL <a name="ZLAR1V.840"></a><a href="zlar1v.f.html#ZLAR1V.1">ZLAR1V</a>( IN, 1, IN, LAMBDA,
      $                          D( IBEGIN ), L( IBEGIN ),
      $                          WORK(INDLD+IBEGIN-1),
      $                          WORK(INDLLD+IBEGIN-1),
@@ -932,7 +930,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>
       RETURN
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">     End of <a name="ZLARRV.916"></a><a href="zlarrv.f.html#ZLARRV.1">ZLARRV</a>
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZLARRV.914"></a><a href="zlarrv.f.html#ZLARRV.1">ZLARRV</a>
 </span><span class="comment">*</span><span class="comment">
 </span>      END
 

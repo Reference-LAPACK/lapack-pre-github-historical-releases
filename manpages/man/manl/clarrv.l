@@ -1,4 +1,4 @@
-.TH  CLARRV 1 "November 2006" " LAPACK auxiliary routine (version 3.1) " " LAPACK auxiliary routine (version 3.1) " 
+.TH  CLARRV 1 "February 2007" " LAPACK auxiliary routine (version 3.1.1) " " LAPACK auxiliary routine (version 3.1.1) " 
 .SH NAME
 CLARRV - the eigenvectors of the tridiagonal matrix T = L D L^T given L, D and APPROXIMATIONS to the eigenvalues of L D L^T
 .SH SYNOPSIS

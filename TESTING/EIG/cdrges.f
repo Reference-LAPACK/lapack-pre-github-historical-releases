@@ -2,9 +2,9 @@
      $                   NOUNIT, A, LDA, B, S, T, Q, LDQ, Z, ALPHA,
      $                   BETA, WORK, LWORK, RWORK, RESULT, BWORK, INFO )
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     February 2007
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, LDQ, LWORK, NOUNIT, NSIZES, NTYPES
@@ -306,8 +306,7 @@
 *     ..
 *     .. Local Arrays ..
       LOGICAL            LASIGN( MAXTYP ), LBSIGN( MAXTYP )
-      INTEGER            IASIGN( MAXTYP ), IBSIGN( MAXTYP ),
-     $                   IOLDSD( 4 ), KADD( 6 ), KAMAGN( MAXTYP ),
+      INTEGER            IOLDSD( 4 ), KADD( 6 ), KAMAGN( MAXTYP ),
      $                   KATYPE( MAXTYP ), KAZERO( MAXTYP ),
      $                   KBMAGN( MAXTYP ), KBTYPE( MAXTYP ),
      $                   KBZERO( MAXTYP ), KCLASS( MAXTYP ),
@@ -352,9 +351,6 @@
       DATA               KBMAGN / 8*1, 3, 2, 3, 2, 2, 3, 7*1, 3, 2, 3,
      $                   2, 1 /
       DATA               KTRIAN / 16*0, 10*1 /
-      DATA               IASIGN / 6*0, 2, 0, 2*2, 2*0, 3*2, 0, 2, 3*0,
-     $                   5*2, 0 /
-      DATA               IBSIGN / 7*0, 2, 2*0, 2*2, 2*0, 2, 0, 2, 9*0 /
       DATA               LASIGN / 6*.FALSE., .TRUE., .FALSE., 2*.TRUE.,
      $                   2*.FALSE., 3*.TRUE., .FALSE., .TRUE.,
      $                   3*.FALSE., 5*.TRUE., .FALSE. /

@@ -145,8 +145,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.128"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.129"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="LSAME.130"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.130"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.129"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="LSAME.130"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.130"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           <a name="DORMLQ.133"></a><a href="dormlq.f.html#DORMLQ.1">DORMLQ</a>, <a name="DORMQR.133"></a><a href="dormqr.f.html#DORMQR.1">DORMQR</a>, <a name="XERBLA.133"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
@@ -198,18 +198,18 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>      IF( INFO.EQ.0 ) THEN
          IF( APPLYQ ) THEN
             IF( LEFT ) THEN
-               NB = <a name="ILAENV.182"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DORMQR.182"></a><a href="dormqr.f.html#DORMQR.1">DORMQR</a>'</span>, SIDE // TRANS, M-1, N, M-1,
+               NB = <a name="ILAENV.182"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DORMQR.182"></a><a href="dormqr.f.html#DORMQR.1">DORMQR</a>'</span>, SIDE // TRANS, M-1, N, M-1,
      $              -1 )
             ELSE
-               NB = <a name="ILAENV.185"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DORMQR.185"></a><a href="dormqr.f.html#DORMQR.1">DORMQR</a>'</span>, SIDE // TRANS, M, N-1, N-1,
+               NB = <a name="ILAENV.185"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DORMQR.185"></a><a href="dormqr.f.html#DORMQR.1">DORMQR</a>'</span>, SIDE // TRANS, M, N-1, N-1,
      $              -1 )
             END IF
          ELSE
             IF( LEFT ) THEN
-               NB = <a name="ILAENV.190"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DORMLQ.190"></a><a href="dormlq.f.html#DORMLQ.1">DORMLQ</a>'</span>, SIDE // TRANS, M-1, N, M-1,
+               NB = <a name="ILAENV.190"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DORMLQ.190"></a><a href="dormlq.f.html#DORMLQ.1">DORMLQ</a>'</span>, SIDE // TRANS, M-1, N, M-1,
      $              -1 )
             ELSE
-               NB = <a name="ILAENV.193"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DORMLQ.193"></a><a href="dormlq.f.html#DORMLQ.1">DORMLQ</a>'</span>, SIDE // TRANS, M, N-1, N-1,
+               NB = <a name="ILAENV.193"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DORMLQ.193"></a><a href="dormlq.f.html#DORMLQ.1">DORMLQ</a>'</span>, SIDE // TRANS, M, N-1, N-1,
      $              -1 )
             END IF
          END IF

@@ -4,7 +4,7 @@
      $                   IBLOCK, INDEXW, GERS, Z, LDZ, ISUPPZ,
      $                   WORK, IWORK, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.1) --
+*  -- LAPACK auxiliary routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -197,13 +197,11 @@
      $                   SIGMA, SPDIAM, SSIGMA, TAU, TMP, TOL, ZTZ
 *     ..
 *     .. External Functions ..
-      REAL              SLAMCH
-      REAL               SCNRM2
-      COMPLEX            CDOTU
-      EXTERNAL  CDOTU, SLAMCH, SCNRM2
+      REAL               SLAMCH
+      EXTERNAL           SLAMCH
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           CAXPY, CLAR1V, CLASET, CSSCAL, SCOPY, SLARRB,
+      EXTERNAL           CLAR1V, CLASET, CSSCAL, SCOPY, SLARRB,
      $                   SLARRF
 *     ..
 *     .. Intrinsic Functions ..

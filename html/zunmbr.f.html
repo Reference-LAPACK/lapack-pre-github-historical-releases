@@ -146,8 +146,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.129"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.130"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="LSAME.131"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.131"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.130"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="LSAME.131"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.131"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           <a name="XERBLA.134"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, <a name="ZUNMLQ.134"></a><a href="zunmlq.f.html#ZUNMLQ.1">ZUNMLQ</a>, <a name="ZUNMQR.134"></a><a href="zunmqr.f.html#ZUNMQR.1">ZUNMQR</a>
@@ -203,18 +203,18 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
          IF( NW.GT.0 ) THEN
             IF( APPLYQ ) THEN
                IF( LEFT ) THEN
-                  NB = <a name="ILAENV.187"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNMQR.187"></a><a href="zunmqr.f.html#ZUNMQR.1">ZUNMQR</a>'</span>, SIDE // TRANS, M-1, N, M-1,
+                  NB = <a name="ILAENV.187"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNMQR.187"></a><a href="zunmqr.f.html#ZUNMQR.1">ZUNMQR</a>'</span>, SIDE // TRANS, M-1, N, M-1,
      $                 -1 )
                ELSE
-                  NB = <a name="ILAENV.190"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNMQR.190"></a><a href="zunmqr.f.html#ZUNMQR.1">ZUNMQR</a>'</span>, SIDE // TRANS, M, N-1, N-1,
+                  NB = <a name="ILAENV.190"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNMQR.190"></a><a href="zunmqr.f.html#ZUNMQR.1">ZUNMQR</a>'</span>, SIDE // TRANS, M, N-1, N-1,
      $                 -1 )
                END IF
             ELSE
                IF( LEFT ) THEN
-                  NB = <a name="ILAENV.195"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNMLQ.195"></a><a href="zunmlq.f.html#ZUNMLQ.1">ZUNMLQ</a>'</span>, SIDE // TRANS, M-1, N, M-1,
+                  NB = <a name="ILAENV.195"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNMLQ.195"></a><a href="zunmlq.f.html#ZUNMLQ.1">ZUNMLQ</a>'</span>, SIDE // TRANS, M-1, N, M-1,
      $                 -1 )
                ELSE
-                  NB = <a name="ILAENV.198"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNMLQ.198"></a><a href="zunmlq.f.html#ZUNMLQ.1">ZUNMLQ</a>'</span>, SIDE // TRANS, M, N-1, N-1,
+                  NB = <a name="ILAENV.198"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNMLQ.198"></a><a href="zunmlq.f.html#ZUNMLQ.1">ZUNMLQ</a>'</span>, SIDE // TRANS, M, N-1, N-1,
      $                 -1 )
                END IF
             END IF

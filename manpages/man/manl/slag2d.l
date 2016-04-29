@@ -1,18 +1,18 @@
-.TH  SLAG2D 1 "November 2006" " LAPACK PROTOTYPE auxilary routine (version 3.1) " " LAPACK PROTOTYPE auxilary routine (version 3.1) "
 .SH NAME
 SLAG2D - a SINGLE PRECISION matrix, SA, to a DOUBLE PRECISION matrix, A
 .SH SYNOPSIS
-.TP 42
-SUBROUTINE SLAG2D(M,N,SA,LDSA,A,LDA,INFO)
-.TP 42
+.TP 19
+SUBROUTINE SLAG2D(
+M, N, SA, LDSA, A, LDA, INFO)
+.TP 19
 .ti +4
 INTEGER
 INFO,LDA,LDSA,M,N
-.TP 42
+.TP 19
 .ti +4
 REAL
 SA(LDSA,*)
-.TP 42
+.TP 19
 .ti +4
 DOUBLE
 PRECISION A(LDA,*)
@@ -51,3 +51,9 @@ INFO    (output) INTEGER
 = 0:  successful exit
 =========
 
+.. Local Scalars ..
+
+..
+.. Executable Statements ..
+
+End of SLAG2D

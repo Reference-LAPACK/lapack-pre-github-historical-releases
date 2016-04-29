@@ -25,15 +25,17 @@
   Knoxville, Tennessee  37996-1301 \\
 \end{center}
 \begin{center}
-  REVISED:  VERSION 3.1, November 2006
+  REVISED:  VERSION 3.1.1, February 2007
 \end{center}
 
 \begin{center}
 Abstract
 \end{center}
-This working note describes how to install, test, and time version 3.1
+This working note describes how to install, and test version 3.1.1
 of LAPACK, a linear algebra package for high-performance
-computers, on a Unix System.  Non-Unix installation instructions and
+computers, on a Unix System.  The timing routines are not actually included in
+release 3.1.1, and that part of the LAWN refers to release 3.0. 
+Non-Unix installation instructions and
 further details of the testing and timing suites are only contained in
 LAPACK Working Note 41, and not in this abbreviated version.
 %Separate instructions are provided for the Unix and non-Unix
@@ -65,13 +67,15 @@ transportable and efficient across a wide range of computers.
 This working note describes how to install, test, and time this
 release of LAPACK on a Unix System.
 
-The instructions for installing, testing, and timing are designed for a 
-person whose
+The instructions for installing, testing, and timing 
+\footnote{timing are only provided in LAPACK 3.0 and before} 
+are designed for a person whose
 responsibility is the maintenance of a mathematical software library.
 We assume the installer has experience in compiling and running 
 Fortran programs and in creating object libraries.
 The installation process involves untarring the file, creating a set of
-libraries, and compiling and running the test and timing programs.
+libraries, and compiling and running the test and timing programs 
+\footnotemark[\value{footnote}]. 
 
 %This guide combines the instructions for the Unix and non-Unix
 %versions of the LAPACK test package (the non-Unix version is in Appendix
@@ -118,8 +122,9 @@ was version 1.0b; the third update, March 31, 1993, was version 1.1;
 version 2.0 on September 30, 1994, coincided with the release of the
 Second Edition of the LAPACK Users' Guide; 
 version 3.0 on June 30, 1999 coincided with the release of the Third Edition of
-the LAPACK Users' Guide; and finally version 3.1 was
-released on October, 2006.
+the LAPACK Users' Guide; 
+version 3.1 was released on November, 2006.
+and finally version 3.1.1 was released on November, 2007.
 
 All LAPACK routines reflect the current version number with the date
 on the routine indicating when it was last modified.
@@ -143,7 +148,7 @@ gzipped tar file (via anonymous ftp or the World Wide Web),
 which contains the Fortran source for LAPACK,
 the Basic Linear Algebra Subprograms
 (the Level 1, 2, and 3 BLAS) needed by LAPACK, the testing programs,
-and the timing programs.
+and the timing programs\footnotemark[\value{footnote}]. 
 Users who wish to have a non-Unix installation should refer to LAPACK
 Working Note 41,
 although the overview in section~\ref{overview} applies to both the Unix and non-Unix
@@ -178,14 +183,15 @@ files are also located at various levels.
 \begin{figure}
 \vspace{11pt}
 \centerline{\includegraphics[width=6.5in,height=3in]{org2.ps}}
-\caption{Unix organization of LAPACK}
+\caption{Unix organization of LAPACK 3.0}
 \vspace{11pt}
 \end{figure}
 Libraries are created in the LAPACK directory and 
 executable files are created in one of the directories BLAS, TESTING,
-or TIMING.  Input files for the test and timing programs are also
+or TIMING\footnotemark[\value{footnote}].  Input files for the test and 
+timing\footnotemark[\value{footnote}]  programs are also
 found in these three directories so that testing may be carried out
-in the directories LAPACK/BLAS, LAPACK/TESTING, and LAPACK/TIMING.
+in the directories LAPACK/BLAS, LAPACK/TESTING, and LAPACK/TIMING \footnotemark[\value{footnote}].
 A top-level makefile in the LAPACK directory is provided to perform the 
 entire installation procedure.
 
@@ -292,7 +298,7 @@ and the other tests routines for the matrix eigenvalue problem.
 The routines for generating test matrices are used by both test
 programs and are compiled into a library for use by both test programs.
 
-\subsection{LAPACK Timing Routines}
+\subsection{LAPACK Timing Routines (for LAPACK 3.0 and before) }
 
 This release also contains two distinct timing programs for the
 LAPACK routines in each data type. 
@@ -315,7 +321,7 @@ subroutines.
 
 \section{Installing LAPACK on a Unix System}\label{installation}
 
-Installing, testing, and timing the Unix version of LAPACK
+Installing, testing, and timing\footnotemark[\value{footnote}] the Unix version of LAPACK
 involves the following steps: 
 \begin{enumerate}
 \item Gunzip and tar the file.
@@ -395,7 +401,7 @@ is approximately 100 Mbytes for all four data types.
 
 \subsection{Copy and edit the file \texttt{LAPACK/make.inc.example to LAPACK/make.inc}}
 
-Before the libraries can be built, or the testing and timing programs
+Before the libraries can be built, or the testing and timing\footnotemark[\value{footnote}] programs
 run, you must define all machine-specific parameters for the
 architecture to which you are installing LAPACK.  All machine-specific
 parameters are contained in the file \texttt{LAPACK/make.inc}.
@@ -420,9 +426,28 @@ library names, to specify the architecture to which you are installing
 LAPACK.  This features avoids confusion in library names when you are
 installing LAPACK on more than one architecture.  Next, you will need
 to modify \texttt{FORTRAN}, \texttt{OPTS}, \texttt{DRVOPTS}, \texttt{NOOPT}, \texttt{LOADER},
-\texttt{LOADOPTS}, \texttt{ARCH}, \texttt{ARCHFLAGS}, and \texttt{RANLIB} to specify
+and \texttt{LOADOPTS} to specify
 the compiler, compiler options, compiler options for the testing and
-timing main programs, loader, loader options, archiver,
+timing\footnotemark[\value{footnote}] main programs, loader, loader options.
+Next you will have to choose which function you will use to time in the \texttt{SECOND} and \texttt{DSECND} routines.
+\begin{verbatim}
+#The Default : SECOND and DSECND will use a call to the EXTERNAL FUNCTION ETIME
+TIMER    = EXT_ETIME
+# For RS6K : SECOND and DSECND will use a call to the EXTERNAL FUNCTION ETIME_ 
+# TIMER    = EXT_ETIME_
+# For gfortran compiler: SECOND and DSECND will use the INTERNAL FUNCTION ETIME
+# TIMER    = INT_ETIME
+# If your Fortran compiler does not provide etime (like Nag Fortran Compiler, etc...)
+# SECOND and DSECND will use a call to the INTERNAL FUNCTION CPU_TIME
+# TIMER    = INT_CPU_TIME
+# If neither of this works...you can use the NONE value... 
+# In that case, SECOND and DSECND will always return 0
+# TIMER     = NONE
+\end{verbatim}
+Refer to the section~\ref{second} to get more information.
+
+
+Next, you will need to modify \texttt{ARCH}, \texttt{ARCHFLAGS}, and \texttt{RANLIB} to specify archiver,
 archiver options, and ranlib for your machine.  If your architecture
 does not require \texttt{ranlib} to be run after each archive command (as
 is the case with CRAY computers running UNICOS, Hewlett Packard
@@ -450,7 +475,7 @@ makefiles may be necessary if a specific routine needs to be compiled
 with a different level of optimization.  
 
 First, edit the definitions of \texttt{blaslib}, \texttt{lapacklib},
-\texttt{tmglib}, \texttt{testing}, and \texttt{timing} in the file \texttt{LAPACK/Makefile}
+\texttt{tmglib}, \texttt{lapack\_testing}, and \texttt{timing}\footnotemark[\value{footnote}] in the file \texttt{LAPACK/Makefile}
 to specify the data types desired.  For example,
 if you only wish to compile the single precision real version of the
 LAPACK library, you would modify the \texttt{lapacklib} definition to be:
@@ -488,11 +513,11 @@ modify the \texttt{all} definition to specify the amount of the
 installation process that you want performed.  By default,
 the \texttt{all} definition is set to
 \begin{verbatim}
-all: install lib blas_testing testing timing blas_timing
+all: lapack_install lib lapack_testing blas_testing
 \end{verbatim}
 which will perform all phases of the installation
 process -- testing of machine-dependent routines, building the libraries,
-BLAS testing, LAPACK testing, LAPACK timing, and BLAS timing.
+BLAS testing and LAPACK testing.
 
 The entire installation process will then be performed by typing
 \texttt{make}.
@@ -615,8 +640,6 @@ minimum and overflow thresholds.
 
 Likewise, the test executable \texttt{testdlamch} is run for DLAMCH.
 
-The files \texttt{slamch.f} and \texttt{dlamch.f} are automatically copied to
-to \texttt{LAPACK/SRC/}.
 If both tests were successful, go to Section~\ref{second}.
 
 If SLAMCH (or DLAMCH) returns an invalid value, you will have to create
@@ -657,23 +680,42 @@ the constants in the version they put in their library.
 
 \subsubsection{Installing SECOND and DSECND}\label{second}
 
-Both the timing routines and the test routines call SECOND
+Both the timing routines\footnotemark[\value{footnote}]  and the test routines call SECOND
 (DSECND), a real function with no arguments that returns the time
 in seconds from some fixed starting time.
-Our version of this routine returns only ``user time'', and
-not ``user time $+$ system time''. 
-The version of SECOND in \texttt{second.f} calls ETIME, a Fortran library
-routine available on some computer systems.
+Our version of this routine 
+returns only ``user time'', and not ``user time $+$ system time''. 
+The following version of SECOND in \texttt{second\_EXT\_ETIME.f, second\_INT\_ETIME.f} calls 
+ETIME, a Fortran library routine available on some computer systems.
 If ETIME is not available or a better local timing function exists,
 you will have to provide the correct interface to SECOND and DSECND
 on your machine.
 
-\emph{On some IBM architectures such as IBM RS/6000s, the timing function
-\texttt{ETIME} is instead called \texttt{ETIME\_}, and therefore the routines
-\texttt{LAPACK/INSTALL/second.f} and \texttt{LAPACK/INSTALL/dsecnd.f} should
-be modified.  Usually on HPPA architectures,
+Since LAPACK 3.1.1 we provide 5 different flavours of the SECOND and DSECND routines.
+The version that will be used depends on the value of the TIMER variable in the make.inc
+
+\begin{itemize}
+\item If ETIME is available as an external function, set the value of the TIMER variable in your 
+make.inc to \texttt{EXT\_ETIME}:\texttt{second\_EXT\_ETIME.f} and \texttt{dsecnd\_EXT\_ETIME.f} will be used.
+Usually on HPPA architectures,
 the compiler and loader flag \texttt{+U77} should be included to access
-the function \texttt{ETIME}}.
+the function \texttt{ETIME}.
+
+\item If ETIME\_ is available as an external function, set the value of the TIMER variable in your make.inc 
+to \texttt{EXT\_ETIME\_}:\texttt{second\_EXT\_ETIME\_.f} and \texttt{dsecnd\_EXT\_ETIME\_.f} will be used.
+It is the case on some IBM architectures such as IBM RS/6000s.
+
+\item If ETIME is available as an internal function, set the value of the TIMER variable in your make.inc
+to \texttt{INT\_ETIME}:\texttt{second\_INT\_ETIME.f}  and \texttt{dsecnd\_INT\_ETIME.f} will be used. 
+This is the case with gfortan.
+
+\item If CPU\_TIME is available as an internal function, set the value of the TIMER variable in your make.inc
+to \texttt{INT\_CPU\_TIME}:\texttt{second\_INT\_CPU\_TIME.f} and \texttt{dsecnd\_INT\_CPU\_TIME.f} will be used.
+
+\item If none of these function is available, set the value of the TIMER variable in your make.inc
+to \texttt{NONE:}\texttt{second\_NONE.f} and \texttt{dsecnd\_NONE.f} will be used.
+These routines will always return zero.
+\end{itemize}
 
 The test program in \texttt{secondtst.f}
 performs a million operations using 5000 iterations of 
@@ -685,8 +727,6 @@ The test program executable is called \texttt{testsecond} (or \texttt{testdsecnd
 There is no single right answer, but the times
 in seconds should be positive and the megaflop ratios should be 
 appropriate for your machine.
-The files \texttt{second.f} and \texttt{dsecnd.f} are automatically copied to
-\texttt{LAPACK/SRC/} for inclusion in the LAPACK library.
 
 \subsubsection{Testing IEEE arithmetic and ILAENV}\label{testieee}
 
@@ -709,7 +749,7 @@ and \texttt{ILAENV=0} if the architecture is non-IEEE-754 compliant.
 Thus, for non-IEEE machines, the user must hard-code the setting of
 (\texttt{ILAENV=0}) for (\texttt{ISPEC=10} and \texttt{ISPEC=11}) in the version
 of \texttt{LAPACK/SRC/ilaenv.f} to be put in
-his library.  There are also specialized testing and timing versions of
+his library.  There are also specialized testing and timing\footnotemark[\value{footnote}] versions of
 ILAENV that will also need to be modified.
 \begin{itemize}
 \item Testing/timing version of \texttt{LAPACK/TESTING/LIN/ilaenv.f}
@@ -738,7 +778,7 @@ To avoid this IEEE test being run every time you call
 that the user hard-code the setting of
 \texttt{ILAENV=1} or \texttt{ILAENV=0} in the version of \texttt{LAPACK/SRC/ilaenv.f} to be put in
 his library.  As aforementioned, there are also specialized testing and
-timing versions of ILAENV that will also need to be modified.
+timing\footnotemark[\value{footnote}] versions of ILAENV that will also need to be modified.
 
 \subsection{Create the BLAS Library} 
 
@@ -782,8 +822,8 @@ output files are created in \texttt{LAPACK/BLAS/}.
 For the Level 1 BLAS tests, the output file names are \texttt{sblat1.out},
 \texttt{dblat1.out}, \texttt{cblat1.out}, and \texttt{zblat1.out}.  For the Level
 2 and 3 BLAS, the name of the output file is indicated on the first line of the
-input file and is currently defined to be \texttt{SBLAT2.SUMM} for
-the Level 2 REAL version, and \texttt{SBLAT3.SUMM} for the Level 3 REAL
+input file and is currently defined to be \texttt{sblat2.out} for
+the Level 2 REAL version, and \texttt{sblat3.out} for the Level 3 REAL
 version, with similar names for the other data types.
 
 If the tests using the supplied data files were completed successfully,
@@ -947,7 +987,7 @@ to `c', `d', or `z'.
 If you encountered failures in this phase of the testing process, please
 refer to Section~\ref{sendresults}.
 
-\subsection{Run the LAPACK Timing Programs}
+\subsection{Run the LAPACK Timing Programs (For LAPACK 3.0 and before)}
 
 There are two distinct timing programs for LAPACK routines
 in each data type, one for the linear equation routines and
@@ -1322,14 +1362,6 @@ and will need to be modified to \texttt{SHELL = /sbin/sh} if you are
 installing LAPACK on an SGI architecture.
 
 \section{ETIME}
-
-The LAPACK Testing
-and Timing Suites assume the use of the timing function \texttt{ETIME}.
-
-On some IBM architectures such as IBM RS/6000s, the timing function
-\texttt{ETIME} is instead called \texttt{ETIME\_}, and therefore the routines
-\texttt{LAPACK/INSTALL/second.f} and \texttt{LAPACK/INSTALL/dsecnd.f} should
-be modified.
 
 On HPPA architectures,
 the compiler and loader flag \texttt{+U77} should be included to access

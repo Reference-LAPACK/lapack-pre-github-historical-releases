@@ -216,9 +216,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.199"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.200"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.200"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       REAL               <a name="SLAMCH.201"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANSY.201"></a><a href="slansy.f.html#SLANSY.1">SLANSY</a>
-      EXTERNAL           <a name="ILAENV.202"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="LSAME.202"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="SLAMCH.202"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANSY.202"></a><a href="slansy.f.html#SLANSY.1">SLANSY</a>
+      EXTERNAL           <a name="ILAENV.202"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="LSAME.202"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="SLAMCH.202"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANSY.202"></a><a href="slansy.f.html#SLANSY.1">SLANSY</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           <a name="SLACPY.205"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>, <a name="SSYCON.205"></a><a href="ssycon.f.html#SSYCON.1">SSYCON</a>, <a name="SSYRFS.205"></a><a href="ssyrfs.f.html#SSYRFS.1">SSYRFS</a>, <a name="SSYTRF.205"></a><a href="ssytrf.f.html#SSYTRF.1">SSYTRF</a>, <a name="SSYTRS.205"></a><a href="ssytrs.f.html#SSYTRS.1">SSYTRS</a>, <a name="XERBLA.205"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
@@ -257,7 +257,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>      IF( INFO.EQ.0 ) THEN
          LWKOPT = MAX( 1, 3*N )
          IF( NOFACT ) THEN
-            NB = <a name="ILAENV.241"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SSYTRF.241"></a><a href="ssytrf.f.html#SSYTRF.1">SSYTRF</a>'</span>, UPLO, N, -1, -1, -1 )
+            NB = <a name="ILAENV.241"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SSYTRF.241"></a><a href="ssytrf.f.html#SSYTRF.1">SSYTRF</a>'</span>, UPLO, N, -1, -1, -1 )
             LWKOPT = MAX( LWKOPT, N*NB )
          END IF
          WORK( 1 ) = LWKOPT

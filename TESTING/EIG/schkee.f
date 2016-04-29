@@ -1,8 +1,8 @@
       PROGRAM SCHKEE
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     February 2007
 *
 *  Purpose
 *  =======
@@ -995,7 +995,8 @@
       CHARACTER*10       INTSTR
       CHARACTER*80       LINE
       INTEGER            I, I1, IC, INFO, ITMP, K, LENP, MAXTYP, NEWSD,
-     $                   NK, NN, NPARMS, NRHS, NTYPES
+     $                   NK, NN, NPARMS, NRHS, NTYPES,
+     $                   VERS_MAJOR, VERS_MINOR, VERS_PATCH
       REAL               EPS, S1, S2, THRESH, THRSHN
 *     ..
 *     .. Local Arrays ..
@@ -1023,7 +1024,7 @@
      $                   SCKGLM, SCKGQR, SCKGSV, SCKLSE, SDRGES, SDRGEV,
      $                   SDRGSX, SDRGVX, SDRVBD, SDRVES, SDRVEV, SDRVGG,
      $                   SDRVSG, SDRVST, SDRVSX, SDRVVX, SERRBD, SERRED,
-     $                   SERRGG, SERRHS, SERRST, XLAENV
+     $                   SERRGG, SERRHS, SERRST, ILAVER, XLAENV
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          LEN, MIN
@@ -1157,6 +1158,12 @@
 *        SEC:  Eigencondition estimation
 *
          READ( NIN, FMT = * )THRESH
+         CALL XLAENV( 1, 1 )
+         CALL XLAENV( 12, 11 )
+         CALL XLAENV( 13, 2 )
+         CALL XLAENV( 14, 0 )
+         CALL XLAENV( 15, 2 )
+         CALL XLAENV( 16, 2 )
          TSTERR = .TRUE.
          CALL SCHKEC( THRESH, TSTERR, NIN, NOUT )
          GO TO 10
@@ -1164,7 +1171,8 @@
          WRITE( NOUT, FMT = 9992 )PATH
          GO TO 10
       END IF
-      WRITE( NOUT, FMT = 9972 )
+      CALL ILAVER( VERS_MAJOR, VERS_MINOR, VERS_PATCH )
+      WRITE( NOUT, FMT = 9972 ) VERS_MAJOR, VERS_MINOR, VERS_PATCH
       WRITE( NOUT, FMT = 9984 )
 *
 *     Read the number of values of M, P, and N.
@@ -1309,8 +1317,8 @@
 *
       ELSE IF( SGS .OR. SGX .OR. SGV .OR. SXV ) THEN
 *
-*        For the nonsymmetric generalized driver routines, only one set of
-*        parameters is allowed.
+*        For the nonsymmetric generalized driver routines, only one set
+*        of parameters is allowed.
 *
          READ( NIN, FMT = * )NBVAL( 1 ), NBMIN( 1 ), NXVAL( 1 ),
      $      NSVAL( 1 ), MXBVAL( 1 )
@@ -1340,6 +1348,7 @@
          WRITE( NOUT, FMT = 9983 )'NX:   ', NXVAL( 1 )
          WRITE( NOUT, FMT = 9983 )'NS:   ', NSVAL( 1 )
          WRITE( NOUT, FMT = 9983 )'MAXB: ', MXBVAL( 1 )
+*
       ELSE IF( .NOT.SSB .AND. .NOT.GLM .AND. .NOT.GQR .AND. .NOT.
      $         GSV .AND. .NOT.LSE ) THEN
 *
@@ -1707,6 +1716,7 @@
          MAXTYP = 21
          NTYPES = MIN( MAXTYP, NTYPES )
          CALL ALAREQ( C3, NTYPES, DOTYPE, MAXTYP, NIN, NOUT )
+         CALL XLAENV( 1, 1 )
          IF( TSTERR )
      $      CALL SERRHS( 'SHSEQR', NOUT )
          DO 270 I = 1, NPARMS
@@ -1751,6 +1761,7 @@
          MAXTYP = 21
          NTYPES = MIN( MAXTYP, NTYPES )
          CALL ALAREQ( C3, NTYPES, DOTYPE, MAXTYP, NIN, NOUT )
+         CALL XLAENV( 1, 1 )
          CALL XLAENV( 9, 25 )
          IF( TSTERR )
      $      CALL SERRST( 'SST', NOUT )
@@ -1840,6 +1851,7 @@
          MAXTYP = 16
          NTYPES = MIN( MAXTYP, NTYPES )
          CALL ALAREQ( C3, NTYPES, DOTYPE, MAXTYP, NIN, NOUT )
+         CALL XLAENV( 1, 1 )
          CALL XLAENV( 9, 25 )
 *
 *        Test the error exits
@@ -2032,6 +2044,7 @@
                IF( INFO.NE.0 )
      $            WRITE( NOUT, FMT = 9980 )'SCHKGG', INFO
             END IF
+            CALL XLAENV( 1, 1 )
             IF( TSTDRV ) THEN
                CALL SDRVGG( NN, NVAL, MAXTYP, DOTYPE, ISEED, THRESH,
      $                      THRSHN, NOUT, A( 1, 1 ), NMAX, A( 1, 2 ),
@@ -2087,6 +2100,7 @@
             IF( TSTERR )
      $         CALL SERRGG( C3, NOUT )
             CALL ALAREQ( C3, NTYPES, DOTYPE, MAXTYP, NIN, NOUT )
+            CALL XLAENV( 5, 2 )
             CALL SDRGSX( NN, NCMAX, THRESH, NIN, NOUT, A( 1, 1 ), NMAX,
      $                   A( 1, 2 ), A( 1, 3 ), A( 1, 4 ), A( 1, 5 ),
      $                   A( 1, 6 ), D( 1, 1 ), D( 1, 2 ), D( 1, 3 ),
@@ -2204,6 +2218,7 @@
 *        GLM:  Generalized Linear Regression Model
 *        -----------------------------------------
 *
+         CALL XLAENV( 1, 1 )
          IF( TSTERR )
      $      CALL SERRGG( 'GLM', NOUT )
          CALL SCKGLM( NN, MVAL, PVAL, NVAL, NTYPES, ISEED, THRESH, NMAX,
@@ -2218,6 +2233,7 @@
 *        GQR:  Generalized QR and RQ factorizations
 *        ------------------------------------------
 *
+         CALL XLAENV( 1, 1 )
          IF( TSTERR )
      $      CALL SERRGG( 'GQR', NOUT )
          CALL SCKGQR( NN, MVAL, NN, PVAL, NN, NVAL, NTYPES, ISEED,
@@ -2250,6 +2266,7 @@
 *        LSE:  Constrained Linear Least Squares
 *        --------------------------------------
 *
+         CALL XLAENV( 1, 1 )
          IF( TSTERR )
      $      CALL SERRGG( 'LSE', NOUT )
          CALL SCKLSE( NN, MVAL, PVAL, NVAL, NTYPES, ISEED, THRESH, NMAX,
@@ -2312,7 +2329,7 @@
  9974 FORMAT( ' Tests of SSBTRD', / ' (reduction of a symmetric band ',
      $      'matrix to tridiagonal form)' )
  9973 FORMAT( / 1X, 71( '-' ) )
- 9972 FORMAT( / ' LAPACK VERSION 3.0, released June 30, 1999 ' )
+ 9972 FORMAT( / ' LAPACK VERSION ', I1, '.', I1, '.', I1 )
  9971 FORMAT( / ' Tests of the Generalized Linear Regression Model ',
      $      'routines' )
  9970 FORMAT( / ' Tests of the Generalized QR and RQ routines' )

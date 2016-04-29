@@ -92,7 +92,7 @@ FRC:
 clean: ; \
         rm -f *.o
 
-.f.o: ; $(FORTRAN) -c $(OPTS) $<
+.f.o: ; $(FORTRAN) $(OPTS) -c $< -o $@
 
 slaran.o: slaran.f ; $(FORTRAN) $(NOOPT) -c $<
 dlaran.o: dlaran.f ; $(FORTRAN) $(NOOPT) -c $<

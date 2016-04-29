@@ -1,4 +1,4 @@
-.TH  ZTGSYL 1 "November 2006" " LAPACK routine (version 3.1) " " LAPACK routine (version 3.1) " 
+.TH  ZTGSYL 1 "February 2007" " LAPACK routine (version 3.1.1) " " LAPACK routine (version 3.1.1) " 
 .SH NAME
 ZTGSYL - the generalized Sylvester equation
 .SH SYNOPSIS
@@ -184,7 +184,6 @@ this value as the first entry of the WORK array, and no error
 message related to LWORK is issued by XERBLA.
 .TP 8
 IWORK   (workspace) INTEGER array, dimension (M+N+2)
-If IJOB = 0, IWORK is not referenced.
 .TP 8
 INFO    (output) INTEGER
 =0: successful exit

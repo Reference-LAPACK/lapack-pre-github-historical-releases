@@ -1,8 +1,8 @@
       LOGICAL          FUNCTION ZSLECT( Z )
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     February 2007
 *
 *     .. Scalar Arguments ..
       COMPLEX*16         Z
@@ -56,8 +56,9 @@
       IF( SELOPT.EQ.0 ) THEN
          ZSLECT = ( DBLE( Z ).LT.ZERO )
       ELSE
-         RMIN = ZERO
-         DO 10 I = 1, SELDIM
+         RMIN = ABS( Z-DCMPLX( SELWR( 1 ), SELWI( 1 ) ) )
+         ZSLECT = SELVAL( 1 )
+         DO 10 I = 2, SELDIM
             X = ABS( Z-DCMPLX( SELWR( I ), SELWI( I ) ) )
             IF( X.LE.RMIN ) THEN
                RMIN = X

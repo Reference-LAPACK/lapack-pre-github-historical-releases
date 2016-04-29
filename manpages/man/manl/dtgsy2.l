@@ -1,4 +1,4 @@
-.TH  DTGSY2 1 "November 2006" " LAPACK auxiliary routine (version 3.1) " " LAPACK auxiliary routine (version 3.1) " 
+.TH  DTGSY2 1 "February 2007" " LAPACK auxiliary routine (version 3.1.1) " " LAPACK auxiliary routine (version 3.1.1) " 
 .SH NAME
 DTGSY2 - the generalized Sylvester equation
 .SH SYNOPSIS
@@ -72,10 +72,10 @@ This case is used to compute an estimate of Dif[(A, D), (B, E)] =
 sigma_min(Z) using reverse communicaton with DLACON.
 .br
 
-DTGSY2 also (IJOB >= 1) contributes to the computation in STGSYL
+DTGSY2 also (IJOB >= 1) contributes to the computation in DTGSYL
 of an upper bound on the separation between to matrix pairs. Then
 the input (A, D), (B, E) are sub-pencils of the matrix pair in
-DTGSYL. See STGSYL for details.
+DTGSYL. See DTGSYL for details.
 .br
 
 .SH ARGUMENTS
@@ -161,7 +161,7 @@ scaling factor RDSCAL (see below) has been factored out.
 On exit, the corresponding sum of squares updated with the
 contributions from the current sub-system.
 If TRANS = \(aqT\(aq RDSUM is not touched.
-NOTE: RDSUM only makes sense when DTGSY2 is called by STGSYL.
+NOTE: RDSUM only makes sense when DTGSY2 is called by DTGSYL.
 .TP 8
 RDSCAL  (input/output) DOUBLE PRECISION
 On entry, scaling factor used to prevent overflow in RDSUM.

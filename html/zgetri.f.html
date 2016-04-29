@@ -64,7 +64,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">  LWORK   (input) INTEGER
 </span><span class="comment">*</span><span class="comment">          The dimension of the array WORK.  LWORK &gt;= max(1,N).
 </span><span class="comment">*</span><span class="comment">          For optimal performance LWORK &gt;= N*NB, where NB is
-</span><span class="comment">*</span><span class="comment">          the optimal blocksize returned by <a name="ILAENV.48"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>.
+</span><span class="comment">*</span><span class="comment">          the optimal blocksize returned by <a name="ILAENV.48"></a><a href="hfy-index.html#ILAENV">ILAENV</a>.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">          If LWORK = -1, then a workspace query is assumed; the routine
 </span><span class="comment">*</span><span class="comment">          only calculates the optimal size of the WORK array, returns
@@ -90,8 +90,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $                   NBMIN, NN
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      INTEGER            <a name="ILAENV.74"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="ILAENV.75"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+</span>      INTEGER            <a name="ILAENV.74"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="ILAENV.75"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           <a name="XERBLA.78"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, ZGEMM, ZGEMV, ZSWAP, ZTRSM, <a name="ZTRTRI.78"></a><a href="ztrtri.f.html#ZTRTRI.1">ZTRTRI</a>
@@ -104,7 +104,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">     Test the input parameters.
 </span><span class="comment">*</span><span class="comment">
 </span>      INFO = 0
-      NB = <a name="ILAENV.88"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZGETRI.88"></a><a href="zgetri.f.html#ZGETRI.1">ZGETRI</a>'</span>, <span class="string">' '</span>, N, -1, -1, -1 )
+      NB = <a name="ILAENV.88"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZGETRI.88"></a><a href="zgetri.f.html#ZGETRI.1">ZGETRI</a>'</span>, <span class="string">' '</span>, N, -1, -1, -1 )
       LWKOPT = N*NB
       WORK( 1 ) = LWKOPT
       LQUERY = ( LWORK.EQ.-1 )
@@ -140,7 +140,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
          IWS = MAX( LDWORK*NB, 1 )
          IF( LWORK.LT.IWS ) THEN
             NB = LWORK / LDWORK
-            NBMIN = MAX( 2, <a name="ILAENV.124"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 2, <span class="string">'<a name="ZGETRI.124"></a><a href="zgetri.f.html#ZGETRI.1">ZGETRI</a>'</span>, <span class="string">' '</span>, N, -1, -1, -1 ) )
+            NBMIN = MAX( 2, <a name="ILAENV.124"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 2, <span class="string">'<a name="ZGETRI.124"></a><a href="zgetri.f.html#ZGETRI.1">ZGETRI</a>'</span>, <span class="string">' '</span>, N, -1, -1, -1 ) )
          END IF
       ELSE
          IWS = N

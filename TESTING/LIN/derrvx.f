@@ -1,8 +1,8 @@
       SUBROUTINE DERRVX( PATH, NUNIT )
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     January 2007
 *
 *     .. Scalar Arguments ..
       CHARACTER*3        PATH
@@ -86,6 +86,7 @@
          R( J ) = 0.D0
          IP( J ) = J
    20 CONTINUE
+      EQ = ' '
       OK = .TRUE.
 *
       IF( LSAMEN( 2, C2, 'GE' ) ) THEN

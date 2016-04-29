@@ -1,9 +1,9 @@
       SUBROUTINE CCHKGT( DOTYPE, NN, NVAL, NNS, NSVAL, THRESH, TSTERR,
      $                   A, AF, B, X, XACT, WORK, RWORK, IWORK, NOUT )
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     January 2007
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -110,7 +110,7 @@
      $                   CSSCAL
 *     ..
 *     .. Intrinsic Functions ..
-      INTRINSIC          CMPLX, MAX
+      INTRINSIC          MAX
 *     ..
 *     .. Scalars in Common ..
       LOGICAL            LERR, OK

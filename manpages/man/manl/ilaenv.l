@@ -18,6 +18,11 @@ parameters for the local environment.  See ISPEC for a description of
 the parameters.
 .br
 
+ILAENV returns an INTEGER
+.br
+if ILAENV >= 0: ILAENV returns the value of the parameter specified by ISPEC
+if ILAENV < 0:  if ILAENV = -k, the k-th argument had an illegal value.
+
 This version provides a set of parameters which should give good,
 but not optimal, performance on many of the currently available
 computers.  Users are encouraged to modify this subroutine to set
@@ -81,9 +86,6 @@ N3      (input) INTEGER
 N4      (input) INTEGER
 Problem dimensions for the subroutine NAME; these may not all
 be required.
-
->= 0: the value of the parameter specified by ISPEC
-< 0:  if ILAENV = -k, the k-th argument had an illegal value.
 .SH FURTHER DETAILS
 The following conventions have been used when calling ILAENV from the
 LAPACK routines:

@@ -161,12 +161,12 @@ clean:
 	rm -f *.o
 
 schkee.o: schkee.f
-	$(FORTRAN) $(DRVOPTS) -c $<
+	$(FORTRAN) $(DRVOPTS) -c $< -o $@
 dchkee.o: dchkee.f
-	$(FORTRAN) $(DRVOPTS) -c $<
+	$(FORTRAN) $(DRVOPTS) -c $< -o $@
 cchkee.o: cchkee.f
-	$(FORTRAN) $(DRVOPTS) -c $<
+	$(FORTRAN) $(DRVOPTS) -c $< -o $@
 zchkee.o: zchkee.f
-	$(FORTRAN) $(DRVOPTS) -c $<
+	$(FORTRAN) $(DRVOPTS) -c $< -o $@
 
-.f.o : ; $(FORTRAN) $(OPTS) -c $<
+.f.o : ; $(FORTRAN) $(OPTS) -c $< -o $@

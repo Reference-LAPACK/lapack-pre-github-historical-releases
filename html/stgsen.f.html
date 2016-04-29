@@ -21,9 +21,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $                   ALPHAR, ALPHAI, BETA, Q, LDQ, Z, LDZ, M, PL,
      $                   PR, DIF, WORK, LWORK, IWORK, LIWORK, INFO )
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1.1) --
 </span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">     January 2007
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     Modified to call <a name="SLACN2.9"></a><a href="slacn2.f.html#SLACN2.1">SLACN2</a> in place of <a name="SLACON.9"></a><a href="slacon.f.html#SLACON.1">SLACON</a>, 7 Feb 03, SJH.
 </span><span class="comment">*</span><span class="comment">
@@ -183,8 +183,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">          If IJOB = 0 or 1, DIF is not referenced.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  WORK    (workspace/output) REAL array, dimension (MAX(1,LWORK))
-</span><span class="comment">*</span><span class="comment">          IF IJOB = 0, WORK is not referenced.  Otherwise,
-</span><span class="comment">*</span><span class="comment">          on exit, if INFO = 0, WORK(1) returns the optimal LWORK.
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  LWORK   (input) INTEGER
 </span><span class="comment">*</span><span class="comment">          The dimension of the array WORK. LWORK &gt;=  4*N+16.
@@ -194,7 +193,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">          If LWORK = -1, then a workspace query is assumed; the routine
 </span><span class="comment">*</span><span class="comment">          only calculates the optimal size of the WORK array, returns
 </span><span class="comment">*</span><span class="comment">          this value as the first entry of the WORK array, and no error
-</span><span class="comment">*</span><span class="comment">          message related to LWORK is issued by <a name="XERBLA.178"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
+</span><span class="comment">*</span><span class="comment">          message related to LWORK is issued by <a name="XERBLA.177"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  IWORK   (workspace/output) INTEGER array, dimension (MAX(1,LIWORK))
 </span><span class="comment">*</span><span class="comment">          IF IJOB = 0, IWORK is not referenced.  Otherwise,
@@ -208,7 +207,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">          If LIWORK = -1, then a workspace query is assumed; the
 </span><span class="comment">*</span><span class="comment">          routine only calculates the optimal size of the IWORK array,
 </span><span class="comment">*</span><span class="comment">          returns this value as the first entry of the IWORK array, and
-</span><span class="comment">*</span><span class="comment">          no error message related to LIWORK is issued by <a name="XERBLA.192"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
+</span><span class="comment">*</span><span class="comment">          no error message related to LIWORK is issued by <a name="XERBLA.191"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
 </span><span class="comment">*</span><span class="comment">            =0: Successful exit.
@@ -222,7 +221,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">  Further Details
 </span><span class="comment">*</span><span class="comment">  ===============
 </span><span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  <a name="STGSEN.206"></a><a href="stgsen.f.html#STGSEN.1">STGSEN</a> first collects the selected eigenvalues by computing
+</span><span class="comment">*</span><span class="comment">  <a name="STGSEN.205"></a><a href="stgsen.f.html#STGSEN.1">STGSEN</a> first collects the selected eigenvalues by computing
 </span><span class="comment">*</span><span class="comment">  orthogonal U and W that move them to the top left corner of (A, B).
 </span><span class="comment">*</span><span class="comment">  In other words, the selected eigenvalues are the eigenvalues of
 </span><span class="comment">*</span><span class="comment">  (A11, B11) in:
@@ -318,9 +317,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">  for more information.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  Note that if the default method for computing the Frobenius-norm-
-</span><span class="comment">*</span><span class="comment">  based estimate DIF is not wanted (see <a name="SLATDF.302"></a><a href="slatdf.f.html#SLATDF.1">SLATDF</a>), then the parameter
-</span><span class="comment">*</span><span class="comment">  IDIFJB (see below) should be changed from 3 to 4 (routine <a name="SLATDF.303"></a><a href="slatdf.f.html#SLATDF.1">SLATDF</a>
-</span><span class="comment">*</span><span class="comment">  (IJOB = 2 will be used)). See <a name="STGSYL.304"></a><a href="stgsyl.f.html#STGSYL.1">STGSYL</a> for more details.
+</span><span class="comment">*</span><span class="comment">  based estimate DIF is not wanted (see <a name="SLATDF.301"></a><a href="slatdf.f.html#SLATDF.1">SLATDF</a>), then the parameter
+</span><span class="comment">*</span><span class="comment">  IDIFJB (see below) should be changed from 3 to 4 (routine <a name="SLATDF.302"></a><a href="slatdf.f.html#SLATDF.1">SLATDF</a>
+</span><span class="comment">*</span><span class="comment">  (IJOB = 2 will be used)). See <a name="STGSYL.303"></a><a href="stgsyl.f.html#STGSYL.1">STGSYL</a> for more details.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  Based on contributions by
 </span><span class="comment">*</span><span class="comment">     Bo Kagstrom and Peter Poromaa, Department of Computing Science,
@@ -368,12 +367,12 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>      INTEGER            ISAVE( 3 )
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
-</span>      EXTERNAL           <a name="SLACN2.352"></a><a href="slacn2.f.html#SLACN2.1">SLACN2</a>, <a name="SLACPY.352"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>, <a name="SLAG2.352"></a><a href="slag2.f.html#SLAG2.1">SLAG2</a>, <a name="SLASSQ.352"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>, <a name="STGEXC.352"></a><a href="stgexc.f.html#STGEXC.1">STGEXC</a>, <a name="STGSYL.352"></a><a href="stgsyl.f.html#STGSYL.1">STGSYL</a>,
-     $                   <a name="XERBLA.353"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+</span>      EXTERNAL           <a name="SLACN2.351"></a><a href="slacn2.f.html#SLACN2.1">SLACN2</a>, <a name="SLACPY.351"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>, <a name="SLAG2.351"></a><a href="slag2.f.html#SLAG2.1">SLAG2</a>, <a name="SLASSQ.351"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>, <a name="STGEXC.351"></a><a href="stgexc.f.html#STGEXC.1">STGEXC</a>, <a name="STGSYL.351"></a><a href="stgsyl.f.html#STGSYL.1">STGSYL</a>,
+     $                   <a name="XERBLA.352"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      REAL               <a name="SLAMCH.356"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
-      EXTERNAL           <a name="SLAMCH.357"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+</span>      REAL               <a name="SLAMCH.355"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      EXTERNAL           <a name="SLAMCH.356"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
 </span>      INTRINSIC          MAX, SIGN, SQRT
@@ -400,14 +399,14 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      IF( INFO.NE.0 ) THEN
-         CALL <a name="XERBLA.384"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="STGSEN.384"></a><a href="stgsen.f.html#STGSEN.1">STGSEN</a>'</span>, -INFO )
+         CALL <a name="XERBLA.383"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="STGSEN.383"></a><a href="stgsen.f.html#STGSEN.1">STGSEN</a>'</span>, -INFO )
          RETURN
       END IF
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     Get machine constants
 </span><span class="comment">*</span><span class="comment">
-</span>      EPS = <a name="SLAMCH.390"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'P'</span> )
-      SMLNUM = <a name="SLAMCH.391"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'S'</span> ) / EPS
+</span>      EPS = <a name="SLAMCH.389"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'P'</span> )
+      SMLNUM = <a name="SLAMCH.390"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'S'</span> ) / EPS
       IERR = 0
 <span class="comment">*</span><span class="comment">
 </span>      WANTP = IJOB.EQ.1 .OR. IJOB.GE.4
@@ -461,7 +460,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      IF( INFO.NE.0 ) THEN
-         CALL <a name="XERBLA.445"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="STGSEN.445"></a><a href="stgsen.f.html#STGSEN.1">STGSEN</a>'</span>, -INFO )
+         CALL <a name="XERBLA.444"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="STGSEN.444"></a><a href="stgsen.f.html#STGSEN.1">STGSEN</a>'</span>, -INFO )
          RETURN
       ELSE IF( LQUERY ) THEN
          RETURN
@@ -478,8 +477,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
             DSCALE = ZERO
             DSUM = ONE
             DO 20 I = 1, N
-               CALL <a name="SLASSQ.462"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>( N, A( 1, I ), 1, DSCALE, DSUM )
-               CALL <a name="SLASSQ.463"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>( N, B( 1, I ), 1, DSCALE, DSUM )
+               CALL <a name="SLASSQ.461"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>( N, A( 1, I ), 1, DSCALE, DSUM )
+               CALL <a name="SLASSQ.462"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>( N, B( 1, I ), 1, DSCALE, DSUM )
    20       CONTINUE
             DIF( 1 ) = DSCALE*SQRT( DSUM )
             DIF( 2 ) = DIF( 1 )
@@ -514,7 +513,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">
 </span>               KK = K
                IF( K.NE.KS )
-     $            CALL <a name="STGEXC.498"></a><a href="stgexc.f.html#STGEXC.1">STGEXC</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ,
+     $            CALL <a name="STGEXC.497"></a><a href="stgexc.f.html#STGEXC.1">STGEXC</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ,
      $                         Z, LDZ, KK, KS, WORK, LWORK, IERR )
 <span class="comment">*</span><span class="comment">
 </span>               IF( IERR.GT.0 ) THEN
@@ -547,10 +546,10 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
          N2 = N - M
          I = N1 + 1
          IJB = 0
-         CALL <a name="SLACPY.531"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, N1, N2, A( 1, I ), LDA, WORK, N1 )
-         CALL <a name="SLACPY.532"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, N1, N2, B( 1, I ), LDB, WORK( N1*N2+1 ),
+         CALL <a name="SLACPY.530"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, N1, N2, A( 1, I ), LDA, WORK, N1 )
+         CALL <a name="SLACPY.531"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, N1, N2, B( 1, I ), LDB, WORK( N1*N2+1 ),
      $                N1 )
-         CALL <a name="STGSYL.534"></a><a href="stgsyl.f.html#STGSYL.1">STGSYL</a>( <span class="string">'N'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA, WORK,
+         CALL <a name="STGSYL.533"></a><a href="stgsyl.f.html#STGSYL.1">STGSYL</a>( <span class="string">'N'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA, WORK,
      $                N1, B, LDB, B( I, I ), LDB, WORK( N1*N2+1 ), N1,
      $                DSCALE, DIF( 1 ), WORK( N1*N2*2+1 ),
      $                LWORK-2*N1*N2, IWORK, IERR )
@@ -560,7 +559,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">
 </span>         RDSCAL = ZERO
          DSUM = ONE
-         CALL <a name="SLASSQ.544"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>( N1*N2, WORK, 1, RDSCAL, DSUM )
+         CALL <a name="SLASSQ.543"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>( N1*N2, WORK, 1, RDSCAL, DSUM )
          PL = RDSCAL*SQRT( DSUM )
          IF( PL.EQ.ZERO ) THEN
             PL = ONE
@@ -569,7 +568,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
          END IF
          RDSCAL = ZERO
          DSUM = ONE
-         CALL <a name="SLASSQ.553"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>( N1*N2, WORK( N1*N2+1 ), 1, RDSCAL, DSUM )
+         CALL <a name="SLASSQ.552"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>( N1*N2, WORK( N1*N2+1 ), 1, RDSCAL, DSUM )
          PR = RDSCAL*SQRT( DSUM )
          IF( PR.EQ.ZERO ) THEN
             PR = ONE
@@ -590,14 +589,14 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">           Frobenius norm-based Difu-estimate.
 </span><span class="comment">*</span><span class="comment">
-</span>            CALL <a name="STGSYL.574"></a><a href="stgsyl.f.html#STGSYL.1">STGSYL</a>( <span class="string">'N'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA, WORK,
+</span>            CALL <a name="STGSYL.573"></a><a href="stgsyl.f.html#STGSYL.1">STGSYL</a>( <span class="string">'N'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA, WORK,
      $                   N1, B, LDB, B( I, I ), LDB, WORK( N1*N2+1 ),
      $                   N1, DSCALE, DIF( 1 ), WORK( 2*N1*N2+1 ),
      $                   LWORK-2*N1*N2, IWORK, IERR )
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">           Frobenius norm-based Difl-estimate.
 </span><span class="comment">*</span><span class="comment">
-</span>            CALL <a name="STGSYL.581"></a><a href="stgsyl.f.html#STGSYL.1">STGSYL</a>( <span class="string">'N'</span>, IJB, N2, N1, A( I, I ), LDA, A, LDA, WORK,
+</span>            CALL <a name="STGSYL.580"></a><a href="stgsyl.f.html#STGSYL.1">STGSYL</a>( <span class="string">'N'</span>, IJB, N2, N1, A( I, I ), LDA, A, LDA, WORK,
      $                   N2, B( I, I ), LDB, B, LDB, WORK( N1*N2+1 ),
      $                   N2, DSCALE, DIF( 2 ), WORK( 2*N1*N2+1 ),
      $                   LWORK-2*N1*N2, IWORK, IERR )
@@ -605,7 +604,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">           Compute 1-norm-based estimates of Difu and Difl using
-</span><span class="comment">*</span><span class="comment">           reversed communication with <a name="SLACN2.589"></a><a href="slacn2.f.html#SLACN2.1">SLACN2</a>. In each step a
+</span><span class="comment">*</span><span class="comment">           reversed communication with <a name="SLACN2.588"></a><a href="slacn2.f.html#SLACN2.1">SLACN2</a>. In each step a
 </span><span class="comment">*</span><span class="comment">           generalized Sylvester equation or a transposed variant
 </span><span class="comment">*</span><span class="comment">           is solved.
 </span><span class="comment">*</span><span class="comment">
@@ -619,14 +618,14 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">           1-norm-based estimate of Difu.
 </span><span class="comment">*</span><span class="comment">
 </span>   40       CONTINUE
-            CALL <a name="SLACN2.603"></a><a href="slacn2.f.html#SLACN2.1">SLACN2</a>( MN2, WORK( MN2+1 ), WORK, IWORK, DIF( 1 ),
+            CALL <a name="SLACN2.602"></a><a href="slacn2.f.html#SLACN2.1">SLACN2</a>( MN2, WORK( MN2+1 ), WORK, IWORK, DIF( 1 ),
      $                   KASE, ISAVE )
             IF( KASE.NE.0 ) THEN
                IF( KASE.EQ.1 ) THEN
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Solve generalized Sylvester equation.
 </span><span class="comment">*</span><span class="comment">
-</span>                  CALL <a name="STGSYL.610"></a><a href="stgsyl.f.html#STGSYL.1">STGSYL</a>( <span class="string">'N'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA,
+</span>                  CALL <a name="STGSYL.609"></a><a href="stgsyl.f.html#STGSYL.1">STGSYL</a>( <span class="string">'N'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA,
      $                         WORK, N1, B, LDB, B( I, I ), LDB,
      $                         WORK( N1*N2+1 ), N1, DSCALE, DIF( 1 ),
      $                         WORK( 2*N1*N2+1 ), LWORK-2*N1*N2, IWORK,
@@ -635,7 +634,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Solve the transposed variant.
 </span><span class="comment">*</span><span class="comment">
-</span>                  CALL <a name="STGSYL.619"></a><a href="stgsyl.f.html#STGSYL.1">STGSYL</a>( <span class="string">'T'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA,
+</span>                  CALL <a name="STGSYL.618"></a><a href="stgsyl.f.html#STGSYL.1">STGSYL</a>( <span class="string">'T'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA,
      $                         WORK, N1, B, LDB, B( I, I ), LDB,
      $                         WORK( N1*N2+1 ), N1, DSCALE, DIF( 1 ),
      $                         WORK( 2*N1*N2+1 ), LWORK-2*N1*N2, IWORK,
@@ -648,14 +647,14 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">           1-norm-based estimate of Difl.
 </span><span class="comment">*</span><span class="comment">
 </span>   50       CONTINUE
-            CALL <a name="SLACN2.632"></a><a href="slacn2.f.html#SLACN2.1">SLACN2</a>( MN2, WORK( MN2+1 ), WORK, IWORK, DIF( 2 ),
+            CALL <a name="SLACN2.631"></a><a href="slacn2.f.html#SLACN2.1">SLACN2</a>( MN2, WORK( MN2+1 ), WORK, IWORK, DIF( 2 ),
      $                   KASE, ISAVE )
             IF( KASE.NE.0 ) THEN
                IF( KASE.EQ.1 ) THEN
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Solve generalized Sylvester equation.
 </span><span class="comment">*</span><span class="comment">
-</span>                  CALL <a name="STGSYL.639"></a><a href="stgsyl.f.html#STGSYL.1">STGSYL</a>( <span class="string">'N'</span>, IJB, N2, N1, A( I, I ), LDA, A, LDA,
+</span>                  CALL <a name="STGSYL.638"></a><a href="stgsyl.f.html#STGSYL.1">STGSYL</a>( <span class="string">'N'</span>, IJB, N2, N1, A( I, I ), LDA, A, LDA,
      $                         WORK, N2, B( I, I ), LDB, B, LDB,
      $                         WORK( N1*N2+1 ), N2, DSCALE, DIF( 2 ),
      $                         WORK( 2*N1*N2+1 ), LWORK-2*N1*N2, IWORK,
@@ -664,7 +663,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Solve the transposed variant.
 </span><span class="comment">*</span><span class="comment">
-</span>                  CALL <a name="STGSYL.648"></a><a href="stgsyl.f.html#STGSYL.1">STGSYL</a>( <span class="string">'T'</span>, IJB, N2, N1, A( I, I ), LDA, A, LDA,
+</span>                  CALL <a name="STGSYL.647"></a><a href="stgsyl.f.html#STGSYL.1">STGSYL</a>( <span class="string">'T'</span>, IJB, N2, N1, A( I, I ), LDA, A, LDA,
      $                         WORK, N2, B( I, I ), LDB, B, LDB,
      $                         WORK( N1*N2+1 ), N2, DSCALE, DIF( 2 ),
      $                         WORK( 2*N1*N2+1 ), LWORK-2*N1*N2, IWORK,
@@ -706,7 +705,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
                WORK( 6 ) = B( K+1, K )
                WORK( 7 ) = B( K, K+1 )
                WORK( 8 ) = B( K+1, K+1 )
-               CALL <a name="SLAG2.690"></a><a href="slag2.f.html#SLAG2.1">SLAG2</a>( WORK, 2, WORK( 5 ), 2, SMLNUM*EPS, BETA( K ),
+               CALL <a name="SLAG2.689"></a><a href="slag2.f.html#SLAG2.1">SLAG2</a>( WORK, 2, WORK( 5 ), 2, SMLNUM*EPS, BETA( K ),
      $                     BETA( K+1 ), ALPHAR( K ), ALPHAR( K+1 ),
      $                     ALPHAI( K ) )
                ALPHAI( K+1 ) = -ALPHAI( K )
@@ -737,7 +736,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span>      RETURN
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">     End of <a name="STGSEN.721"></a><a href="stgsen.f.html#STGSEN.1">STGSEN</a>
+</span><span class="comment">*</span><span class="comment">     End of <a name="STGSEN.720"></a><a href="stgsen.f.html#STGSEN.1">STGSEN</a>
 </span><span class="comment">*</span><span class="comment">
 </span>      END
 

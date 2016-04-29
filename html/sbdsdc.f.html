@@ -110,7 +110,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">             requiring O(N log N) space instead of 2*N**2.
 </span><span class="comment">*</span><span class="comment">             In particular, Q contains all the REAL data in
 </span><span class="comment">*</span><span class="comment">             LDQ &gt;= N*(11 + 2*SMLSIZ + 8*INT(LOG_2(N/(SMLSIZ+1))))
-</span><span class="comment">*</span><span class="comment">             words of memory, where SMLSIZ is returned by <a name="ILAENV.94"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> and
+</span><span class="comment">*</span><span class="comment">             words of memory, where SMLSIZ is returned by <a name="ILAENV.94"></a><a href="hfy-index.html#ILAENV">ILAENV</a> and
 </span><span class="comment">*</span><span class="comment">             is equal to the maximum size of the subproblems at the
 </span><span class="comment">*</span><span class="comment">             bottom of the computation tree (usually about 25).
 </span><span class="comment">*</span><span class="comment">          For other values of COMPQ, Q is not referenced.
@@ -122,7 +122,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">             requiring O(N log N) space instead of 2*N**2.
 </span><span class="comment">*</span><span class="comment">             In particular, IQ contains all INTEGER data in
 </span><span class="comment">*</span><span class="comment">             LDIQ &gt;= N*(3 + 3*INT(LOG_2(N/(SMLSIZ+1))))
-</span><span class="comment">*</span><span class="comment">             words of memory, where SMLSIZ is returned by <a name="ILAENV.106"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> and
+</span><span class="comment">*</span><span class="comment">             words of memory, where SMLSIZ is returned by <a name="ILAENV.106"></a><a href="hfy-index.html#ILAENV">ILAENV</a> and
 </span><span class="comment">*</span><span class="comment">             is equal to the maximum size of the subproblems at the
 </span><span class="comment">*</span><span class="comment">             bottom of the computation tree (usually about 25).
 </span><span class="comment">*</span><span class="comment">          For other values of COMPQ, IQ is not referenced.
@@ -164,9 +164,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.147"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.148"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.148"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       REAL               <a name="SLAMCH.149"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANST.149"></a><a href="slanst.f.html#SLANST.1">SLANST</a>
-      EXTERNAL           <a name="SLAMCH.150"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANST.150"></a><a href="slanst.f.html#SLANST.1">SLANST</a>, <a name="ILAENV.150"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="LSAME.150"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="SLAMCH.150"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANST.150"></a><a href="slanst.f.html#SLANST.1">SLANST</a>, <a name="ILAENV.150"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="LSAME.150"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           SCOPY, <a name="SLARTG.153"></a><a href="slartg.f.html#SLARTG.1">SLARTG</a>, <a name="SLASCL.153"></a><a href="slascl.f.html#SLASCL.1">SLASCL</a>, <a name="SLASD0.153"></a><a href="slasd0.f.html#SLASD0.1">SLASD0</a>, <a name="SLASDA.153"></a><a href="slasda.f.html#SLASDA.1">SLASDA</a>, <a name="SLASDQ.153"></a><a href="slasdq.f.html#SLASDQ.1">SLASDQ</a>,
@@ -217,7 +217,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">
 </span>      IF( N.EQ.0 )
      $   RETURN
-      SMLSIZ = <a name="ILAENV.201"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 9, <span class="string">'<a name="SBDSDC.201"></a><a href="sbdsdc.f.html#SBDSDC.1">SBDSDC</a>'</span>, <span class="string">' '</span>, 0, 0, 0, 0 )
+      SMLSIZ = <a name="ILAENV.201"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 9, <span class="string">'<a name="SBDSDC.201"></a><a href="sbdsdc.f.html#SBDSDC.1">SBDSDC</a>'</span>, <span class="string">' '</span>, 0, 0, 0, 0 )
       IF( N.EQ.1 ) THEN
          IF( ICOMPQ.EQ.1 ) THEN
             Q( 1 ) = SIGN( ONE, D( 1 ) )

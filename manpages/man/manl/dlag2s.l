@@ -1,18 +1,18 @@
-.TH  DLAG2S 1 "November 2006" " LAPACK PROTOTYPE auxilary routine (version 3.1) " " LAPACK PROTOTYPE auxilary routine (version 3.1) "
 .SH NAME
 DLAG2S - a DOUBLE PRECISION matrix, SA, to a SINGLE PRECISION matrix, A
 .SH SYNOPSIS
-.TP 42
-SUBROUTINE DLAG2S(M,N,A,LDA,SA,LDSA,INFO)
-.TP 42
+.TP 19
+SUBROUTINE DLAG2S(
+M, N, A, LDA, SA, LDSA, INFO)
+.TP 19
 .ti +4
 INTEGER
 INFO,LDA,LDSA,M,N
-.TP 42
+.TP 19
 .ti +4
 REAL
 SA(LDSA,*)
-.TP 42
+.TP 19
 .ti +4
 DOUBLE
 PRECISION A(LDA,*)
@@ -56,3 +56,12 @@ k is given by k = (i-1)*LDA+j
 
 =========
 
+.. Local Scalars ..
+
+..
+.. External Functions ..
+
+..
+.. Executable Statements ..
+
+End of DLAG2S

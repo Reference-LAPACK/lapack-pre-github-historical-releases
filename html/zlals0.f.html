@@ -192,7 +192,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       DOUBLE PRECISION   DIFLJ, DIFRJ, DJ, DSIGJ, DSIGJP, TEMP
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
-</span>      EXTERNAL           DGEMV, <a name="XERBLA.176"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, ZCOPY, <a name="ZDROT.176"></a><a href="zdrot.f.html#ZDROT.1">ZDROT</a>, ZDSCAL, <a name="ZLACPY.176"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>,
+</span>      EXTERNAL           DGEMV, <a name="XERBLA.176"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, ZCOPY, ZDROT, ZDSCAL, <a name="ZLACPY.176"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>,
      $                   <a name="ZLASCL.177"></a><a href="zlascl.f.html#ZLASCL.1">ZLASCL</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
@@ -250,7 +250,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">        Step (1L): apply back the Givens rotations performed.
 </span><span class="comment">*</span><span class="comment">
 </span>         DO 10 I = 1, GIVPTR
-            CALL <a name="ZDROT.234"></a><a href="zdrot.f.html#ZDROT.1">ZDROT</a>( NRHS, B( GIVCOL( I, 2 ), 1 ), LDB,
+            CALL ZDROT( NRHS, B( GIVCOL( I, 2 ), 1 ), LDB,
      $                  B( GIVCOL( I, 1 ), 1 ), LDB, GIVNUM( I, 2 ),
      $                  GIVNUM( I, 1 ) )
    10    CONTINUE
@@ -420,7 +420,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">
 </span>         IF( SQRE.EQ.1 ) THEN
             CALL ZCOPY( NRHS, B( M, 1 ), LDB, BX( M, 1 ), LDBX )
-            CALL <a name="ZDROT.404"></a><a href="zdrot.f.html#ZDROT.1">ZDROT</a>( NRHS, BX( 1, 1 ), LDBX, BX( M, 1 ), LDBX, C, S )
+            CALL ZDROT( NRHS, BX( 1, 1 ), LDBX, BX( M, 1 ), LDBX, C, S )
          END IF
          IF( K.LT.MAX( M, N ) )
      $      CALL <a name="ZLACPY.407"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'A'</span>, N-K, NRHS, B( K+1, 1 ), LDB, BX( K+1, 1 ),
@@ -439,7 +439,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">        Step (4R): apply back the Givens rotations performed.
 </span><span class="comment">*</span><span class="comment">
 </span>         DO 200 I = GIVPTR, 1, -1
-            CALL <a name="ZDROT.423"></a><a href="zdrot.f.html#ZDROT.1">ZDROT</a>( NRHS, B( GIVCOL( I, 2 ), 1 ), LDB,
+            CALL ZDROT( NRHS, B( GIVCOL( I, 2 ), 1 ), LDB,
      $                  B( GIVCOL( I, 1 ), 1 ), LDB, GIVNUM( I, 2 ),
      $                  -GIVNUM( I, 1 ) )
   200    CONTINUE

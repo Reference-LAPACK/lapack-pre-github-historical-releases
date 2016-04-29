@@ -289,9 +289,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.272"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.273"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.273"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       REAL               <a name="SLAMCH.274"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANGE.274"></a><a href="slange.f.html#SLANGE.1">SLANGE</a>
-      EXTERNAL           <a name="LSAME.275"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.275"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="SLAMCH.275"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANGE.275"></a><a href="slange.f.html#SLANGE.1">SLANGE</a>
+      EXTERNAL           <a name="LSAME.275"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.275"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="SLAMCH.275"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANGE.275"></a><a href="slange.f.html#SLANGE.1">SLANGE</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
 </span>      INTRINSIC          ABS, MAX, SQRT
@@ -367,18 +367,18 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">       minimal amount of workspace needed at that point in the code,
 </span><span class="comment">*</span><span class="comment">       as well as the preferred amount for good performance.
 </span><span class="comment">*</span><span class="comment">       NB refers to the optimal block size for the immediately
-</span><span class="comment">*</span><span class="comment">       following subroutine, as returned by <a name="ILAENV.351"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>.)
+</span><span class="comment">*</span><span class="comment">       following subroutine, as returned by <a name="ILAENV.351"></a><a href="hfy-index.html#ILAENV">ILAENV</a>.)
 </span><span class="comment">*</span><span class="comment">
 </span>      IF( INFO.EQ.0 ) THEN
          IF( N.GT.0) THEN
             MINWRK = MAX( 8*N, 6*N + 16 )
             MAXWRK = MINWRK - N +
-     $               N*<a name="ILAENV.357"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.357"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, N, 1, N, 0 )
+     $               N*<a name="ILAENV.357"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.357"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, N, 1, N, 0 )
             MAXWRK = MAX( MAXWRK, MINWRK - N +
-     $               N*<a name="ILAENV.359"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORMQR.359"></a><a href="sormqr.f.html#SORMQR.1">SORMQR</a>'</span>, <span class="string">' '</span>, N, 1, N, -1 ) )
+     $               N*<a name="ILAENV.359"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORMQR.359"></a><a href="sormqr.f.html#SORMQR.1">SORMQR</a>'</span>, <span class="string">' '</span>, N, 1, N, -1 ) )
             IF( ILVSL ) THEN
                MAXWRK = MAX( MAXWRK, MINWRK - N +
-     $                  N*<a name="ILAENV.362"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGQR.362"></a><a href="sorgqr.f.html#SORGQR.1">SORGQR</a>'</span>, <span class="string">' '</span>, N, 1, N, -1 ) )
+     $                  N*<a name="ILAENV.362"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGQR.362"></a><a href="sorgqr.f.html#SORGQR.1">SORGQR</a>'</span>, <span class="string">' '</span>, N, 1, N, -1 ) )
             END IF
             LWRK = MAXWRK
             IF( IJOB.GE.1 )

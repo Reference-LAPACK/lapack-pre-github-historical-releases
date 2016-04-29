@@ -120,8 +120,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $                   WORK31( LDWORK, NBMAX )
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      INTEGER            ICAMAX, <a name="ILAENV.104"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           ICAMAX, <a name="ILAENV.105"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+</span>      INTEGER            ICAMAX, <a name="ILAENV.104"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           ICAMAX, <a name="ILAENV.105"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           CCOPY, <a name="CGBTF2.108"></a><a href="cgbtf2.f.html#CGBTF2.1">CGBTF2</a>, CGEMM, CGERU, <a name="CLASWP.108"></a><a href="claswp.f.html#CLASWP.1">CLASWP</a>, CSCAL,
@@ -163,7 +163,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     Determine the block size for this environment
 </span><span class="comment">*</span><span class="comment">
-</span>      NB = <a name="ILAENV.147"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGBTRF.147"></a><a href="cgbtrf.f.html#CGBTRF.1">CGBTRF</a>'</span>, <span class="string">' '</span>, M, N, KL, KU )
+</span>      NB = <a name="ILAENV.147"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGBTRF.147"></a><a href="cgbtrf.f.html#CGBTRF.1">CGBTRF</a>'</span>, <span class="string">' '</span>, M, N, KL, KU )
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     The block size must not exceed the limit set by the size of the
 </span><span class="comment">*</span><span class="comment">     local arrays WORK13 and WORK31.

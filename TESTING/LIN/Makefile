@@ -227,13 +227,13 @@ clean:
 	rm -f *.o
 
 schkaa.o: schkaa.f
-	$(FORTRAN) $(DRVOPTS) -c $<
+	$(FORTRAN) $(DRVOPTS) -c $< -o $@
 dchkaa.o: dchkaa.f
-	$(FORTRAN) $(DRVOPTS) -c $<
+	$(FORTRAN) $(DRVOPTS) -c $< -o $@
 cchkaa.o: cchkaa.f
-	$(FORTRAN) $(DRVOPTS) -c $<
+	$(FORTRAN) $(DRVOPTS) -c $< -o $@
 zchkaa.o: zchkaa.f
-	$(FORTRAN) $(DRVOPTS) -c $<
+	$(FORTRAN) $(DRVOPTS) -c $< -o $@
  
 .f.o: 
-	$(FORTRAN) -c $(OPTS) $*.f
+	$(FORTRAN) $(OPTS) -c $< -o $@

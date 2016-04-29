@@ -17,11 +17,11 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
   <body>
 
 <pre>
-      INTEGER FUNCTION <a name="ILAENV.1"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( ISPEC, NAME, OPTS, N1, N2, N3, N4 )
+      INTEGER FUNCTION <a name="ILAENV.1"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( ISPEC, NAME, OPTS, N1, N2, N3, N4 )
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1.1) --
 </span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">     January 2007
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
 </span>      CHARACTER*( * )    NAME, OPTS
@@ -31,9 +31,13 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">  Purpose
 </span><span class="comment">*</span><span class="comment">  =======
 </span><span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  <a name="ILAENV.15"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> is called from the LAPACK routines to choose problem-dependent
+</span><span class="comment">*</span><span class="comment">  <a name="ILAENV.15"></a><a href="hfy-index.html#ILAENV">ILAENV</a> is called from the LAPACK routines to choose problem-dependent
 </span><span class="comment">*</span><span class="comment">  parameters for the local environment.  See ISPEC for a description of
 </span><span class="comment">*</span><span class="comment">  the parameters.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ILAENV.19"></a><a href="hfy-index.html#ILAENV">ILAENV</a> returns an INTEGER
+</span><span class="comment">*</span><span class="comment">  if <a name="ILAENV.20"></a><a href="hfy-index.html#ILAENV">ILAENV</a> &gt;= 0: <a name="ILAENV.20"></a><a href="hfy-index.html#ILAENV">ILAENV</a> returns the value of the parameter specified by ISPEC
+</span><span class="comment">*</span><span class="comment">  if <a name="ILAENV.21"></a><a href="hfy-index.html#ILAENV">ILAENV</a> &lt; 0:  if <a name="ILAENV.21"></a><a href="hfy-index.html#ILAENV">ILAENV</a> = -k, the k-th argument had an illegal value.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  This version provides a set of parameters which should give good,
 </span><span class="comment">*</span><span class="comment">  but not optimal, performance on many of the currently available
@@ -49,7 +53,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  ISPEC   (input) INTEGER
 </span><span class="comment">*</span><span class="comment">          Specifies the parameter to be returned as the value of
-</span><span class="comment">*</span><span class="comment">          <a name="ILAENV.33"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>.
+</span><span class="comment">*</span><span class="comment">          <a name="ILAENV.37"></a><a href="hfy-index.html#ILAENV">ILAENV</a>.
 </span><span class="comment">*</span><span class="comment">          = 1: the optimal blocksize; if this value is 1, an unblocked
 </span><span class="comment">*</span><span class="comment">               algorithm will give the best performance.
 </span><span class="comment">*</span><span class="comment">          = 2: the minimum block size for which the block routine
@@ -61,7 +65,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">               eigenvalue routines (DEPRECATED)
 </span><span class="comment">*</span><span class="comment">          = 5: the minimum column dimension for blocking to be used;
 </span><span class="comment">*</span><span class="comment">               rectangular blocks must have dimension at least k by m,
-</span><span class="comment">*</span><span class="comment">               where k is given by <a name="ILAENV.45"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>(2,...) and m by <a name="ILAENV.45"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>(5,...)
+</span><span class="comment">*</span><span class="comment">               where k is given by <a name="ILAENV.49"></a><a href="hfy-index.html#ILAENV">ILAENV</a>(2,...) and m by <a name="ILAENV.49"></a><a href="hfy-index.html#ILAENV">ILAENV</a>(5,...)
 </span><span class="comment">*</span><span class="comment">          = 6: the crossover point for the SVD (when reducing an m by n
 </span><span class="comment">*</span><span class="comment">               matrix to bidiagonal form, if max(m,n)/min(m,n) exceeds
 </span><span class="comment">*</span><span class="comment">               this value, a QR factorization is used first to reduce
@@ -76,7 +80,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">          =11: infinity arithmetic can be trusted not to trap
 </span><span class="comment">*</span><span class="comment">          12 &lt;= ISPEC &lt;= 16:
 </span><span class="comment">*</span><span class="comment">               xHSEQR or one of its subroutines,
-</span><span class="comment">*</span><span class="comment">               see <a name="IPARMQ.60"></a><a href="iparmq.f.html#IPARMQ.1">IPARMQ</a> for detailed explanation
+</span><span class="comment">*</span><span class="comment">               see <a name="IPARMQ.64"></a><a href="iparmq.f.html#IPARMQ.1">IPARMQ</a> for detailed explanation
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  NAME    (input) CHARACTER*(*)
 </span><span class="comment">*</span><span class="comment">          The name of the calling subroutine, in either upper case or
@@ -95,14 +99,10 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">          Problem dimensions for the subroutine NAME; these may not all
 </span><span class="comment">*</span><span class="comment">          be required.
 </span><span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment"> (<a name="ILAENV.79"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>) (output) INTEGER
-</span><span class="comment">*</span><span class="comment">          &gt;= 0: the value of the parameter specified by ISPEC
-</span><span class="comment">*</span><span class="comment">          &lt; 0:  if <a name="ILAENV.81"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> = -k, the k-th argument had an illegal value.
-</span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  Further Details
 </span><span class="comment">*</span><span class="comment">  ===============
 </span><span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  The following conventions have been used when calling <a name="ILAENV.86"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> from the
+</span><span class="comment">*</span><span class="comment">  The following conventions have been used when calling <a name="ILAENV.86"></a><a href="hfy-index.html#ILAENV">ILAENV</a> from the
 </span><span class="comment">*</span><span class="comment">  LAPACK routines:
 </span><span class="comment">*</span><span class="comment">  1)  OPTS is a concatenation of all of the character options to
 </span><span class="comment">*</span><span class="comment">      subroutine NAME, in the same order that they appear in the
@@ -112,11 +112,11 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">      that they appear in the argument list for NAME.  N1 is used
 </span><span class="comment">*</span><span class="comment">      first, N2 second, and so on, and unused problem dimensions are
 </span><span class="comment">*</span><span class="comment">      passed a value of -1.
-</span><span class="comment">*</span><span class="comment">  3)  The parameter value returned by <a name="ILAENV.96"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> is checked for validity in
-</span><span class="comment">*</span><span class="comment">      the calling subroutine.  For example, <a name="ILAENV.97"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> is used to retrieve
+</span><span class="comment">*</span><span class="comment">  3)  The parameter value returned by <a name="ILAENV.96"></a><a href="hfy-index.html#ILAENV">ILAENV</a> is checked for validity in
+</span><span class="comment">*</span><span class="comment">      the calling subroutine.  For example, <a name="ILAENV.97"></a><a href="hfy-index.html#ILAENV">ILAENV</a> is used to retrieve
 </span><span class="comment">*</span><span class="comment">      the optimal blocksize for <a name="STRTRI.98"></a><a href="strtri.f.html#STRTRI.1">STRTRI</a> as follows:
 </span><span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">      NB = <a name="ILAENV.100"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, '<a name="STRTRI.100"></a><a href="strtri.f.html#STRTRI.1">STRTRI</a>', UPLO // DIAG, N, -1, -1, -1 )
+</span><span class="comment">*</span><span class="comment">      NB = <a name="ILAENV.100"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, '<a name="STRTRI.100"></a><a href="strtri.f.html#STRTRI.1">STRTRI</a>', UPLO // DIAG, N, -1, -1, -1 )
 </span><span class="comment">*</span><span class="comment">      IF( NB.LE.1 ) NB = MAX( 1, N )
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  =====================================================================
@@ -130,8 +130,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>      INTRINSIC          CHAR, ICHAR, INT, MIN, REAL
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      INTEGER            <a name="IEEECK.114"></a><a href="ieeeck.f.html#IEEECK.1">IEEECK</a>, <a name="IPARMQ.114"></a><a href="iparmq.f.html#IPARMQ.1">IPARMQ</a>
-      EXTERNAL           <a name="IEEECK.115"></a><a href="ieeeck.f.html#IEEECK.1">IEEECK</a>, <a name="IPARMQ.115"></a><a href="iparmq.f.html#IPARMQ.1">IPARMQ</a>
+</span>      INTEGER            <a name="IEEECK.114"></a><a href="hfy-index.html#IEEECK">IEEECK</a>, <a name="IPARMQ.114"></a><a href="iparmq.f.html#IPARMQ.1">IPARMQ</a>
+      EXTERNAL           <a name="IEEECK.115"></a><a href="hfy-index.html#IEEECK">IEEECK</a>, <a name="IPARMQ.115"></a><a href="iparmq.f.html#IPARMQ.1">IPARMQ</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
 </span><span class="comment">*</span><span class="comment">
@@ -140,14 +140,14 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     Invalid value for ISPEC
 </span><span class="comment">*</span><span class="comment">
-</span>      <a name="ILAENV.124"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> = -1
+</span>      <a name="ILAENV.124"></a><a href="hfy-index.html#ILAENV">ILAENV</a> = -1
       RETURN
 <span class="comment">*</span><span class="comment">
 </span>   10 CONTINUE
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     Convert NAME to upper case if the first character is lower case.
 </span><span class="comment">*</span><span class="comment">
-</span>      <a name="ILAENV.131"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> = 1
+</span>      <a name="ILAENV.131"></a><a href="hfy-index.html#ILAENV">ILAENV</a> = 1
       SUBNAM = NAME
       IC = ICHAR( SUBNAM( 1: 1 ) )
       IZ = ICHAR( <span class="string">'Z'</span> )
@@ -358,7 +358,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
             NB = 1
          END IF
       END IF
-      <a name="ILAENV.342"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> = NB
+      <a name="ILAENV.342"></a><a href="hfy-index.html#ILAENV">ILAENV</a> = NB
       RETURN
 <span class="comment">*</span><span class="comment">
 </span>   60 CONTINUE
@@ -436,7 +436,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
             END IF
          END IF
       END IF
-      <a name="ILAENV.420"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> = NBMIN
+      <a name="ILAENV.420"></a><a href="hfy-index.html#ILAENV">ILAENV</a> = NBMIN
       RETURN
 <span class="comment">*</span><span class="comment">
 </span>   70 CONTINUE
@@ -490,42 +490,42 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
             END IF
          END IF
       END IF
-      <a name="ILAENV.474"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> = NX
+      <a name="ILAENV.474"></a><a href="hfy-index.html#ILAENV">ILAENV</a> = NX
       RETURN
 <span class="comment">*</span><span class="comment">
 </span>   80 CONTINUE
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     ISPEC = 4:  number of shifts (used by xHSEQR)
 </span><span class="comment">*</span><span class="comment">
-</span>      <a name="ILAENV.481"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> = 6
+</span>      <a name="ILAENV.481"></a><a href="hfy-index.html#ILAENV">ILAENV</a> = 6
       RETURN
 <span class="comment">*</span><span class="comment">
 </span>   90 CONTINUE
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     ISPEC = 5:  minimum column dimension (not used)
 </span><span class="comment">*</span><span class="comment">
-</span>      <a name="ILAENV.488"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> = 2
+</span>      <a name="ILAENV.488"></a><a href="hfy-index.html#ILAENV">ILAENV</a> = 2
       RETURN
 <span class="comment">*</span><span class="comment">
 </span>  100 CONTINUE
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     ISPEC = 6:  crossover point for SVD (used by xGELSS and xGESVD)
 </span><span class="comment">*</span><span class="comment">
-</span>      <a name="ILAENV.495"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> = INT( REAL( MIN( N1, N2 ) )*1.6E0 )
+</span>      <a name="ILAENV.495"></a><a href="hfy-index.html#ILAENV">ILAENV</a> = INT( REAL( MIN( N1, N2 ) )*1.6E0 )
       RETURN
 <span class="comment">*</span><span class="comment">
 </span>  110 CONTINUE
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     ISPEC = 7:  number of processors (not used)
 </span><span class="comment">*</span><span class="comment">
-</span>      <a name="ILAENV.502"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> = 1
+</span>      <a name="ILAENV.502"></a><a href="hfy-index.html#ILAENV">ILAENV</a> = 1
       RETURN
 <span class="comment">*</span><span class="comment">
 </span>  120 CONTINUE
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     ISPEC = 8:  crossover point for multishift (used by xHSEQR)
 </span><span class="comment">*</span><span class="comment">
-</span>      <a name="ILAENV.509"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> = 50
+</span>      <a name="ILAENV.509"></a><a href="hfy-index.html#ILAENV">ILAENV</a> = 50
       RETURN
 <span class="comment">*</span><span class="comment">
 </span>  130 CONTINUE
@@ -534,17 +534,17 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">                 computation tree in the divide-and-conquer algorithm
 </span><span class="comment">*</span><span class="comment">                 (used by xGELSD and xGESDD)
 </span><span class="comment">*</span><span class="comment">
-</span>      <a name="ILAENV.518"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> = 25
+</span>      <a name="ILAENV.518"></a><a href="hfy-index.html#ILAENV">ILAENV</a> = 25
       RETURN
 <span class="comment">*</span><span class="comment">
 </span>  140 CONTINUE
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     ISPEC = 10: ieee NaN arithmetic can be trusted not to trap
 </span><span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">     <a name="ILAENV.525"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> = 0
-</span>      <a name="ILAENV.526"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> = 1
-      IF( <a name="ILAENV.527"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>.EQ.1 ) THEN
-         <a name="ILAENV.528"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> = <a name="IEEECK.528"></a><a href="ieeeck.f.html#IEEECK.1">IEEECK</a>( 0, 0.0, 1.0 )
+</span><span class="comment">*</span><span class="comment">     <a name="ILAENV.525"></a><a href="hfy-index.html#ILAENV">ILAENV</a> = 0
+</span>      <a name="ILAENV.526"></a><a href="hfy-index.html#ILAENV">ILAENV</a> = 1
+      IF( <a name="ILAENV.527"></a><a href="hfy-index.html#ILAENV">ILAENV</a>.EQ.1 ) THEN
+         <a name="ILAENV.528"></a><a href="hfy-index.html#ILAENV">ILAENV</a> = <a name="IEEECK.528"></a><a href="hfy-index.html#IEEECK">IEEECK</a>( 0, 0.0, 1.0 )
       END IF
       RETURN
 <span class="comment">*</span><span class="comment">
@@ -552,10 +552,10 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     ISPEC = 11: infinity arithmetic can be trusted not to trap
 </span><span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">     <a name="ILAENV.536"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> = 0
-</span>      <a name="ILAENV.537"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> = 1
-      IF( <a name="ILAENV.538"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>.EQ.1 ) THEN
-         <a name="ILAENV.539"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> = <a name="IEEECK.539"></a><a href="ieeeck.f.html#IEEECK.1">IEEECK</a>( 1, 0.0, 1.0 )
+</span><span class="comment">*</span><span class="comment">     <a name="ILAENV.536"></a><a href="hfy-index.html#ILAENV">ILAENV</a> = 0
+</span>      <a name="ILAENV.537"></a><a href="hfy-index.html#ILAENV">ILAENV</a> = 1
+      IF( <a name="ILAENV.538"></a><a href="hfy-index.html#ILAENV">ILAENV</a>.EQ.1 ) THEN
+         <a name="ILAENV.539"></a><a href="hfy-index.html#ILAENV">ILAENV</a> = <a name="IEEECK.539"></a><a href="hfy-index.html#IEEECK">IEEECK</a>( 1, 0.0, 1.0 )
       END IF
       RETURN
 <span class="comment">*</span><span class="comment">
@@ -563,10 +563,10 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     12 &lt;= ISPEC &lt;= 16: xHSEQR or one of its subroutines. 
 </span><span class="comment">*</span><span class="comment">
-</span>      <a name="ILAENV.547"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> = <a name="IPARMQ.547"></a><a href="iparmq.f.html#IPARMQ.1">IPARMQ</a>( ISPEC, NAME, OPTS, N1, N2, N3, N4 )
+</span>      <a name="ILAENV.547"></a><a href="hfy-index.html#ILAENV">ILAENV</a> = <a name="IPARMQ.547"></a><a href="iparmq.f.html#IPARMQ.1">IPARMQ</a>( ISPEC, NAME, OPTS, N1, N2, N3, N4 )
       RETURN
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">     End of <a name="ILAENV.550"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+</span><span class="comment">*</span><span class="comment">     End of <a name="ILAENV.550"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 </span><span class="comment">*</span><span class="comment">
 </span>      END
 

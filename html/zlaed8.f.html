@@ -164,7 +164,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       EXTERNAL           IDAMAX, <a name="DLAMCH.145"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLAPY2.145"></a><a href="dlapy2.f.html#DLAPY2.1">DLAPY2</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
-</span>      EXTERNAL           DCOPY, <a name="DLAMRG.148"></a><a href="dlamrg.f.html#DLAMRG.1">DLAMRG</a>, DSCAL, <a name="XERBLA.148"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, ZCOPY, <a name="ZDROT.148"></a><a href="zdrot.f.html#ZDROT.1">ZDROT</a>,
+</span>      EXTERNAL           DCOPY, <a name="DLAMRG.148"></a><a href="dlamrg.f.html#DLAMRG.1">DLAMRG</a>, DSCAL, <a name="XERBLA.148"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, ZCOPY, ZDROT,
      $                   <a name="ZLACPY.149"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
@@ -313,7 +313,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
             GIVCOL( 2, GIVPTR ) = INDXQ( INDX( J ) )
             GIVNUM( 1, GIVPTR ) = C
             GIVNUM( 2, GIVPTR ) = S
-            CALL <a name="ZDROT.297"></a><a href="zdrot.f.html#ZDROT.1">ZDROT</a>( QSIZ, Q( 1, INDXQ( INDX( JLAM ) ) ), 1,
+            CALL ZDROT( QSIZ, Q( 1, INDXQ( INDX( JLAM ) ) ), 1,
      $                  Q( 1, INDXQ( INDX( J ) ) ), 1, C, S )
             T = D( JLAM )*C*C + D( J )*S*S
             D( J ) = D( JLAM )*S*S + D( J )*C*C

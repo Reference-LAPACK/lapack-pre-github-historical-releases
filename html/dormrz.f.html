@@ -20,9 +20,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       SUBROUTINE <a name="DORMRZ.1"></a><a href="dormrz.f.html#DORMRZ.1">DORMRZ</a>( SIDE, TRANS, M, N, K, L, A, LDA, TAU, C, LDC,
      $                   WORK, LWORK, INFO )
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1.1) --
 </span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">     January 2007
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
 </span>      CHARACTER          SIDE, TRANS
@@ -142,8 +142,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.125"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.126"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="LSAME.127"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.127"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.126"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="LSAME.127"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.127"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           <a name="DLARZB.130"></a><a href="dlarzb.f.html#DLARZB.1">DLARZB</a>, <a name="DLARZT.130"></a><a href="dlarzt.f.html#DLARZT.1">DLARZT</a>, <a name="DORMR3.130"></a><a href="dormr3.f.html#DORMR3.1">DORMR3</a>, <a name="XERBLA.130"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
@@ -191,11 +191,12 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>      IF( INFO.EQ.0 ) THEN
          IF( M.EQ.0 .OR. N.EQ.0 ) THEN
             LWKOPT = 1
+         ELSE
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">           Determine the block size.  NB may be at most NBMAX, where
 </span><span class="comment">*</span><span class="comment">           NBMAX is used to define the local array T.
 </span><span class="comment">*</span><span class="comment">
-</span>            NB = MIN( NBMAX, <a name="ILAENV.179"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DORMRQ.179"></a><a href="dormrq.f.html#DORMRQ.1">DORMRQ</a>'</span>, SIDE // TRANS, M, N,
+</span>            NB = MIN( NBMAX, <a name="ILAENV.180"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DORMRQ.180"></a><a href="dormrq.f.html#DORMRQ.1">DORMRQ</a>'</span>, SIDE // TRANS, M, N,
      $                               K, -1 ) )
             LWKOPT = NW*NB
          END IF
@@ -207,7 +208,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      IF( INFO.NE.0 ) THEN
-         CALL <a name="XERBLA.191"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DORMRZ.191"></a><a href="dormrz.f.html#DORMRZ.1">DORMRZ</a>'</span>, -INFO )
+         CALL <a name="XERBLA.192"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DORMRZ.192"></a><a href="dormrz.f.html#DORMRZ.1">DORMRZ</a>'</span>, -INFO )
          RETURN
       ELSE IF( LQUERY ) THEN
          RETURN
@@ -226,7 +227,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
          IWS = NW*NB
          IF( LWORK.LT.IWS ) THEN
             NB = LWORK / LDWORK
-            NBMIN = MAX( 2, <a name="ILAENV.210"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 2, <span class="string">'<a name="DORMRQ.210"></a><a href="dormrq.f.html#DORMRQ.1">DORMRQ</a>'</span>, SIDE // TRANS, M, N, K,
+            NBMIN = MAX( 2, <a name="ILAENV.211"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 2, <span class="string">'<a name="DORMRQ.211"></a><a href="dormrq.f.html#DORMRQ.1">DORMRQ</a>'</span>, SIDE // TRANS, M, N, K,
      $              -1 ) )
          END IF
       ELSE
@@ -237,7 +238,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">        Use unblocked code
 </span><span class="comment">*</span><span class="comment">
-</span>         CALL <a name="DORMR3.221"></a><a href="dormr3.f.html#DORMR3.1">DORMR3</a>( SIDE, TRANS, M, N, K, L, A, LDA, TAU, C, LDC,
+</span>         CALL <a name="DORMR3.222"></a><a href="dormr3.f.html#DORMR3.1">DORMR3</a>( SIDE, TRANS, M, N, K, L, A, LDA, TAU, C, LDC,
      $                WORK, IINFO )
       ELSE
 <span class="comment">*</span><span class="comment">
@@ -276,7 +277,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">           Form the triangular factor of the block reflector
 </span><span class="comment">*</span><span class="comment">           H = H(i+ib-1) . . . H(i+1) H(i)
 </span><span class="comment">*</span><span class="comment">
-</span>            CALL <a name="DLARZT.260"></a><a href="dlarzt.f.html#DLARZT.1">DLARZT</a>( <span class="string">'Backward'</span>, <span class="string">'Rowwise'</span>, L, IB, A( I, JA ), LDA,
+</span>            CALL <a name="DLARZT.261"></a><a href="dlarzt.f.html#DLARZT.1">DLARZT</a>( <span class="string">'Backward'</span>, <span class="string">'Rowwise'</span>, L, IB, A( I, JA ), LDA,
      $                   TAU( I ), T, LDT )
 <span class="comment">*</span><span class="comment">
 </span>            IF( LEFT ) THEN
@@ -295,7 +296,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">           Apply H or H'
 </span><span class="comment">*</span><span class="comment">
-</span>            CALL <a name="DLARZB.279"></a><a href="dlarzb.f.html#DLARZB.1">DLARZB</a>( SIDE, TRANST, <span class="string">'Backward'</span>, <span class="string">'Rowwise'</span>, MI, NI,
+</span>            CALL <a name="DLARZB.280"></a><a href="dlarzb.f.html#DLARZB.1">DLARZB</a>( SIDE, TRANST, <span class="string">'Backward'</span>, <span class="string">'Rowwise'</span>, MI, NI,
      $                   IB, L, A( I, JA ), LDA, T, LDT, C( IC, JC ),
      $                   LDC, WORK, LDWORK )
    10    CONTINUE
@@ -306,7 +307,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span>      RETURN
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">     End of <a name="DORMRZ.290"></a><a href="dormrz.f.html#DORMRZ.1">DORMRZ</a>
+</span><span class="comment">*</span><span class="comment">     End of <a name="DORMRZ.291"></a><a href="dormrz.f.html#DORMRZ.1">DORMRZ</a>
 </span><span class="comment">*</span><span class="comment">
 </span>      END
 

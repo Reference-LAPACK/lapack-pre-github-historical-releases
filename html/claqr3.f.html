@@ -184,8 +184,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      REAL               <a name="SLAMCH.167"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
-      INTEGER            <a name="ILAENV.168"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="SLAMCH.169"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="ILAENV.169"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.168"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="SLAMCH.169"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="ILAENV.169"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           CCOPY, <a name="CGEHRD.172"></a><a href="cgehrd.f.html#CGEHRD.1">CGEHRD</a>, CGEMM, <a name="CLACPY.172"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>, <a name="CLAHQR.172"></a><a href="clahqr.f.html#CLAHQR.1">CLAHQR</a>, <a name="CLAQR4.172"></a><a href="claqr4.f.html#CLAQR4.1">CLAQR4</a>,
@@ -293,7 +293,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       CALL CCOPY( JW-1, H( KWTOP+1, KWTOP ), LDH+1, T( 2, 1 ), LDT+1 )
 <span class="comment">*</span><span class="comment">
 </span>      CALL <a name="CLASET.276"></a><a href="claset.f.html#CLASET.1">CLASET</a>( <span class="string">'A'</span>, JW, JW, ZERO, ONE, V, LDV )
-      NMIN = <a name="ILAENV.277"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 12, <span class="string">'<a name="CLAQR3.277"></a><a href="claqr3.f.html#CLAQR3.1">CLAQR3</a>'</span>, <span class="string">'SV'</span>, JW, 1, JW, LWORK )
+      NMIN = <a name="ILAENV.277"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 12, <span class="string">'<a name="CLAQR3.277"></a><a href="claqr3.f.html#CLAQR3.1">CLAQR3</a>'</span>, <span class="string">'SV'</span>, JW, 1, JW, LWORK )
       IF( JW.GT.NMIN ) THEN
          CALL <a name="CLAQR4.279"></a><a href="claqr4.f.html#CLAQR4.1">CLAQR4</a>( .true., .true., JW, 1, JW, T, LDT, SH( KWTOP ), 1,
      $                JW, V, LDV, WORK, LWORK, INFQR )

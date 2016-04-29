@@ -153,9 +153,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.136"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.137"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.137"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       REAL               <a name="SLAMCH.138"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANST.138"></a><a href="slanst.f.html#SLANST.1">SLANST</a>
-      EXTERNAL           <a name="ILAENV.139"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="LSAME.139"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="SLAMCH.139"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANST.139"></a><a href="slanst.f.html#SLANST.1">SLANST</a>
+      EXTERNAL           <a name="ILAENV.139"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="LSAME.139"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="SLAMCH.139"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANST.139"></a><a href="slanst.f.html#SLANST.1">SLANST</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           SGEMM, <a name="SLACPY.142"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>, <a name="SLAED0.142"></a><a href="slaed0.f.html#SLAED0.1">SLAED0</a>, <a name="SLASCL.142"></a><a href="slascl.f.html#SLASCL.1">SLASCL</a>, <a name="SLASET.142"></a><a href="slaset.f.html#SLASET.1">SLASET</a>, <a name="SLASRT.142"></a><a href="slasrt.f.html#SLASRT.1">SLASRT</a>,
@@ -193,7 +193,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">        Compute the workspace requirements
 </span><span class="comment">*</span><span class="comment">
-</span>         SMLSIZ = <a name="ILAENV.177"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 9, <span class="string">'<a name="SSTEDC.177"></a><a href="sstedc.f.html#SSTEDC.1">SSTEDC</a>'</span>, <span class="string">' '</span>, 0, 0, 0, 0 )
+</span>         SMLSIZ = <a name="ILAENV.177"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 9, <span class="string">'<a name="SSTEDC.177"></a><a href="sstedc.f.html#SSTEDC.1">SSTEDC</a>'</span>, <span class="string">' '</span>, 0, 0, 0, 0 )
          IF( N.LE.1 .OR. ICOMPZ.EQ.0 ) THEN
             LIWMIN = 1
             LWMIN = 1

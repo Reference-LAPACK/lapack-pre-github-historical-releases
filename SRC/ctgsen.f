@@ -2,9 +2,9 @@
      $                   ALPHA, BETA, Q, LDQ, Z, LDZ, M, PL, PR, DIF,
      $                   WORK, LWORK, IWORK, LIWORK, INFO )
 *
-*  -- LAPACK routine (version 3.1) --
+*  -- LAPACK routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     January 2007
 *
 *     Modified to call CLACN2 in place of CLACON, 10 Feb 03, SJH.
 *
@@ -333,6 +333,7 @@
       INTEGER            I, IERR, IJB, K, KASE, KS, LIWMIN, LWMIN, MN2,
      $                   N1, N2
       REAL               DSCALE, DSUM, RDSCAL, SAFMIN
+      COMPLEX            TEMP1, TEMP2
 *     ..
 *     .. Local Arrays ..
       INTEGER            ISAVE( 3 )
@@ -621,13 +622,13 @@
       DO 60 K = 1, N
          DSCALE = ABS( B( K, K ) )
          IF( DSCALE.GT.SAFMIN ) THEN
-            WORK( 1 ) = CONJG( B( K, K ) / DSCALE )
-            WORK( 2 ) = B( K, K ) / DSCALE
+            TEMP1 = CONJG( B( K, K ) / DSCALE )
+            TEMP2 = B( K, K ) / DSCALE
             B( K, K ) = DSCALE
-            CALL CSCAL( N-K, WORK( 1 ), B( K, K+1 ), LDB )
-            CALL CSCAL( N-K+1, WORK( 1 ), A( K, K ), LDA )
+            CALL CSCAL( N-K, TEMP1, B( K, K+1 ), LDB )
+            CALL CSCAL( N-K+1, TEMP1, A( K, K ), LDA )
             IF( WANTQ )
-     $         CALL CSCAL( N, WORK( 2 ), Q( 1, K ), 1 )
+     $         CALL CSCAL( N, TEMP2, Q( 1, K ), 1 )
          ELSE
             B( K, K ) = CMPLX( ZERO, ZERO )
          END IF

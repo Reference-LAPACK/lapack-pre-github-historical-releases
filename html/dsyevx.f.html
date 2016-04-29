@@ -145,7 +145,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">          otherwise 8*N.
 </span><span class="comment">*</span><span class="comment">          For optimal efficiency, LWORK &gt;= (NB+3)*N,
 </span><span class="comment">*</span><span class="comment">          where NB is the max of the blocksize for <a name="DSYTRD.128"></a><a href="dsytrd.f.html#DSYTRD.1">DSYTRD</a> and <a name="DORMTR.128"></a><a href="dormtr.f.html#DORMTR.1">DORMTR</a>
-</span><span class="comment">*</span><span class="comment">          returned by <a name="ILAENV.129"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>.
+</span><span class="comment">*</span><span class="comment">          returned by <a name="ILAENV.129"></a><a href="hfy-index.html#ILAENV">ILAENV</a>.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">          If LWORK = -1, then a workspace query is assumed; the routine
 </span><span class="comment">*</span><span class="comment">          only calculates the optimal size of the WORK array, returns
@@ -185,9 +185,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.168"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.169"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.169"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       DOUBLE PRECISION   <a name="DLAMCH.170"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANSY.170"></a><a href="dlansy.f.html#DLANSY.1">DLANSY</a>
-      EXTERNAL           <a name="LSAME.171"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.171"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="DLAMCH.171"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANSY.171"></a><a href="dlansy.f.html#DLANSY.1">DLANSY</a>
+      EXTERNAL           <a name="LSAME.171"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.171"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="DLAMCH.171"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANSY.171"></a><a href="dlansy.f.html#DLANSY.1">DLANSY</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           DCOPY, <a name="DLACPY.174"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>, <a name="DORGTR.174"></a><a href="dorgtr.f.html#DORGTR.1">DORGTR</a>, <a name="DORMTR.174"></a><a href="dormtr.f.html#DORMTR.1">DORMTR</a>, DSCAL, <a name="DSTEBZ.174"></a><a href="dstebz.f.html#DSTEBZ.1">DSTEBZ</a>,
@@ -242,8 +242,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
             WORK( 1 ) = LWKMIN
          ELSE
             LWKMIN = 8*N
-            NB = <a name="ILAENV.226"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DSYTRD.226"></a><a href="dsytrd.f.html#DSYTRD.1">DSYTRD</a>'</span>, UPLO, N, -1, -1, -1 )
-            NB = MAX( NB, <a name="ILAENV.227"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DORMTR.227"></a><a href="dormtr.f.html#DORMTR.1">DORMTR</a>'</span>, UPLO, N, -1, -1, -1 ) )
+            NB = <a name="ILAENV.226"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DSYTRD.226"></a><a href="dsytrd.f.html#DSYTRD.1">DSYTRD</a>'</span>, UPLO, N, -1, -1, -1 )
+            NB = MAX( NB, <a name="ILAENV.227"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DORMTR.227"></a><a href="dormtr.f.html#DORMTR.1">DORMTR</a>'</span>, UPLO, N, -1, -1, -1 ) )
             LWKOPT = MAX( LWKMIN, ( NB + 3 )*N )
             WORK( 1 ) = LWKOPT
          END IF

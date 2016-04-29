@@ -1,6 +1,6 @@
       SUBROUTINE ALAHDG( IOUNIT, PATH )
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -37,8 +37,8 @@
       INTEGER           ITYPE
 *     ..
 *     .. External Functions ..
-      LOGICAL           LSAME, LSAMEN
-      EXTERNAL          LSAME, LSAMEN
+      LOGICAL           LSAMEN
+      EXTERNAL          LSAMEN
 *     ..
 *     .. Executable Statements ..
 *

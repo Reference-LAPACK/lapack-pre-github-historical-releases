@@ -119,8 +119,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.102"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.103"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="LSAME.104"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.104"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.103"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="LSAME.104"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.104"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           SGEMM, <a name="SPBTF2.107"></a><a href="spbtf2.f.html#SPBTF2.1">SPBTF2</a>, <a name="SPOTF2.107"></a><a href="spotf2.f.html#SPOTF2.1">SPOTF2</a>, SSYRK, STRSM, <a name="XERBLA.107"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
@@ -155,7 +155,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     Determine the block size for this environment
 </span><span class="comment">*</span><span class="comment">
-</span>      NB = <a name="ILAENV.139"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SPBTRF.139"></a><a href="spbtrf.f.html#SPBTRF.1">SPBTRF</a>'</span>, UPLO, N, KD, -1, -1 )
+</span>      NB = <a name="ILAENV.139"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SPBTRF.139"></a><a href="spbtrf.f.html#SPBTRF.1">SPBTRF</a>'</span>, UPLO, N, KD, -1, -1 )
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     The block size must not exceed the semi-bandwidth KD, and must not
 </span><span class="comment">*</span><span class="comment">     exceed the limit set by the size of the local array WORK.

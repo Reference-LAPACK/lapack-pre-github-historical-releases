@@ -1,26 +1,26 @@
-.TH  DGESV 1 "November 2006" " LAPACK PROTOTYPE driver routine (version 3.1) " " LAPACK PROTOTYPE driver routine (version 3.1) "
 .SH NAME
 DSGESV - the solution to a real system of linear equations  A * X = B,
 .SH SYNOPSIS
-.TP 65
-SUBROUTINE DSGESV(N,NRHS,A,LDA,IPIV,B,LDB,X,LDX,WORK,SWORK,ITER,
-.TP 65
+.TP 19
+SUBROUTINE DSGESV(
+N, NRHS, A, LDA, IPIV, B, LDB, X, LDX, WORK,
+.TP 19
 .ti +4
 +
-INFO)
-.TP 65
+SWORK, ITER, INFO)
+.TP 19
 .ti +4
 INTEGER
 INFO,ITER,LDA,LDB,LDX,N,NRHS
-.TP 65
+.TP 19
 .ti +4
 INTEGER
 IPIV(*)
-.TP 65
+.TP 19
 .ti +4
 REAL
 SWORK(*)
-.TP 65
+.TP 19
 .ti +4
 DOUBLE
 PRECISION A(LDA,*),B(LDB,*),WORK(N,*),X(LDX,*)
@@ -29,8 +29,7 @@ DSGESV computes the solution to a real system of linear equations
    A * X = B,
 where A is an N-by-N matrix and X and B are N-by-NRHS matrices.
 
-DSGESV first attempts to factorize the matrix in SINGLE PRECISION
-
+DSGESV first attempts to factorize the matrix in SINGLE PRECISION 
 and use this factorization within an iterative refinement procedure to
 produce a solution with DOUBLE PRECISION normwise backward error
 quality (see below). If the approach fails the method switches to a
@@ -38,13 +37,9 @@ DOUBLE PRECISION factorization and solve.
 .br
 
 The iterative refinement is not going to be a winning strategy if
-
 the ratio SINGLE PRECISION performance over DOUBLE PRECISION performance
-
 is too small. A reasonable strategy should take the number of right-hand
-
-sides and the size of the matrix into account. This might be done with a
-
+sides and the size of the matrix into account. This might be done with a 
 call to ILAENV in the future. Up to now, we always try iterative refinement.
 
 The iterative refinement process is stopped if
@@ -53,7 +48,7 @@ The iterative refinement process is stopped if
 .br
 or for all the RHS we have:
 .br
-    RNRM < SQRT(N)*XNRM*ANRM*EPS*BWDMAX
+    RNRM < SQRT(N)*XNRM*ANRM*EPS*BWDMAX 
 .br
 where
 .br
@@ -67,7 +62,6 @@ where
     o ANRM is the infinity-operator-norm of the matrix A
 .br
     o EPS is the machine epsilon returned by DLAMCH(\(aqEpsilon\(aq)
-
 The value ITERMAX and BWDMAX are fixed to 30 and 1.0D+00 respectively.
 
 .SH ARGUMENTS
@@ -96,8 +90,8 @@ The leading dimension of the array A.  LDA >= max(1,N).
 IPIV    (output) INTEGER array, dimension (N)
 The pivot indices that define the permutation matrix P;
 row i of the matrix was interchanged with row IPIV(i).
-Corresponds either to the single precision factorization
-(if INFO.EQ.0 and ITER.GE.0) or the double precision
+Corresponds either to the single precision factorization 
+(if INFO.EQ.0 and ITER.GE.0) or the double precision 
 factorization (if INFO.EQ.0 and ITER.LT.0).
 .TP 8
 B       (input) DOUBLE PRECISION array, dimension (LDB,NRHS)
@@ -115,8 +109,8 @@ The leading dimension of the array X.  LDX >= max(1,N).
 WORK    (workspace) DOUBLE PRECISION array, dimension (N*NRHS)
 This array is used to hold the residual vectors.
 .TP 8
-SWORK   (workspace) SINGLE PRECISION array, dimension (N*(N+NRHS))
-This array is used to use the single precision matrix and the
+SWORK   (workspace) REAL array, dimension (N*(N+NRHS))
+This array is used to use the single precision matrix and the 
 right-hand sides or solutions in single precision.
 .TP 8
 ITER    (output) INTEGER

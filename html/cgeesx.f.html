@@ -189,9 +189,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.172"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.173"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.173"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       REAL               <a name="CLANGE.174"></a><a href="clange.f.html#CLANGE.1">CLANGE</a>, <a name="SLAMCH.174"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
-      EXTERNAL           <a name="LSAME.175"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.175"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="CLANGE.175"></a><a href="clange.f.html#CLANGE.1">CLANGE</a>, <a name="SLAMCH.175"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      EXTERNAL           <a name="LSAME.175"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.175"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="CLANGE.175"></a><a href="clange.f.html#CLANGE.1">CLANGE</a>, <a name="SLAMCH.175"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
 </span>      INTRINSIC          MAX, SQRT
@@ -228,7 +228,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">       code, as well as the preferred amount for good performance.
 </span><span class="comment">*</span><span class="comment">       CWorkspace refers to complex workspace, and RWorkspace to real
 </span><span class="comment">*</span><span class="comment">       workspace. NB refers to the optimal block size for the
-</span><span class="comment">*</span><span class="comment">       immediately following subroutine, as returned by <a name="ILAENV.212"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>.
+</span><span class="comment">*</span><span class="comment">       immediately following subroutine, as returned by <a name="ILAENV.212"></a><a href="hfy-index.html#ILAENV">ILAENV</a>.
 </span><span class="comment">*</span><span class="comment">       HSWORK refers to the workspace preferred by <a name="CHSEQR.213"></a><a href="chseqr.f.html#CHSEQR.1">CHSEQR</a>, as
 </span><span class="comment">*</span><span class="comment">       calculated below. HSWORK is computed assuming ILO=1 and IHI=N,
 </span><span class="comment">*</span><span class="comment">       the worst case.
@@ -241,7 +241,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
             MINWRK = 1
             LWRK = 1
          ELSE
-            MAXWRK = N + N*<a name="ILAENV.225"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGEHRD.225"></a><a href="cgehrd.f.html#CGEHRD.1">CGEHRD</a>'</span>, <span class="string">' '</span>, N, 1, N, 0 )
+            MAXWRK = N + N*<a name="ILAENV.225"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGEHRD.225"></a><a href="cgehrd.f.html#CGEHRD.1">CGEHRD</a>'</span>, <span class="string">' '</span>, N, 1, N, 0 )
             MINWRK = 2*N
 <span class="comment">*</span><span class="comment">
 </span>            CALL <a name="CHSEQR.228"></a><a href="chseqr.f.html#CHSEQR.1">CHSEQR</a>( <span class="string">'S'</span>, JOBVS, N, 1, N, A, LDA, W, VS, LDVS,
@@ -251,7 +251,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>            IF( .NOT.WANTVS ) THEN
                MAXWRK = MAX( MAXWRK, HSWORK )
             ELSE
-               MAXWRK = MAX( MAXWRK, N + ( N - 1 )*<a name="ILAENV.235"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGHR.235"></a><a href="cunghr.f.html#CUNGHR.1">CUNGHR</a>'</span>,
+               MAXWRK = MAX( MAXWRK, N + ( N - 1 )*<a name="ILAENV.235"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGHR.235"></a><a href="cunghr.f.html#CUNGHR.1">CUNGHR</a>'</span>,
      $                       <span class="string">' '</span>, N, 1, N, -1 ) )
                MAXWRK = MAX( MAXWRK, HSWORK )
             END IF

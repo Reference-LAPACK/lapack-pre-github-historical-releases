@@ -21,9 +21,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $                   ALPHA, BETA, Q, LDQ, Z, LDZ, M, PL, PR, DIF,
      $                   WORK, LWORK, IWORK, LIWORK, INFO )
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1.1) --
 </span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">     January 2007
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     Modified to call <a name="ZLACN2.9"></a><a href="zlacn2.f.html#ZLACN2.1">ZLACN2</a> in place of <a name="ZLACON.9"></a><a href="zlacon.f.html#ZLACON.1">ZLACON</a>, 10 Feb 03, SJH.
 </span><span class="comment">*</span><span class="comment">
@@ -352,20 +352,21 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       INTEGER            I, IERR, IJB, K, KASE, KS, LIWMIN, LWMIN, MN2,
      $                   N1, N2
       DOUBLE PRECISION   DSCALE, DSUM, RDSCAL, SAFMIN
+      COMPLEX*16         TEMP1, TEMP2
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
 </span>      INTEGER            ISAVE( 3 )
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
-</span>      EXTERNAL           <a name="XERBLA.341"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, <a name="ZLACN2.341"></a><a href="zlacn2.f.html#ZLACN2.1">ZLACN2</a>, <a name="ZLACPY.341"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>, <a name="ZLASSQ.341"></a><a href="zlassq.f.html#ZLASSQ.1">ZLASSQ</a>, ZSCAL, <a name="ZTGEXC.341"></a><a href="ztgexc.f.html#ZTGEXC.1">ZTGEXC</a>,
-     $                   <a name="ZTGSYL.342"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>
+</span>      EXTERNAL           <a name="XERBLA.342"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, <a name="ZLACN2.342"></a><a href="zlacn2.f.html#ZLACN2.1">ZLACN2</a>, <a name="ZLACPY.342"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>, <a name="ZLASSQ.342"></a><a href="zlassq.f.html#ZLASSQ.1">ZLASSQ</a>, ZSCAL, <a name="ZTGEXC.342"></a><a href="ztgexc.f.html#ZTGEXC.1">ZTGEXC</a>,
+     $                   <a name="ZTGSYL.343"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
 </span>      INTRINSIC          ABS, DCMPLX, DCONJG, MAX, SQRT
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      DOUBLE PRECISION   <a name="DLAMCH.348"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
-      EXTERNAL           <a name="DLAMCH.349"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+</span>      DOUBLE PRECISION   <a name="DLAMCH.349"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+      EXTERNAL           <a name="DLAMCH.350"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
 </span><span class="comment">*</span><span class="comment">
@@ -389,7 +390,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      IF( INFO.NE.0 ) THEN
-         CALL <a name="XERBLA.373"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZTGSEN.373"></a><a href="ztgsen.f.html#ZTGSEN.1">ZTGSEN</a>'</span>, -INFO )
+         CALL <a name="XERBLA.374"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZTGSEN.374"></a><a href="ztgsen.f.html#ZTGSEN.1">ZTGSEN</a>'</span>, -INFO )
          RETURN
       END IF
 <span class="comment">*</span><span class="comment">
@@ -437,7 +438,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      IF( INFO.NE.0 ) THEN
-         CALL <a name="XERBLA.421"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZTGSEN.421"></a><a href="ztgsen.f.html#ZTGSEN.1">ZTGSEN</a>'</span>, -INFO )
+         CALL <a name="XERBLA.422"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZTGSEN.422"></a><a href="ztgsen.f.html#ZTGSEN.1">ZTGSEN</a>'</span>, -INFO )
          RETURN
       ELSE IF( LQUERY ) THEN
          RETURN
@@ -454,8 +455,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
             DSCALE = ZERO
             DSUM = ONE
             DO 20 I = 1, N
-               CALL <a name="ZLASSQ.438"></a><a href="zlassq.f.html#ZLASSQ.1">ZLASSQ</a>( N, A( 1, I ), 1, DSCALE, DSUM )
-               CALL <a name="ZLASSQ.439"></a><a href="zlassq.f.html#ZLASSQ.1">ZLASSQ</a>( N, B( 1, I ), 1, DSCALE, DSUM )
+               CALL <a name="ZLASSQ.439"></a><a href="zlassq.f.html#ZLASSQ.1">ZLASSQ</a>( N, A( 1, I ), 1, DSCALE, DSUM )
+               CALL <a name="ZLASSQ.440"></a><a href="zlassq.f.html#ZLASSQ.1">ZLASSQ</a>( N, B( 1, I ), 1, DSCALE, DSUM )
    20       CONTINUE
             DIF( 1 ) = DSCALE*SQRT( DSUM )
             DIF( 2 ) = DIF( 1 )
@@ -465,7 +466,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     Get machine constant
 </span><span class="comment">*</span><span class="comment">
-</span>      SAFMIN = <a name="DLAMCH.449"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'S'</span> )
+</span>      SAFMIN = <a name="DLAMCH.450"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'S'</span> )
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     Collect the selected blocks at the top-left corner of (A, B).
 </span><span class="comment">*</span><span class="comment">
@@ -479,7 +480,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">           and Z that will swap adjacent diagonal blocks in (A, B).
 </span><span class="comment">*</span><span class="comment">
 </span>            IF( K.NE.KS )
-     $         CALL <a name="ZTGEXC.463"></a><a href="ztgexc.f.html#ZTGEXC.1">ZTGEXC</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ, Z,
+     $         CALL <a name="ZTGEXC.464"></a><a href="ztgexc.f.html#ZTGEXC.1">ZTGEXC</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ, Z,
      $                      LDZ, K, KS, IERR )
 <span class="comment">*</span><span class="comment">
 </span>            IF( IERR.GT.0 ) THEN
@@ -508,11 +509,11 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>         N1 = M
          N2 = N - M
          I = N1 + 1
-         CALL <a name="ZLACPY.492"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'Full'</span>, N1, N2, A( 1, I ), LDA, WORK, N1 )
-         CALL <a name="ZLACPY.493"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'Full'</span>, N1, N2, B( 1, I ), LDB, WORK( N1*N2+1 ),
+         CALL <a name="ZLACPY.493"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'Full'</span>, N1, N2, A( 1, I ), LDA, WORK, N1 )
+         CALL <a name="ZLACPY.494"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'Full'</span>, N1, N2, B( 1, I ), LDB, WORK( N1*N2+1 ),
      $                N1 )
          IJB = 0
-         CALL <a name="ZTGSYL.496"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>( <span class="string">'N'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA, WORK,
+         CALL <a name="ZTGSYL.497"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>( <span class="string">'N'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA, WORK,
      $                N1, B, LDB, B( I, I ), LDB, WORK( N1*N2+1 ), N1,
      $                DSCALE, DIF( 1 ), WORK( N1*N2*2+1 ),
      $                LWORK-2*N1*N2, IWORK, IERR )
@@ -522,7 +523,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">
 </span>         RDSCAL = ZERO
          DSUM = ONE
-         CALL <a name="ZLASSQ.506"></a><a href="zlassq.f.html#ZLASSQ.1">ZLASSQ</a>( N1*N2, WORK, 1, RDSCAL, DSUM )
+         CALL <a name="ZLASSQ.507"></a><a href="zlassq.f.html#ZLASSQ.1">ZLASSQ</a>( N1*N2, WORK, 1, RDSCAL, DSUM )
          PL = RDSCAL*SQRT( DSUM )
          IF( PL.EQ.ZERO ) THEN
             PL = ONE
@@ -531,7 +532,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
          END IF
          RDSCAL = ZERO
          DSUM = ONE
-         CALL <a name="ZLASSQ.515"></a><a href="zlassq.f.html#ZLASSQ.1">ZLASSQ</a>( N1*N2, WORK( N1*N2+1 ), 1, RDSCAL, DSUM )
+         CALL <a name="ZLASSQ.516"></a><a href="zlassq.f.html#ZLASSQ.1">ZLASSQ</a>( N1*N2, WORK( N1*N2+1 ), 1, RDSCAL, DSUM )
          PR = RDSCAL*SQRT( DSUM )
          IF( PR.EQ.ZERO ) THEN
             PR = ONE
@@ -551,21 +552,21 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">           Frobenius norm-based Difu estimate.
 </span><span class="comment">*</span><span class="comment">
-</span>            CALL <a name="ZTGSYL.535"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>( <span class="string">'N'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA, WORK,
+</span>            CALL <a name="ZTGSYL.536"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>( <span class="string">'N'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA, WORK,
      $                   N1, B, LDB, B( I, I ), LDB, WORK( N1*N2+1 ),
      $                   N1, DSCALE, DIF( 1 ), WORK( N1*N2*2+1 ),
      $                   LWORK-2*N1*N2, IWORK, IERR )
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">           Frobenius norm-based Difl estimate.
 </span><span class="comment">*</span><span class="comment">
-</span>            CALL <a name="ZTGSYL.542"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>( <span class="string">'N'</span>, IJB, N2, N1, A( I, I ), LDA, A, LDA, WORK,
+</span>            CALL <a name="ZTGSYL.543"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>( <span class="string">'N'</span>, IJB, N2, N1, A( I, I ), LDA, A, LDA, WORK,
      $                   N2, B( I, I ), LDB, B, LDB, WORK( N1*N2+1 ),
      $                   N2, DSCALE, DIF( 2 ), WORK( N1*N2*2+1 ),
      $                   LWORK-2*N1*N2, IWORK, IERR )
          ELSE
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">           Compute 1-norm-based estimates of Difu and Difl using
-</span><span class="comment">*</span><span class="comment">           reversed communication with <a name="ZLACN2.549"></a><a href="zlacn2.f.html#ZLACN2.1">ZLACN2</a>. In each step a
+</span><span class="comment">*</span><span class="comment">           reversed communication with <a name="ZLACN2.550"></a><a href="zlacn2.f.html#ZLACN2.1">ZLACN2</a>. In each step a
 </span><span class="comment">*</span><span class="comment">           generalized Sylvester equation or a transposed variant
 </span><span class="comment">*</span><span class="comment">           is solved.
 </span><span class="comment">*</span><span class="comment">
@@ -579,14 +580,14 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">           1-norm-based estimate of Difu.
 </span><span class="comment">*</span><span class="comment">
 </span>   40       CONTINUE
-            CALL <a name="ZLACN2.563"></a><a href="zlacn2.f.html#ZLACN2.1">ZLACN2</a>( MN2, WORK( MN2+1 ), WORK, DIF( 1 ), KASE,
+            CALL <a name="ZLACN2.564"></a><a href="zlacn2.f.html#ZLACN2.1">ZLACN2</a>( MN2, WORK( MN2+1 ), WORK, DIF( 1 ), KASE,
      $                   ISAVE )
             IF( KASE.NE.0 ) THEN
                IF( KASE.EQ.1 ) THEN
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Solve generalized Sylvester equation
 </span><span class="comment">*</span><span class="comment">
-</span>                  CALL <a name="ZTGSYL.570"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>( <span class="string">'N'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA,
+</span>                  CALL <a name="ZTGSYL.571"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>( <span class="string">'N'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA,
      $                         WORK, N1, B, LDB, B( I, I ), LDB,
      $                         WORK( N1*N2+1 ), N1, DSCALE, DIF( 1 ),
      $                         WORK( N1*N2*2+1 ), LWORK-2*N1*N2, IWORK,
@@ -595,7 +596,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Solve the transposed variant.
 </span><span class="comment">*</span><span class="comment">
-</span>                  CALL <a name="ZTGSYL.579"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>( <span class="string">'C'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA,
+</span>                  CALL <a name="ZTGSYL.580"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>( <span class="string">'C'</span>, IJB, N1, N2, A, LDA, A( I, I ), LDA,
      $                         WORK, N1, B, LDB, B( I, I ), LDB,
      $                         WORK( N1*N2+1 ), N1, DSCALE, DIF( 1 ),
      $                         WORK( N1*N2*2+1 ), LWORK-2*N1*N2, IWORK,
@@ -608,14 +609,14 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">           1-norm-based estimate of Difl.
 </span><span class="comment">*</span><span class="comment">
 </span>   50       CONTINUE
-            CALL <a name="ZLACN2.592"></a><a href="zlacn2.f.html#ZLACN2.1">ZLACN2</a>( MN2, WORK( MN2+1 ), WORK, DIF( 2 ), KASE,
+            CALL <a name="ZLACN2.593"></a><a href="zlacn2.f.html#ZLACN2.1">ZLACN2</a>( MN2, WORK( MN2+1 ), WORK, DIF( 2 ), KASE,
      $                   ISAVE )
             IF( KASE.NE.0 ) THEN
                IF( KASE.EQ.1 ) THEN
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Solve generalized Sylvester equation
 </span><span class="comment">*</span><span class="comment">
-</span>                  CALL <a name="ZTGSYL.599"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>( <span class="string">'N'</span>, IJB, N2, N1, A( I, I ), LDA, A, LDA,
+</span>                  CALL <a name="ZTGSYL.600"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>( <span class="string">'N'</span>, IJB, N2, N1, A( I, I ), LDA, A, LDA,
      $                         WORK, N2, B( I, I ), LDB, B, LDB,
      $                         WORK( N1*N2+1 ), N2, DSCALE, DIF( 2 ),
      $                         WORK( N1*N2*2+1 ), LWORK-2*N1*N2, IWORK,
@@ -624,7 +625,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Solve the transposed variant.
 </span><span class="comment">*</span><span class="comment">
-</span>                  CALL <a name="ZTGSYL.608"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>( <span class="string">'C'</span>, IJB, N2, N1, A( I, I ), LDA, A, LDA,
+</span>                  CALL <a name="ZTGSYL.609"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>( <span class="string">'C'</span>, IJB, N2, N1, A( I, I ), LDA, A, LDA,
      $                         WORK, N2, B, LDB, B( I, I ), LDB,
      $                         WORK( N1*N2+1 ), N2, DSCALE, DIF( 2 ),
      $                         WORK( N1*N2*2+1 ), LWORK-2*N1*N2, IWORK,
@@ -643,13 +644,13 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>      DO 60 K = 1, N
          DSCALE = ABS( B( K, K ) )
          IF( DSCALE.GT.SAFMIN ) THEN
-            WORK( 1 ) = DCONJG( B( K, K ) / DSCALE )
-            WORK( 2 ) = B( K, K ) / DSCALE
+            TEMP1 = DCONJG( B( K, K ) / DSCALE )
+            TEMP2 = B( K, K ) / DSCALE
             B( K, K ) = DSCALE
-            CALL ZSCAL( N-K, WORK( 1 ), B( K, K+1 ), LDB )
-            CALL ZSCAL( N-K+1, WORK( 1 ), A( K, K ), LDA )
+            CALL ZSCAL( N-K, TEMP1, B( K, K+1 ), LDB )
+            CALL ZSCAL( N-K+1, TEMP1, A( K, K ), LDA )
             IF( WANTQ )
-     $         CALL ZSCAL( N, WORK( 2 ), Q( 1, K ), 1 )
+     $         CALL ZSCAL( N, TEMP2, Q( 1, K ), 1 )
          ELSE
             B( K, K ) = DCMPLX( ZERO, ZERO )
          END IF
@@ -666,7 +667,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span>      RETURN
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">     End of <a name="ZTGSEN.650"></a><a href="ztgsen.f.html#ZTGSEN.1">ZTGSEN</a>
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZTGSEN.651"></a><a href="ztgsen.f.html#ZTGSEN.1">ZTGSEN</a>
 </span><span class="comment">*</span><span class="comment">
 </span>      END
 

@@ -1,8 +1,8 @@
       PROGRAM SCHKAA
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     January 2007
 *
 *  Purpose
 *  =======
@@ -94,7 +94,8 @@
       CHARACTER*10       INTSTR
       CHARACTER*72       ALINE
       INTEGER            I, IC, J, K, LA, LAFAC, LDA, NB, NM, NMATS, NN,
-     $                   NNB, NNB2, NNS, NRHS, NTYPES
+     $                   NNB, NNB2, NNS, NRHS, NTYPES,
+     $                   VERS_MAJOR, VERS_MINOR, VERS_PATCH
       REAL               EPS, S1, S2, THREQ, THRESH
 *     ..
 *     .. Local Arrays ..
@@ -117,7 +118,7 @@
      $                   SCHKQP, SCHKQR, SCHKRQ, SCHKSP, SCHKSY, SCHKTB,
      $                   SCHKTP, SCHKTR, SCHKTZ, SDRVGB, SDRVGE, SDRVGT,
      $                   SDRVLS, SDRVPB, SDRVPO, SDRVPP, SDRVPT, SDRVSP,
-     $                   SDRVSY
+     $                   SDRVSY, ILAVER
 *     ..
 *     .. Scalars in Common ..
       LOGICAL            LERR, OK
@@ -147,7 +148,8 @@
 *
 *     Report values of parameters.
 *
-      WRITE( NOUT, FMT = 9994 )
+      CALL ILAVER( VERS_MAJOR, VERS_MINOR, VERS_PATCH )
+      WRITE( NOUT, FMT = 9994 ) VERS_MAJOR, VERS_MINOR, VERS_PATCH
 *
 *     Read the values of M
 *
@@ -775,7 +777,7 @@
  9995 FORMAT( ' Invalid input value: ', A4, '=', I6, '; must be <=',
      $      I6 )
  9994 FORMAT( ' Tests of the REAL LAPACK routines ',
-     $      / ' LAPACK VERSION 3.0, released June 30, 1999 ',
+     $      / ' LAPACK VERSION ', I1, '.', I1, '.', I1,
      $      / / ' The following parameter values will be used:' )
  9993 FORMAT( 4X, A4, ':  ', 10I6, / 11X, 10I6 )
  9992 FORMAT( / ' Routines pass computational tests if test ratio is ',

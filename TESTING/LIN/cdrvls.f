@@ -3,9 +3,9 @@
      $                   COPYB, C, S, COPYS, WORK, RWORK, IWORK,
      $                   NOUT )
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     January 2007
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -119,6 +119,8 @@
 *     .. Parameters ..
       INTEGER            NTESTS
       PARAMETER          ( NTESTS = 18 )
+      INTEGER            SMLSIZ
+      PARAMETER          ( SMLSIZ = 25 )
       REAL               ONE, ZERO
       PARAMETER          ( ONE = 1.0E+0, ZERO = 0.0E+0 )
       COMPLEX            CONE, CZERO
@@ -145,7 +147,7 @@
 *     .. External Subroutines ..
       EXTERNAL           ALAERH, ALAHD, ALASVM, CERRLS, CGELS, CGELSD,
      $                   CGELSS, CGELSX, CGELSY, CGEMM, CLACPY, CLARNV,
-     $                   CQRT13, CQRT15, CQRT16, CSSCAL, SAXPY, SLASRT,
+     $                   CQRT13, CQRT15, CQRT16, CSSCAL, SAXPY, 
      $                   XLAENV
 *     ..
 *     .. Intrinsic Functions ..
@@ -183,6 +185,7 @@
 *
 *     Test the error exits
 *
+      CALL XLAENV( 9, SMLSIZ )
       IF( TSTERR )
      $   CALL CERRLS( PATH, NOUT )
 *

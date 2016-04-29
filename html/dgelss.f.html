@@ -138,9 +138,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $                   <a name="DORMBR.119"></a><a href="dormbr.f.html#DORMBR.1">DORMBR</a>, <a name="DORMLQ.119"></a><a href="dormlq.f.html#DORMLQ.1">DORMLQ</a>, <a name="DORMQR.119"></a><a href="dormqr.f.html#DORMQR.1">DORMQR</a>, <a name="DRSCL.119"></a><a href="drscl.f.html#DRSCL.1">DRSCL</a>, <a name="XERBLA.119"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      INTEGER            <a name="ILAENV.122"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+</span>      INTEGER            <a name="ILAENV.122"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       DOUBLE PRECISION   <a name="DLAMCH.123"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANGE.123"></a><a href="dlange.f.html#DLANGE.1">DLANGE</a>
-      EXTERNAL           <a name="ILAENV.124"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="DLAMCH.124"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANGE.124"></a><a href="dlange.f.html#DLANGE.1">DLANGE</a>
+      EXTERNAL           <a name="ILAENV.124"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="DLAMCH.124"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANGE.124"></a><a href="dlange.f.html#DLANGE.1">DLANGE</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
 </span>      INTRINSIC          MAX, MIN
@@ -170,23 +170,23 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">       minimal amount of workspace needed at that point in the code,
 </span><span class="comment">*</span><span class="comment">       as well as the preferred amount for good performance.
 </span><span class="comment">*</span><span class="comment">       NB refers to the optimal block size for the immediately
-</span><span class="comment">*</span><span class="comment">       following subroutine, as returned by <a name="ILAENV.154"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>.)
+</span><span class="comment">*</span><span class="comment">       following subroutine, as returned by <a name="ILAENV.154"></a><a href="hfy-index.html#ILAENV">ILAENV</a>.)
 </span><span class="comment">*</span><span class="comment">
 </span>      IF( INFO.EQ.0 ) THEN
          MINWRK = 1
          MAXWRK = 1
          IF( MINMN.GT.0 ) THEN
             MM = M
-            MNTHR = <a name="ILAENV.161"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 6, <span class="string">'<a name="DGELSS.161"></a><a href="dgelss.f.html#DGELSS.1">DGELSS</a>'</span>, <span class="string">' '</span>, M, N, NRHS, -1 )
+            MNTHR = <a name="ILAENV.161"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 6, <span class="string">'<a name="DGELSS.161"></a><a href="dgelss.f.html#DGELSS.1">DGELSS</a>'</span>, <span class="string">' '</span>, M, N, NRHS, -1 )
             IF( M.GE.N .AND. M.GE.MNTHR ) THEN
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">              Path 1a - overdetermined, with many more rows than
 </span><span class="comment">*</span><span class="comment">                        columns
 </span><span class="comment">*</span><span class="comment">
 </span>               MM = N
-               MAXWRK = MAX( MAXWRK, N + N*<a name="ILAENV.168"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DGEQRF.168"></a><a href="dgeqrf.f.html#DGEQRF.1">DGEQRF</a>'</span>, <span class="string">' '</span>, M,
+               MAXWRK = MAX( MAXWRK, N + N*<a name="ILAENV.168"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DGEQRF.168"></a><a href="dgeqrf.f.html#DGEQRF.1">DGEQRF</a>'</span>, <span class="string">' '</span>, M,
      $                       N, -1, -1 ) )
-               MAXWRK = MAX( MAXWRK, N + NRHS*<a name="ILAENV.170"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DORMQR.170"></a><a href="dormqr.f.html#DORMQR.1">DORMQR</a>'</span>, <span class="string">'LT'</span>,
+               MAXWRK = MAX( MAXWRK, N + NRHS*<a name="ILAENV.170"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DORMQR.170"></a><a href="dormqr.f.html#DORMQR.1">DORMQR</a>'</span>, <span class="string">'LT'</span>,
      $                       M, NRHS, N, -1 ) )
             END IF
             IF( M.GE.N ) THEN
@@ -196,11 +196,11 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">              Compute workspace needed for <a name="DBDSQR.177"></a><a href="dbdsqr.f.html#DBDSQR.1">DBDSQR</a>
 </span><span class="comment">*</span><span class="comment">
 </span>               BDSPAC = MAX( 1, 5*N )
-               MAXWRK = MAX( MAXWRK, 3*N + ( MM + N )*<a name="ILAENV.180"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1,
+               MAXWRK = MAX( MAXWRK, 3*N + ( MM + N )*<a name="ILAENV.180"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1,
      $                       <span class="string">'<a name="DGEBRD.181"></a><a href="dgebrd.f.html#DGEBRD.1">DGEBRD</a>'</span>, <span class="string">' '</span>, MM, N, -1, -1 ) )
-               MAXWRK = MAX( MAXWRK, 3*N + NRHS*<a name="ILAENV.182"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DORMBR.182"></a><a href="dormbr.f.html#DORMBR.1">DORMBR</a>'</span>,
+               MAXWRK = MAX( MAXWRK, 3*N + NRHS*<a name="ILAENV.182"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DORMBR.182"></a><a href="dormbr.f.html#DORMBR.1">DORMBR</a>'</span>,
      $                       <span class="string">'QLT'</span>, MM, NRHS, N, -1 ) )
-               MAXWRK = MAX( MAXWRK, 3*N + ( N - 1 )*<a name="ILAENV.184"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1,
+               MAXWRK = MAX( MAXWRK, 3*N + ( N - 1 )*<a name="ILAENV.184"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1,
      $                       <span class="string">'<a name="DORGBR.185"></a><a href="dorgbr.f.html#DORGBR.1">DORGBR</a>'</span>, <span class="string">'P'</span>, N, N, N, -1 ) )
                MAXWRK = MAX( MAXWRK, BDSPAC )
                MAXWRK = MAX( MAXWRK, N*NRHS )
@@ -218,14 +218,14 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">                 Path 2a - underdetermined, with many more columns
 </span><span class="comment">*</span><span class="comment">                 than rows
 </span><span class="comment">*</span><span class="comment">
-</span>                  MAXWRK = M + M*<a name="ILAENV.202"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DGELQF.202"></a><a href="dgelqf.f.html#DGELQF.1">DGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1,
+</span>                  MAXWRK = M + M*<a name="ILAENV.202"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DGELQF.202"></a><a href="dgelqf.f.html#DGELQF.1">DGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1,
      $                                  -1 )
-                  MAXWRK = MAX( MAXWRK, M*M + 4*M + 2*M*<a name="ILAENV.204"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1,
+                  MAXWRK = MAX( MAXWRK, M*M + 4*M + 2*M*<a name="ILAENV.204"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1,
      $                          <span class="string">'<a name="DGEBRD.205"></a><a href="dgebrd.f.html#DGEBRD.1">DGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
-                  MAXWRK = MAX( MAXWRK, M*M + 4*M + NRHS*<a name="ILAENV.206"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1,
+                  MAXWRK = MAX( MAXWRK, M*M + 4*M + NRHS*<a name="ILAENV.206"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1,
      $                          <span class="string">'<a name="DORMBR.207"></a><a href="dormbr.f.html#DORMBR.1">DORMBR</a>'</span>, <span class="string">'QLT'</span>, M, NRHS, M, -1 ) )
                   MAXWRK = MAX( MAXWRK, M*M + 4*M +
-     $                          ( M - 1 )*<a name="ILAENV.209"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DORGBR.209"></a><a href="dorgbr.f.html#DORGBR.1">DORGBR</a>'</span>, <span class="string">'P'</span>, M,
+     $                          ( M - 1 )*<a name="ILAENV.209"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DORGBR.209"></a><a href="dorgbr.f.html#DORGBR.1">DORGBR</a>'</span>, <span class="string">'P'</span>, M,
      $                          M, M, -1 ) )
                   MAXWRK = MAX( MAXWRK, M*M + M + BDSPAC )
                   IF( NRHS.GT.1 ) THEN
@@ -233,17 +233,17 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
                   ELSE
                      MAXWRK = MAX( MAXWRK, M*M + 2*M )
                   END IF
-                  MAXWRK = MAX( MAXWRK, M + NRHS*<a name="ILAENV.217"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DORMLQ.217"></a><a href="dormlq.f.html#DORMLQ.1">DORMLQ</a>'</span>,
+                  MAXWRK = MAX( MAXWRK, M + NRHS*<a name="ILAENV.217"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DORMLQ.217"></a><a href="dormlq.f.html#DORMLQ.1">DORMLQ</a>'</span>,
      $                          <span class="string">'LT'</span>, N, NRHS, M, -1 ) )
                ELSE
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 2 - underdetermined
 </span><span class="comment">*</span><span class="comment">
-</span>                  MAXWRK = 3*M + ( N + M )*<a name="ILAENV.223"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DGEBRD.223"></a><a href="dgebrd.f.html#DGEBRD.1">DGEBRD</a>'</span>, <span class="string">' '</span>, M,
+</span>                  MAXWRK = 3*M + ( N + M )*<a name="ILAENV.223"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DGEBRD.223"></a><a href="dgebrd.f.html#DGEBRD.1">DGEBRD</a>'</span>, <span class="string">' '</span>, M,
      $                     N, -1, -1 )
-                  MAXWRK = MAX( MAXWRK, 3*M + NRHS*<a name="ILAENV.225"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DORMBR.225"></a><a href="dormbr.f.html#DORMBR.1">DORMBR</a>'</span>,
+                  MAXWRK = MAX( MAXWRK, 3*M + NRHS*<a name="ILAENV.225"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DORMBR.225"></a><a href="dormbr.f.html#DORMBR.1">DORMBR</a>'</span>,
      $                          <span class="string">'QLT'</span>, M, NRHS, M, -1 ) )
-                  MAXWRK = MAX( MAXWRK, 3*M + M*<a name="ILAENV.227"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DORGBR.227"></a><a href="dorgbr.f.html#DORGBR.1">DORGBR</a>'</span>,
+                  MAXWRK = MAX( MAXWRK, 3*M + M*<a name="ILAENV.227"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DORGBR.227"></a><a href="dorgbr.f.html#DORGBR.1">DORGBR</a>'</span>,
      $                          <span class="string">'P'</span>, M, N, M, -1 ) )
                   MAXWRK = MAX( MAXWRK, BDSPAC )
                   MAXWRK = MAX( MAXWRK, N*NRHS )

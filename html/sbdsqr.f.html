@@ -20,9 +20,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       SUBROUTINE <a name="SBDSQR.1"></a><a href="sbdsqr.f.html#SBDSQR.1">SBDSQR</a>( UPLO, N, NCVT, NRU, NCC, D, E, VT, LDVT, U,
      $                   LDU, C, LDC, WORK, INFO )
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1.1) --
 </span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">     January 2007
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
 </span>      CHARACTER          UPLO
@@ -125,7 +125,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">          LDC &gt;= max(1,N) if NCC &gt; 0; LDC &gt;=1 if NCC = 0.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  WORK    (workspace) REAL array, dimension (2*N)
-</span><span class="comment">*</span><span class="comment">          if NCVT = NRU = NCC = 0, (max(1, 4*N-4)) otherwise
+</span><span class="comment">*</span><span class="comment">          if NCVT = NRU = NCC = 0, (max(1, 4*N)) otherwise
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
 </span><span class="comment">*</span><span class="comment">          = 0:  successful exit

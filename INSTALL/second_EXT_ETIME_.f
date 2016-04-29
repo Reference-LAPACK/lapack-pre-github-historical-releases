@@ -1,9 +1,8 @@
       REAL             FUNCTION SECOND( )
 *
-*  -- LAPACK auxiliary routine (version 2.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,
-*     Courant Institute, Argonne National Lab, and Rice University
-*     September 30, 1994
+*  -- LAPACK auxiliary routine (version 3.1.1) --
+*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+*     February 2007
 *
 *  Purpose
 *  =======

@@ -21,9 +21,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $                   LDD, E, LDE, F, LDF, SCALE, RDSUM, RDSCAL,
      $                   IWORK, PQ, INFO )
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1.1) --
 </span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">     January 2007
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
 </span>      CHARACTER          TRANS
@@ -531,7 +531,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
                      CALL SGER( MB, N-JE, ONE, RHS( 3 ), 1,
      $                          B( JS, JE+1 ), LDB, C( IS, JE+1 ), LDC )
                      CALL SGER( MB, N-JE, ONE, RHS( 3 ), 1,
-     $                          E( JS, JE+1 ), LDB, F( IS, JE+1 ), LDC )
+     $                          E( JS, JE+1 ), LDE, F( IS, JE+1 ), LDF )
                   END IF
 <span class="comment">*</span><span class="comment">
 </span>               ELSE IF( ( MB.EQ.2 ) .AND. ( NB.EQ.2 ) ) THEN

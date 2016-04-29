@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
  <head>
-  <title>dsecnd.f</title>
+  <title>second_EXT_ETIME.f</title>
  <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
 <style type="text/css"><!-- 
 body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
@@ -15,17 +15,17 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
   <body>
 
 <pre>
-      DOUBLE PRECISION FUNCTION <a name="DSECND.1"></a><a href="dsecnd.f.html#DSECND.1">DSECND</a>( )
+      REAL             FUNCTION <a name="SECOND.1"></a><a href="hfy-index.html#SECOND">SECOND</a>( )
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1.1) --
 </span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">     February 2007
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  Purpose
 </span><span class="comment">*</span><span class="comment">  =======
 </span><span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  <a name="DSECND.10"></a><a href="dsecnd.f.html#DSECND.1">DSECND</a> returns the user time for a process in seconds.
-</span><span class="comment">*</span><span class="comment">  This version gets the time from the system function ETIME.
+</span><span class="comment">*</span><span class="comment">  <a name="SECOND.10"></a><a href="hfy-index.html#SECOND">SECOND</a> returns the user time for a process in seconds.
+</span><span class="comment">*</span><span class="comment">  This version gets the time from the EXTERNAL system function ETIME.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment"> =====================================================================
 </span><span class="comment">*</span><span class="comment">
@@ -42,10 +42,10 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
 </span><span class="comment">*</span><span class="comment">
 </span>      T1 = ETIME( TARRAY )
-      <a name="DSECND.28"></a><a href="dsecnd.f.html#DSECND.1">DSECND</a> = TARRAY( 1 )
+      <a name="SECOND.28"></a><a href="hfy-index.html#SECOND">SECOND</a> = TARRAY( 1 )
       RETURN
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">     End of <a name="DSECND.31"></a><a href="dsecnd.f.html#DSECND.1">DSECND</a>
+</span><span class="comment">*</span><span class="comment">     End of <a name="SECOND.31"></a><a href="hfy-index.html#SECOND">SECOND</a>
 </span><span class="comment">*</span><span class="comment">
 </span>      END
 

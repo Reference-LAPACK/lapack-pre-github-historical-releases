@@ -87,8 +87,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>      EXTERNAL           DGEMM, <a name="DGETF2.68"></a><a href="dgetf2.f.html#DGETF2.1">DGETF2</a>, <a name="DLASWP.68"></a><a href="dlaswp.f.html#DLASWP.1">DLASWP</a>, DTRSM, <a name="XERBLA.68"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      INTEGER            <a name="ILAENV.71"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="ILAENV.72"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+</span>      INTEGER            <a name="ILAENV.71"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="ILAENV.72"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
 </span>      INTRINSIC          MAX, MIN
@@ -117,7 +117,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     Determine the block size for this environment.
 </span><span class="comment">*</span><span class="comment">
-</span>      NB = <a name="ILAENV.101"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DGETRF.101"></a><a href="dgetrf.f.html#DGETRF.1">DGETRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+</span>      NB = <a name="ILAENV.101"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DGETRF.101"></a><a href="dgetrf.f.html#DGETRF.1">DGETRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
       IF( NB.LE.1 .OR. NB.GE.MIN( M, N ) ) THEN
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">        Use unblocked code.

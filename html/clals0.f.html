@@ -192,7 +192,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       REAL               DIFLJ, DIFRJ, DJ, DSIGJ, DSIGJP, TEMP
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
-</span>      EXTERNAL           CCOPY, <a name="CLACPY.176"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>, <a name="CLASCL.176"></a><a href="clascl.f.html#CLASCL.1">CLASCL</a>, <a name="CSROT.176"></a><a href="csrot.f.html#CSROT.1">CSROT</a>, CSSCAL, SGEMV,
+</span>      EXTERNAL           CCOPY, <a name="CLACPY.176"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>, <a name="CLASCL.176"></a><a href="clascl.f.html#CLASCL.1">CLASCL</a>, CSROT, CSSCAL, SGEMV,
      $                   <a name="XERBLA.177"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
@@ -250,7 +250,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">        Step (1L): apply back the Givens rotations performed.
 </span><span class="comment">*</span><span class="comment">
 </span>         DO 10 I = 1, GIVPTR
-            CALL <a name="CSROT.234"></a><a href="csrot.f.html#CSROT.1">CSROT</a>( NRHS, B( GIVCOL( I, 2 ), 1 ), LDB,
+            CALL CSROT( NRHS, B( GIVCOL( I, 2 ), 1 ), LDB,
      $                  B( GIVCOL( I, 1 ), 1 ), LDB, GIVNUM( I, 2 ),
      $                  GIVNUM( I, 1 ) )
    10    CONTINUE
@@ -420,7 +420,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">
 </span>         IF( SQRE.EQ.1 ) THEN
             CALL CCOPY( NRHS, B( M, 1 ), LDB, BX( M, 1 ), LDBX )
-            CALL <a name="CSROT.404"></a><a href="csrot.f.html#CSROT.1">CSROT</a>( NRHS, BX( 1, 1 ), LDBX, BX( M, 1 ), LDBX, C, S )
+            CALL CSROT( NRHS, BX( 1, 1 ), LDBX, BX( M, 1 ), LDBX, C, S )
          END IF
          IF( K.LT.MAX( M, N ) )
      $      CALL <a name="CLACPY.407"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>( <span class="string">'A'</span>, N-K, NRHS, B( K+1, 1 ), LDB,
@@ -439,7 +439,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">        Step (4R): apply back the Givens rotations performed.
 </span><span class="comment">*</span><span class="comment">
 </span>         DO 200 I = GIVPTR, 1, -1
-            CALL <a name="CSROT.423"></a><a href="csrot.f.html#CSROT.1">CSROT</a>( NRHS, B( GIVCOL( I, 2 ), 1 ), LDB,
+            CALL CSROT( NRHS, B( GIVCOL( I, 2 ), 1 ), LDB,
      $                  B( GIVCOL( I, 1 ), 1 ), LDB, GIVNUM( I, 2 ),
      $                  -GIVNUM( I, 1 ) )
   200    CONTINUE

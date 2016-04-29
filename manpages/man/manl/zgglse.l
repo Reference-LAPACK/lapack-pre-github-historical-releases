@@ -1,4 +1,4 @@
-.TH  ZGGLSE 1 "November 2006" " LAPACK driver routine (version 3.1) " " LAPACK driver routine (version 3.1) " 
+.TH  ZGGLSE 1 "February 2007" " LAPACK driver routine (version 3.1.1) " " LAPACK driver routine (version 3.1.1) " 
 .SH NAME
 ZGGLSE - the linear equality-constrained least squares (LSE) problem
 .SH SYNOPSIS

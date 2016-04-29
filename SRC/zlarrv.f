@@ -4,7 +4,7 @@
      $                   IBLOCK, INDEXW, GERS, Z, LDZ, ISUPPZ,
      $                   WORK, IWORK, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.1) --
+*  -- LAPACK auxiliary routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -197,13 +197,11 @@
      $                   SIGMA, SPDIAM, SSIGMA, TAU, TMP, TOL, ZTZ
 *     ..
 *     .. External Functions ..
-      DOUBLE PRECISION  DLAMCH
-      DOUBLE PRECISION   DZNRM2
-      COMPLEX*16         ZDOTU
-      EXTERNAL  ZDOTU, DLAMCH, DZNRM2
+      DOUBLE PRECISION   DLAMCH
+      EXTERNAL           DLAMCH
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DLARRB, DLARRF, ZAXPY, ZDSCAL, ZLAR1V,
+      EXTERNAL           DCOPY, DLARRB, DLARRF, ZDSCAL, ZLAR1V,
      $                   ZLASET
 *     ..
 *     .. Intrinsic Functions ..

@@ -164,7 +164,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       EXTERNAL           ISAMAX, <a name="SLAMCH.145"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLAPY2.145"></a><a href="slapy2.f.html#SLAPY2.1">SLAPY2</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
-</span>      EXTERNAL           CCOPY, <a name="CLACPY.148"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>, <a name="CSROT.148"></a><a href="csrot.f.html#CSROT.1">CSROT</a>, SCOPY, <a name="SLAMRG.148"></a><a href="slamrg.f.html#SLAMRG.1">SLAMRG</a>, SSCAL,
+</span>      EXTERNAL           CCOPY, <a name="CLACPY.148"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>, CSROT, SCOPY, <a name="SLAMRG.148"></a><a href="slamrg.f.html#SLAMRG.1">SLAMRG</a>, SSCAL,
      $                   <a name="XERBLA.149"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
@@ -313,7 +313,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
             GIVCOL( 2, GIVPTR ) = INDXQ( INDX( J ) )
             GIVNUM( 1, GIVPTR ) = C
             GIVNUM( 2, GIVPTR ) = S
-            CALL <a name="CSROT.297"></a><a href="csrot.f.html#CSROT.1">CSROT</a>( QSIZ, Q( 1, INDXQ( INDX( JLAM ) ) ), 1,
+            CALL CSROT( QSIZ, Q( 1, INDXQ( INDX( JLAM ) ) ), 1,
      $                  Q( 1, INDXQ( INDX( J ) ) ), 1, C, S )
             T = D( JLAM )*C*C + D( J )*S*S
             D( J ) = D( JLAM )*S*S + D( J )*C*C

@@ -87,7 +87,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  LWORK   (input) INTEGER
 </span><span class="comment">*</span><span class="comment">          The length of WORK.  LWORK &gt;=1.  For best performance
-</span><span class="comment">*</span><span class="comment">          LWORK &gt;= N*NB, where NB is the block size returned by <a name="ILAENV.71"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>.
+</span><span class="comment">*</span><span class="comment">          LWORK &gt;= N*NB, where NB is the block size returned by <a name="ILAENV.71"></a><a href="hfy-index.html#ILAENV">ILAENV</a>.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">          If LWORK = -1, then a workspace query is assumed; the routine
 </span><span class="comment">*</span><span class="comment">          only calculates the optimal size of the WORK array, returns
@@ -147,8 +147,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.130"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.131"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="LSAME.132"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.132"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.131"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="LSAME.132"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.132"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           <a name="XERBLA.135"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, <a name="ZLASYF.135"></a><a href="zlasyf.f.html#ZLASYF.1">ZLASYF</a>, <a name="ZSYTF2.135"></a><a href="zsytf2.f.html#ZSYTF2.1">ZSYTF2</a>
@@ -177,7 +177,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">        Determine the block size
 </span><span class="comment">*</span><span class="comment">
-</span>         NB = <a name="ILAENV.161"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZSYTRF.161"></a><a href="zsytrf.f.html#ZSYTRF.1">ZSYTRF</a>'</span>, UPLO, N, -1, -1, -1 )
+</span>         NB = <a name="ILAENV.161"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZSYTRF.161"></a><a href="zsytrf.f.html#ZSYTRF.1">ZSYTRF</a>'</span>, UPLO, N, -1, -1, -1 )
          LWKOPT = N*NB
          WORK( 1 ) = LWKOPT
       END IF
@@ -195,7 +195,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
          IWS = LDWORK*NB
          IF( LWORK.LT.IWS ) THEN
             NB = MAX( LWORK / LDWORK, 1 )
-            NBMIN = MAX( 2, <a name="ILAENV.179"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 2, <span class="string">'<a name="ZSYTRF.179"></a><a href="zsytrf.f.html#ZSYTRF.1">ZSYTRF</a>'</span>, UPLO, N, -1, -1, -1 ) )
+            NBMIN = MAX( 2, <a name="ILAENV.179"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 2, <span class="string">'<a name="ZSYTRF.179"></a><a href="zsytrf.f.html#ZSYTRF.1">ZSYTRF</a>'</span>, UPLO, N, -1, -1, -1 ) )
          END IF
       ELSE
          IWS = 1

@@ -215,8 +215,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       CHARACTER          JBCMPZ*2
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      INTEGER            <a name="ILAENV.199"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="ILAENV.200"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+</span>      INTEGER            <a name="ILAENV.199"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="ILAENV.200"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
 </span>      COMPLEX*16         ZDUM( 1, 1 )
@@ -244,7 +244,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
          RETURN
       END IF
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">     ==== Set up job flags for <a name="ILAENV.228"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>. ====
+</span><span class="comment">*</span><span class="comment">     ==== Set up job flags for <a name="ILAENV.228"></a><a href="hfy-index.html#ILAENV">ILAENV</a>. ====
 </span><span class="comment">*</span><span class="comment">
 </span>      IF( WANTT ) THEN
          JBCMPZ( 1: 1 ) = <span class="string">'S'</span>
@@ -282,7 +282,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">        .    (In fact, there is enough subdiagonal space for
 </span><span class="comment">*</span><span class="comment">        .    NWR.GE.3.) ====
 </span><span class="comment">*</span><span class="comment">
-</span>         NWR = <a name="ILAENV.266"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 13, <span class="string">'<a name="ZLAQR4.266"></a><a href="zlaqr4.f.html#ZLAQR4.1">ZLAQR4</a>'</span>, JBCMPZ, N, ILO, IHI, LWORK )
+</span>         NWR = <a name="ILAENV.266"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 13, <span class="string">'<a name="ZLAQR4.266"></a><a href="zlaqr4.f.html#ZLAQR4.1">ZLAQR4</a>'</span>, JBCMPZ, N, ILO, IHI, LWORK )
          NWR = MAX( 2, NWR )
          NWR = MIN( IHI-ILO+1, ( N-1 ) / 3, NWR )
          NW = NWR
@@ -292,7 +292,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">        .    enough subdiagonal workspace for NSR to be even
 </span><span class="comment">*</span><span class="comment">        .    and greater than or equal to two as required. ====
 </span><span class="comment">*</span><span class="comment">
-</span>         NSR = <a name="ILAENV.276"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 15, <span class="string">'<a name="ZLAQR4.276"></a><a href="zlaqr4.f.html#ZLAQR4.1">ZLAQR4</a>'</span>, JBCMPZ, N, ILO, IHI, LWORK )
+</span>         NSR = <a name="ILAENV.276"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 15, <span class="string">'<a name="ZLAQR4.276"></a><a href="zlaqr4.f.html#ZLAQR4.1">ZLAQR4</a>'</span>, JBCMPZ, N, ILO, IHI, LWORK )
          NSR = MIN( NSR, ( N+6 ) / 9, IHI-ILO )
          NSR = MAX( 2, NSR-MOD( NSR, 2 ) )
 <span class="comment">*</span><span class="comment">
@@ -317,18 +317,18 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">        ==== <a name="ZLAHQR.299"></a><a href="zlahqr.f.html#ZLAHQR.1">ZLAHQR</a>/<a name="ZLAQR0.299"></a><a href="zlaqr0.f.html#ZLAQR0.1">ZLAQR0</a> crossover point ====
 </span><span class="comment">*</span><span class="comment">
-</span>         NMIN = <a name="ILAENV.301"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 12, <span class="string">'<a name="ZLAQR4.301"></a><a href="zlaqr4.f.html#ZLAQR4.1">ZLAQR4</a>'</span>, JBCMPZ, N, ILO, IHI, LWORK )
+</span>         NMIN = <a name="ILAENV.301"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 12, <span class="string">'<a name="ZLAQR4.301"></a><a href="zlaqr4.f.html#ZLAQR4.1">ZLAQR4</a>'</span>, JBCMPZ, N, ILO, IHI, LWORK )
          NMIN = MAX( NTINY, NMIN )
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">        ==== Nibble crossover point ====
 </span><span class="comment">*</span><span class="comment">
-</span>         NIBBLE = <a name="ILAENV.306"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 14, <span class="string">'<a name="ZLAQR4.306"></a><a href="zlaqr4.f.html#ZLAQR4.1">ZLAQR4</a>'</span>, JBCMPZ, N, ILO, IHI, LWORK )
+</span>         NIBBLE = <a name="ILAENV.306"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 14, <span class="string">'<a name="ZLAQR4.306"></a><a href="zlaqr4.f.html#ZLAQR4.1">ZLAQR4</a>'</span>, JBCMPZ, N, ILO, IHI, LWORK )
          NIBBLE = MAX( 0, NIBBLE )
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">        ==== Accumulate reflections during ttswp?  Use block
 </span><span class="comment">*</span><span class="comment">        .    2-by-2 structure during matrix-matrix multiply? ====
 </span><span class="comment">*</span><span class="comment">
-</span>         KACC22 = <a name="ILAENV.312"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 16, <span class="string">'<a name="ZLAQR4.312"></a><a href="zlaqr4.f.html#ZLAQR4.1">ZLAQR4</a>'</span>, JBCMPZ, N, ILO, IHI, LWORK )
+</span>         KACC22 = <a name="ILAENV.312"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 16, <span class="string">'<a name="ZLAQR4.312"></a><a href="zlaqr4.f.html#ZLAQR4.1">ZLAQR4</a>'</span>, JBCMPZ, N, ILO, IHI, LWORK )
          KACC22 = MAX( 0, KACC22 )
          KACC22 = MIN( 2, KACC22 )
 <span class="comment">*</span><span class="comment">

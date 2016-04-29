@@ -1,9 +1,9 @@
-      SUBROUTINE DSGESV(N,NRHS,A,LDA,IPIV,B,LDB,X,LDX,WORK,SWORK,ITER,
-     +                  INFO)
+      SUBROUTINE DSGESV( N, NRHS, A, LDA, IPIV, B, LDB, X, LDX, WORK,
+     +                   SWORK, ITER, INFO)
 *
-*  -- LAPACK PROTOTYPE driver routine (version 3.1) --
+*  -- LAPACK PROTOTYPE driver routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     February 2007
 *
 *     ..
 *     .. WARNING: PROTOTYPE ..
@@ -99,7 +99,7 @@
 *  WORK    (workspace) DOUBLE PRECISION array, dimension (N*NRHS)
 *          This array is used to hold the residual vectors.
 *
-*  SWORK   (workspace) SINGLE PRECISION array, dimension (N*(N+NRHS))
+*  SWORK   (workspace) REAL array, dimension (N*(N+NRHS))
 *          This array is used to use the single precision matrix and the 
 *          right-hand sides or solutions in single precision.
 *

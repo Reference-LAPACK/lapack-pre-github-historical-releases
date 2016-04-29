@@ -2,9 +2,9 @@
      $                   NSVAL, THRESH, TSTERR, NMAX, A, AFAC, AINV, B,
      $                   X, XACT, WORK, RWORK, IWORK, NOUT )
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     January 2007
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -160,6 +160,7 @@
 *
 *     Test the error exits
 *
+      CALL XLAENV( 1, 1 )
       IF( TSTERR )
      $   CALL SERRGE( PATH, NOUT )
       INFOT = 0

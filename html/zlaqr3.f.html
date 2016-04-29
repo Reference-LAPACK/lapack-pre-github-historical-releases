@@ -184,8 +184,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      DOUBLE PRECISION   <a name="DLAMCH.167"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
-      INTEGER            <a name="ILAENV.168"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="DLAMCH.169"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="ILAENV.169"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.168"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="DLAMCH.169"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="ILAENV.169"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           <a name="DLABAD.172"></a><a href="dlabad.f.html#DLABAD.1">DLABAD</a>, ZCOPY, <a name="ZGEHRD.172"></a><a href="zgehrd.f.html#ZGEHRD.1">ZGEHRD</a>, ZGEMM, <a name="ZLACPY.172"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>, <a name="ZLAHQR.172"></a><a href="zlahqr.f.html#ZLAHQR.1">ZLAHQR</a>,
@@ -293,7 +293,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       CALL ZCOPY( JW-1, H( KWTOP+1, KWTOP ), LDH+1, T( 2, 1 ), LDT+1 )
 <span class="comment">*</span><span class="comment">
 </span>      CALL <a name="ZLASET.276"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'A'</span>, JW, JW, ZERO, ONE, V, LDV )
-      NMIN = <a name="ILAENV.277"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 12, <span class="string">'<a name="ZLAQR3.277"></a><a href="zlaqr3.f.html#ZLAQR3.1">ZLAQR3</a>'</span>, <span class="string">'SV'</span>, JW, 1, JW, LWORK )
+      NMIN = <a name="ILAENV.277"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 12, <span class="string">'<a name="ZLAQR3.277"></a><a href="zlaqr3.f.html#ZLAQR3.1">ZLAQR3</a>'</span>, <span class="string">'SV'</span>, JW, 1, JW, LWORK )
       IF( JW.GT.NMIN ) THEN
          CALL <a name="ZLAQR4.279"></a><a href="zlaqr4.f.html#ZLAQR4.1">ZLAQR4</a>( .true., .true., JW, 1, JW, T, LDT, SH( KWTOP ), 1,
      $                JW, V, LDV, WORK, LWORK, INFQR )

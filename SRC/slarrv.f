@@ -4,7 +4,7 @@
      $                   IBLOCK, INDEXW, GERS, Z, LDZ, ISUPPZ,
      $                   WORK, IWORK, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.1) --
+*  -- LAPACK auxiliary routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -195,11 +195,10 @@
 *     ..
 *     .. External Functions ..
       REAL              SLAMCH
-      REAL               SDOT, SNRM2
-      EXTERNAL           SDOT, SLAMCH, SNRM2
+      EXTERNAL           SLAMCH
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           SAXPY, SCOPY, SLAR1V, SLARRB, SLARRF, SLASET,
+      EXTERNAL           SCOPY, SLAR1V, SLARRB, SLARRF, SLASET,
      $                   SSCAL
 *     ..
 *     .. Intrinsic Functions ..

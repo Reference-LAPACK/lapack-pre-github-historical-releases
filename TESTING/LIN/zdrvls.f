@@ -2,9 +2,9 @@
      $                   NBVAL, NXVAL, THRESH, TSTERR, A, COPYA, B,
      $                   COPYB, C, S, COPYS, WORK, RWORK, IWORK, NOUT )
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     January 2007
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -118,6 +118,8 @@
 *     .. Parameters ..
       INTEGER            NTESTS
       PARAMETER          ( NTESTS = 18 )
+      INTEGER            SMLSIZ
+      PARAMETER          ( SMLSIZ = 25 )
       DOUBLE PRECISION   ONE, ZERO
       PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
       COMPLEX*16         CONE, CZERO
@@ -182,6 +184,7 @@
 *
 *     Test the error exits
 *
+      CALL XLAENV( 9, SMLSIZ )
       IF( TSTERR )
      $   CALL ZERRLS( PATH, NOUT )
 *

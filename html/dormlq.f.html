@@ -131,8 +131,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.114"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.115"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="LSAME.116"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.116"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.115"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="LSAME.116"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.116"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           <a name="DLARFB.119"></a><a href="dlarfb.f.html#DLARFB.1">DLARFB</a>, <a name="DLARFT.119"></a><a href="dlarft.f.html#DLARFT.1">DLARFT</a>, <a name="DORML2.119"></a><a href="dorml2.f.html#DORML2.1">DORML2</a>, <a name="XERBLA.119"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
@@ -181,7 +181,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">        Determine the block size.  NB may be at most NBMAX, where NBMAX
 </span><span class="comment">*</span><span class="comment">        is used to define the local array T.
 </span><span class="comment">*</span><span class="comment">
-</span>         NB = MIN( NBMAX, <a name="ILAENV.165"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DORMLQ.165"></a><a href="dormlq.f.html#DORMLQ.1">DORMLQ</a>'</span>, SIDE // TRANS, M, N, K,
+</span>         NB = MIN( NBMAX, <a name="ILAENV.165"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DORMLQ.165"></a><a href="dormlq.f.html#DORMLQ.1">DORMLQ</a>'</span>, SIDE // TRANS, M, N, K,
      $        -1 ) )
          LWKOPT = MAX( 1, NW )*NB
          WORK( 1 ) = LWKOPT
@@ -207,7 +207,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
          IWS = NW*NB
          IF( LWORK.LT.IWS ) THEN
             NB = LWORK / LDWORK
-            NBMIN = MAX( 2, <a name="ILAENV.191"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 2, <span class="string">'<a name="DORMLQ.191"></a><a href="dormlq.f.html#DORMLQ.1">DORMLQ</a>'</span>, SIDE // TRANS, M, N, K,
+            NBMIN = MAX( 2, <a name="ILAENV.191"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 2, <span class="string">'<a name="DORMLQ.191"></a><a href="dormlq.f.html#DORMLQ.1">DORMLQ</a>'</span>, SIDE // TRANS, M, N, K,
      $              -1 ) )
          END IF
       ELSE

@@ -127,8 +127,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.110"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.111"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="ILAENV.112"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="LSAME.112"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      INTEGER            <a name="ILAENV.111"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="ILAENV.112"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="LSAME.112"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           <a name="SSYTRF.115"></a><a href="ssytrf.f.html#SSYTRF.1">SSYTRF</a>, <a name="SSYTRS.115"></a><a href="ssytrs.f.html#SSYTRS.1">SSYTRS</a>, <a name="XERBLA.115"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
@@ -160,7 +160,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
          IF( N.EQ.0 ) THEN
             LWKOPT = 1
          ELSE
-            NB = <a name="ILAENV.144"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SSYTRF.144"></a><a href="ssytrf.f.html#SSYTRF.1">SSYTRF</a>'</span>, UPLO, N, -1, -1, -1 )
+            NB = <a name="ILAENV.144"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SSYTRF.144"></a><a href="ssytrf.f.html#SSYTRF.1">SSYTRF</a>'</span>, UPLO, N, -1, -1, -1 )
             LWKOPT = N*NB
          END IF
          WORK( 1 ) = LWKOPT

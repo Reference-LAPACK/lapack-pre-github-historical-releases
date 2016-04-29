@@ -1,4 +1,4 @@
-.TH  STGSEN 1 "November 2006" " LAPACK routine (version 3.1) " " LAPACK routine (version 3.1) " 
+.TH  STGSEN 1 "February 2007" " LAPACK routine (version 3.1.1) " " LAPACK routine (version 3.1.1) " 
 .SH NAME
 STGSEN - the generalized real Schur decomposition of a real matrix pair (A, B) (in terms of an orthonormal equivalence trans- formation Q\(aq * (A, B) * Z), so that a selected cluster of eigenvalues appears in the leading diagonal blocks of the upper quasi-triangular matrix A and the upper triangular B
 .SH SYNOPSIS
@@ -189,8 +189,7 @@ If M = 0 or N, DIF(1:2) = F-norm([A, B]).
 If IJOB = 0 or 1, DIF is not referenced.
 .TP 8
 WORK    (workspace/output) REAL array, dimension (MAX(1,LWORK))
-IF IJOB = 0, WORK is not referenced.  Otherwise,
-on exit, if INFO = 0, WORK(1) returns the optimal LWORK.
+On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
 .TP 8
 LWORK   (input) INTEGER
 The dimension of the array WORK. LWORK >=  4*N+16.

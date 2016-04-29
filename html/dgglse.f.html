@@ -140,8 +140,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $                   DTRMV, <a name="DTRTRS.121"></a><a href="dtrtrs.f.html#DTRTRS.1">DTRTRS</a>, <a name="XERBLA.121"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      INTEGER            <a name="ILAENV.124"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="ILAENV.125"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+</span>      INTEGER            <a name="ILAENV.124"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="ILAENV.125"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
 </span>      INTRINSIC          INT, MAX, MIN
@@ -172,10 +172,10 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
             LWKMIN = 1
             LWKOPT = 1
          ELSE
-            NB1 = <a name="ILAENV.156"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DGEQRF.156"></a><a href="dgeqrf.f.html#DGEQRF.1">DGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-            NB2 = <a name="ILAENV.157"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DGERQF.157"></a><a href="dgerqf.f.html#DGERQF.1">DGERQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-            NB3 = <a name="ILAENV.158"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DORMQR.158"></a><a href="dormqr.f.html#DORMQR.1">DORMQR</a>'</span>, <span class="string">' '</span>, M, N, P, -1 )
-            NB4 = <a name="ILAENV.159"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DORMRQ.159"></a><a href="dormrq.f.html#DORMRQ.1">DORMRQ</a>'</span>, <span class="string">' '</span>, M, N, P, -1 )
+            NB1 = <a name="ILAENV.156"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DGEQRF.156"></a><a href="dgeqrf.f.html#DGEQRF.1">DGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+            NB2 = <a name="ILAENV.157"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DGERQF.157"></a><a href="dgerqf.f.html#DGERQF.1">DGERQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+            NB3 = <a name="ILAENV.158"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DORMQR.158"></a><a href="dormqr.f.html#DORMQR.1">DORMQR</a>'</span>, <span class="string">' '</span>, M, N, P, -1 )
+            NB4 = <a name="ILAENV.159"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DORMRQ.159"></a><a href="dormrq.f.html#DORMRQ.1">DORMRQ</a>'</span>, <span class="string">' '</span>, M, N, P, -1 )
             NB = MAX( NB1, NB2, NB3, NB4 )
             LWKMIN = M + N + P
             LWKOPT = P + MN + MAX( M, N )*NB

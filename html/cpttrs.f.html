@@ -88,8 +88,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       INTEGER            IUPLO, J, JB, NB
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      INTEGER            <a name="ILAENV.72"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="ILAENV.73"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+</span>      INTEGER            <a name="ILAENV.72"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="ILAENV.73"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           <a name="CPTTS2.76"></a><a href="cptts2.f.html#CPTTS2.1">CPTTS2</a>, <a name="XERBLA.76"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
@@ -127,7 +127,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>      IF( NRHS.EQ.1 ) THEN
          NB = 1
       ELSE
-         NB = MAX( 1, <a name="ILAENV.111"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CPTTRS.111"></a><a href="cpttrs.f.html#CPTTRS.1">CPTTRS</a>'</span>, UPLO, N, NRHS, -1, -1 ) )
+         NB = MAX( 1, <a name="ILAENV.111"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CPTTRS.111"></a><a href="cpttrs.f.html#CPTTRS.1">CPTTRS</a>'</span>, UPLO, N, NRHS, -1, -1 ) )
       END IF
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     Decode UPLO

@@ -1,9 +1,9 @@
       SUBROUTINE SCHKTZ( DOTYPE, NM, MVAL, NN, NVAL, THRESH, TSTERR, A,
      $                   COPYA, S, COPYS, TAU, WORK, NOUT )
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     January 2007
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -146,7 +146,7 @@
 *
             N = NVAL( IN )
             MNMIN = MIN( M, N )
-            LWORK = MAX( 1, N*N+4*M+N )
+            LWORK = MAX( 1, N*N+4*M+N, M*N+2*MNMIN+4*N )
 *
             IF( M.LE.N ) THEN
                DO 50 IMODE = 1, NTYPES

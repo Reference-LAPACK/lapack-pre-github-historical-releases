@@ -95,8 +95,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       INTEGER            ITRANS, J, JB, NB
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      INTEGER            <a name="ILAENV.79"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="ILAENV.80"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+</span>      INTEGER            <a name="ILAENV.79"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="ILAENV.80"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           <a name="CGTTS2.83"></a><a href="cgtts2.f.html#CGTTS2.1">CGTTS2</a>, <a name="XERBLA.83"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
@@ -143,7 +143,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>      IF( NRHS.EQ.1 ) THEN
          NB = 1
       ELSE
-         NB = MAX( 1, <a name="ILAENV.127"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGTTRS.127"></a><a href="cgttrs.f.html#CGTTRS.1">CGTTRS</a>'</span>, TRANS, N, NRHS, -1, -1 ) )
+         NB = MAX( 1, <a name="ILAENV.127"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGTTRS.127"></a><a href="cgttrs.f.html#CGTTRS.1">CGTTRS</a>'</span>, TRANS, N, NRHS, -1, -1 ) )
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      IF( NB.GE.NRHS ) THEN

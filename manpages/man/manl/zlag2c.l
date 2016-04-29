@@ -1,18 +1,18 @@
-.TH  ZLAG2C 1 "November 2006" " LAPACK PROTOTYPE auxilary routine (version 3.1) " " LAPACK PROTOTYPE auxilary routine (version 3.1) "
 .SH NAME
 ZLAG2C - a DOUBLE PRECISION COMPLEX matrix, SA, to a SINGLE PRECISION COMPLEX matrix, A
 .SH SYNOPSIS
-.TP 42
-SUBROUTINE ZLAG2C(M,N,A,LDA,SA,LDSA,INFO)
-.TP 42
+.TP 19
+SUBROUTINE ZLAG2C(
+M, N, A, LDA, SA, LDSA, INFO)
+.TP 19
 .ti +4
 INTEGER
 INFO,LDA,LDSA,M,N
-.TP 42
+.TP 19
 .ti +4
 COMPLEX
 SA(LDSA,*)
-.TP 42
+.TP 19
 .ti +4
 COMPLEX*16
 A(LDA,*)
@@ -55,3 +55,16 @@ overflowed when moving from DOUBLE PRECISION to SINGLE
 k is given by k = (i-1)*LDA+j
 
 =========
+
+.. Local Scalars ..
+
+..
+.. Intrinsic Functions ..
+
+..
+.. External Functions ..
+
+..
+.. Executable Statements ..
+
+End of ZLAG2C

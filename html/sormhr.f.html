@@ -126,8 +126,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.109"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.110"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="ILAENV.111"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="LSAME.111"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      INTEGER            <a name="ILAENV.110"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="ILAENV.111"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="LSAME.111"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           <a name="SORMQR.114"></a><a href="sormqr.f.html#SORMQR.1">SORMQR</a>, <a name="XERBLA.114"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
@@ -176,9 +176,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span>      IF( INFO.EQ.0 ) THEN
          IF( LEFT ) THEN
-            NB = <a name="ILAENV.160"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORMQR.160"></a><a href="sormqr.f.html#SORMQR.1">SORMQR</a>'</span>, SIDE // TRANS, NH, N, NH, -1 )
+            NB = <a name="ILAENV.160"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORMQR.160"></a><a href="sormqr.f.html#SORMQR.1">SORMQR</a>'</span>, SIDE // TRANS, NH, N, NH, -1 )
          ELSE
-            NB = <a name="ILAENV.162"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORMQR.162"></a><a href="sormqr.f.html#SORMQR.1">SORMQR</a>'</span>, SIDE // TRANS, M, NH, NH, -1 ) 
+            NB = <a name="ILAENV.162"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORMQR.162"></a><a href="sormqr.f.html#SORMQR.1">SORMQR</a>'</span>, SIDE // TRANS, M, NH, NH, -1 ) 
          END IF
          LWKOPT = MAX( 1, NW )*NB
          WORK( 1 ) = LWKOPT

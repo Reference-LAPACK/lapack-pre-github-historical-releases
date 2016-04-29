@@ -2,9 +2,9 @@
      $                   LDD, E, LDE, F, LDF, SCALE, RDSUM, RDSCAL,
      $                   IWORK, PQ, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.1) --
+*  -- LAPACK auxiliary routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     January 2007
 *
 *     .. Scalar Arguments ..
       CHARACTER          TRANS
@@ -512,7 +512,7 @@
                      CALL SGER( MB, N-JE, ONE, RHS( 3 ), 1,
      $                          B( JS, JE+1 ), LDB, C( IS, JE+1 ), LDC )
                      CALL SGER( MB, N-JE, ONE, RHS( 3 ), 1,
-     $                          E( JS, JE+1 ), LDB, F( IS, JE+1 ), LDC )
+     $                          E( JS, JE+1 ), LDE, F( IS, JE+1 ), LDF )
                   END IF
 *
                ELSE IF( ( MB.EQ.2 ) .AND. ( NB.EQ.2 ) ) THEN

@@ -1,8 +1,8 @@
-      SUBROUTINE CLAG2Z(M,N,SA,LDSA,A,LDA,INFO)
+      SUBROUTINE CLAG2Z( M, N, SA, LDSA, A, LDA, INFO)
 *
-*  -- LAPACK PROTOTYPE auxilary routine (version 3.1) --
+*  -- LAPACK PROTOTYPE auxilary routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     January 2007
 *
 *     ..
 *     .. WARNING: PROTOTYPE ..

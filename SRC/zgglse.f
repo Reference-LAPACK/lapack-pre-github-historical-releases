@@ -1,9 +1,9 @@
       SUBROUTINE ZGGLSE( M, N, P, A, LDA, B, LDB, C, D, X, WORK, LWORK,
      $                   INFO )
 *
-*  -- LAPACK driver routine (version 3.1) --
+*  -- LAPACK driver routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     February 2007
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, LDB, LWORK, M, N, P
@@ -204,7 +204,7 @@
 *     Solve T12*x2 = d for x2
 *
       IF( P.GT.0 ) THEN
-         CALL CTRTRS( 'Upper', 'No transpose', 'Non-unit', P, 1,
+         CALL ZTRTRS( 'Upper', 'No transpose', 'Non-unit', P, 1,
      $                B( 1, N-P+1 ), LDB, D, P, INFO )
 *
          IF( INFO.GT.0 ) THEN
@@ -225,7 +225,7 @@
 *     Solve R11*x1 = c1 for x1
 *
       IF( N.GT.P ) THEN
-         CALL CTRTRS( 'Upper', 'No transpose', 'Non-unit', N-P, 1,
+         CALL ZTRTRS( 'Upper', 'No transpose', 'Non-unit', N-P, 1,
      $                A, LDA, C, N-P, INFO )
 *
          IF( INFO.GT.0 ) THEN

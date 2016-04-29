@@ -191,9 +191,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.174"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.175"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.175"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       REAL               <a name="CLANGE.176"></a><a href="clange.f.html#CLANGE.1">CLANGE</a>, <a name="SLAMCH.176"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
-      EXTERNAL           <a name="CLANGE.177"></a><a href="clange.f.html#CLANGE.1">CLANGE</a>, <a name="SLAMCH.177"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="ILAENV.177"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="LSAME.177"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="CLANGE.177"></a><a href="clange.f.html#CLANGE.1">CLANGE</a>, <a name="SLAMCH.177"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="ILAENV.177"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="LSAME.177"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
 </span>      INTRINSIC          INT, MAX, MIN, SQRT
@@ -237,7 +237,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">       as well as the preferred amount for good performance.
 </span><span class="comment">*</span><span class="comment">       CWorkspace refers to complex workspace, and RWorkspace to
 </span><span class="comment">*</span><span class="comment">       real workspace. NB refers to the optimal block size for the
-</span><span class="comment">*</span><span class="comment">       immediately following subroutine, as returned by <a name="ILAENV.221"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>.)
+</span><span class="comment">*</span><span class="comment">       immediately following subroutine, as returned by <a name="ILAENV.221"></a><a href="hfy-index.html#ILAENV">ILAENV</a>.)
 </span><span class="comment">*</span><span class="comment">
 </span>      IF( INFO.EQ.0 .AND. M.GT.0 .AND. N.GT.0 ) THEN
          IF( M.GE.N ) THEN
@@ -254,54 +254,54 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 1 (M much larger than N, JOBZ='N')
 </span><span class="comment">*</span><span class="comment">
-</span>                  MAXWRK = N + N*<a name="ILAENV.238"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGEQRF.238"></a><a href="cgeqrf.f.html#CGEQRF.1">CGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1,
+</span>                  MAXWRK = N + N*<a name="ILAENV.238"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGEQRF.238"></a><a href="cgeqrf.f.html#CGEQRF.1">CGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1,
      $                     -1 )
                   MAXWRK = MAX( MAXWRK, 2*N+2*N*
-     $                     <a name="ILAENV.241"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.241"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
+     $                     <a name="ILAENV.241"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.241"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
                   MINWRK = 3*N
                ELSE IF( WNTQO ) THEN
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 2 (M much larger than N, JOBZ='O')
 </span><span class="comment">*</span><span class="comment">
-</span>                  WRKBL = N + N*<a name="ILAENV.247"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGEQRF.247"></a><a href="cgeqrf.f.html#CGEQRF.1">CGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, N+N*<a name="ILAENV.248"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGQR.248"></a><a href="cungqr.f.html#CUNGQR.1">CUNGQR</a>'</span>, <span class="string">' '</span>, M,
+</span>                  WRKBL = N + N*<a name="ILAENV.247"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGEQRF.247"></a><a href="cgeqrf.f.html#CGEQRF.1">CGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+                  WRKBL = MAX( WRKBL, N+N*<a name="ILAENV.248"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGQR.248"></a><a href="cungqr.f.html#CUNGQR.1">CUNGQR</a>'</span>, <span class="string">' '</span>, M,
      $                    N, N, -1 ) )
                   WRKBL = MAX( WRKBL, 2*N+2*N*
-     $                    <a name="ILAENV.251"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.251"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
+     $                    <a name="ILAENV.251"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.251"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
                   WRKBL = MAX( WRKBL, 2*N+N*
-     $                    <a name="ILAENV.253"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.253"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'QLN'</span>, N, N, N, -1 ) )
+     $                    <a name="ILAENV.253"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.253"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'QLN'</span>, N, N, N, -1 ) )
                   WRKBL = MAX( WRKBL, 2*N+N*
-     $                    <a name="ILAENV.255"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.255"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'PRC'</span>, N, N, N, -1 ) )
+     $                    <a name="ILAENV.255"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.255"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'PRC'</span>, N, N, N, -1 ) )
                   MAXWRK = M*N + N*N + WRKBL
                   MINWRK = 2*N*N + 3*N
                ELSE IF( WNTQS ) THEN
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 3 (M much larger than N, JOBZ='S')
 </span><span class="comment">*</span><span class="comment">
-</span>                  WRKBL = N + N*<a name="ILAENV.262"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGEQRF.262"></a><a href="cgeqrf.f.html#CGEQRF.1">CGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, N+N*<a name="ILAENV.263"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGQR.263"></a><a href="cungqr.f.html#CUNGQR.1">CUNGQR</a>'</span>, <span class="string">' '</span>, M,
+</span>                  WRKBL = N + N*<a name="ILAENV.262"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGEQRF.262"></a><a href="cgeqrf.f.html#CGEQRF.1">CGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+                  WRKBL = MAX( WRKBL, N+N*<a name="ILAENV.263"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGQR.263"></a><a href="cungqr.f.html#CUNGQR.1">CUNGQR</a>'</span>, <span class="string">' '</span>, M,
      $                    N, N, -1 ) )
                   WRKBL = MAX( WRKBL, 2*N+2*N*
-     $                    <a name="ILAENV.266"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.266"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
+     $                    <a name="ILAENV.266"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.266"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
                   WRKBL = MAX( WRKBL, 2*N+N*
-     $                    <a name="ILAENV.268"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.268"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'QLN'</span>, N, N, N, -1 ) )
+     $                    <a name="ILAENV.268"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.268"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'QLN'</span>, N, N, N, -1 ) )
                   WRKBL = MAX( WRKBL, 2*N+N*
-     $                    <a name="ILAENV.270"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.270"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'PRC'</span>, N, N, N, -1 ) )
+     $                    <a name="ILAENV.270"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.270"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'PRC'</span>, N, N, N, -1 ) )
                   MAXWRK = N*N + WRKBL
                   MINWRK = N*N + 3*N
                ELSE IF( WNTQA ) THEN
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 4 (M much larger than N, JOBZ='A')
 </span><span class="comment">*</span><span class="comment">
-</span>                  WRKBL = N + N*<a name="ILAENV.277"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGEQRF.277"></a><a href="cgeqrf.f.html#CGEQRF.1">CGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, N+M*<a name="ILAENV.278"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGQR.278"></a><a href="cungqr.f.html#CUNGQR.1">CUNGQR</a>'</span>, <span class="string">' '</span>, M,
+</span>                  WRKBL = N + N*<a name="ILAENV.277"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGEQRF.277"></a><a href="cgeqrf.f.html#CGEQRF.1">CGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+                  WRKBL = MAX( WRKBL, N+M*<a name="ILAENV.278"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGQR.278"></a><a href="cungqr.f.html#CUNGQR.1">CUNGQR</a>'</span>, <span class="string">' '</span>, M,
      $                    M, N, -1 ) )
                   WRKBL = MAX( WRKBL, 2*N+2*N*
-     $                    <a name="ILAENV.281"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.281"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
+     $                    <a name="ILAENV.281"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.281"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
                   WRKBL = MAX( WRKBL, 2*N+N*
-     $                    <a name="ILAENV.283"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.283"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'QLN'</span>, N, N, N, -1 ) )
+     $                    <a name="ILAENV.283"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.283"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'QLN'</span>, N, N, N, -1 ) )
                   WRKBL = MAX( WRKBL, 2*N+N*
-     $                    <a name="ILAENV.285"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.285"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'PRC'</span>, N, N, N, -1 ) )
+     $                    <a name="ILAENV.285"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.285"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'PRC'</span>, N, N, N, -1 ) )
                   MAXWRK = N*N + WRKBL
                   MINWRK = N*N + 2*N + M
                END IF
@@ -309,51 +309,51 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">              Path 5 (M much larger than N, but not as much as MNTHR1)
 </span><span class="comment">*</span><span class="comment">
-</span>               MAXWRK = 2*N + ( M+N )*<a name="ILAENV.293"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.293"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, M, N,
+</span>               MAXWRK = 2*N + ( M+N )*<a name="ILAENV.293"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.293"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, M, N,
      $                  -1, -1 )
                MINWRK = 2*N + M
                IF( WNTQO ) THEN
                   MAXWRK = MAX( MAXWRK, 2*N+N*
-     $                     <a name="ILAENV.298"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.298"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'P'</span>, N, N, N, -1 ) )
+     $                     <a name="ILAENV.298"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.298"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'P'</span>, N, N, N, -1 ) )
                   MAXWRK = MAX( MAXWRK, 2*N+N*
-     $                     <a name="ILAENV.300"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.300"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'Q'</span>, M, N, N, -1 ) )
+     $                     <a name="ILAENV.300"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.300"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'Q'</span>, M, N, N, -1 ) )
                   MAXWRK = MAXWRK + M*N
                   MINWRK = MINWRK + N*N
                ELSE IF( WNTQS ) THEN
                   MAXWRK = MAX( MAXWRK, 2*N+N*
-     $                     <a name="ILAENV.305"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.305"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'P'</span>, N, N, N, -1 ) )
+     $                     <a name="ILAENV.305"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.305"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'P'</span>, N, N, N, -1 ) )
                   MAXWRK = MAX( MAXWRK, 2*N+N*
-     $                     <a name="ILAENV.307"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.307"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'Q'</span>, M, N, N, -1 ) )
+     $                     <a name="ILAENV.307"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.307"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'Q'</span>, M, N, N, -1 ) )
                ELSE IF( WNTQA ) THEN
                   MAXWRK = MAX( MAXWRK, 2*N+N*
-     $                     <a name="ILAENV.310"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.310"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'P'</span>, N, N, N, -1 ) )
+     $                     <a name="ILAENV.310"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.310"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'P'</span>, N, N, N, -1 ) )
                   MAXWRK = MAX( MAXWRK, 2*N+M*
-     $                     <a name="ILAENV.312"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.312"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'Q'</span>, M, M, N, -1 ) )
+     $                     <a name="ILAENV.312"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.312"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'Q'</span>, M, M, N, -1 ) )
                END IF
             ELSE
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">              Path 6 (M at least N, but not much larger)
 </span><span class="comment">*</span><span class="comment">
-</span>               MAXWRK = 2*N + ( M+N )*<a name="ILAENV.318"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.318"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, M, N,
+</span>               MAXWRK = 2*N + ( M+N )*<a name="ILAENV.318"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.318"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, M, N,
      $                  -1, -1 )
                MINWRK = 2*N + M
                IF( WNTQO ) THEN
                   MAXWRK = MAX( MAXWRK, 2*N+N*
-     $                     <a name="ILAENV.323"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.323"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'PRC'</span>, N, N, N, -1 ) )
+     $                     <a name="ILAENV.323"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.323"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'PRC'</span>, N, N, N, -1 ) )
                   MAXWRK = MAX( MAXWRK, 2*N+N*
-     $                     <a name="ILAENV.325"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.325"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'QLN'</span>, M, N, N, -1 ) )
+     $                     <a name="ILAENV.325"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.325"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'QLN'</span>, M, N, N, -1 ) )
                   MAXWRK = MAXWRK + M*N
                   MINWRK = MINWRK + N*N
                ELSE IF( WNTQS ) THEN
                   MAXWRK = MAX( MAXWRK, 2*N+N*
-     $                     <a name="ILAENV.330"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.330"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'PRC'</span>, N, N, N, -1 ) )
+     $                     <a name="ILAENV.330"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.330"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'PRC'</span>, N, N, N, -1 ) )
                   MAXWRK = MAX( MAXWRK, 2*N+N*
-     $                     <a name="ILAENV.332"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.332"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'QLN'</span>, M, N, N, -1 ) )
+     $                     <a name="ILAENV.332"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.332"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'QLN'</span>, M, N, N, -1 ) )
                ELSE IF( WNTQA ) THEN
                   MAXWRK = MAX( MAXWRK, 2*N+N*
-     $                     <a name="ILAENV.335"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.335"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'PRC'</span>, N, N, N, -1 ) )
+     $                     <a name="ILAENV.335"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.335"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'PRC'</span>, N, N, N, -1 ) )
                   MAXWRK = MAX( MAXWRK, 2*N+M*
-     $                     <a name="ILAENV.337"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.337"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'QLN'</span>, M, M, N, -1 ) )
+     $                     <a name="ILAENV.337"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.337"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'QLN'</span>, M, M, N, -1 ) )
                END IF
             END IF
          ELSE
@@ -370,54 +370,54 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 1t (N much larger than M, JOBZ='N')
 </span><span class="comment">*</span><span class="comment">
-</span>                  MAXWRK = M + M*<a name="ILAENV.354"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGELQF.354"></a><a href="cgelqf.f.html#CGELQF.1">CGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1,
+</span>                  MAXWRK = M + M*<a name="ILAENV.354"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGELQF.354"></a><a href="cgelqf.f.html#CGELQF.1">CGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1,
      $                     -1 )
                   MAXWRK = MAX( MAXWRK, 2*M+2*M*
-     $                     <a name="ILAENV.357"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.357"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
+     $                     <a name="ILAENV.357"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.357"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
                   MINWRK = 3*M
                ELSE IF( WNTQO ) THEN
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 2t (N much larger than M, JOBZ='O')
 </span><span class="comment">*</span><span class="comment">
-</span>                  WRKBL = M + M*<a name="ILAENV.363"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGELQF.363"></a><a href="cgelqf.f.html#CGELQF.1">CGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, M+M*<a name="ILAENV.364"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGLQ.364"></a><a href="cunglq.f.html#CUNGLQ.1">CUNGLQ</a>'</span>, <span class="string">' '</span>, M,
+</span>                  WRKBL = M + M*<a name="ILAENV.363"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGELQF.363"></a><a href="cgelqf.f.html#CGELQF.1">CGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+                  WRKBL = MAX( WRKBL, M+M*<a name="ILAENV.364"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGLQ.364"></a><a href="cunglq.f.html#CUNGLQ.1">CUNGLQ</a>'</span>, <span class="string">' '</span>, M,
      $                    N, M, -1 ) )
                   WRKBL = MAX( WRKBL, 2*M+2*M*
-     $                    <a name="ILAENV.367"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.367"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
+     $                    <a name="ILAENV.367"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.367"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
                   WRKBL = MAX( WRKBL, 2*M+M*
-     $                    <a name="ILAENV.369"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.369"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'PRC'</span>, M, M, M, -1 ) )
+     $                    <a name="ILAENV.369"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.369"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'PRC'</span>, M, M, M, -1 ) )
                   WRKBL = MAX( WRKBL, 2*M+M*
-     $                    <a name="ILAENV.371"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.371"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'QLN'</span>, M, M, M, -1 ) )
+     $                    <a name="ILAENV.371"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.371"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'QLN'</span>, M, M, M, -1 ) )
                   MAXWRK = M*N + M*M + WRKBL
                   MINWRK = 2*M*M + 3*M
                ELSE IF( WNTQS ) THEN
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 3t (N much larger than M, JOBZ='S')
 </span><span class="comment">*</span><span class="comment">
-</span>                  WRKBL = M + M*<a name="ILAENV.378"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGELQF.378"></a><a href="cgelqf.f.html#CGELQF.1">CGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, M+M*<a name="ILAENV.379"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGLQ.379"></a><a href="cunglq.f.html#CUNGLQ.1">CUNGLQ</a>'</span>, <span class="string">' '</span>, M,
+</span>                  WRKBL = M + M*<a name="ILAENV.378"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGELQF.378"></a><a href="cgelqf.f.html#CGELQF.1">CGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+                  WRKBL = MAX( WRKBL, M+M*<a name="ILAENV.379"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGLQ.379"></a><a href="cunglq.f.html#CUNGLQ.1">CUNGLQ</a>'</span>, <span class="string">' '</span>, M,
      $                    N, M, -1 ) )
                   WRKBL = MAX( WRKBL, 2*M+2*M*
-     $                    <a name="ILAENV.382"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.382"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
+     $                    <a name="ILAENV.382"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.382"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
                   WRKBL = MAX( WRKBL, 2*M+M*
-     $                    <a name="ILAENV.384"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.384"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'PRC'</span>, M, M, M, -1 ) )
+     $                    <a name="ILAENV.384"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.384"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'PRC'</span>, M, M, M, -1 ) )
                   WRKBL = MAX( WRKBL, 2*M+M*
-     $                    <a name="ILAENV.386"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.386"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'QLN'</span>, M, M, M, -1 ) )
+     $                    <a name="ILAENV.386"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.386"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'QLN'</span>, M, M, M, -1 ) )
                   MAXWRK = M*M + WRKBL
                   MINWRK = M*M + 3*M
                ELSE IF( WNTQA ) THEN
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 4t (N much larger than M, JOBZ='A')
 </span><span class="comment">*</span><span class="comment">
-</span>                  WRKBL = M + M*<a name="ILAENV.393"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGELQF.393"></a><a href="cgelqf.f.html#CGELQF.1">CGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, M+N*<a name="ILAENV.394"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGLQ.394"></a><a href="cunglq.f.html#CUNGLQ.1">CUNGLQ</a>'</span>, <span class="string">' '</span>, N,
+</span>                  WRKBL = M + M*<a name="ILAENV.393"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGELQF.393"></a><a href="cgelqf.f.html#CGELQF.1">CGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+                  WRKBL = MAX( WRKBL, M+N*<a name="ILAENV.394"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGLQ.394"></a><a href="cunglq.f.html#CUNGLQ.1">CUNGLQ</a>'</span>, <span class="string">' '</span>, N,
      $                    N, M, -1 ) )
                   WRKBL = MAX( WRKBL, 2*M+2*M*
-     $                    <a name="ILAENV.397"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.397"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
+     $                    <a name="ILAENV.397"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.397"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
                   WRKBL = MAX( WRKBL, 2*M+M*
-     $                    <a name="ILAENV.399"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.399"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'PRC'</span>, M, M, M, -1 ) )
+     $                    <a name="ILAENV.399"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.399"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'PRC'</span>, M, M, M, -1 ) )
                   WRKBL = MAX( WRKBL, 2*M+M*
-     $                    <a name="ILAENV.401"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.401"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'QLN'</span>, M, M, M, -1 ) )
+     $                    <a name="ILAENV.401"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.401"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'QLN'</span>, M, M, M, -1 ) )
                   MAXWRK = M*M + WRKBL
                   MINWRK = M*M + 2*M + N
                END IF
@@ -425,51 +425,51 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">              Path 5t (N much larger than M, but not as much as MNTHR1)
 </span><span class="comment">*</span><span class="comment">
-</span>               MAXWRK = 2*M + ( M+N )*<a name="ILAENV.409"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.409"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, M, N,
+</span>               MAXWRK = 2*M + ( M+N )*<a name="ILAENV.409"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.409"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, M, N,
      $                  -1, -1 )
                MINWRK = 2*M + N
                IF( WNTQO ) THEN
                   MAXWRK = MAX( MAXWRK, 2*M+M*
-     $                     <a name="ILAENV.414"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.414"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'P'</span>, M, N, M, -1 ) )
+     $                     <a name="ILAENV.414"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.414"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'P'</span>, M, N, M, -1 ) )
                   MAXWRK = MAX( MAXWRK, 2*M+M*
-     $                     <a name="ILAENV.416"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.416"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'Q'</span>, M, M, N, -1 ) )
+     $                     <a name="ILAENV.416"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.416"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'Q'</span>, M, M, N, -1 ) )
                   MAXWRK = MAXWRK + M*N
                   MINWRK = MINWRK + M*M
                ELSE IF( WNTQS ) THEN
                   MAXWRK = MAX( MAXWRK, 2*M+M*
-     $                     <a name="ILAENV.421"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.421"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'P'</span>, M, N, M, -1 ) )
+     $                     <a name="ILAENV.421"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.421"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'P'</span>, M, N, M, -1 ) )
                   MAXWRK = MAX( MAXWRK, 2*M+M*
-     $                     <a name="ILAENV.423"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.423"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'Q'</span>, M, M, N, -1 ) )
+     $                     <a name="ILAENV.423"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.423"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'Q'</span>, M, M, N, -1 ) )
                ELSE IF( WNTQA ) THEN
                   MAXWRK = MAX( MAXWRK, 2*M+N*
-     $                     <a name="ILAENV.426"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.426"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'P'</span>, N, N, M, -1 ) )
+     $                     <a name="ILAENV.426"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.426"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'P'</span>, N, N, M, -1 ) )
                   MAXWRK = MAX( MAXWRK, 2*M+M*
-     $                     <a name="ILAENV.428"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.428"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'Q'</span>, M, M, N, -1 ) )
+     $                     <a name="ILAENV.428"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.428"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'Q'</span>, M, M, N, -1 ) )
                END IF
             ELSE
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">              Path 6t (N greater than M, but not much larger)
 </span><span class="comment">*</span><span class="comment">
-</span>               MAXWRK = 2*M + ( M+N )*<a name="ILAENV.434"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.434"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, M, N,
+</span>               MAXWRK = 2*M + ( M+N )*<a name="ILAENV.434"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGEBRD.434"></a><a href="cgebrd.f.html#CGEBRD.1">CGEBRD</a>'</span>, <span class="string">' '</span>, M, N,
      $                  -1, -1 )
                MINWRK = 2*M + N
                IF( WNTQO ) THEN
                   MAXWRK = MAX( MAXWRK, 2*M+M*
-     $                     <a name="ILAENV.439"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.439"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'PRC'</span>, M, N, M, -1 ) )
+     $                     <a name="ILAENV.439"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.439"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'PRC'</span>, M, N, M, -1 ) )
                   MAXWRK = MAX( MAXWRK, 2*M+M*
-     $                     <a name="ILAENV.441"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.441"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'QLN'</span>, M, M, N, -1 ) )
+     $                     <a name="ILAENV.441"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNMBR.441"></a><a href="cunmbr.f.html#CUNMBR.1">CUNMBR</a>'</span>, <span class="string">'QLN'</span>, M, M, N, -1 ) )
                   MAXWRK = MAXWRK + M*N
                   MINWRK = MINWRK + M*M
                ELSE IF( WNTQS ) THEN
                   MAXWRK = MAX( MAXWRK, 2*M+M*
-     $                     <a name="ILAENV.446"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.446"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'PRC'</span>, M, N, M, -1 ) )
+     $                     <a name="ILAENV.446"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.446"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'PRC'</span>, M, N, M, -1 ) )
                   MAXWRK = MAX( MAXWRK, 2*M+M*
-     $                     <a name="ILAENV.448"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.448"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'QLN'</span>, M, M, N, -1 ) )
+     $                     <a name="ILAENV.448"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.448"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'QLN'</span>, M, M, N, -1 ) )
                ELSE IF( WNTQA ) THEN
                   MAXWRK = MAX( MAXWRK, 2*M+N*
-     $                     <a name="ILAENV.451"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.451"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'PRC'</span>, N, N, M, -1 ) )
+     $                     <a name="ILAENV.451"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.451"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'PRC'</span>, N, N, M, -1 ) )
                   MAXWRK = MAX( MAXWRK, 2*M+M*
-     $                     <a name="ILAENV.453"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.453"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'QLN'</span>, M, M, N, -1 ) )
+     $                     <a name="ILAENV.453"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGBR.453"></a><a href="cungbr.f.html#CUNGBR.1">CUNGBR</a>'</span>, <span class="string">'QLN'</span>, M, M, N, -1 ) )
                END IF
             END IF
          END IF

@@ -563,7 +563,7 @@
                DO 130 JR = 1, NTEST
                   IF( RESULT( JR ).GE.THRESH ) THEN
                      IF( NERRS.EQ.0 )
-     $                  CALL SLAHD2( NOUNIT, 'ZBB' )
+     $                  CALL SLAHD2( NOUNIT, 'CBB' )
                      NERRS = NERRS + 1
                      WRITE( NOUNIT, FMT = 9998 )M, N, K, IOLDSD, JTYPE,
      $                  JR, RESULT( JR )
@@ -576,7 +576,7 @@
 *
 *     Summary
 *
-      CALL SLASUM( 'ZBB', NOUNIT, NERRS, NTESTT )
+      CALL SLASUM( 'CBB', NOUNIT, NERRS, NTESTT )
       RETURN
 *
  9999 FORMAT( ' CCHKBB: ', A, ' returned INFO=', I5, '.', / 9X, 'M=',

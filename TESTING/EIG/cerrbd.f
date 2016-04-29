@@ -1,6 +1,6 @@
       SUBROUTINE CERRBD( PATH, NUNIT )
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 *     November 2006
 *
@@ -43,7 +43,7 @@
       EXTERNAL           LSAMEN
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           CBDSQR, CGEBD2, CGEBRD, CHKXER, CUNGBR, CUNMBR
+      EXTERNAL           CBDSQR, CGEBRD, CHKXER, CUNGBR, CUNMBR
 *     ..
 *     .. Scalars in Common ..
       LOGICAL            LERR, OK

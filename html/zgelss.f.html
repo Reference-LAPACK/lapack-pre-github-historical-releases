@@ -145,9 +145,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $                   <a name="ZUNMQR.126"></a><a href="zunmqr.f.html#ZUNMQR.1">ZUNMQR</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      INTEGER            <a name="ILAENV.129"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+</span>      INTEGER            <a name="ILAENV.129"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       DOUBLE PRECISION   <a name="DLAMCH.130"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="ZLANGE.130"></a><a href="zlange.f.html#ZLANGE.1">ZLANGE</a>
-      EXTERNAL           <a name="ILAENV.131"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="DLAMCH.131"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="ZLANGE.131"></a><a href="zlange.f.html#ZLANGE.1">ZLANGE</a>
+      EXTERNAL           <a name="ILAENV.131"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="DLAMCH.131"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="ZLANGE.131"></a><a href="zlange.f.html#ZLANGE.1">ZLANGE</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
 </span>      INTRINSIC          MAX, MIN
@@ -178,34 +178,34 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">       as well as the preferred amount for good performance.
 </span><span class="comment">*</span><span class="comment">       CWorkspace refers to complex workspace, and RWorkspace refers
 </span><span class="comment">*</span><span class="comment">       to real workspace. NB refers to the optimal block size for the
-</span><span class="comment">*</span><span class="comment">       immediately following subroutine, as returned by <a name="ILAENV.162"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>.)
+</span><span class="comment">*</span><span class="comment">       immediately following subroutine, as returned by <a name="ILAENV.162"></a><a href="hfy-index.html#ILAENV">ILAENV</a>.)
 </span><span class="comment">*</span><span class="comment">
 </span>      IF( INFO.EQ.0 ) THEN
          MINWRK = 1
          MAXWRK = 1
          IF( MINMN.GT.0 ) THEN
             MM = M
-            MNTHR = <a name="ILAENV.169"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 6, <span class="string">'<a name="ZGELSS.169"></a><a href="zgelss.f.html#ZGELSS.1">ZGELSS</a>'</span>, <span class="string">' '</span>, M, N, NRHS, -1 )
+            MNTHR = <a name="ILAENV.169"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 6, <span class="string">'<a name="ZGELSS.169"></a><a href="zgelss.f.html#ZGELSS.1">ZGELSS</a>'</span>, <span class="string">' '</span>, M, N, NRHS, -1 )
             IF( M.GE.N .AND. M.GE.MNTHR ) THEN
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">              Path 1a - overdetermined, with many more rows than
 </span><span class="comment">*</span><span class="comment">                        columns
 </span><span class="comment">*</span><span class="comment">
 </span>               MM = N
-               MAXWRK = MAX( MAXWRK, N + N*<a name="ILAENV.176"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZGEQRF.176"></a><a href="zgeqrf.f.html#ZGEQRF.1">ZGEQRF</a>'</span>, <span class="string">' '</span>, M,
+               MAXWRK = MAX( MAXWRK, N + N*<a name="ILAENV.176"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZGEQRF.176"></a><a href="zgeqrf.f.html#ZGEQRF.1">ZGEQRF</a>'</span>, <span class="string">' '</span>, M,
      $                       N, -1, -1 ) )
-               MAXWRK = MAX( MAXWRK, N + NRHS*<a name="ILAENV.178"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNMQR.178"></a><a href="zunmqr.f.html#ZUNMQR.1">ZUNMQR</a>'</span>, <span class="string">'LC'</span>,
+               MAXWRK = MAX( MAXWRK, N + NRHS*<a name="ILAENV.178"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNMQR.178"></a><a href="zunmqr.f.html#ZUNMQR.1">ZUNMQR</a>'</span>, <span class="string">'LC'</span>,
      $                       M, NRHS, N, -1 ) )
             END IF
             IF( M.GE.N ) THEN
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">              Path 1 - overdetermined or exactly determined
 </span><span class="comment">*</span><span class="comment">
-</span>               MAXWRK = MAX( MAXWRK, 2*N + ( MM + N )*<a name="ILAENV.185"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1,
+</span>               MAXWRK = MAX( MAXWRK, 2*N + ( MM + N )*<a name="ILAENV.185"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1,
      $                       <span class="string">'<a name="ZGEBRD.186"></a><a href="zgebrd.f.html#ZGEBRD.1">ZGEBRD</a>'</span>, <span class="string">' '</span>, MM, N, -1, -1 ) )
-               MAXWRK = MAX( MAXWRK, 2*N + NRHS*<a name="ILAENV.187"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNMBR.187"></a><a href="zunmbr.f.html#ZUNMBR.1">ZUNMBR</a>'</span>,
+               MAXWRK = MAX( MAXWRK, 2*N + NRHS*<a name="ILAENV.187"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNMBR.187"></a><a href="zunmbr.f.html#ZUNMBR.1">ZUNMBR</a>'</span>,
      $                       <span class="string">'QLC'</span>, MM, NRHS, N, -1 ) )
-               MAXWRK = MAX( MAXWRK, 2*N + ( N - 1 )*<a name="ILAENV.189"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1,
+               MAXWRK = MAX( MAXWRK, 2*N + ( N - 1 )*<a name="ILAENV.189"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1,
      $                       <span class="string">'<a name="ZUNGBR.190"></a><a href="zungbr.f.html#ZUNGBR.1">ZUNGBR</a>'</span>, <span class="string">'P'</span>, N, N, N, -1 ) )
                MAXWRK = MAX( MAXWRK, N*NRHS )
                MINWRK = 2*N + MAX( NRHS, M )
@@ -217,30 +217,30 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">                 Path 2a - underdetermined, with many more columns
 </span><span class="comment">*</span><span class="comment">                 than rows
 </span><span class="comment">*</span><span class="comment">
-</span>                  MAXWRK = M + M*<a name="ILAENV.201"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZGELQF.201"></a><a href="zgelqf.f.html#ZGELQF.1">ZGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1,
+</span>                  MAXWRK = M + M*<a name="ILAENV.201"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZGELQF.201"></a><a href="zgelqf.f.html#ZGELQF.1">ZGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1,
      $                     -1 )
-                  MAXWRK = MAX( MAXWRK, 3*M + M*M + 2*M*<a name="ILAENV.203"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1,
+                  MAXWRK = MAX( MAXWRK, 3*M + M*M + 2*M*<a name="ILAENV.203"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1,
      $                          <span class="string">'<a name="ZGEBRD.204"></a><a href="zgebrd.f.html#ZGEBRD.1">ZGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
-                  MAXWRK = MAX( MAXWRK, 3*M + M*M + NRHS*<a name="ILAENV.205"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1,
+                  MAXWRK = MAX( MAXWRK, 3*M + M*M + NRHS*<a name="ILAENV.205"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1,
      $                          <span class="string">'<a name="ZUNMBR.206"></a><a href="zunmbr.f.html#ZUNMBR.1">ZUNMBR</a>'</span>, <span class="string">'QLC'</span>, M, NRHS, M, -1 ) )
-                  MAXWRK = MAX( MAXWRK, 3*M + M*M + ( M - 1 )*<a name="ILAENV.207"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1,
+                  MAXWRK = MAX( MAXWRK, 3*M + M*M + ( M - 1 )*<a name="ILAENV.207"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1,
      $                          <span class="string">'<a name="ZUNGBR.208"></a><a href="zungbr.f.html#ZUNGBR.1">ZUNGBR</a>'</span>, <span class="string">'P'</span>, M, M, M, -1 ) )
                   IF( NRHS.GT.1 ) THEN
                      MAXWRK = MAX( MAXWRK, M*M + M + M*NRHS )
                   ELSE
                      MAXWRK = MAX( MAXWRK, M*M + 2*M )
                   END IF
-                  MAXWRK = MAX( MAXWRK, M + NRHS*<a name="ILAENV.214"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNMLQ.214"></a><a href="zunmlq.f.html#ZUNMLQ.1">ZUNMLQ</a>'</span>,
+                  MAXWRK = MAX( MAXWRK, M + NRHS*<a name="ILAENV.214"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNMLQ.214"></a><a href="zunmlq.f.html#ZUNMLQ.1">ZUNMLQ</a>'</span>,
      $                          <span class="string">'LC'</span>, N, NRHS, M, -1 ) )
                ELSE
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 2 - underdetermined
 </span><span class="comment">*</span><span class="comment">
-</span>                  MAXWRK = 2*M + ( N + M )*<a name="ILAENV.220"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZGEBRD.220"></a><a href="zgebrd.f.html#ZGEBRD.1">ZGEBRD</a>'</span>, <span class="string">' '</span>, M,
+</span>                  MAXWRK = 2*M + ( N + M )*<a name="ILAENV.220"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZGEBRD.220"></a><a href="zgebrd.f.html#ZGEBRD.1">ZGEBRD</a>'</span>, <span class="string">' '</span>, M,
      $                     N, -1, -1 )
-                  MAXWRK = MAX( MAXWRK, 2*M + NRHS*<a name="ILAENV.222"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNMBR.222"></a><a href="zunmbr.f.html#ZUNMBR.1">ZUNMBR</a>'</span>,
+                  MAXWRK = MAX( MAXWRK, 2*M + NRHS*<a name="ILAENV.222"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNMBR.222"></a><a href="zunmbr.f.html#ZUNMBR.1">ZUNMBR</a>'</span>,
      $                          <span class="string">'QLC'</span>, M, NRHS, M, -1 ) )
-                  MAXWRK = MAX( MAXWRK, 2*M + M*<a name="ILAENV.224"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNGBR.224"></a><a href="zungbr.f.html#ZUNGBR.1">ZUNGBR</a>'</span>,
+                  MAXWRK = MAX( MAXWRK, 2*M + M*<a name="ILAENV.224"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNGBR.224"></a><a href="zungbr.f.html#ZUNGBR.1">ZUNGBR</a>'</span>,
      $                          <span class="string">'P'</span>, M, N, M, -1 ) )
                   MAXWRK = MAX( MAXWRK, N*NRHS )
                END IF

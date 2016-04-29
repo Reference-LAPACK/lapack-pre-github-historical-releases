@@ -1,4 +1,4 @@
-.TH  ZUNMRZ 1 "November 2006" " LAPACK routine (version 3.1) " " LAPACK routine (version 3.1) " 
+.TH  ZUNMRZ 1 "February 2007" " LAPACK routine (version 3.1.1) " " LAPACK routine (version 3.1.1) " 
 .SH NAME
 ZUNMRZ - the general complex M-by-N matrix C with   SIDE = \(aqL\(aq SIDE = \(aqR\(aq TRANS = \(aqN\(aq
 .SH SYNOPSIS

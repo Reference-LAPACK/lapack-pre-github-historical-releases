@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>sdsdot.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      REAL FUNCTION <a name="SDSDOT.1"></a><a href="sdsdot.f.html#SDSDOT.1">SDSDOT</a>(N,SB,SX,INCX,SY,INCY)
+<span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      REAL SB
+      INTEGER INCX,INCY,N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL SX(*),SY(*)
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  PURPOSE
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Compute the inner product of two vectors with extended
+</span><span class="comment">*</span><span class="comment">  precision accumulation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Returns S.P. result with dot product accumulated in D.P.
+</span><span class="comment">*</span><span class="comment">  <a name="SDSDOT.17"></a><a href="sdsdot.f.html#SDSDOT.1">SDSDOT</a> = SB + sum for I = 0 to N-1 of SX(LX+I*INCX)*SY(LY+I*INCY),
+</span><span class="comment">*</span><span class="comment">  where LX = 1 if INCX .GE. 0, else LX = 1+(1-N)*INCX, and LY is
+</span><span class="comment">*</span><span class="comment">  defined in a similar way using INCY.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AUTHOR
+</span><span class="comment">*</span><span class="comment">  ======
+</span><span class="comment">*</span><span class="comment">  Lawson, C. L., (JPL), Hanson, R. J., (SNLA),
+</span><span class="comment">*</span><span class="comment">  Kincaid, D. R., (U. of Texas), Krogh, F. T., (JPL)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ARGUMENTS 
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         number of elements in input vector(s)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SB     (input) REAL
+</span><span class="comment">*</span><span class="comment">         single precision scalar to be added to inner product
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SX     (input) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         single precision vector with N elements
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INCX   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         storage spacing between elements of SX
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SY     (input) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         single precision vector with N elements
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INCY   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         storage spacing between elements of SY
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SDSDOT.47"></a><a href="sdsdot.f.html#SDSDOT.1">SDSDOT</a> (output) REAL
+</span><span class="comment">*</span><span class="comment">         single precision dot product (SB if N .LE. 0)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  REFERENCES
+</span><span class="comment">*</span><span class="comment">  ==========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C. L. Lawson, R. J. Hanson, D. R. Kincaid and F. T.
+</span><span class="comment">*</span><span class="comment">  Krogh, Basic linear algebra subprograms for Fortran
+</span><span class="comment">*</span><span class="comment">  usage, Algorithm No. 539, Transactions on Mathematical
+</span><span class="comment">*</span><span class="comment">  Software 5, 3 (September 1979), pp. 308-323.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  REVISION HISTORY  (YYMMDD)
+</span><span class="comment">*</span><span class="comment">  ==========================
+</span><span class="comment">*</span><span class="comment">      
+</span><span class="comment">*</span><span class="comment">  791001  DATE WRITTEN
+</span><span class="comment">*</span><span class="comment">  890531  Changed all specific intrinsics to generic.  (WRB)
+</span><span class="comment">*</span><span class="comment">  890831  Modified array declarations.  (WRB)
+</span><span class="comment">*</span><span class="comment">  890831  REVISION DATE from Version 3.2
+</span><span class="comment">*</span><span class="comment">  891214  Prologue converted to Version 4.0 format.  (BAB)
+</span><span class="comment">*</span><span class="comment">  920310  Corrected definition of LX in DESCRIPTION.  (WRB)
+</span><span class="comment">*</span><span class="comment">  920501  Reformatted the REFERENCES section.  (WRB)
+</span><span class="comment">*</span><span class="comment">  070118  Reformat to LAPACK coding style
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      DOUBLE PRECISION <a name="DSDOT.73"></a><a href="dsdot.f.html#DSDOT.1">DSDOT</a>
+      INTEGER I,KX,KY,NS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC DBLE
+<span class="comment">*</span><span class="comment">     ..
+</span>      <a name="DSDOT.79"></a><a href="dsdot.f.html#DSDOT.1">DSDOT</a> = SB
+      IF (N.LE.0) GO TO 30
+      IF (INCX.EQ.INCY .AND. INCX.GT.0) GO TO 40
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Code for unequal or nonpositive increments.
+</span><span class="comment">*</span><span class="comment">
+</span>      KX = 1
+      KY = 1
+      IF (INCX.LT.0) KX = 1 + (1-N)*INCX
+      IF (INCY.LT.0) KY = 1 + (1-N)*INCY
+      DO 10 I = 1,N
+          <a name="DSDOT.90"></a><a href="dsdot.f.html#DSDOT.1">DSDOT</a> = <a name="DSDOT.90"></a><a href="dsdot.f.html#DSDOT.1">DSDOT</a> + DBLE(SX(KX))*DBLE(SY(KY))
+          KX = KX + INCX
+          KY = KY + INCY
+   10 CONTINUE
+   30 <a name="SDSDOT.94"></a><a href="sdsdot.f.html#SDSDOT.1">SDSDOT</a> = <a name="DSDOT.94"></a><a href="dsdot.f.html#DSDOT.1">DSDOT</a>
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Code for equal and positive increments.
+</span><span class="comment">*</span><span class="comment">
+</span>   40 NS = N*INCX
+      DO 50 I = 1,NS,INCX
+          <a name="DSDOT.101"></a><a href="dsdot.f.html#DSDOT.1">DSDOT</a> = <a name="DSDOT.101"></a><a href="dsdot.f.html#DSDOT.1">DSDOT</a> + DBLE(SX(I))*DBLE(SY(I))
+   50 CONTINUE
+      <a name="SDSDOT.103"></a><a href="sdsdot.f.html#SDSDOT.1">SDSDOT</a> = <a name="DSDOT.103"></a><a href="dsdot.f.html#DSDOT.1">DSDOT</a>
+      RETURN
+      END
+
+</pre>
+
+ </body>
+</html>

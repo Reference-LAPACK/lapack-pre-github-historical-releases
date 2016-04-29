@@ -1,4 +1,4 @@
-.TH  SORMRZ 1 "November 2006" " LAPACK routine (version 3.1) " " LAPACK routine (version 3.1) " 
+.TH  SORMRZ 1 "February 2007" " LAPACK routine (version 3.1.1) " " LAPACK routine (version 3.1.1) " 
 .SH NAME
 SORMRZ - the general real M-by-N matrix C with   SIDE = \(aqL\(aq SIDE = \(aqR\(aq TRANS = \(aqN\(aq
 .SH SYNOPSIS
@@ -17,8 +17,7 @@ INFO, K, L, LDA, LDC, LWORK, M, N
 .TP 19
 .ti +4
 REAL
-A( LDA, * ), C( LDC, * ), TAU( * ),
-WORK( * )
+A( LDA, * ), C( LDC, * ), TAU( * ), WORK( * )
 .SH PURPOSE
 SORMRZ overwrites the general real M-by-N matrix C with
 TRANS = \(aqT\(aq:      Q**T * C       C * Q**T

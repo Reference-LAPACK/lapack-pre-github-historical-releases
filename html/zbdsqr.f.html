@@ -194,7 +194,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       EXTERNAL           <a name="LSAME.175"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="DLAMCH.175"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
-</span>      EXTERNAL           <a name="DLARTG.178"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>, <a name="DLAS2.178"></a><a href="dlas2.f.html#DLAS2.1">DLAS2</a>, <a name="DLASQ1.178"></a><a href="dlasq1.f.html#DLASQ1.1">DLASQ1</a>, <a name="DLASV2.178"></a><a href="dlasv2.f.html#DLASV2.1">DLASV2</a>, <a name="XERBLA.178"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, <a name="ZDROT.178"></a><a href="zdrot.f.html#ZDROT.1">ZDROT</a>,
+</span>      EXTERNAL           <a name="DLARTG.178"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>, <a name="DLAS2.178"></a><a href="dlas2.f.html#DLAS2.1">DLAS2</a>, <a name="DLASQ1.178"></a><a href="dlasq1.f.html#DLASQ1.1">DLASQ1</a>, <a name="DLASV2.178"></a><a href="dlasv2.f.html#DLASV2.1">DLASV2</a>, <a name="XERBLA.178"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, ZDROT,
      $                   ZDSCAL, <a name="ZLASR.179"></a><a href="zlasr.f.html#ZLASR.1">ZLASR</a>, ZSWAP
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
@@ -392,12 +392,12 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">        Compute singular vectors, if desired
 </span><span class="comment">*</span><span class="comment">
 </span>         IF( NCVT.GT.0 )
-     $      CALL <a name="ZDROT.376"></a><a href="zdrot.f.html#ZDROT.1">ZDROT</a>( NCVT, VT( M-1, 1 ), LDVT, VT( M, 1 ), LDVT,
+     $      CALL ZDROT( NCVT, VT( M-1, 1 ), LDVT, VT( M, 1 ), LDVT,
      $                  COSR, SINR )
          IF( NRU.GT.0 )
-     $      CALL <a name="ZDROT.379"></a><a href="zdrot.f.html#ZDROT.1">ZDROT</a>( NRU, U( 1, M-1 ), 1, U( 1, M ), 1, COSL, SINL )
+     $      CALL ZDROT( NRU, U( 1, M-1 ), 1, U( 1, M ), 1, COSL, SINL )
          IF( NCC.GT.0 )
-     $      CALL <a name="ZDROT.381"></a><a href="zdrot.f.html#ZDROT.1">ZDROT</a>( NCC, C( M-1, 1 ), LDC, C( M, 1 ), LDC, COSL,
+     $      CALL ZDROT( NCC, C( M-1, 1 ), LDC, C( M, 1 ), LDC, COSL,
      $                  SINL )
          M = M - 2
          GO TO 60

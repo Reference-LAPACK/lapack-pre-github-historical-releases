@@ -19,9 +19,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <pre>
       SUBROUTINE <a name="DLAED6.1"></a><a href="dlaed6.f.html#DLAED6.1">DLAED6</a>( KNITER, ORGATI, RHO, D, Z, FINIT, TAU, INFO )
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1.1) --
 </span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">     February 2007
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
 </span>      LOGICAL            ORGATI
@@ -89,8 +89,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">     Ren-Cang Li, Computer Science Division, University of California
 </span><span class="comment">*</span><span class="comment">     at Berkeley, USA
 </span><span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  10/02/03: This version has a few statements commented out for thread safety
-</span><span class="comment">*</span><span class="comment">     (machine parameters are computed on each entry). SJH.
+</span><span class="comment">*</span><span class="comment">  10/02/03: This version has a few statements commented out for thread
+</span><span class="comment">*</span><span class="comment">  safety (machine parameters are computed on each entry). SJH.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  05/10/06: Modified from a new version of Ren-Cang Li, use
 </span><span class="comment">*</span><span class="comment">     Gragg-Thornton-Warner cubic convergent scheme for better stability.
@@ -166,16 +166,20 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
          END IF
          IF( TAU .LT. LBD .OR. TAU .GT. UBD )
      $      TAU = ( LBD+UBD )/TWO
-         TEMP = FINIT + TAU*Z(1)/( D(1)*( D( 1 )-TAU ) ) +
-     $                  TAU*Z(2)/( D(2)*( D( 2 )-TAU ) ) +
-     $                  TAU*Z(3)/( D(3)*( D( 3 )-TAU ) )
-         IF( TEMP .LE. ZERO )THEN
-            LBD = TAU
+         IF( D(1).EQ.TAU .OR. D(2).EQ.TAU .OR. D(3).EQ.TAU ) THEN
+            TAU = ZERO
          ELSE
-            UBD = TAU
+            TEMP = FINIT + TAU*Z(1)/( D(1)*( D( 1 )-TAU ) ) +
+     $                     TAU*Z(2)/( D(2)*( D( 2 )-TAU ) ) +
+     $                     TAU*Z(3)/( D(3)*( D( 3 )-TAU ) )
+            IF( TEMP .LE. ZERO )THEN
+               LBD = TAU
+            ELSE
+               UBD = TAU
+            END IF
+            IF( ABS( FINIT ).LE.ABS( TEMP ) )
+     $         TAU = ZERO
          END IF
-         IF( ABS( FINIT ).LE.ABS( TEMP ) )
-     $      TAU = ZERO
       END IF
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     get machine parameters for possible scaling to avoid overflow
@@ -184,9 +188,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">     SMINV2, EPS are not SAVEd anymore between one call to the
 </span><span class="comment">*</span><span class="comment">     others but recomputed at each call
 </span><span class="comment">*</span><span class="comment">
-</span>      EPS = <a name="DLAMCH.168"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Epsilon'</span> )
-      BASE = <a name="DLAMCH.169"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Base'</span> )
-      SMALL1 = BASE**( INT( LOG( <a name="DLAMCH.170"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'SafMin'</span> ) ) / LOG( BASE ) /
+</span>      EPS = <a name="DLAMCH.172"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Epsilon'</span> )
+      BASE = <a name="DLAMCH.173"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Base'</span> )
+      SMALL1 = BASE**( INT( LOG( <a name="DLAMCH.174"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'SafMin'</span> ) ) / LOG( BASE ) /
      $         THREE ) )
       SMINV1 = ONE / SMALL1
       SMALL2 = SMALL1*SMALL1
@@ -337,7 +341,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $   TAU = TAU*SCLINV
       RETURN
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">     End of <a name="DLAED6.321"></a><a href="dlaed6.f.html#DLAED6.1">DLAED6</a>
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLAED6.325"></a><a href="dlaed6.f.html#DLAED6.1">DLAED6</a>
 </span><span class="comment">*</span><span class="comment">
 </span>      END
 

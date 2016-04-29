@@ -2,9 +2,9 @@
      $                   BI, Z, Q, ALPHA, BETA, C, LDC, S, WORK, LWORK,
      $                   RWORK, IWORK, LIWORK, BWORK, INFO )
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     February 2007
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, LDC, LIWORK, LWORK, NCMAX, NIN,
@@ -299,6 +299,7 @@
 *
 *     Check for errors
 *
+      INFO = 0
       IF( NSIZE.LT.0 ) THEN
          INFO = -1
       ELSE IF( THRESH.LT.ZERO ) THEN

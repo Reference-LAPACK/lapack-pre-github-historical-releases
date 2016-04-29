@@ -1,15 +1,14 @@
       DOUBLE PRECISION FUNCTION DSECND( )
 *
-*  -- LAPACK auxiliary routine (version 2.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley, NAG Ltd.,
-*     Courant Institute, Argonne National Lab, and Rice University
-*     September 30, 1994
+*  -- LAPACK auxiliary routine (version 3.1.1) --
+*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+*     February 2007
 *
 *  Purpose
 *  =======
 *
 *  DSECND returns the user time for a process in seconds.
-*  This version gets the time from the system function ETIME_.
+*  This version gets the time from the EXTERNAL system function ETIME.
 *
 * =====================================================================
 *
@@ -20,12 +19,12 @@
       REAL               TARRAY( 2 )
 *     ..
 *     .. External Functions ..
-      REAL               ETIME_
-      EXTERNAL           ETIME_
+      REAL               ETIME
+      EXTERNAL           ETIME
 *     ..
 *     .. Executable Statements ..
 *
-      T1 = ETIME_( TARRAY )
+      T1 = ETIME( TARRAY )
       DSECND = TARRAY( 1 )
       RETURN
 *

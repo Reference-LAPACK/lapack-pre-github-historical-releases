@@ -149,9 +149,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.132"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.133"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.133"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       DOUBLE PRECISION   <a name="DLAMCH.134"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANGE.134"></a><a href="dlange.f.html#DLANGE.1">DLANGE</a>
-      EXTERNAL           <a name="LSAME.135"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.135"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="DLABAD.135"></a><a href="dlabad.f.html#DLABAD.1">DLABAD</a>, <a name="DLAMCH.135"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANGE.135"></a><a href="dlange.f.html#DLANGE.1">DLANGE</a>
+      EXTERNAL           <a name="LSAME.135"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.135"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="DLABAD.135"></a><a href="dlabad.f.html#DLABAD.1">DLABAD</a>, <a name="DLAMCH.135"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANGE.135"></a><a href="dlange.f.html#DLANGE.1">DLANGE</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           <a name="DGELQF.138"></a><a href="dgelqf.f.html#DGELQF.1">DGELQF</a>, <a name="DGEQRF.138"></a><a href="dgeqrf.f.html#DGEQRF.1">DGEQRF</a>, <a name="DLASCL.138"></a><a href="dlascl.f.html#DLASCL.1">DLASCL</a>, <a name="DLASET.138"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>, <a name="DORMLQ.138"></a><a href="dormlq.f.html#DORMLQ.1">DORMLQ</a>, <a name="DORMQR.138"></a><a href="dormqr.f.html#DORMQR.1">DORMQR</a>,
@@ -193,21 +193,21 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $      TPSD = .FALSE.
 <span class="comment">*</span><span class="comment">
 </span>         IF( M.GE.N ) THEN
-            NB = <a name="ILAENV.177"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DGEQRF.177"></a><a href="dgeqrf.f.html#DGEQRF.1">DGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+            NB = <a name="ILAENV.177"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DGEQRF.177"></a><a href="dgeqrf.f.html#DGEQRF.1">DGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
             IF( TPSD ) THEN
-               NB = MAX( NB, <a name="ILAENV.179"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DORMQR.179"></a><a href="dormqr.f.html#DORMQR.1">DORMQR</a>'</span>, <span class="string">'LN'</span>, M, NRHS, N,
+               NB = MAX( NB, <a name="ILAENV.179"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DORMQR.179"></a><a href="dormqr.f.html#DORMQR.1">DORMQR</a>'</span>, <span class="string">'LN'</span>, M, NRHS, N,
      $              -1 ) )
             ELSE
-               NB = MAX( NB, <a name="ILAENV.182"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DORMQR.182"></a><a href="dormqr.f.html#DORMQR.1">DORMQR</a>'</span>, <span class="string">'LT'</span>, M, NRHS, N,
+               NB = MAX( NB, <a name="ILAENV.182"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DORMQR.182"></a><a href="dormqr.f.html#DORMQR.1">DORMQR</a>'</span>, <span class="string">'LT'</span>, M, NRHS, N,
      $              -1 ) )
             END IF
          ELSE
-            NB = <a name="ILAENV.186"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DGELQF.186"></a><a href="dgelqf.f.html#DGELQF.1">DGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+            NB = <a name="ILAENV.186"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DGELQF.186"></a><a href="dgelqf.f.html#DGELQF.1">DGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
             IF( TPSD ) THEN
-               NB = MAX( NB, <a name="ILAENV.188"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DORMLQ.188"></a><a href="dormlq.f.html#DORMLQ.1">DORMLQ</a>'</span>, <span class="string">'LT'</span>, N, NRHS, M,
+               NB = MAX( NB, <a name="ILAENV.188"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DORMLQ.188"></a><a href="dormlq.f.html#DORMLQ.1">DORMLQ</a>'</span>, <span class="string">'LT'</span>, N, NRHS, M,
      $              -1 ) )
             ELSE
-               NB = MAX( NB, <a name="ILAENV.191"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DORMLQ.191"></a><a href="dormlq.f.html#DORMLQ.1">DORMLQ</a>'</span>, <span class="string">'LN'</span>, N, NRHS, M,
+               NB = MAX( NB, <a name="ILAENV.191"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DORMLQ.191"></a><a href="dormlq.f.html#DORMLQ.1">DORMLQ</a>'</span>, <span class="string">'LN'</span>, N, NRHS, M,
      $              -1 ) )
             END IF
          END IF

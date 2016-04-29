@@ -4,9 +4,9 @@
      $                   UU, TAU, WORK, NWORK, IWORK, SELECT, RESULT,
      $                   INFO )
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     February 2007
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, LDU, NOUNIT, NSIZES, NTYPES, NWORK
@@ -691,7 +691,7 @@
                   H( I, J ) = ZERO
   110          CONTINUE
   120       CONTINUE
-            CALL SCOPY( N, WORK, 1, TAU, 1 )
+            CALL SCOPY( N-1, WORK, 1, TAU, 1 )
             CALL SORGHR( N, ILO, IHI, U, LDU, WORK, WORK( N+1 ),
      $                   NWORK-N, IINFO )
             NTEST = 2

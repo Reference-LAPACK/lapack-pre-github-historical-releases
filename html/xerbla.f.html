@@ -17,15 +17,15 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
   <body>
 
 <pre>
-      SUBROUTINE <a name="XERBLA.1"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>(SRNAME,INFO)
+      SUBROUTINE <a name="XERBLA.1"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( SRNAME, INFO )
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (preliminary version) --
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
 </span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 </span><span class="comment">*</span><span class="comment">     November 2006
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
-</span>      INTEGER INFO
-      CHARACTER*6 SRNAME
+</span>      CHARACTER*6        SRNAME
+      INTEGER            INFO
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  Purpose
@@ -48,15 +48,18 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">          The position of the invalid parameter in the parameter list
 </span><span class="comment">*</span><span class="comment">          of the calling routine.
 </span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment"> =====================================================================
 </span><span class="comment">*</span><span class="comment">
-</span>      WRITE (*,FMT=9999) SRNAME,INFO
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      WRITE( *, FMT = 9999 )SRNAME, INFO
 <span class="comment">*</span><span class="comment">
 </span>      STOP
 <span class="comment">*</span><span class="comment">
-</span> 9999 FORMAT (<span class="string">' ** On entry to '</span>,A6,<span class="string">' parameter number '</span>,I2,<span class="string">' had '</span>,
-     +       <span class="string">'an illegal value'</span>)
+</span> 9999 FORMAT( <span class="string">' ** On entry to '</span>, A6, <span class="string">' parameter number '</span>, I2, <span class="string">' had '</span>,
+     $      <span class="string">'an illegal value'</span> )
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">     End of <a name="XERBLA.40"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+</span><span class="comment">*</span><span class="comment">     End of <a name="XERBLA.43"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
 </span><span class="comment">*</span><span class="comment">
 </span>      END
 

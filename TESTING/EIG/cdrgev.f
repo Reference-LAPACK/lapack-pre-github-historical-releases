@@ -3,9 +3,9 @@
      $                   ALPHA, BETA, ALPHA1, BETA1, WORK, LWORK, RWORK,
      $                   RESULT, INFO )
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     February 2007
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, LDQ, LDQE, LWORK, NOUNIT, NSIZES,
@@ -719,7 +719,7 @@
 *
 *           Print out tests which fail.
 *
-            DO 200 JR = 1, 9
+            DO 200 JR = 1, 7
                IF( RESULT( JR ).GE.THRESH ) THEN
 *
 *                 If this is the first test to fail,

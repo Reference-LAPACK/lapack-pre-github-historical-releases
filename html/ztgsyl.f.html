@@ -21,9 +21,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $                   LDD, E, LDE, F, LDF, SCALE, DIF, WORK, LWORK,
      $                   IWORK, INFO )
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1.1) --
 </span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">     January 2007
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
 </span>      CHARACTER          TRANS
@@ -178,7 +178,6 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">          message related to LWORK is issued by <a name="XERBLA.159"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  IWORK   (workspace) INTEGER array, dimension (M+N+2)
-</span><span class="comment">*</span><span class="comment">          If IJOB = 0, IWORK is not referenced.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
 </span><span class="comment">*</span><span class="comment">            =0: successful exit
@@ -211,7 +210,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">      July 1989, pp 745-751.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  =====================================================================
-</span><span class="comment">*</span><span class="comment">  Replaced various illegal calls to CCOPY by calls to <a name="CLASET.195"></a><a href="claset.f.html#CLASET.1">CLASET</a>.
+</span><span class="comment">*</span><span class="comment">  Replaced various illegal calls to CCOPY by calls to <a name="CLASET.194"></a><a href="claset.f.html#CLASET.1">CLASET</a>.
 </span><span class="comment">*</span><span class="comment">  Sven Hammarling, 1/5/02.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     .. Parameters ..
@@ -227,12 +226,12 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       DOUBLE PRECISION   DSCALE, DSUM, SCALE2, SCALOC
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      LOGICAL            <a name="LSAME.211"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.212"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="LSAME.213"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.213"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+</span>      LOGICAL            <a name="LSAME.210"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      INTEGER            <a name="ILAENV.211"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="LSAME.212"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.212"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
-</span>      EXTERNAL           <a name="XERBLA.216"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, ZGEMM, <a name="ZLACPY.216"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>, <a name="ZLASET.216"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>, ZSCAL, <a name="ZTGSY2.216"></a><a href="ztgsy2.f.html#ZTGSY2.1">ZTGSY2</a>
+</span>      EXTERNAL           <a name="XERBLA.215"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, ZGEMM, <a name="ZLACPY.215"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>, <a name="ZLASET.215"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>, ZSCAL, <a name="ZTGSY2.215"></a><a href="ztgsy2.f.html#ZTGSY2.1">ZTGSY2</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
 </span>      INTRINSIC          DBLE, DCMPLX, MAX, SQRT
@@ -242,10 +241,10 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">     Decode and test input parameters
 </span><span class="comment">*</span><span class="comment">
 </span>      INFO = 0
-      NOTRAN = <a name="LSAME.226"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'N'</span> )
+      NOTRAN = <a name="LSAME.225"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'N'</span> )
       LQUERY = ( LWORK.EQ.-1 )
 <span class="comment">*</span><span class="comment">
-</span>      IF( .NOT.NOTRAN .AND. .NOT.<a name="LSAME.229"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'C'</span> ) ) THEN
+</span>      IF( .NOT.NOTRAN .AND. .NOT.<a name="LSAME.228"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'C'</span> ) ) THEN
          INFO = -1
       ELSE IF( NOTRAN ) THEN
          IF( ( IJOB.LT.0 ) .OR. ( IJOB.GT.4 ) ) THEN
@@ -290,7 +289,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      IF( INFO.NE.0 ) THEN
-         CALL <a name="XERBLA.274"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZTGSYL.274"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>'</span>, -INFO )
+         CALL <a name="XERBLA.273"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZTGSYL.273"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>'</span>, -INFO )
          RETURN
       ELSE IF( LQUERY ) THEN
          RETURN
@@ -310,16 +309,16 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     Determine  optimal block sizes MB and NB
 </span><span class="comment">*</span><span class="comment">
-</span>      MB = <a name="ILAENV.294"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 2, <span class="string">'<a name="ZTGSYL.294"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>'</span>, TRANS, M, N, -1, -1 )
-      NB = <a name="ILAENV.295"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 5, <span class="string">'<a name="ZTGSYL.295"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>'</span>, TRANS, M, N, -1, -1 )
+</span>      MB = <a name="ILAENV.293"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 2, <span class="string">'<a name="ZTGSYL.293"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>'</span>, TRANS, M, N, -1, -1 )
+      NB = <a name="ILAENV.294"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 5, <span class="string">'<a name="ZTGSYL.294"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>'</span>, TRANS, M, N, -1, -1 )
 <span class="comment">*</span><span class="comment">
 </span>      ISOLVE = 1
       IFUNC = 0
       IF( NOTRAN ) THEN
          IF( IJOB.GE.3 ) THEN
             IFUNC = IJOB - 2
-            CALL <a name="ZLASET.302"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'F'</span>, M, N, CZERO, CZERO, C, LDC )
-            CALL <a name="ZLASET.303"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'F'</span>, M, N, CZERO, CZERO, F, LDF )
+            CALL <a name="ZLASET.301"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'F'</span>, M, N, CZERO, CZERO, C, LDC )
+            CALL <a name="ZLASET.302"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'F'</span>, M, N, CZERO, CZERO, F, LDF )
          ELSE IF( IJOB.GE.1 .AND. NOTRAN ) THEN
             ISOLVE = 2
          END IF
@@ -336,7 +335,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
             DSCALE = ZERO
             DSUM = ONE
             PQ = M*N
-            CALL <a name="ZTGSY2.320"></a><a href="ztgsy2.f.html#ZTGSY2.1">ZTGSY2</a>( TRANS, IFUNC, M, N, A, LDA, B, LDB, C, LDC, D,
+            CALL <a name="ZTGSY2.319"></a><a href="ztgsy2.f.html#ZTGSY2.1">ZTGSY2</a>( TRANS, IFUNC, M, N, A, LDA, B, LDB, C, LDC, D,
      $                   LDD, E, LDE, F, LDF, SCALE, DSUM, DSCALE,
      $                   INFO )
             IF( DSCALE.NE.ZERO ) THEN
@@ -351,13 +350,13 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
                   IFUNC = IJOB
                END IF
                SCALE2 = SCALE
-               CALL <a name="ZLACPY.335"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'F'</span>, M, N, C, LDC, WORK, M )
-               CALL <a name="ZLACPY.336"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'F'</span>, M, N, F, LDF, WORK( M*N+1 ), M )
-               CALL <a name="ZLASET.337"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'F'</span>, M, N, CZERO, CZERO, C, LDC )
-               CALL <a name="ZLASET.338"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'F'</span>, M, N, CZERO, CZERO, F, LDF )
+               CALL <a name="ZLACPY.334"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'F'</span>, M, N, C, LDC, WORK, M )
+               CALL <a name="ZLACPY.335"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'F'</span>, M, N, F, LDF, WORK( M*N+1 ), M )
+               CALL <a name="ZLASET.336"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'F'</span>, M, N, CZERO, CZERO, C, LDC )
+               CALL <a name="ZLASET.337"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'F'</span>, M, N, CZERO, CZERO, F, LDF )
             ELSE IF( ISOLVE.EQ.2 .AND. IROUND.EQ.2 ) THEN
-               CALL <a name="ZLACPY.340"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'F'</span>, M, N, WORK, M, C, LDC )
-               CALL <a name="ZLACPY.341"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'F'</span>, M, N, WORK( M*N+1 ), M, F, LDF )
+               CALL <a name="ZLACPY.339"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'F'</span>, M, N, WORK, M, C, LDC )
+               CALL <a name="ZLACPY.340"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'F'</span>, M, N, WORK( M*N+1 ), M, F, LDF )
                SCALE = SCALE2
             END IF
    30    CONTINUE
@@ -424,7 +423,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
                   IS = IWORK( I )
                   IE = IWORK( I+1 ) - 1
                   MB = IE - IS + 1
-                  CALL <a name="ZTGSY2.408"></a><a href="ztgsy2.f.html#ZTGSY2.1">ZTGSY2</a>( TRANS, IFUNC, MB, NB, A( IS, IS ), LDA,
+                  CALL <a name="ZTGSY2.407"></a><a href="ztgsy2.f.html#ZTGSY2.1">ZTGSY2</a>( TRANS, IFUNC, MB, NB, A( IS, IS ), LDA,
      $                         B( JS, JS ), LDB, C( IS, JS ), LDC,
      $                         D( IS, IS ), LDD, E( JS, JS ), LDE,
      $                         F( IS, JS ), LDF, SCALOC, DSUM, DSCALE,
@@ -498,13 +497,13 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
                   IFUNC = IJOB
                END IF
                SCALE2 = SCALE
-               CALL <a name="ZLACPY.482"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'F'</span>, M, N, C, LDC, WORK, M )
-               CALL <a name="ZLACPY.483"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'F'</span>, M, N, F, LDF, WORK( M*N+1 ), M )
-               CALL <a name="ZLASET.484"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'F'</span>, M, N, CZERO, CZERO, C, LDC )
-               CALL <a name="ZLASET.485"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'F'</span>, M, N, CZERO, CZERO, F, LDF )
+               CALL <a name="ZLACPY.481"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'F'</span>, M, N, C, LDC, WORK, M )
+               CALL <a name="ZLACPY.482"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'F'</span>, M, N, F, LDF, WORK( M*N+1 ), M )
+               CALL <a name="ZLASET.483"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'F'</span>, M, N, CZERO, CZERO, C, LDC )
+               CALL <a name="ZLASET.484"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'F'</span>, M, N, CZERO, CZERO, F, LDF )
             ELSE IF( ISOLVE.EQ.2 .AND. IROUND.EQ.2 ) THEN
-               CALL <a name="ZLACPY.487"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'F'</span>, M, N, WORK, M, C, LDC )
-               CALL <a name="ZLACPY.488"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'F'</span>, M, N, WORK( M*N+1 ), M, F, LDF )
+               CALL <a name="ZLACPY.486"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'F'</span>, M, N, WORK, M, C, LDC )
+               CALL <a name="ZLACPY.487"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'F'</span>, M, N, WORK( M*N+1 ), M, F, LDF )
                SCALE = SCALE2
             END IF
   150    CONTINUE
@@ -524,7 +523,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
                JS = IWORK( J )
                JE = IWORK( J+1 ) - 1
                NB = JE - JS + 1
-               CALL <a name="ZTGSY2.508"></a><a href="ztgsy2.f.html#ZTGSY2.1">ZTGSY2</a>( TRANS, IFUNC, MB, NB, A( IS, IS ), LDA,
+               CALL <a name="ZTGSY2.507"></a><a href="ztgsy2.f.html#ZTGSY2.1">ZTGSY2</a>( TRANS, IFUNC, MB, NB, A( IS, IS ), LDA,
      $                      B( JS, JS ), LDB, C( IS, JS ), LDC,
      $                      D( IS, IS ), LDD, E( JS, JS ), LDE,
      $                      F( IS, JS ), LDF, SCALOC, DSUM, DSCALE,
@@ -589,7 +588,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span>      RETURN
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">     End of <a name="ZTGSYL.573"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZTGSYL.572"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>
 </span><span class="comment">*</span><span class="comment">
 </span>      END
 

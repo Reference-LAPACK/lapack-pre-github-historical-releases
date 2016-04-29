@@ -1,4 +1,4 @@
-.TH  CTGSEN 1 "November 2006" " LAPACK routine (version 3.1) " " LAPACK routine (version 3.1) " 
+.TH  CTGSEN 1 "February 2007" " LAPACK routine (version 3.1.1) " " LAPACK routine (version 3.1.1) " 
 .SH NAME
 CTGSEN - the generalized Schur decomposition of a complex matrix pair (A, B) (in terms of an unitary equivalence trans- formation Q\(aq * (A, B) * Z), so that a selected cluster of eigenvalues appears in the leading diagonal blocks of the pair (A,B)
 .SH SYNOPSIS

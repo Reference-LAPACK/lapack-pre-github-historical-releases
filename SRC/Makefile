@@ -56,7 +56,7 @@ SCLAUX = \
    slaset.o slasq1.o slasq2.o slasq3.o slazq3.o slasq4.o slazq4.o slasq5.o slasq6.o \
    slasr.o  slasrt.o slassq.o slasv2.o spttrf.o sstebz.o sstedc.o \
    ssteqr.o ssterf.o slaisnan.o sisnan.o \
-   ../INSTALL/slamch.o ../INSTALL/second.o
+   ../INSTALL/slamch.o ../INSTALL/second_$(TIMER).o
 
 DZLAUX = \
    dbdsdc.o \
@@ -73,7 +73,7 @@ DZLAUX = \
    dlaset.o dlasq1.o dlasq2.o dlasq3.o dlazq3.o dlasq4.o dlazq4.o dlasq5.o dlasq6.o \
    dlasr.o  dlasrt.o dlassq.o dlasv2.o dpttrf.o dstebz.o dstedc.o \
    dsteqr.o dsterf.o dlaisnan.o disnan.o \
-   ../INSTALL/dlamch.o ../INSTALL/dsecnd.o
+   ../INSTALL/dlamch.o ../INSTALL/dsecnd_$(TIMER).o
 
 SLASRC = \
    sgbbrd.o sgbcon.o sgbequ.o sgbrfs.o sgbsv.o  \
@@ -165,7 +165,7 @@ CLASRC = \
    cppequ.o cpprfs.o cppsv.o  cppsvx.o cpptrf.o cpptri.o cpptrs.o \
    cptcon.o cpteqr.o cptrfs.o cptsv.o  cptsvx.o cpttrf.o cpttrs.o cptts2.o \
    crot.o   cspcon.o cspmv.o  cspr.o   csprfs.o cspsv.o  \
-   cspsvx.o csptrf.o csptri.o csptrs.o csrot.o  csrscl.o cstedc.o \
+   cspsvx.o csptrf.o csptri.o csptrs.o csrscl.o cstedc.o \
    cstegr.o cstein.o csteqr.o csycon.o csymv.o  \
    csyr.o   csyrfs.o csysv.o  csysvx.o csytf2.o csytrf.o csytri.o \
    csytrs.o ctbcon.o ctbrfs.o ctbtrs.o ctgevc.o ctgex2.o \
@@ -273,7 +273,7 @@ ZLASRC = \
    zppequ.o zpprfs.o zppsv.o  zppsvx.o zpptrf.o zpptri.o zpptrs.o \
    zptcon.o zpteqr.o zptrfs.o zptsv.o  zptsvx.o zpttrf.o zpttrs.o zptts2.o \
    zrot.o   zspcon.o zspmv.o  zspr.o   zsprfs.o zspsv.o  \
-   zspsvx.o zsptrf.o zsptri.o zsptrs.o zdrot.o  zdrscl.o zstedc.o \
+   zspsvx.o zsptrf.o zsptri.o zsptrs.o zdrscl.o zstedc.o \
    zstegr.o zstein.o zsteqr.o zsycon.o zsymv.o  \
    zsyr.o   zsyrfs.o zsysv.o  zsysvx.o zsytf2.o zsytrf.o zsytri.o \
    zsytrs.o ztbcon.o ztbrfs.o ztbtrs.o ztgevc.o ztgex2.o \
@@ -332,8 +332,8 @@ clean:
 	rm -f *.o
 
 .f.o: 
-	$(FORTRAN) $(OPTS) -c $<
+	$(FORTRAN) $(OPTS) -c $< -o $@
 
-slaruv.o: slaruv.f ; $(FORTRAN) $(NOOPT) -c $<
-dlaruv.o: dlaruv.f ; $(FORTRAN) $(NOOPT) -c $<
+slaruv.o: slaruv.f ; $(FORTRAN) $(NOOPT) -c $< -o $@
+dlaruv.o: dlaruv.f ; $(FORTRAN) $(NOOPT) -c $< -o $@
 

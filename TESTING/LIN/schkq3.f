@@ -2,9 +2,9 @@
      $                   THRESH, A, COPYA, S, COPYS, TAU, WORK, IWORK,
      $                   NOUT )
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     January 2007
 *
 *     .. Scalar Arguments ..
       INTEGER            NM, NN, NNB, NOUT
@@ -153,7 +153,8 @@
 *
             N = NVAL( IN )
             MNMIN = MIN( M, N )
-            LWORK = MAX( 1, M*MAX( M, N )+4*MNMIN+MAX( M, N ) )
+            LWORK = MAX( 1, M*MAX( M, N )+4*MNMIN+MAX( M, N ),
+     $                   M*N + 2*MNMIN + 4*N )
 *
             DO 70 IMODE = 1, NTYPES
                IF( .NOT.DOTYPE( IMODE ) )

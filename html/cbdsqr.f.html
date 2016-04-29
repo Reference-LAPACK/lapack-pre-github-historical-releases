@@ -194,7 +194,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       EXTERNAL           <a name="LSAME.175"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="SLAMCH.175"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
-</span>      EXTERNAL           <a name="CLASR.178"></a><a href="clasr.f.html#CLASR.1">CLASR</a>, <a name="CSROT.178"></a><a href="csrot.f.html#CSROT.1">CSROT</a>, CSSCAL, CSWAP, <a name="SLARTG.178"></a><a href="slartg.f.html#SLARTG.1">SLARTG</a>, <a name="SLAS2.178"></a><a href="slas2.f.html#SLAS2.1">SLAS2</a>,
+</span>      EXTERNAL           <a name="CLASR.178"></a><a href="clasr.f.html#CLASR.1">CLASR</a>, CSROT, CSSCAL, CSWAP, <a name="SLARTG.178"></a><a href="slartg.f.html#SLARTG.1">SLARTG</a>, <a name="SLAS2.178"></a><a href="slas2.f.html#SLAS2.1">SLAS2</a>,
      $                   <a name="SLASQ1.179"></a><a href="slasq1.f.html#SLASQ1.1">SLASQ1</a>, <a name="SLASV2.179"></a><a href="slasv2.f.html#SLASV2.1">SLASV2</a>, <a name="XERBLA.179"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
@@ -392,12 +392,12 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">        Compute singular vectors, if desired
 </span><span class="comment">*</span><span class="comment">
 </span>         IF( NCVT.GT.0 )
-     $      CALL <a name="CSROT.376"></a><a href="csrot.f.html#CSROT.1">CSROT</a>( NCVT, VT( M-1, 1 ), LDVT, VT( M, 1 ), LDVT,
+     $      CALL CSROT( NCVT, VT( M-1, 1 ), LDVT, VT( M, 1 ), LDVT,
      $                  COSR, SINR )
          IF( NRU.GT.0 )
-     $      CALL <a name="CSROT.379"></a><a href="csrot.f.html#CSROT.1">CSROT</a>( NRU, U( 1, M-1 ), 1, U( 1, M ), 1, COSL, SINL )
+     $      CALL CSROT( NRU, U( 1, M-1 ), 1, U( 1, M ), 1, COSL, SINL )
          IF( NCC.GT.0 )
-     $      CALL <a name="CSROT.381"></a><a href="csrot.f.html#CSROT.1">CSROT</a>( NCC, C( M-1, 1 ), LDC, C( M, 1 ), LDC, COSL,
+     $      CALL CSROT( NCC, C( M-1, 1 ), LDC, C( M, 1 ), LDC, COSL,
      $                  SINL )
          M = M - 2
          GO TO 60

@@ -1,4 +1,4 @@
-.TH  DBDSQR 1 "November 2006" " LAPACK routine (version 3.1) " " LAPACK routine (version 3.1) " 
+.TH  DBDSQR 1 "February 2007" " LAPACK routine (version 3.1.1) " " LAPACK routine (version 3.1.1) " 
 .SH NAME
 DBDSQR - the singular values and, optionally, the right and/or left singular vectors from the singular value decomposition (SVD) of a real N-by-N (upper or lower) bidiagonal matrix B using the implicit zero-shift QR algorithm
 .SH SYNOPSIS
@@ -115,7 +115,7 @@ The leading dimension of the array C.
 LDC >= max(1,N) if NCC > 0; LDC >=1 if NCC = 0.
 .TP 8
 WORK    (workspace) DOUBLE PRECISION array, dimension (2*N)
-if NCVT = NRU = NCC = 0, (max(1, 4*N-4)) otherwise
+if NCVT = NRU = NCC = 0, (max(1, 4*N)) otherwise
 .TP 8
 INFO    (output) INTEGER
 = 0:  successful exit

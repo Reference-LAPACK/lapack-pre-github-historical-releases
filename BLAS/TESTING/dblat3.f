@@ -7,7 +7,7 @@
 *  are read using the format ( A6, L2 ). An annotated example of a data
 *  file can be obtained by deleting the first 3 characters from the
 *  following 20 lines:
-*  'DBLAT3.SUMM'     NAME OF SUMMARY OUTPUT FILE
+*  'dblat3.out'      NAME OF SUMMARY OUTPUT FILE
 *  6                 UNIT NUMBER OF SUMMARY FILE
 *  'DBLAT3.SNAP'     NAME OF SNAPSHOT OUTPUT FILE
 *  -1                UNIT NUMBER OF SNAPSHOT FILE (NOT USED IF .LT. 0)

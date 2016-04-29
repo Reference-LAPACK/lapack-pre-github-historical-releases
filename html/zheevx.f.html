@@ -146,7 +146,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">          otherwise 2*N.
 </span><span class="comment">*</span><span class="comment">          For optimal efficiency, LWORK &gt;= (NB+1)*N,
 </span><span class="comment">*</span><span class="comment">          where NB is the max of the blocksize for <a name="ZHETRD.129"></a><a href="zhetrd.f.html#ZHETRD.1">ZHETRD</a> and for
-</span><span class="comment">*</span><span class="comment">          <a name="ZUNMTR.130"></a><a href="zunmtr.f.html#ZUNMTR.1">ZUNMTR</a> as returned by <a name="ILAENV.130"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>.
+</span><span class="comment">*</span><span class="comment">          <a name="ZUNMTR.130"></a><a href="zunmtr.f.html#ZUNMTR.1">ZUNMTR</a> as returned by <a name="ILAENV.130"></a><a href="hfy-index.html#ILAENV">ILAENV</a>.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">          If LWORK = -1, then a workspace query is assumed; the routine
 </span><span class="comment">*</span><span class="comment">          only calculates the optimal size of the WORK array, returns
@@ -190,9 +190,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.173"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.174"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.174"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       DOUBLE PRECISION   <a name="DLAMCH.175"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="ZLANHE.175"></a><a href="zlanhe.f.html#ZLANHE.1">ZLANHE</a>
-      EXTERNAL           <a name="LSAME.176"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.176"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="DLAMCH.176"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="ZLANHE.176"></a><a href="zlanhe.f.html#ZLANHE.1">ZLANHE</a>
+      EXTERNAL           <a name="LSAME.176"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.176"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="DLAMCH.176"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="ZLANHE.176"></a><a href="zlanhe.f.html#ZLANHE.1">ZLANHE</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           DCOPY, DSCAL, <a name="DSTEBZ.179"></a><a href="dstebz.f.html#DSTEBZ.1">DSTEBZ</a>, <a name="DSTERF.179"></a><a href="dsterf.f.html#DSTERF.1">DSTERF</a>, <a name="XERBLA.179"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, ZDSCAL,
@@ -248,8 +248,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
             WORK( 1 ) = LWKMIN
          ELSE
             LWKMIN = 2*N
-            NB = <a name="ILAENV.232"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZHETRD.232"></a><a href="zhetrd.f.html#ZHETRD.1">ZHETRD</a>'</span>, UPLO, N, -1, -1, -1 )
-            NB = MAX( NB, <a name="ILAENV.233"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNMTR.233"></a><a href="zunmtr.f.html#ZUNMTR.1">ZUNMTR</a>'</span>, UPLO, N, -1, -1, -1 ) )
+            NB = <a name="ILAENV.232"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZHETRD.232"></a><a href="zhetrd.f.html#ZHETRD.1">ZHETRD</a>'</span>, UPLO, N, -1, -1, -1 )
+            NB = MAX( NB, <a name="ILAENV.233"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNMTR.233"></a><a href="zunmtr.f.html#ZUNMTR.1">ZUNMTR</a>'</span>, UPLO, N, -1, -1, -1 ) )
             LWKOPT = MAX( 1, ( NB + 1 )*N )
             WORK( 1 ) = LWKOPT
          END IF

@@ -62,19 +62,19 @@ all: $(BLASLIB)
 #  the Level 1 BLAS.
 #---------------------------------------------------------
 SBLAS1 = isamax.o sasum.o saxpy.o scopy.o sdot.o snrm2.o \
-	srot.o srotg.o sscal.o sswap.o
+	srot.o srotg.o sscal.o sswap.o sdsdot.o srotmg.o srotm.o
 $(SBLAS1): $(FRC)
 
 CBLAS1 = scabs1.o scasum.o scnrm2.o icamax.o caxpy.o ccopy.o \
-	cdotc.o cdotu.o csscal.o crotg.o cscal.o cswap.o
+	cdotc.o cdotu.o csscal.o crotg.o cscal.o cswap.o csrot.o
 $(CBLAS1): $(FRC)
 
 DBLAS1 = idamax.o dasum.o daxpy.o dcopy.o ddot.o dnrm2.o \
-	drot.o drotg.o dscal.o dswap.o
+	drot.o drotg.o dscal.o dswap.o drotmg.o drotm.o
 $(DBLAS1): $(FRC)
 
 ZBLAS1 = dcabs1.o dzasum.o dznrm2.o izamax.o zaxpy.o zcopy.o \
-	zdotc.o zdotu.o zdscal.o zrotg.o zscal.o zswap.o
+	zdotc.o zdotu.o zdscal.o zrotg.o zscal.o zswap.o zdrot.o
 $(ZBLAS1): $(FRC)
 
 CB1AUX = isamax.o sasum.o saxpy.o scopy.o snrm2.o sscal.o
@@ -168,4 +168,4 @@ clean:
 	rm -f *.o
 
 .f.o: 
-	$(FORTRAN) $(OPTS) -c $*.f
+	$(FORTRAN) $(OPTS) -c $< -o $@

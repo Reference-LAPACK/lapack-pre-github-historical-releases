@@ -21,9 +21,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $                   LDD, E, LDE, F, LDF, SCALE, RDSUM, RDSCAL,
      $                   IWORK, PQ, INFO )
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1.1) --
 </span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">     January 2007
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
 </span>      CHARACTER          TRANS
@@ -73,10 +73,10 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">  This case is used to compute an estimate of Dif[(A, D), (B, E)] =
 </span><span class="comment">*</span><span class="comment">  sigma_min(Z) using reverse communicaton with <a name="DLACON.55"></a><a href="dlacon.f.html#DLACON.1">DLACON</a>.
 </span><span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  <a name="DTGSY2.57"></a><a href="dtgsy2.f.html#DTGSY2.1">DTGSY2</a> also (IJOB &gt;= 1) contributes to the computation in <a name="STGSYL.57"></a><a href="stgsyl.f.html#STGSYL.1">STGSYL</a>
+</span><span class="comment">*</span><span class="comment">  <a name="DTGSY2.57"></a><a href="dtgsy2.f.html#DTGSY2.1">DTGSY2</a> also (IJOB &gt;= 1) contributes to the computation in <a name="DTGSYL.57"></a><a href="dtgsyl.f.html#DTGSYL.1">DTGSYL</a>
 </span><span class="comment">*</span><span class="comment">  of an upper bound on the separation between to matrix pairs. Then
 </span><span class="comment">*</span><span class="comment">  the input (A, D), (B, E) are sub-pencils of the matrix pair in
-</span><span class="comment">*</span><span class="comment">  <a name="DTGSYL.60"></a><a href="dtgsyl.f.html#DTGSYL.1">DTGSYL</a>. See <a name="STGSYL.60"></a><a href="stgsyl.f.html#STGSYL.1">STGSYL</a> for details.
+</span><span class="comment">*</span><span class="comment">  <a name="DTGSYL.60"></a><a href="dtgsyl.f.html#DTGSYL.1">DTGSYL</a>. See <a name="DTGSYL.60"></a><a href="dtgsyl.f.html#DTGSYL.1">DTGSYL</a> for details.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  Arguments
 </span><span class="comment">*</span><span class="comment">  =========
@@ -161,7 +161,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">          On exit, the corresponding sum of squares updated with the
 </span><span class="comment">*</span><span class="comment">          contributions from the current sub-system.
 </span><span class="comment">*</span><span class="comment">          If TRANS = 'T' RDSUM is not touched.
-</span><span class="comment">*</span><span class="comment">          NOTE: RDSUM only makes sense when <a name="DTGSY2.145"></a><a href="dtgsy2.f.html#DTGSY2.1">DTGSY2</a> is called by <a name="STGSYL.145"></a><a href="stgsyl.f.html#STGSYL.1">STGSYL</a>.
+</span><span class="comment">*</span><span class="comment">          NOTE: RDSUM only makes sense when <a name="DTGSY2.145"></a><a href="dtgsy2.f.html#DTGSY2.1">DTGSY2</a> is called by <a name="DTGSYL.145"></a><a href="dtgsyl.f.html#DTGSYL.1">DTGSYL</a>.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  RDSCAL  (input/output) DOUBLE PRECISION
 </span><span class="comment">*</span><span class="comment">          On entry, scaling factor used to prevent overflow in RDSUM.
@@ -531,7 +531,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
                      CALL DGER( MB, N-JE, ONE, RHS( 3 ), 1,
      $                          B( JS, JE+1 ), LDB, C( IS, JE+1 ), LDC )
                      CALL DGER( MB, N-JE, ONE, RHS( 3 ), 1,
-     $                          E( JS, JE+1 ), LDB, F( IS, JE+1 ), LDC )
+     $                          E( JS, JE+1 ), LDE, F( IS, JE+1 ), LDF )
                   END IF
 <span class="comment">*</span><span class="comment">
 </span>               ELSE IF( ( MB.EQ.2 ) .AND. ( NB.EQ.2 ) ) THEN

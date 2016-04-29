@@ -150,9 +150,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.133"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.134"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.134"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       REAL               <a name="SLAMCH.135"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANSY.135"></a><a href="slansy.f.html#SLANSY.1">SLANSY</a>
-      EXTERNAL           <a name="ILAENV.136"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="LSAME.136"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="SLAMCH.136"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANSY.136"></a><a href="slansy.f.html#SLANSY.1">SLANSY</a>
+      EXTERNAL           <a name="ILAENV.136"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="LSAME.136"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="SLAMCH.136"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANSY.136"></a><a href="slansy.f.html#SLANSY.1">SLANSY</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           <a name="SLACPY.139"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>, <a name="SLASCL.139"></a><a href="slascl.f.html#SLASCL.1">SLASCL</a>, <a name="SORMTR.139"></a><a href="sormtr.f.html#SORMTR.1">SORMTR</a>, SSCAL, <a name="SSTEDC.139"></a><a href="sstedc.f.html#SSTEDC.1">SSTEDC</a>, <a name="SSTERF.139"></a><a href="ssterf.f.html#SSTERF.1">SSTERF</a>,
@@ -195,7 +195,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
                LWMIN = 2*N + 1
             END IF
             LOPT = MAX( LWMIN, 2*N +
-     $                  <a name="ILAENV.179"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SSYTRD.179"></a><a href="ssytrd.f.html#SSYTRD.1">SSYTRD</a>'</span>, UPLO, N, -1, -1, -1 ) )
+     $                  <a name="ILAENV.179"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SSYTRD.179"></a><a href="ssytrd.f.html#SSYTRD.1">SSYTRD</a>'</span>, UPLO, N, -1, -1, -1 ) )
             LIOPT = LIWMIN
          END IF
          WORK( 1 ) = LOPT

@@ -20,9 +20,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       SUBROUTINE <a name="ZGGLSE.1"></a><a href="zgglse.f.html#ZGGLSE.1">ZGGLSE</a>( M, N, P, A, LDA, B, LDB, C, D, X, WORK, LWORK,
      $                   INFO )
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  -- LAPACK driver routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">  -- LAPACK driver routine (version 3.1.1) --
 </span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">     February 2007
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
 </span>      INTEGER            INFO, LDA, LDB, LWORK, M, N, P
@@ -140,8 +140,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $                   <a name="ZTRTRS.121"></a><a href="ztrtrs.f.html#ZTRTRS.1">ZTRTRS</a>, <a name="ZUNMQR.121"></a><a href="zunmqr.f.html#ZUNMQR.1">ZUNMQR</a>, <a name="ZUNMRQ.121"></a><a href="zunmrq.f.html#ZUNMRQ.1">ZUNMRQ</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      INTEGER            <a name="ILAENV.124"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="ILAENV.125"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+</span>      INTEGER            <a name="ILAENV.124"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="ILAENV.125"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
 </span>      INTRINSIC          INT, MAX, MIN
@@ -172,10 +172,10 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
             LWKMIN = 1
             LWKOPT = 1
          ELSE
-            NB1 = <a name="ILAENV.156"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZGEQRF.156"></a><a href="zgeqrf.f.html#ZGEQRF.1">ZGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-            NB2 = <a name="ILAENV.157"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZGERQF.157"></a><a href="zgerqf.f.html#ZGERQF.1">ZGERQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-            NB3 = <a name="ILAENV.158"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNMQR.158"></a><a href="zunmqr.f.html#ZUNMQR.1">ZUNMQR</a>'</span>, <span class="string">' '</span>, M, N, P, -1 )
-            NB4 = <a name="ILAENV.159"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNMRQ.159"></a><a href="zunmrq.f.html#ZUNMRQ.1">ZUNMRQ</a>'</span>, <span class="string">' '</span>, M, N, P, -1 )
+            NB1 = <a name="ILAENV.156"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZGEQRF.156"></a><a href="zgeqrf.f.html#ZGEQRF.1">ZGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+            NB2 = <a name="ILAENV.157"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZGERQF.157"></a><a href="zgerqf.f.html#ZGERQF.1">ZGERQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+            NB3 = <a name="ILAENV.158"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNMQR.158"></a><a href="zunmqr.f.html#ZUNMQR.1">ZUNMQR</a>'</span>, <span class="string">' '</span>, M, N, P, -1 )
+            NB4 = <a name="ILAENV.159"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNMRQ.159"></a><a href="zunmrq.f.html#ZUNMRQ.1">ZUNMRQ</a>'</span>, <span class="string">' '</span>, M, N, P, -1 )
             NB = MAX( NB1, NB2, NB3, NB4 )
             LWKMIN = M + N + P
             LWKOPT = P + MN + MAX( M, N )*NB
@@ -223,7 +223,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">     Solve T12*x2 = d for x2
 </span><span class="comment">*</span><span class="comment">
 </span>      IF( P.GT.0 ) THEN
-         CALL <a name="CTRTRS.207"></a><a href="ctrtrs.f.html#CTRTRS.1">CTRTRS</a>( <span class="string">'Upper'</span>, <span class="string">'No transpose'</span>, <span class="string">'Non-unit'</span>, P, 1,
+         CALL <a name="ZTRTRS.207"></a><a href="ztrtrs.f.html#ZTRTRS.1">ZTRTRS</a>( <span class="string">'Upper'</span>, <span class="string">'No transpose'</span>, <span class="string">'Non-unit'</span>, P, 1,
      $                B( 1, N-P+1 ), LDB, D, P, INFO )
 <span class="comment">*</span><span class="comment">
 </span>         IF( INFO.GT.0 ) THEN
@@ -244,7 +244,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">     Solve R11*x1 = c1 for x1
 </span><span class="comment">*</span><span class="comment">
 </span>      IF( N.GT.P ) THEN
-         CALL <a name="CTRTRS.228"></a><a href="ctrtrs.f.html#CTRTRS.1">CTRTRS</a>( <span class="string">'Upper'</span>, <span class="string">'No transpose'</span>, <span class="string">'Non-unit'</span>, N-P, 1,
+         CALL <a name="ZTRTRS.228"></a><a href="ztrtrs.f.html#ZTRTRS.1">ZTRTRS</a>( <span class="string">'Upper'</span>, <span class="string">'No transpose'</span>, <span class="string">'Non-unit'</span>, N-P, 1,
      $                A, LDA, C, N-P, INFO )
 <span class="comment">*</span><span class="comment">
 </span>         IF( INFO.GT.0 ) THEN

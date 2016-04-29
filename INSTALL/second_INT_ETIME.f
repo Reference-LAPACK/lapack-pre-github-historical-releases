@@ -1,14 +1,14 @@
       REAL             FUNCTION SECOND( )
 *
-*  -- LAPACK auxiliary routine (version 3.1) --
+*  -- LAPACK auxiliary routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     February 2007
 *
 *  Purpose
 *  =======
 *
 *  SECOND returns the user time for a process in seconds.
-*  This version gets the time from the system function ETIME.
+*  This version gets the time from the INTERNAL function ETIME.
 *
 * =====================================================================
 *
@@ -18,9 +18,9 @@
 *     .. Local Arrays ..
       REAL               TARRAY( 2 )
 *     ..
-*     .. External Functions ..
+*     .. Intrinsic Functions ..
       REAL               ETIME
-      EXTERNAL           ETIME
+      INTRINSIC          ETIME
 *     ..
 *     .. Executable Statements ..
 *

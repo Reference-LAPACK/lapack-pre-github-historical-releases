@@ -129,7 +129,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">          The block algorithm requires that:
 </span><span class="comment">*</span><span class="comment">             LWORK &gt;= MAX( MN+2*N+NB*(N+1), 2*MN+NB*NRHS ),
 </span><span class="comment">*</span><span class="comment">          where NB is an upper bound on the blocksize returned
-</span><span class="comment">*</span><span class="comment">          by <a name="ILAENV.113"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> for the routines <a name="SGEQP3.113"></a><a href="sgeqp3.f.html#SGEQP3.1">SGEQP3</a>, <a name="STZRZF.113"></a><a href="stzrzf.f.html#STZRZF.1">STZRZF</a>, <a name="STZRQF.113"></a><a href="stzrqf.f.html#STZRQF.1">STZRQF</a>, <a name="SORMQR.113"></a><a href="sormqr.f.html#SORMQR.1">SORMQR</a>,
+</span><span class="comment">*</span><span class="comment">          by <a name="ILAENV.113"></a><a href="hfy-index.html#ILAENV">ILAENV</a> for the routines <a name="SGEQP3.113"></a><a href="sgeqp3.f.html#SGEQP3.1">SGEQP3</a>, <a name="STZRZF.113"></a><a href="stzrzf.f.html#STZRZF.1">STZRZF</a>, <a name="STZRQF.113"></a><a href="stzrqf.f.html#STZRQF.1">STZRQF</a>, <a name="SORMQR.113"></a><a href="sormqr.f.html#SORMQR.1">SORMQR</a>,
 </span><span class="comment">*</span><span class="comment">          and <a name="SORMRZ.114"></a><a href="sormrz.f.html#SORMRZ.1">SORMRZ</a>.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">          If LWORK = -1, then a workspace query is assumed; the routine
@@ -165,9 +165,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $                   SMAXPR, SMIN, SMINPR, SMLNUM, WSIZE
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      INTEGER            <a name="ILAENV.149"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+</span>      INTEGER            <a name="ILAENV.149"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       REAL               <a name="SLAMCH.150"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANGE.150"></a><a href="slange.f.html#SLANGE.1">SLANGE</a>
-      EXTERNAL           <a name="ILAENV.151"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="SLAMCH.151"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANGE.151"></a><a href="slange.f.html#SLANGE.1">SLANGE</a>
+      EXTERNAL           <a name="ILAENV.151"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="SLAMCH.151"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANGE.151"></a><a href="slange.f.html#SLANGE.1">SLANGE</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           SCOPY, <a name="SGEQP3.154"></a><a href="sgeqp3.f.html#SGEQP3.1">SGEQP3</a>, <a name="SLABAD.154"></a><a href="slabad.f.html#SLABAD.1">SLABAD</a>, <a name="SLAIC1.154"></a><a href="slaic1.f.html#SLAIC1.1">SLAIC1</a>, <a name="SLASCL.154"></a><a href="slascl.f.html#SLASCL.1">SLASCL</a>, <a name="SLASET.154"></a><a href="slaset.f.html#SLASET.1">SLASET</a>,
@@ -205,10 +205,10 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
             LWKMIN = 1
             LWKOPT = 1
          ELSE
-            NB1 = <a name="ILAENV.189"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.189"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-            NB2 = <a name="ILAENV.190"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGERQF.190"></a><a href="sgerqf.f.html#SGERQF.1">SGERQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-            NB3 = <a name="ILAENV.191"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORMQR.191"></a><a href="sormqr.f.html#SORMQR.1">SORMQR</a>'</span>, <span class="string">' '</span>, M, N, NRHS, -1 )
-            NB4 = <a name="ILAENV.192"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORMRQ.192"></a><a href="sormrq.f.html#SORMRQ.1">SORMRQ</a>'</span>, <span class="string">' '</span>, M, N, NRHS, -1 )
+            NB1 = <a name="ILAENV.189"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.189"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+            NB2 = <a name="ILAENV.190"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGERQF.190"></a><a href="sgerqf.f.html#SGERQF.1">SGERQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+            NB3 = <a name="ILAENV.191"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORMQR.191"></a><a href="sormqr.f.html#SORMQR.1">SORMQR</a>'</span>, <span class="string">' '</span>, M, N, NRHS, -1 )
+            NB4 = <a name="ILAENV.192"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORMRQ.192"></a><a href="sormrq.f.html#SORMRQ.1">SORMRQ</a>'</span>, <span class="string">' '</span>, M, N, NRHS, -1 )
             NB = MAX( NB1, NB2, NB3, NB4 )
             LWKMIN = MN + MAX( 2*MN, N + 1, MN + NRHS )
             LWKOPT = MAX( LWKMIN,

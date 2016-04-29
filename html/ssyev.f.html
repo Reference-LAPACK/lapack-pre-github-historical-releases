@@ -75,7 +75,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">  LWORK   (input) INTEGER
 </span><span class="comment">*</span><span class="comment">          The length of the array WORK.  LWORK &gt;= max(1,3*N-1).
 </span><span class="comment">*</span><span class="comment">          For optimal efficiency, LWORK &gt;= (NB+2)*N,
-</span><span class="comment">*</span><span class="comment">          where NB is the blocksize for <a name="SSYTRD.59"></a><a href="ssytrd.f.html#SSYTRD.1">SSYTRD</a> returned by <a name="ILAENV.59"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>.
+</span><span class="comment">*</span><span class="comment">          where NB is the blocksize for <a name="SSYTRD.59"></a><a href="ssytrd.f.html#SSYTRD.1">SSYTRD</a> returned by <a name="ILAENV.59"></a><a href="hfy-index.html#ILAENV">ILAENV</a>.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">          If LWORK = -1, then a workspace query is assumed; the routine
 </span><span class="comment">*</span><span class="comment">          only calculates the optimal size of the WORK array, returns
@@ -104,9 +104,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.87"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.88"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.88"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       REAL               <a name="SLAMCH.89"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANSY.89"></a><a href="slansy.f.html#SLANSY.1">SLANSY</a>
-      EXTERNAL           <a name="ILAENV.90"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="LSAME.90"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="SLAMCH.90"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANSY.90"></a><a href="slansy.f.html#SLANSY.1">SLANSY</a>
+      EXTERNAL           <a name="ILAENV.90"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="LSAME.90"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="SLAMCH.90"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANSY.90"></a><a href="slansy.f.html#SLANSY.1">SLANSY</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           <a name="SLASCL.93"></a><a href="slascl.f.html#SLASCL.1">SLASCL</a>, <a name="SORGTR.93"></a><a href="sorgtr.f.html#SORGTR.1">SORGTR</a>, SSCAL, <a name="SSTEQR.93"></a><a href="ssteqr.f.html#SSTEQR.1">SSTEQR</a>, <a name="SSTERF.93"></a><a href="ssterf.f.html#SSTERF.1">SSTERF</a>, <a name="SSYTRD.93"></a><a href="ssytrd.f.html#SSYTRD.1">SSYTRD</a>,
@@ -135,7 +135,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      IF( INFO.EQ.0 ) THEN
-         NB = <a name="ILAENV.119"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SSYTRD.119"></a><a href="ssytrd.f.html#SSYTRD.1">SSYTRD</a>'</span>, UPLO, N, -1, -1, -1 )
+         NB = <a name="ILAENV.119"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SSYTRD.119"></a><a href="ssytrd.f.html#SSYTRD.1">SSYTRD</a>'</span>, UPLO, N, -1, -1, -1 )
          LWKOPT = MAX( 1, ( NB+2 )*N )
          WORK( 1 ) = LWKOPT
 <span class="comment">*</span><span class="comment">

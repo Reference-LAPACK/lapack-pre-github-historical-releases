@@ -1,8 +1,8 @@
       REAL             FUNCTION SQRT12( M, N, A, LDA, S, WORK, LWORK )
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     January 2007
 *
 *     .. Scalar Arguments ..
       INTEGER            LDA, LWORK, M, N
@@ -40,8 +40,8 @@
 *  WORK    (workspace) REAL array, dimension (LWORK)
 *
 *  LWORK   (input) INTEGER
-*          The length of the array WORK. LWORK >= M*N + 4*min(M,N) +
-*          max(M,N).
+*          The length of the array WORK. LWORK >= max(M*N + 4*min(M,N) +
+*          max(M,N), M*N+2*MIN( M, N )+4*N).
 *
 *  =====================================================================
 *
@@ -73,7 +73,8 @@
 *
 *     Test that enough workspace is supplied
 *
-      IF( LWORK.LT.M*N+4*MIN( M, N )+MAX( M, N ) ) THEN
+      IF( LWORK.LT.MAX( M*N+4*MIN( M, N )+MAX( M, N ),
+     $                  M*N+2*MIN( M, N )+4*N) ) THEN
          CALL XERBLA( 'SQRT12', 7 )
          RETURN
       END IF

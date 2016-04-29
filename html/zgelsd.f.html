@@ -138,7 +138,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">             10*M + 2*M*SMLSIZ + 8*M*NLVL + 3*SMLSIZ*NRHS +
 </span><span class="comment">*</span><span class="comment">             (SMLSIZ+1)**2
 </span><span class="comment">*</span><span class="comment">          if M is less than N, the code will execute correctly.
-</span><span class="comment">*</span><span class="comment">          SMLSIZ is returned by <a name="ILAENV.122"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> and is equal to the maximum
+</span><span class="comment">*</span><span class="comment">          SMLSIZ is returned by <a name="ILAENV.122"></a><a href="hfy-index.html#ILAENV">ILAENV</a> and is equal to the maximum
 </span><span class="comment">*</span><span class="comment">          size of the subproblems at the bottom of the computation
 </span><span class="comment">*</span><span class="comment">          tree (usually about 25), and
 </span><span class="comment">*</span><span class="comment">             NLVL = MAX( 0, INT( LOG_2( MIN( M,N )/(SMLSIZ+1) ) ) + 1 )
@@ -185,9 +185,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $                   <a name="ZUNMLQ.166"></a><a href="zunmlq.f.html#ZUNMLQ.1">ZUNMLQ</a>, <a name="ZUNMQR.166"></a><a href="zunmqr.f.html#ZUNMQR.1">ZUNMQR</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      INTEGER            <a name="ILAENV.169"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+</span>      INTEGER            <a name="ILAENV.169"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       DOUBLE PRECISION   <a name="DLAMCH.170"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="ZLANGE.170"></a><a href="zlange.f.html#ZLANGE.1">ZLANGE</a>
-      EXTERNAL           <a name="ILAENV.171"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="DLAMCH.171"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="ZLANGE.171"></a><a href="zlange.f.html#ZLANGE.1">ZLANGE</a>
+      EXTERNAL           <a name="ILAENV.171"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="DLAMCH.171"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="ZLANGE.171"></a><a href="zlange.f.html#ZLANGE.1">ZLANGE</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
 </span>      INTRINSIC          INT, LOG, MAX, MIN, DBLE
@@ -217,7 +217,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">     minimal amount of workspace needed at that point in the code,
 </span><span class="comment">*</span><span class="comment">     as well as the preferred amount for good performance.
 </span><span class="comment">*</span><span class="comment">     NB refers to the optimal block size for the immediately
-</span><span class="comment">*</span><span class="comment">     following subroutine, as returned by <a name="ILAENV.201"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>.)
+</span><span class="comment">*</span><span class="comment">     following subroutine, as returned by <a name="ILAENV.201"></a><a href="hfy-index.html#ILAENV">ILAENV</a>.)
 </span><span class="comment">*</span><span class="comment">
 </span>      IF( INFO.EQ.0 ) THEN
          MINWRK = 1
@@ -225,8 +225,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
          LIWORK = 1
          LRWORK = 1
          IF( MINMN.GT.0 ) THEN
-            SMLSIZ = <a name="ILAENV.209"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 9, <span class="string">'<a name="ZGELSD.209"></a><a href="zgelsd.f.html#ZGELSD.1">ZGELSD</a>'</span>, <span class="string">' '</span>, 0, 0, 0, 0 )
-            MNTHR = <a name="ILAENV.210"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 6, <span class="string">'<a name="ZGELSD.210"></a><a href="zgelsd.f.html#ZGELSD.1">ZGELSD</a>'</span>, <span class="string">' '</span>, M, N, NRHS, -1 )
+            SMLSIZ = <a name="ILAENV.209"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 9, <span class="string">'<a name="ZGELSD.209"></a><a href="zgelsd.f.html#ZGELSD.1">ZGELSD</a>'</span>, <span class="string">' '</span>, 0, 0, 0, 0 )
+            MNTHR = <a name="ILAENV.210"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 6, <span class="string">'<a name="ZGELSD.210"></a><a href="zgelsd.f.html#ZGELSD.1">ZGELSD</a>'</span>, <span class="string">' '</span>, M, N, NRHS, -1 )
             NLVL = MAX( INT( LOG( DBLE( MINMN ) / DBLE( SMLSIZ + 1 ) ) /
      $                  LOG( TWO ) ) + 1, 0 )
             LIWORK = 3*MINMN*NLVL + 11*MINMN
@@ -237,9 +237,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">                        columns.
 </span><span class="comment">*</span><span class="comment">
 </span>               MM = N
-               MAXWRK = MAX( MAXWRK, N*<a name="ILAENV.221"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZGEQRF.221"></a><a href="zgeqrf.f.html#ZGEQRF.1">ZGEQRF</a>'</span>, <span class="string">' '</span>, M, N,
+               MAXWRK = MAX( MAXWRK, N*<a name="ILAENV.221"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZGEQRF.221"></a><a href="zgeqrf.f.html#ZGEQRF.1">ZGEQRF</a>'</span>, <span class="string">' '</span>, M, N,
      $                       -1, -1 ) )
-               MAXWRK = MAX( MAXWRK, NRHS*<a name="ILAENV.223"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNMQR.223"></a><a href="zunmqr.f.html#ZUNMQR.1">ZUNMQR</a>'</span>, <span class="string">'LC'</span>, M,
+               MAXWRK = MAX( MAXWRK, NRHS*<a name="ILAENV.223"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNMQR.223"></a><a href="zunmqr.f.html#ZUNMQR.1">ZUNMQR</a>'</span>, <span class="string">'LC'</span>, M,
      $                       NRHS, N, -1 ) )
             END IF
             IF( M.GE.N ) THEN
@@ -248,11 +248,11 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">
 </span>               LRWORK = 10*N + 2*N*SMLSIZ + 8*N*NLVL + 3*SMLSIZ*NRHS +
      $                  ( SMLSIZ + 1 )**2
-               MAXWRK = MAX( MAXWRK, 2*N + ( MM + N )*<a name="ILAENV.232"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1,
+               MAXWRK = MAX( MAXWRK, 2*N + ( MM + N )*<a name="ILAENV.232"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1,
      $                       <span class="string">'<a name="ZGEBRD.233"></a><a href="zgebrd.f.html#ZGEBRD.1">ZGEBRD</a>'</span>, <span class="string">' '</span>, MM, N, -1, -1 ) )
-               MAXWRK = MAX( MAXWRK, 2*N + NRHS*<a name="ILAENV.234"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNMBR.234"></a><a href="zunmbr.f.html#ZUNMBR.1">ZUNMBR</a>'</span>,
+               MAXWRK = MAX( MAXWRK, 2*N + NRHS*<a name="ILAENV.234"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNMBR.234"></a><a href="zunmbr.f.html#ZUNMBR.1">ZUNMBR</a>'</span>,
      $                       <span class="string">'QLC'</span>, MM, NRHS, N, -1 ) )
-               MAXWRK = MAX( MAXWRK, 2*N + ( N - 1 )*<a name="ILAENV.236"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1,
+               MAXWRK = MAX( MAXWRK, 2*N + ( N - 1 )*<a name="ILAENV.236"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1,
      $                       <span class="string">'<a name="ZUNMBR.237"></a><a href="zunmbr.f.html#ZUNMBR.1">ZUNMBR</a>'</span>, <span class="string">'PLN'</span>, N, NRHS, N, -1 ) )
                MAXWRK = MAX( MAXWRK, 2*N + N*NRHS )
                MINWRK = MAX( 2*N + MM, 2*N + N*NRHS )
@@ -265,13 +265,13 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">                 Path 2a - underdetermined, with many more columns
 </span><span class="comment">*</span><span class="comment">                           than rows.
 </span><span class="comment">*</span><span class="comment">
-</span>                  MAXWRK = M + M*<a name="ILAENV.249"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZGELQF.249"></a><a href="zgelqf.f.html#ZGELQF.1">ZGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1,
+</span>                  MAXWRK = M + M*<a name="ILAENV.249"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZGELQF.249"></a><a href="zgelqf.f.html#ZGELQF.1">ZGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1,
      $                     -1 )
-                  MAXWRK = MAX( MAXWRK, M*M + 4*M + 2*M*<a name="ILAENV.251"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1,
+                  MAXWRK = MAX( MAXWRK, M*M + 4*M + 2*M*<a name="ILAENV.251"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1,
      $                          <span class="string">'<a name="ZGEBRD.252"></a><a href="zgebrd.f.html#ZGEBRD.1">ZGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
-                  MAXWRK = MAX( MAXWRK, M*M + 4*M + NRHS*<a name="ILAENV.253"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1,
+                  MAXWRK = MAX( MAXWRK, M*M + 4*M + NRHS*<a name="ILAENV.253"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1,
      $                          <span class="string">'<a name="ZUNMBR.254"></a><a href="zunmbr.f.html#ZUNMBR.1">ZUNMBR</a>'</span>, <span class="string">'QLC'</span>, M, NRHS, M, -1 ) )
-                  MAXWRK = MAX( MAXWRK, M*M + 4*M + ( M - 1 )*<a name="ILAENV.255"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1,
+                  MAXWRK = MAX( MAXWRK, M*M + 4*M + ( M - 1 )*<a name="ILAENV.255"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1,
      $                          <span class="string">'<a name="ZUNMLQ.256"></a><a href="zunmlq.f.html#ZUNMLQ.1">ZUNMLQ</a>'</span>, <span class="string">'LC'</span>, N, NRHS, M, -1 ) )
                   IF( NRHS.GT.1 ) THEN
                      MAXWRK = MAX( MAXWRK, M*M + M + M*NRHS )
@@ -283,11 +283,11 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 2 - underdetermined.
 </span><span class="comment">*</span><span class="comment">
-</span>                  MAXWRK = 2*M + ( N + M )*<a name="ILAENV.267"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZGEBRD.267"></a><a href="zgebrd.f.html#ZGEBRD.1">ZGEBRD</a>'</span>, <span class="string">' '</span>, M,
+</span>                  MAXWRK = 2*M + ( N + M )*<a name="ILAENV.267"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZGEBRD.267"></a><a href="zgebrd.f.html#ZGEBRD.1">ZGEBRD</a>'</span>, <span class="string">' '</span>, M,
      $                     N, -1, -1 )
-                  MAXWRK = MAX( MAXWRK, 2*M + NRHS*<a name="ILAENV.269"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNMBR.269"></a><a href="zunmbr.f.html#ZUNMBR.1">ZUNMBR</a>'</span>,
+                  MAXWRK = MAX( MAXWRK, 2*M + NRHS*<a name="ILAENV.269"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNMBR.269"></a><a href="zunmbr.f.html#ZUNMBR.1">ZUNMBR</a>'</span>,
      $                          <span class="string">'QLC'</span>, M, NRHS, M, -1 ) )
-                  MAXWRK = MAX( MAXWRK, 2*M + M*<a name="ILAENV.271"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNMBR.271"></a><a href="zunmbr.f.html#ZUNMBR.1">ZUNMBR</a>'</span>,
+                  MAXWRK = MAX( MAXWRK, 2*M + M*<a name="ILAENV.271"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNMBR.271"></a><a href="zunmbr.f.html#ZUNMBR.1">ZUNMBR</a>'</span>,
      $                          <span class="string">'PLN'</span>, N, NRHS, M, -1 ) )
                   MAXWRK = MAX( MAXWRK, 2*M + M*NRHS )
                END IF

@@ -124,8 +124,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.107"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.108"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="LSAME.109"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.109"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.108"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="LSAME.109"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.109"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           <a name="XERBLA.112"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, <a name="ZUNGLQ.112"></a><a href="zunglq.f.html#ZUNGLQ.1">ZUNGLQ</a>, <a name="ZUNGQR.112"></a><a href="zungqr.f.html#ZUNGQR.1">ZUNGQR</a>
@@ -159,9 +159,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span>      IF( INFO.EQ.0 ) THEN
          IF( WANTQ ) THEN
-            NB = <a name="ILAENV.143"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNGQR.143"></a><a href="zungqr.f.html#ZUNGQR.1">ZUNGQR</a>'</span>, <span class="string">' '</span>, M, N, K, -1 )
+            NB = <a name="ILAENV.143"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNGQR.143"></a><a href="zungqr.f.html#ZUNGQR.1">ZUNGQR</a>'</span>, <span class="string">' '</span>, M, N, K, -1 )
          ELSE
-            NB = <a name="ILAENV.145"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNGLQ.145"></a><a href="zunglq.f.html#ZUNGLQ.1">ZUNGLQ</a>'</span>, <span class="string">' '</span>, M, N, K, -1 )
+            NB = <a name="ILAENV.145"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNGLQ.145"></a><a href="zunglq.f.html#ZUNGLQ.1">ZUNGLQ</a>'</span>, <span class="string">' '</span>, M, N, K, -1 )
          END IF
          LWKOPT = MAX( 1, MN )*NB
          WORK( 1 ) = LWKOPT

@@ -118,9 +118,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>      EXTERNAL           <a name="SGEQRF.99"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>, <a name="SLAQP2.99"></a><a href="slaqp2.f.html#SLAQP2.1">SLAQP2</a>, <a name="SLAQPS.99"></a><a href="slaqps.f.html#SLAQPS.1">SLAQPS</a>, <a name="SORMQR.99"></a><a href="sormqr.f.html#SORMQR.1">SORMQR</a>, SSWAP, <a name="XERBLA.99"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      INTEGER            <a name="ILAENV.102"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+</span>      INTEGER            <a name="ILAENV.102"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       REAL               SNRM2
-      EXTERNAL           <a name="ILAENV.104"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, SNRM2
+      EXTERNAL           <a name="ILAENV.104"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, SNRM2
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
 </span>      INTRINSIC          INT, MAX, MIN
@@ -144,7 +144,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
             LWKOPT = 1
          ELSE
             IWS = 3*N + 1
-            NB = <a name="ILAENV.128"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( INB, <span class="string">'<a name="SGEQRF.128"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+            NB = <a name="ILAENV.128"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( INB, <span class="string">'<a name="SGEQRF.128"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
             LWKOPT = 2*N + ( N + 1 )*NB
          END IF
          WORK( 1 ) = LWKOPT
@@ -217,7 +217,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">        Determine the block size.
 </span><span class="comment">*</span><span class="comment">
-</span>         NB = <a name="ILAENV.201"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( INB, <span class="string">'<a name="SGEQRF.201"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, SM, SN, -1, -1 )
+</span>         NB = <a name="ILAENV.201"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( INB, <span class="string">'<a name="SGEQRF.201"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, SM, SN, -1, -1 )
          NBMIN = 2
          NX = 0
 <span class="comment">*</span><span class="comment">
@@ -225,7 +225,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">           Determine when to cross over from blocked to unblocked code.
 </span><span class="comment">*</span><span class="comment">
-</span>            NX = MAX( 0, <a name="ILAENV.209"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( IXOVER, <span class="string">'<a name="SGEQRF.209"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, SM, SN, -1,
+</span>            NX = MAX( 0, <a name="ILAENV.209"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( IXOVER, <span class="string">'<a name="SGEQRF.209"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, SM, SN, -1,
      $           -1 ) )
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">
@@ -241,7 +241,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">                 determine the minimum value of NB.
 </span><span class="comment">*</span><span class="comment">
 </span>                  NB = ( LWORK-2*SN ) / ( SN+1 )
-                  NBMIN = MAX( 2, <a name="ILAENV.225"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( INBMIN, <span class="string">'<a name="SGEQRF.225"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, SM, SN,
+                  NBMIN = MAX( 2, <a name="ILAENV.225"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( INBMIN, <span class="string">'<a name="SGEQRF.225"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, SM, SN,
      $                    -1, -1 ) )
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">

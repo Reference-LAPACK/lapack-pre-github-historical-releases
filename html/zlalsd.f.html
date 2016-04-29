@@ -153,7 +153,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           DGEMM, <a name="DLARTG.136"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>, <a name="DLASCL.136"></a><a href="dlascl.f.html#DLASCL.1">DLASCL</a>, <a name="DLASDA.136"></a><a href="dlasda.f.html#DLASDA.1">DLASDA</a>, <a name="DLASDQ.136"></a><a href="dlasdq.f.html#DLASDQ.1">DLASDQ</a>, <a name="DLASET.136"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>,
-     $                   <a name="DLASRT.137"></a><a href="dlasrt.f.html#DLASRT.1">DLASRT</a>, <a name="XERBLA.137"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, ZCOPY, <a name="ZDROT.137"></a><a href="zdrot.f.html#ZDROT.1">ZDROT</a>, <a name="ZLACPY.137"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>, <a name="ZLALSA.137"></a><a href="zlalsa.f.html#ZLALSA.1">ZLALSA</a>,
+     $                   <a name="DLASRT.137"></a><a href="dlasrt.f.html#DLASRT.1">DLASRT</a>, <a name="XERBLA.137"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, ZCOPY, ZDROT, <a name="ZLACPY.137"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>, <a name="ZLALSA.137"></a><a href="zlalsa.f.html#ZLALSA.1">ZLALSA</a>,
      $                   <a name="ZLASCL.138"></a><a href="zlascl.f.html#ZLASCL.1">ZLASCL</a>, <a name="ZLASET.138"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
@@ -213,7 +213,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
             E( I ) = SN*D( I+1 )
             D( I+1 ) = CS*D( I+1 )
             IF( NRHS.EQ.1 ) THEN
-               CALL <a name="ZDROT.197"></a><a href="zdrot.f.html#ZDROT.1">ZDROT</a>( 1, B( I, 1 ), 1, B( I+1, 1 ), 1, CS, SN )
+               CALL ZDROT( 1, B( I, 1 ), 1, B( I+1, 1 ), 1, CS, SN )
             ELSE
                RWORK( I*2-1 ) = CS
                RWORK( I*2 ) = SN
@@ -224,7 +224,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
                DO 20 J = 1, N - 1
                   CS = RWORK( J*2-1 )
                   SN = RWORK( J*2 )
-                  CALL <a name="ZDROT.208"></a><a href="zdrot.f.html#ZDROT.1">ZDROT</a>( 1, B( J, I ), 1, B( J+1, I ), 1, CS, SN )
+                  CALL ZDROT( 1, B( J, I ), 1, B( J+1, I ), 1, CS, SN )
    20          CONTINUE
    30       CONTINUE
          END IF

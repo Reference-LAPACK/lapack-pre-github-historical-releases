@@ -162,8 +162,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.145"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.146"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="LSAME.147"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.147"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.146"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="LSAME.147"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.147"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
 </span><span class="comment">*</span><span class="comment">
@@ -186,7 +186,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">        Determine the block size.
 </span><span class="comment">*</span><span class="comment">
-</span>         NB = <a name="ILAENV.170"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DSYTRD.170"></a><a href="dsytrd.f.html#DSYTRD.1">DSYTRD</a>'</span>, UPLO, N, -1, -1, -1 )
+</span>         NB = <a name="ILAENV.170"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DSYTRD.170"></a><a href="dsytrd.f.html#DSYTRD.1">DSYTRD</a>'</span>, UPLO, N, -1, -1, -1 )
          LWKOPT = N*NB
          WORK( 1 ) = LWKOPT
       END IF
@@ -212,7 +212,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">        Determine when to cross over from blocked to unblocked code
 </span><span class="comment">*</span><span class="comment">        (last block is always handled by unblocked code).
 </span><span class="comment">*</span><span class="comment">
-</span>         NX = MAX( NB, <a name="ILAENV.196"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 3, <span class="string">'<a name="DSYTRD.196"></a><a href="dsytrd.f.html#DSYTRD.1">DSYTRD</a>'</span>, UPLO, N, -1, -1, -1 ) )
+</span>         NX = MAX( NB, <a name="ILAENV.196"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 3, <span class="string">'<a name="DSYTRD.196"></a><a href="dsytrd.f.html#DSYTRD.1">DSYTRD</a>'</span>, UPLO, N, -1, -1, -1 ) )
          IF( NX.LT.N ) THEN
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">           Determine if workspace is large enough for blocked code.
@@ -226,7 +226,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">              unblocked code by setting NX = N.
 </span><span class="comment">*</span><span class="comment">
 </span>               NB = MAX( LWORK / LDWORK, 1 )
-               NBMIN = <a name="ILAENV.210"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 2, <span class="string">'<a name="DSYTRD.210"></a><a href="dsytrd.f.html#DSYTRD.1">DSYTRD</a>'</span>, UPLO, N, -1, -1, -1 )
+               NBMIN = <a name="ILAENV.210"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 2, <span class="string">'<a name="DSYTRD.210"></a><a href="dsytrd.f.html#DSYTRD.1">DSYTRD</a>'</span>, UPLO, N, -1, -1, -1 )
                IF( NB.LT.NBMIN )
      $            NX = N
             END IF

@@ -1,8 +1,8 @@
       SUBROUTINE SLAED6( KNITER, ORGATI, RHO, D, Z, FINIT, TAU, INFO )
 *
-*  -- LAPACK routine (version 3.1) --
+*  -- LAPACK routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     February 2007
 *
 *     .. Scalar Arguments ..
       LOGICAL            ORGATI
@@ -147,16 +147,20 @@
          END IF
          IF( TAU .LT. LBD .OR. TAU .GT. UBD )
      $      TAU = ( LBD+UBD )/TWO
-         TEMP = FINIT + TAU*Z(1)/( D(1)*( D( 1 )-TAU ) ) +
-     $                  TAU*Z(2)/( D(2)*( D( 2 )-TAU ) ) +
-     $                  TAU*Z(3)/( D(3)*( D( 3 )-TAU ) )
-         IF( TEMP .LE. ZERO )THEN
-            LBD = TAU
+         IF( D(1).EQ.TAU .OR. D(2).EQ.TAU .OR. D(3).EQ.TAU ) THEN
+            TAU = ZERO
          ELSE
-            UBD = TAU
+            TEMP = FINIT + TAU*Z(1)/( D(1)*( D( 1 )-TAU ) ) +
+     $                     TAU*Z(2)/( D(2)*( D( 2 )-TAU ) ) +
+     $                     TAU*Z(3)/( D(3)*( D( 3 )-TAU ) )
+            IF( TEMP .LE. ZERO )THEN
+               LBD = TAU
+            ELSE
+               UBD = TAU
+            END IF
+            IF( ABS( FINIT ).LE.ABS( TEMP ) )
+     $         TAU = ZERO
          END IF
-         IF( ABS( FINIT ).LE.ABS( TEMP ) )
-     $      TAU = ZERO
       END IF
 *
 *     get machine parameters for possible scaling to avoid overflow

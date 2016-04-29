@@ -1,4 +1,4 @@
-.TH  DLAED6 1 "November 2006" " LAPACK routine (version 3.1) " " LAPACK routine (version 3.1) " 
+.TH  DLAED6 1 "February 2007" " LAPACK routine (version 3.1.1) " " LAPACK routine (version 3.1.1) " 
 .SH NAME
 DLAED6 - the positive or negative root (closest to the origin) of  z(1) z(2) z(3) f(x) = rho + --------- + ---------- + ---------  d(1)-x d(2)-x d(3)-x  It is assumed that   if ORGATI = .true
 .SH SYNOPSIS
@@ -73,9 +73,8 @@ INFO         (output) INTEGER
    at Berkeley, USA
 .br
 
-10/02/03: This version has a few statements commented out for thread safety
-   (machine parameters are computed on each entry). SJH.
-.br
+10/02/03: This version has a few statements commented out for thread
+safety (machine parameters are computed on each entry). SJH.
 
 05/10/06: Modified from a new version of Ren-Cang Li, use
    Gragg-Thornton-Warner cubic convergent scheme for better stability.

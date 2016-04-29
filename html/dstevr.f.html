@@ -236,9 +236,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.219"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.220"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.220"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       DOUBLE PRECISION   <a name="DLAMCH.221"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANST.221"></a><a href="dlanst.f.html#DLANST.1">DLANST</a>
-      EXTERNAL           <a name="LSAME.222"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.222"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="DLAMCH.222"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANST.222"></a><a href="dlanst.f.html#DLANST.1">DLANST</a>
+      EXTERNAL           <a name="LSAME.222"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.222"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="DLAMCH.222"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANST.222"></a><a href="dlanst.f.html#DLANST.1">DLANST</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           DCOPY, DSCAL, <a name="DSTEBZ.225"></a><a href="dstebz.f.html#DSTEBZ.1">DSTEBZ</a>, <a name="DSTEMR.225"></a><a href="dstemr.f.html#DSTEMR.1">DSTEMR</a>, <a name="DSTEIN.225"></a><a href="dstein.f.html#DSTEIN.1">DSTEIN</a>, <a name="DSTERF.225"></a><a href="dsterf.f.html#DSTERF.1">DSTERF</a>,
@@ -252,7 +252,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     Test the input parameters.
 </span><span class="comment">*</span><span class="comment">
-</span>      IEEEOK = <a name="ILAENV.236"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 10, <span class="string">'<a name="DSTEVR.236"></a><a href="dstevr.f.html#DSTEVR.1">DSTEVR</a>'</span>, <span class="string">'N'</span>, 1, 2, 3, 4 )
+</span>      IEEEOK = <a name="ILAENV.236"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 10, <span class="string">'<a name="DSTEVR.236"></a><a href="dstevr.f.html#DSTEVR.1">DSTEVR</a>'</span>, <span class="string">'N'</span>, 1, 2, 3, 4 )
 <span class="comment">*</span><span class="comment">
 </span>      WANTZ = <a name="LSAME.238"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBZ, <span class="string">'V'</span> )
       ALLEIG = <a name="LSAME.239"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( RANGE, <span class="string">'A'</span> )

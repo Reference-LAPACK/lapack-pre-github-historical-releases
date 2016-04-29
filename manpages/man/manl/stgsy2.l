@@ -1,4 +1,4 @@
-.TH  STGSY2 1 "November 2006" " LAPACK auxiliary routine (version 3.1) " " LAPACK auxiliary routine (version 3.1) " 
+.TH  STGSY2 1 "February 2007" " LAPACK auxiliary routine (version 3.1.1) " " LAPACK auxiliary routine (version 3.1.1) " 
 .SH NAME
 STGSY2 - the generalized Sylvester equation
 .SH SYNOPSIS

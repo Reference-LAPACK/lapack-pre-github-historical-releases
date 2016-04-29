@@ -1,26 +1,26 @@
-.TH  DGESV 1 "November 2006" " LAPACK PROTOTYPE driver routine (version 3.1) " " LAPACK PROTOTYPE driver routine (version 3.1) "
 .SH NAME
 ZCGESV - the solution to a real system of linear equations  A * X = B,
 .SH SYNOPSIS
-.TP 65
-SUBROUTINE ZCGESV(N,NRHS,A,LDA,IPIV,B,LDB,X,LDX,WORK,SWORK,ITER,
-.TP 65
+.TP 19
+SUBROUTINE ZCGESV(
+N, NRHS, A, LDA, IPIV, B, LDB, X, LDX, WORK,
+.TP 19
 .ti +4
 +
-INFO)
-.TP 65
+SWORK, ITER, INFO)
+.TP 19
 .ti +4
 INTEGER
 INFO,ITER,LDA,LDB,LDX,N,NRHS
-.TP 65
+.TP 19
 .ti +4
 INTEGER
 IPIV(*)
-.TP 65
+.TP 19
 .ti +4
 COMPLEX
 SWORK(*)
-.TP 65
+.TP 19
 .ti +4
 COMPLEX*16
 A(LDA,*),B(LDB,*),WORK(N,*),X(LDX,*)

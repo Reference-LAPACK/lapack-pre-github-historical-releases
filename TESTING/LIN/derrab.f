@@ -1,9 +1,9 @@
       SUBROUTINE DERRAB( NUNIT )
       IMPLICIT NONE
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     January 2007
 *
 *     .. Scalar Arguments ..
       INTEGER            NUNIT
@@ -42,7 +42,7 @@
 *     ..
 *     .. Scalars in Common ..
       LOGICAL            LERR, OK
-      CHARACTER(32)      SRNAMT
+      CHARACTER*32       SRNAMT
       INTEGER            INFOT, NOUT
 *     ..
 *     .. Common blocks ..

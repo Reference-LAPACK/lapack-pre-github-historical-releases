@@ -15,7 +15,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
   <body>
 
 <pre>
-      INTEGER          FUNCTION <a name="IEEECK.1"></a><a href="ieeeck.f.html#IEEECK.1">IEEECK</a>( ISPEC, ZERO, ONE )
+      INTEGER          FUNCTION <a name="IEEECK.1"></a><a href="hfy-index.html#IEEECK">IEEECK</a>( ISPEC, ZERO, ONE )
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
 </span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
@@ -29,7 +29,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">  Purpose
 </span><span class="comment">*</span><span class="comment">  =======
 </span><span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  <a name="IEEECK.15"></a><a href="ieeeck.f.html#IEEECK.1">IEEECK</a> is called from the <a name="ILAENV.15"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> to verify that Infinity and
+</span><span class="comment">*</span><span class="comment">  <a name="IEEECK.15"></a><a href="hfy-index.html#IEEECK">IEEECK</a> is called from the <a name="ILAENV.15"></a><a href="hfy-index.html#ILAENV">ILAENV</a> to verify that Infinity and
 </span><span class="comment">*</span><span class="comment">  possibly NaN arithmetic is safe (i.e. will not trap).
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  Arguments
@@ -60,53 +60,53 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $                   NEGZRO, NEWZRO, POSINF
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
-</span>      <a name="IEEECK.46"></a><a href="ieeeck.f.html#IEEECK.1">IEEECK</a> = 1
+</span>      <a name="IEEECK.46"></a><a href="hfy-index.html#IEEECK">IEEECK</a> = 1
 <span class="comment">*</span><span class="comment">
 </span>      POSINF = ONE / ZERO
       IF( POSINF.LE.ONE ) THEN
-         <a name="IEEECK.50"></a><a href="ieeeck.f.html#IEEECK.1">IEEECK</a> = 0
+         <a name="IEEECK.50"></a><a href="hfy-index.html#IEEECK">IEEECK</a> = 0
          RETURN
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      NEGINF = -ONE / ZERO
       IF( NEGINF.GE.ZERO ) THEN
-         <a name="IEEECK.56"></a><a href="ieeeck.f.html#IEEECK.1">IEEECK</a> = 0
+         <a name="IEEECK.56"></a><a href="hfy-index.html#IEEECK">IEEECK</a> = 0
          RETURN
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      NEGZRO = ONE / ( NEGINF+ONE )
       IF( NEGZRO.NE.ZERO ) THEN
-         <a name="IEEECK.62"></a><a href="ieeeck.f.html#IEEECK.1">IEEECK</a> = 0
+         <a name="IEEECK.62"></a><a href="hfy-index.html#IEEECK">IEEECK</a> = 0
          RETURN
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      NEGINF = ONE / NEGZRO
       IF( NEGINF.GE.ZERO ) THEN
-         <a name="IEEECK.68"></a><a href="ieeeck.f.html#IEEECK.1">IEEECK</a> = 0
+         <a name="IEEECK.68"></a><a href="hfy-index.html#IEEECK">IEEECK</a> = 0
          RETURN
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      NEWZRO = NEGZRO + ZERO
       IF( NEWZRO.NE.ZERO ) THEN
-         <a name="IEEECK.74"></a><a href="ieeeck.f.html#IEEECK.1">IEEECK</a> = 0
+         <a name="IEEECK.74"></a><a href="hfy-index.html#IEEECK">IEEECK</a> = 0
          RETURN
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      POSINF = ONE / NEWZRO
       IF( POSINF.LE.ONE ) THEN
-         <a name="IEEECK.80"></a><a href="ieeeck.f.html#IEEECK.1">IEEECK</a> = 0
+         <a name="IEEECK.80"></a><a href="hfy-index.html#IEEECK">IEEECK</a> = 0
          RETURN
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      NEGINF = NEGINF*POSINF
       IF( NEGINF.GE.ZERO ) THEN
-         <a name="IEEECK.86"></a><a href="ieeeck.f.html#IEEECK.1">IEEECK</a> = 0
+         <a name="IEEECK.86"></a><a href="hfy-index.html#IEEECK">IEEECK</a> = 0
          RETURN
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      POSINF = POSINF*POSINF
       IF( POSINF.LE.ONE ) THEN
-         <a name="IEEECK.92"></a><a href="ieeeck.f.html#IEEECK.1">IEEECK</a> = 0
+         <a name="IEEECK.92"></a><a href="hfy-index.html#IEEECK">IEEECK</a> = 0
          RETURN
       END IF
 <span class="comment">*</span><span class="comment">
@@ -131,32 +131,32 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>      NAN6 = NAN5*0.0
 <span class="comment">*</span><span class="comment">
 </span>      IF( NAN1.EQ.NAN1 ) THEN
-         <a name="IEEECK.117"></a><a href="ieeeck.f.html#IEEECK.1">IEEECK</a> = 0
+         <a name="IEEECK.117"></a><a href="hfy-index.html#IEEECK">IEEECK</a> = 0
          RETURN
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      IF( NAN2.EQ.NAN2 ) THEN
-         <a name="IEEECK.122"></a><a href="ieeeck.f.html#IEEECK.1">IEEECK</a> = 0
+         <a name="IEEECK.122"></a><a href="hfy-index.html#IEEECK">IEEECK</a> = 0
          RETURN
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      IF( NAN3.EQ.NAN3 ) THEN
-         <a name="IEEECK.127"></a><a href="ieeeck.f.html#IEEECK.1">IEEECK</a> = 0
+         <a name="IEEECK.127"></a><a href="hfy-index.html#IEEECK">IEEECK</a> = 0
          RETURN
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      IF( NAN4.EQ.NAN4 ) THEN
-         <a name="IEEECK.132"></a><a href="ieeeck.f.html#IEEECK.1">IEEECK</a> = 0
+         <a name="IEEECK.132"></a><a href="hfy-index.html#IEEECK">IEEECK</a> = 0
          RETURN
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      IF( NAN5.EQ.NAN5 ) THEN
-         <a name="IEEECK.137"></a><a href="ieeeck.f.html#IEEECK.1">IEEECK</a> = 0
+         <a name="IEEECK.137"></a><a href="hfy-index.html#IEEECK">IEEECK</a> = 0
          RETURN
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      IF( NAN6.EQ.NAN6 ) THEN
-         <a name="IEEECK.142"></a><a href="ieeeck.f.html#IEEECK.1">IEEECK</a> = 0
+         <a name="IEEECK.142"></a><a href="hfy-index.html#IEEECK">IEEECK</a> = 0
          RETURN
       END IF
 <span class="comment">*</span><span class="comment">

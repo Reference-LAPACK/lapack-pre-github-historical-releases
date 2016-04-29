@@ -1,17 +1,16 @@
       SUBROUTINE CUNMRZ( SIDE, TRANS, M, N, K, L, A, LDA, TAU, C, LDC,
      $                   WORK, LWORK, INFO )
 *
-*  -- LAPACK routine (version 3.1) --
+*  -- LAPACK routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     January 2007
 *
 *     .. Scalar Arguments ..
       CHARACTER          SIDE, TRANS
       INTEGER            INFO, K, L, LDA, LDC, LWORK, M, N
 *     ..
 *     .. Array Arguments ..
-      COMPLEX            A( LDA, * ), C( LDC, * ), TAU( * ),
-     $                   WORK( * )
+      COMPLEX            A( LDA, * ), C( LDC, * ), TAU( * ), WORK( * )
 *     ..
 *
 *  Purpose
@@ -173,6 +172,7 @@
       IF( INFO.EQ.0 ) THEN
          IF( M.EQ.0 .OR. N.EQ.0 ) THEN
             LWKOPT = 1
+         ELSE
 *
 *           Determine the block size.  NB may be at most NBMAX, where
 *           NBMAX is used to define the local array T.

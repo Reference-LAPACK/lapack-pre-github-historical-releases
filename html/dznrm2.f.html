@@ -33,7 +33,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  -- This version written on 25-October-1982.
-</span><span class="comment">*</span><span class="comment">     Modified on 14-October-1993 to inline the call to ZLASSQ.
+</span><span class="comment">*</span><span class="comment">     Modified on 14-October-1993 to inline the call to <a name="ZLASSQ.19"></a><a href="zlassq.f.html#ZLASSQ.1">ZLASSQ</a>.
 </span><span class="comment">*</span><span class="comment">     Sven Hammarling, Nag Ltd.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">
@@ -55,7 +55,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
           SSQ = ONE
 <span class="comment">*</span><span class="comment">        The following loop is equivalent to this call to the LAPACK
 </span><span class="comment">*</span><span class="comment">        auxiliary routine:
-</span><span class="comment">*</span><span class="comment">        CALL ZLASSQ( N, X, INCX, SCALE, SSQ )
+</span><span class="comment">*</span><span class="comment">        CALL <a name="ZLASSQ.41"></a><a href="zlassq.f.html#ZLASSQ.1">ZLASSQ</a>( N, X, INCX, SCALE, SSQ )
 </span><span class="comment">*</span><span class="comment">
 </span>          DO 10 IX = 1,1 + (N-1)*INCX,INCX
               IF (DBLE(X(IX)).NE.ZERO) THEN

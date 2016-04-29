@@ -71,4 +71,4 @@ clean:
 	rm -f *.o
  
 .f.o: 
-	$(FORTRAN) $(OPTS) -c $*.f
+	$(FORTRAN) $(OPTS) -c $< -o $@

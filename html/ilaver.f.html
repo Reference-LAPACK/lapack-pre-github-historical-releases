@@ -15,36 +15,33 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
   <body>
 
 <pre>
-      SUBROUTINE <a name="ILAVER.1"></a><a href="ilaver.f.html#ILAVER.1">ILAVER</a> ( VERS_MAJOR, VERS_MINOR, VERS_PATCH )
-<span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+      SUBROUTINE <a name="ILAVER.1"></a><a href="ilaver.f.html#ILAVER.1">ILAVER</a>( VERS_MAJOR, VERS_MINOR, VERS_PATCH )
+<span class="comment">*</span><span class="comment">     
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1.1) --
 </span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-</span><span class="comment">*</span><span class="comment">     November 2006
-</span><span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
-</span>      INTEGER VERS_MAJOR, VERS_MINOR, VERS_PATCH
-<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     January 2007
+</span><span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  Purpose
 </span><span class="comment">*</span><span class="comment">  =======
 </span><span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  This subroutine return the Lapack version.
+</span><span class="comment">*</span><span class="comment">  This subroutine return the Lapack version
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  Arguments
 </span><span class="comment">*</span><span class="comment">  =========
-</span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  VERS_MAJOR   (output) INTEGER
 </span><span class="comment">*</span><span class="comment">      return the lapack major version
 </span><span class="comment">*</span><span class="comment">  VERS_MINOR   (output) INTEGER
 </span><span class="comment">*</span><span class="comment">      return the lapack minor version from the major version
 </span><span class="comment">*</span><span class="comment">  VERS_PATCH   (output) INTEGER
 </span><span class="comment">*</span><span class="comment">      return the lapack patch version from the minor version
+</span><span class="comment">*</span><span class="comment">  =====================================================================
 </span><span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
-</span><span class="comment">*</span><span class="comment">
+</span>      INTEGER VERS_MAJOR, VERS_MINOR, VERS_PATCH
+<span class="comment">*</span><span class="comment">  =====================================================================
 </span>      VERS_MAJOR = 3
       VERS_MINOR = 1
-      VERS_PATCH = 0
+      VERS_PATCH = 1
 <span class="comment">*</span><span class="comment">  =====================================================================
 </span><span class="comment">*</span><span class="comment">
 </span>      RETURN

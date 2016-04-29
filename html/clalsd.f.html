@@ -150,7 +150,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       EXTERNAL           ISAMAX, <a name="SLAMCH.131"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANST.131"></a><a href="slanst.f.html#SLANST.1">SLANST</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
-</span>      EXTERNAL           CCOPY, <a name="CLACPY.134"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>, <a name="CLALSA.134"></a><a href="clalsa.f.html#CLALSA.1">CLALSA</a>, <a name="CLASCL.134"></a><a href="clascl.f.html#CLASCL.1">CLASCL</a>, <a name="CLASET.134"></a><a href="claset.f.html#CLASET.1">CLASET</a>, <a name="CSROT.134"></a><a href="csrot.f.html#CSROT.1">CSROT</a>,
+</span>      EXTERNAL           CCOPY, <a name="CLACPY.134"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>, <a name="CLALSA.134"></a><a href="clalsa.f.html#CLALSA.1">CLALSA</a>, <a name="CLASCL.134"></a><a href="clascl.f.html#CLASCL.1">CLASCL</a>, <a name="CLASET.134"></a><a href="claset.f.html#CLASET.1">CLASET</a>, CSROT,
      $                   SGEMM, <a name="SLARTG.135"></a><a href="slartg.f.html#SLARTG.1">SLARTG</a>, <a name="SLASCL.135"></a><a href="slascl.f.html#SLASCL.1">SLASCL</a>, <a name="SLASDA.135"></a><a href="slasda.f.html#SLASDA.1">SLASDA</a>, <a name="SLASDQ.135"></a><a href="slasdq.f.html#SLASDQ.1">SLASDQ</a>, <a name="SLASET.135"></a><a href="slaset.f.html#SLASET.1">SLASET</a>,
      $                   <a name="SLASRT.136"></a><a href="slasrt.f.html#SLASRT.1">SLASRT</a>, <a name="XERBLA.136"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
 <span class="comment">*</span><span class="comment">     ..
@@ -211,7 +211,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
             E( I ) = SN*D( I+1 )
             D( I+1 ) = CS*D( I+1 )
             IF( NRHS.EQ.1 ) THEN
-               CALL <a name="CSROT.195"></a><a href="csrot.f.html#CSROT.1">CSROT</a>( 1, B( I, 1 ), 1, B( I+1, 1 ), 1, CS, SN )
+               CALL CSROT( 1, B( I, 1 ), 1, B( I+1, 1 ), 1, CS, SN )
             ELSE
                RWORK( I*2-1 ) = CS
                RWORK( I*2 ) = SN
@@ -222,7 +222,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
                DO 20 J = 1, N - 1
                   CS = RWORK( J*2-1 )
                   SN = RWORK( J*2 )
-                  CALL <a name="CSROT.206"></a><a href="csrot.f.html#CSROT.1">CSROT</a>( 1, B( J, I ), 1, B( J+1, I ), 1, CS, SN )
+                  CALL CSROT( 1, B( J, I ), 1, B( J+1, I ), 1, CS, SN )
    20          CONTINUE
    30       CONTINUE
          END IF

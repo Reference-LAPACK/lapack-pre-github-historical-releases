@@ -1,4 +1,4 @@
-.TH  CUNMRZ 1 "November 2006" " LAPACK routine (version 3.1) " " LAPACK routine (version 3.1) " 
+.TH  CUNMRZ 1 "February 2007" " LAPACK routine (version 3.1.1) " " LAPACK routine (version 3.1.1) " 
 .SH NAME
 CUNMRZ - the general complex M-by-N matrix C with   SIDE = \(aqL\(aq SIDE = \(aqR\(aq TRANS = \(aqN\(aq
 .SH SYNOPSIS
@@ -17,8 +17,7 @@ INFO, K, L, LDA, LDC, LWORK, M, N
 .TP 19
 .ti +4
 COMPLEX
-A( LDA, * ), C( LDC, * ), TAU( * ),
-WORK( * )
+A( LDA, * ), C( LDC, * ), TAU( * ), WORK( * )
 .SH PURPOSE
 CUNMRZ overwrites the general complex M-by-N matrix C with
 TRANS = \(aqC\(aq:      Q**H * C       C * Q**H

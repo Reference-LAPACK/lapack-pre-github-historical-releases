@@ -103,15 +103,15 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>      INTRINSIC          MAX, MIN
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      INTEGER            <a name="ILAENV.87"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="ILAENV.88"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+</span>      INTEGER            <a name="ILAENV.87"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="ILAENV.88"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     Test the input arguments
 </span><span class="comment">*</span><span class="comment">
 </span>      INFO = 0
-      NB = <a name="ILAENV.95"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DORGQR.95"></a><a href="dorgqr.f.html#DORGQR.1">DORGQR</a>'</span>, <span class="string">' '</span>, M, N, K, -1 )
+      NB = <a name="ILAENV.95"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DORGQR.95"></a><a href="dorgqr.f.html#DORGQR.1">DORGQR</a>'</span>, <span class="string">' '</span>, M, N, K, -1 )
       LWKOPT = MAX( 1, N )*NB
       WORK( 1 ) = LWKOPT
       LQUERY = ( LWORK.EQ.-1 )
@@ -147,7 +147,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">        Determine when to cross over from blocked to unblocked code.
 </span><span class="comment">*</span><span class="comment">
-</span>         NX = MAX( 0, <a name="ILAENV.131"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 3, <span class="string">'<a name="DORGQR.131"></a><a href="dorgqr.f.html#DORGQR.1">DORGQR</a>'</span>, <span class="string">' '</span>, M, N, K, -1 ) )
+</span>         NX = MAX( 0, <a name="ILAENV.131"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 3, <span class="string">'<a name="DORGQR.131"></a><a href="dorgqr.f.html#DORGQR.1">DORGQR</a>'</span>, <span class="string">' '</span>, M, N, K, -1 ) )
          IF( NX.LT.K ) THEN
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">           Determine if workspace is large enough for blocked code.
@@ -160,7 +160,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">              determine the minimum value of NB.
 </span><span class="comment">*</span><span class="comment">
 </span>               NB = LWORK / LDWORK
-               NBMIN = MAX( 2, <a name="ILAENV.144"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 2, <span class="string">'<a name="DORGQR.144"></a><a href="dorgqr.f.html#DORGQR.1">DORGQR</a>'</span>, <span class="string">' '</span>, M, N, K, -1 ) )
+               NBMIN = MAX( 2, <a name="ILAENV.144"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 2, <span class="string">'<a name="DORGQR.144"></a><a href="dorgqr.f.html#DORGQR.1">DORGQR</a>'</span>, <span class="string">' '</span>, M, N, K, -1 ) )
             END IF
          END IF
       END IF

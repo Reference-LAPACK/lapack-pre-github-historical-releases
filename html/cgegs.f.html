@@ -125,7 +125,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">  LWORK   (input) INTEGER
 </span><span class="comment">*</span><span class="comment">          The dimension of the array WORK.  LWORK &gt;= max(1,2*N).
 </span><span class="comment">*</span><span class="comment">          For good performance, LWORK must generally be larger.
-</span><span class="comment">*</span><span class="comment">          To compute the optimal value of LWORK, call <a name="ILAENV.109"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> to get
+</span><span class="comment">*</span><span class="comment">          To compute the optimal value of LWORK, call <a name="ILAENV.109"></a><a href="hfy-index.html#ILAENV">ILAENV</a> to get
 </span><span class="comment">*</span><span class="comment">          blocksizes (for <a name="CGEQRF.110"></a><a href="cgeqrf.f.html#CGEQRF.1">CGEQRF</a>, <a name="CUNMQR.110"></a><a href="cunmqr.f.html#CUNMQR.1">CUNMQR</a>, and <a name="CUNGQR.110"></a><a href="cungqr.f.html#CUNGQR.1">CUNGQR</a>.)  Then compute:
 </span><span class="comment">*</span><span class="comment">          NB  -- MAX of the blocksizes for <a name="CGEQRF.111"></a><a href="cgeqrf.f.html#CGEQRF.1">CGEQRF</a>, <a name="CUNMQR.111"></a><a href="cunmqr.f.html#CUNMQR.1">CUNMQR</a>, and <a name="CUNGQR.111"></a><a href="cungqr.f.html#CUNGQR.1">CUNGQR</a>;
 </span><span class="comment">*</span><span class="comment">          the optimal LWORK is N*(NB+1).
@@ -179,9 +179,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.162"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.163"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.163"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       REAL               <a name="CLANGE.164"></a><a href="clange.f.html#CLANGE.1">CLANGE</a>, <a name="SLAMCH.164"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
-      EXTERNAL           <a name="ILAENV.165"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="LSAME.165"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="CLANGE.165"></a><a href="clange.f.html#CLANGE.1">CLANGE</a>, <a name="SLAMCH.165"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      EXTERNAL           <a name="ILAENV.165"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="LSAME.165"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="CLANGE.165"></a><a href="clange.f.html#CLANGE.1">CLANGE</a>, <a name="SLAMCH.165"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
 </span>      INTRINSIC          INT, MAX
@@ -238,9 +238,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      IF( INFO.EQ.0 ) THEN
-         NB1 = <a name="ILAENV.222"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CGEQRF.222"></a><a href="cgeqrf.f.html#CGEQRF.1">CGEQRF</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 )
-         NB2 = <a name="ILAENV.223"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNMQR.223"></a><a href="cunmqr.f.html#CUNMQR.1">CUNMQR</a>'</span>, <span class="string">' '</span>, N, N, N, -1 )
-         NB3 = <a name="ILAENV.224"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNGQR.224"></a><a href="cungqr.f.html#CUNGQR.1">CUNGQR</a>'</span>, <span class="string">' '</span>, N, N, N, -1 )
+         NB1 = <a name="ILAENV.222"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CGEQRF.222"></a><a href="cgeqrf.f.html#CGEQRF.1">CGEQRF</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 )
+         NB2 = <a name="ILAENV.223"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNMQR.223"></a><a href="cunmqr.f.html#CUNMQR.1">CUNMQR</a>'</span>, <span class="string">' '</span>, N, N, N, -1 )
+         NB3 = <a name="ILAENV.224"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNGQR.224"></a><a href="cungqr.f.html#CUNGQR.1">CUNGQR</a>'</span>, <span class="string">' '</span>, N, N, N, -1 )
          NB = MAX( NB1, NB2, NB3 )
          LOPT = N*(NB+1)
          WORK( 1 ) = LOPT

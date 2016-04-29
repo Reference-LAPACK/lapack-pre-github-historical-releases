@@ -17,12 +17,12 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
   <body>
 
 <pre>
-      SUBROUTINE <a name="DSGESV.1"></a><a href="dsgesv.f.html#DSGESV.1">DSGESV</a>(N,NRHS,A,LDA,IPIV,B,LDB,X,LDX,WORK,SWORK,ITER,
-     +                  INFO)
+      SUBROUTINE <a name="DSGESV.1"></a><a href="dsgesv.f.html#DSGESV.1">DSGESV</a>( N, NRHS, A, LDA, IPIV, B, LDB, X, LDX, WORK,
+     +                   SWORK, ITER, INFO)
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  -- LAPACK PROTOTYPE driver routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">  -- LAPACK PROTOTYPE driver routine (version 3.1.1) --
 </span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">     February 2007
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. WARNING: PROTOTYPE ..
@@ -57,7 +57,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">  the ratio SINGLE PRECISION performance over DOUBLE PRECISION performance
 </span><span class="comment">*</span><span class="comment">  is too small. A reasonable strategy should take the number of right-hand
 </span><span class="comment">*</span><span class="comment">  sides and the size of the matrix into account. This might be done with a 
-</span><span class="comment">*</span><span class="comment">  call to <a name="ILAENV.41"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> in the future. Up to now, we always try iterative refinement.
+</span><span class="comment">*</span><span class="comment">  call to <a name="ILAENV.41"></a><a href="hfy-index.html#ILAENV">ILAENV</a> in the future. Up to now, we always try iterative refinement.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  The iterative refinement process is stopped if
 </span><span class="comment">*</span><span class="comment">      ITER &gt; ITERMAX
@@ -118,7 +118,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">  WORK    (workspace) DOUBLE PRECISION array, dimension (N*NRHS)
 </span><span class="comment">*</span><span class="comment">          This array is used to hold the residual vectors.
 </span><span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  SWORK   (workspace) SINGLE PRECISION array, dimension (N*(N+NRHS))
+</span><span class="comment">*</span><span class="comment">  SWORK   (workspace) REAL array, dimension (N*(N+NRHS))
 </span><span class="comment">*</span><span class="comment">          This array is used to use the single precision matrix and the 
 </span><span class="comment">*</span><span class="comment">          right-hand sides or solutions in single precision.
 </span><span class="comment">*</span><span class="comment">

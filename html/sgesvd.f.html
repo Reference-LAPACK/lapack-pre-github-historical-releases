@@ -174,9 +174,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.157"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.158"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.158"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       REAL               <a name="SLAMCH.159"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANGE.159"></a><a href="slange.f.html#SLANGE.1">SLANGE</a>
-      EXTERNAL           <a name="LSAME.160"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.160"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="SLAMCH.160"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANGE.160"></a><a href="slange.f.html#SLANGE.1">SLANGE</a>
+      EXTERNAL           <a name="LSAME.160"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.160"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="SLAMCH.160"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANGE.160"></a><a href="slange.f.html#SLANGE.1">SLANGE</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
 </span>      INTRINSIC          MAX, MIN, SQRT
@@ -222,7 +222,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">       minimal amount of workspace needed at that point in the code,
 </span><span class="comment">*</span><span class="comment">       as well as the preferred amount for good performance.
 </span><span class="comment">*</span><span class="comment">       NB refers to the optimal block size for the immediately
-</span><span class="comment">*</span><span class="comment">       following subroutine, as returned by <a name="ILAENV.206"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>.)
+</span><span class="comment">*</span><span class="comment">       following subroutine, as returned by <a name="ILAENV.206"></a><a href="hfy-index.html#ILAENV">ILAENV</a>.)
 </span><span class="comment">*</span><span class="comment">
 </span>      IF( INFO.EQ.0 ) THEN
          MINWRK = 1
@@ -231,33 +231,33 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">           Compute space needed for <a name="SBDSQR.213"></a><a href="sbdsqr.f.html#SBDSQR.1">SBDSQR</a>
 </span><span class="comment">*</span><span class="comment">
-</span>            MNTHR = <a name="ILAENV.215"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 6, <span class="string">'<a name="SGESVD.215"></a><a href="sgesvd.f.html#SGESVD.1">SGESVD</a>'</span>, JOBU // JOBVT, M, N, 0, 0 )
+</span>            MNTHR = <a name="ILAENV.215"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 6, <span class="string">'<a name="SGESVD.215"></a><a href="sgesvd.f.html#SGESVD.1">SGESVD</a>'</span>, JOBU // JOBVT, M, N, 0, 0 )
             BDSPAC = 5*N
             IF( M.GE.MNTHR ) THEN
                IF( WNTUN ) THEN
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 1 (M much larger than N, JOBU='N')
 </span><span class="comment">*</span><span class="comment">
-</span>                  MAXWRK = N + N*<a name="ILAENV.222"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.222"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1,
+</span>                  MAXWRK = N + N*<a name="ILAENV.222"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.222"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1,
      $                     -1 )
                   MAXWRK = MAX( MAXWRK, 3*N+2*N*
-     $                     <a name="ILAENV.225"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.225"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
+     $                     <a name="ILAENV.225"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.225"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
                   IF( WNTVO .OR. WNTVAS )
      $               MAXWRK = MAX( MAXWRK, 3*N+( N-1 )*
-     $                        <a name="ILAENV.228"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.228"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, N, N, N, -1 ) )
+     $                        <a name="ILAENV.228"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.228"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, N, N, N, -1 ) )
                   MAXWRK = MAX( MAXWRK, BDSPAC )
                   MINWRK = MAX( 4*N, BDSPAC )
                ELSE IF( WNTUO .AND. WNTVN ) THEN
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 2 (M much larger than N, JOBU='O', JOBVT='N')
 </span><span class="comment">*</span><span class="comment">
-</span>                  WRKBL = N + N*<a name="ILAENV.235"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.235"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, N+N*<a name="ILAENV.236"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGQR.236"></a><a href="sorgqr.f.html#SORGQR.1">SORGQR</a>'</span>, <span class="string">' '</span>, M,
+</span>                  WRKBL = N + N*<a name="ILAENV.235"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.235"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+                  WRKBL = MAX( WRKBL, N+N*<a name="ILAENV.236"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGQR.236"></a><a href="sorgqr.f.html#SORGQR.1">SORGQR</a>'</span>, <span class="string">' '</span>, M,
      $                    N, N, -1 ) )
                   WRKBL = MAX( WRKBL, 3*N+2*N*
-     $                    <a name="ILAENV.239"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.239"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
+     $                    <a name="ILAENV.239"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.239"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
                   WRKBL = MAX( WRKBL, 3*N+N*
-     $                    <a name="ILAENV.241"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.241"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, N, N, N, -1 ) )
+     $                    <a name="ILAENV.241"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.241"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, N, N, N, -1 ) )
                   WRKBL = MAX( WRKBL, BDSPAC )
                   MAXWRK = MAX( N*N+WRKBL, N*N+M*N+N )
                   MINWRK = MAX( 3*N+M, BDSPAC )
@@ -266,15 +266,15 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">                 Path 3 (M much larger than N, JOBU='O', JOBVT='S' or
 </span><span class="comment">*</span><span class="comment">                 'A')
 </span><span class="comment">*</span><span class="comment">
-</span>                  WRKBL = N + N*<a name="ILAENV.250"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.250"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, N+N*<a name="ILAENV.251"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGQR.251"></a><a href="sorgqr.f.html#SORGQR.1">SORGQR</a>'</span>, <span class="string">' '</span>, M,
+</span>                  WRKBL = N + N*<a name="ILAENV.250"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.250"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+                  WRKBL = MAX( WRKBL, N+N*<a name="ILAENV.251"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGQR.251"></a><a href="sorgqr.f.html#SORGQR.1">SORGQR</a>'</span>, <span class="string">' '</span>, M,
      $                    N, N, -1 ) )
                   WRKBL = MAX( WRKBL, 3*N+2*N*
-     $                    <a name="ILAENV.254"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.254"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
+     $                    <a name="ILAENV.254"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.254"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
                   WRKBL = MAX( WRKBL, 3*N+N*
-     $                    <a name="ILAENV.256"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.256"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, N, N, N, -1 ) )
+     $                    <a name="ILAENV.256"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.256"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, N, N, N, -1 ) )
                   WRKBL = MAX( WRKBL, 3*N+( N-1 )*
-     $                    <a name="ILAENV.258"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.258"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, N, N, N, -1 ) )
+     $                    <a name="ILAENV.258"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.258"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, N, N, N, -1 ) )
                   WRKBL = MAX( WRKBL, BDSPAC )
                   MAXWRK = MAX( N*N+WRKBL, N*N+M*N+N )
                   MINWRK = MAX( 3*N+M, BDSPAC )
@@ -282,13 +282,13 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 4 (M much larger than N, JOBU='S', JOBVT='N')
 </span><span class="comment">*</span><span class="comment">
-</span>                  WRKBL = N + N*<a name="ILAENV.266"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.266"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, N+N*<a name="ILAENV.267"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGQR.267"></a><a href="sorgqr.f.html#SORGQR.1">SORGQR</a>'</span>, <span class="string">' '</span>, M,
+</span>                  WRKBL = N + N*<a name="ILAENV.266"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.266"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+                  WRKBL = MAX( WRKBL, N+N*<a name="ILAENV.267"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGQR.267"></a><a href="sorgqr.f.html#SORGQR.1">SORGQR</a>'</span>, <span class="string">' '</span>, M,
      $                    N, N, -1 ) )
                   WRKBL = MAX( WRKBL, 3*N+2*N*
-     $                    <a name="ILAENV.270"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.270"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
+     $                    <a name="ILAENV.270"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.270"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
                   WRKBL = MAX( WRKBL, 3*N+N*
-     $                    <a name="ILAENV.272"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.272"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, N, N, N, -1 ) )
+     $                    <a name="ILAENV.272"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.272"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, N, N, N, -1 ) )
                   WRKBL = MAX( WRKBL, BDSPAC )
                   MAXWRK = N*N + WRKBL
                   MINWRK = MAX( 3*N+M, BDSPAC )
@@ -296,15 +296,15 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 5 (M much larger than N, JOBU='S', JOBVT='O')
 </span><span class="comment">*</span><span class="comment">
-</span>                  WRKBL = N + N*<a name="ILAENV.280"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.280"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, N+N*<a name="ILAENV.281"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGQR.281"></a><a href="sorgqr.f.html#SORGQR.1">SORGQR</a>'</span>, <span class="string">' '</span>, M,
+</span>                  WRKBL = N + N*<a name="ILAENV.280"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.280"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+                  WRKBL = MAX( WRKBL, N+N*<a name="ILAENV.281"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGQR.281"></a><a href="sorgqr.f.html#SORGQR.1">SORGQR</a>'</span>, <span class="string">' '</span>, M,
      $                    N, N, -1 ) )
                   WRKBL = MAX( WRKBL, 3*N+2*N*
-     $                    <a name="ILAENV.284"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.284"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
+     $                    <a name="ILAENV.284"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.284"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
                   WRKBL = MAX( WRKBL, 3*N+N*
-     $                    <a name="ILAENV.286"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.286"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, N, N, N, -1 ) )
+     $                    <a name="ILAENV.286"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.286"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, N, N, N, -1 ) )
                   WRKBL = MAX( WRKBL, 3*N+( N-1 )*
-     $                    <a name="ILAENV.288"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.288"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, N, N, N, -1 ) )
+     $                    <a name="ILAENV.288"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.288"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, N, N, N, -1 ) )
                   WRKBL = MAX( WRKBL, BDSPAC )
                   MAXWRK = 2*N*N + WRKBL
                   MINWRK = MAX( 3*N+M, BDSPAC )
@@ -313,15 +313,15 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">                 Path 6 (M much larger than N, JOBU='S', JOBVT='S' or
 </span><span class="comment">*</span><span class="comment">                 'A')
 </span><span class="comment">*</span><span class="comment">
-</span>                  WRKBL = N + N*<a name="ILAENV.297"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.297"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, N+N*<a name="ILAENV.298"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGQR.298"></a><a href="sorgqr.f.html#SORGQR.1">SORGQR</a>'</span>, <span class="string">' '</span>, M,
+</span>                  WRKBL = N + N*<a name="ILAENV.297"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.297"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+                  WRKBL = MAX( WRKBL, N+N*<a name="ILAENV.298"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGQR.298"></a><a href="sorgqr.f.html#SORGQR.1">SORGQR</a>'</span>, <span class="string">' '</span>, M,
      $                    N, N, -1 ) )
                   WRKBL = MAX( WRKBL, 3*N+2*N*
-     $                    <a name="ILAENV.301"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.301"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
+     $                    <a name="ILAENV.301"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.301"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
                   WRKBL = MAX( WRKBL, 3*N+N*
-     $                    <a name="ILAENV.303"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.303"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, N, N, N, -1 ) )
+     $                    <a name="ILAENV.303"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.303"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, N, N, N, -1 ) )
                   WRKBL = MAX( WRKBL, 3*N+( N-1 )*
-     $                    <a name="ILAENV.305"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.305"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, N, N, N, -1 ) )
+     $                    <a name="ILAENV.305"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.305"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, N, N, N, -1 ) )
                   WRKBL = MAX( WRKBL, BDSPAC )
                   MAXWRK = N*N + WRKBL
                   MINWRK = MAX( 3*N+M, BDSPAC )
@@ -329,13 +329,13 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 7 (M much larger than N, JOBU='A', JOBVT='N')
 </span><span class="comment">*</span><span class="comment">
-</span>                  WRKBL = N + N*<a name="ILAENV.313"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.313"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, N+M*<a name="ILAENV.314"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGQR.314"></a><a href="sorgqr.f.html#SORGQR.1">SORGQR</a>'</span>, <span class="string">' '</span>, M,
+</span>                  WRKBL = N + N*<a name="ILAENV.313"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.313"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+                  WRKBL = MAX( WRKBL, N+M*<a name="ILAENV.314"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGQR.314"></a><a href="sorgqr.f.html#SORGQR.1">SORGQR</a>'</span>, <span class="string">' '</span>, M,
      $                    M, N, -1 ) )
                   WRKBL = MAX( WRKBL, 3*N+2*N*
-     $                    <a name="ILAENV.317"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.317"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
+     $                    <a name="ILAENV.317"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.317"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
                   WRKBL = MAX( WRKBL, 3*N+N*
-     $                    <a name="ILAENV.319"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.319"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, N, N, N, -1 ) )
+     $                    <a name="ILAENV.319"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.319"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, N, N, N, -1 ) )
                   WRKBL = MAX( WRKBL, BDSPAC )
                   MAXWRK = N*N + WRKBL
                   MINWRK = MAX( 3*N+M, BDSPAC )
@@ -343,15 +343,15 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 8 (M much larger than N, JOBU='A', JOBVT='O')
 </span><span class="comment">*</span><span class="comment">
-</span>                  WRKBL = N + N*<a name="ILAENV.327"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.327"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, N+M*<a name="ILAENV.328"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGQR.328"></a><a href="sorgqr.f.html#SORGQR.1">SORGQR</a>'</span>, <span class="string">' '</span>, M,
+</span>                  WRKBL = N + N*<a name="ILAENV.327"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.327"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+                  WRKBL = MAX( WRKBL, N+M*<a name="ILAENV.328"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGQR.328"></a><a href="sorgqr.f.html#SORGQR.1">SORGQR</a>'</span>, <span class="string">' '</span>, M,
      $                    M, N, -1 ) )
                   WRKBL = MAX( WRKBL, 3*N+2*N*
-     $                    <a name="ILAENV.331"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.331"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
+     $                    <a name="ILAENV.331"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.331"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
                   WRKBL = MAX( WRKBL, 3*N+N*
-     $                    <a name="ILAENV.333"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.333"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, N, N, N, -1 ) )
+     $                    <a name="ILAENV.333"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.333"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, N, N, N, -1 ) )
                   WRKBL = MAX( WRKBL, 3*N+( N-1 )*
-     $                    <a name="ILAENV.335"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.335"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, N, N, N, -1 ) )
+     $                    <a name="ILAENV.335"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.335"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, N, N, N, -1 ) )
                   WRKBL = MAX( WRKBL, BDSPAC )
                   MAXWRK = 2*N*N + WRKBL
                   MINWRK = MAX( 3*N+M, BDSPAC )
@@ -360,15 +360,15 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">                 Path 9 (M much larger than N, JOBU='A', JOBVT='S' or
 </span><span class="comment">*</span><span class="comment">                 'A')
 </span><span class="comment">*</span><span class="comment">
-</span>                  WRKBL = N + N*<a name="ILAENV.344"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.344"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, N+M*<a name="ILAENV.345"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGQR.345"></a><a href="sorgqr.f.html#SORGQR.1">SORGQR</a>'</span>, <span class="string">' '</span>, M,
+</span>                  WRKBL = N + N*<a name="ILAENV.344"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.344"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+                  WRKBL = MAX( WRKBL, N+M*<a name="ILAENV.345"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGQR.345"></a><a href="sorgqr.f.html#SORGQR.1">SORGQR</a>'</span>, <span class="string">' '</span>, M,
      $                    M, N, -1 ) )
                   WRKBL = MAX( WRKBL, 3*N+2*N*
-     $                    <a name="ILAENV.348"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.348"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
+     $                    <a name="ILAENV.348"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.348"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, N, N, -1, -1 ) )
                   WRKBL = MAX( WRKBL, 3*N+N*
-     $                    <a name="ILAENV.350"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.350"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, N, N, N, -1 ) )
+     $                    <a name="ILAENV.350"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.350"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, N, N, N, -1 ) )
                   WRKBL = MAX( WRKBL, 3*N+( N-1 )*
-     $                    <a name="ILAENV.352"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.352"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, N, N, N, -1 ) )
+     $                    <a name="ILAENV.352"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.352"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, N, N, N, -1 ) )
                   WRKBL = MAX( WRKBL, BDSPAC )
                   MAXWRK = N*N + WRKBL
                   MINWRK = MAX( 3*N+M, BDSPAC )
@@ -377,17 +377,17 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">              Path 10 (M at least N, but not much larger)
 </span><span class="comment">*</span><span class="comment">
-</span>               MAXWRK = 3*N + ( M+N )*<a name="ILAENV.361"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.361"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, M, N,
+</span>               MAXWRK = 3*N + ( M+N )*<a name="ILAENV.361"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.361"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, M, N,
      $                  -1, -1 )
                IF( WNTUS .OR. WNTUO )
      $            MAXWRK = MAX( MAXWRK, 3*N+N*
-     $                     <a name="ILAENV.365"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.365"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, M, N, N, -1 ) )
+     $                     <a name="ILAENV.365"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.365"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, M, N, N, -1 ) )
                IF( WNTUA )
      $            MAXWRK = MAX( MAXWRK, 3*N+M*
-     $                     <a name="ILAENV.368"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.368"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, M, M, N, -1 ) )
+     $                     <a name="ILAENV.368"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.368"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, M, M, N, -1 ) )
                IF( .NOT.WNTVN )
      $            MAXWRK = MAX( MAXWRK, 3*N+( N-1 )*
-     $                     <a name="ILAENV.371"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.371"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, N, N, N, -1 ) )
+     $                     <a name="ILAENV.371"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.371"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, N, N, N, -1 ) )
                MAXWRK = MAX( MAXWRK, BDSPAC )
                MINWRK = MAX( 3*N+M, BDSPAC )
             END IF
@@ -395,33 +395,33 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">           Compute space needed for <a name="SBDSQR.377"></a><a href="sbdsqr.f.html#SBDSQR.1">SBDSQR</a>
 </span><span class="comment">*</span><span class="comment">
-</span>            MNTHR = <a name="ILAENV.379"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 6, <span class="string">'<a name="SGESVD.379"></a><a href="sgesvd.f.html#SGESVD.1">SGESVD</a>'</span>, JOBU // JOBVT, M, N, 0, 0 )
+</span>            MNTHR = <a name="ILAENV.379"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 6, <span class="string">'<a name="SGESVD.379"></a><a href="sgesvd.f.html#SGESVD.1">SGESVD</a>'</span>, JOBU // JOBVT, M, N, 0, 0 )
             BDSPAC = 5*M
             IF( N.GE.MNTHR ) THEN
                IF( WNTVN ) THEN
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 1t(N much larger than M, JOBVT='N')
 </span><span class="comment">*</span><span class="comment">
-</span>                  MAXWRK = M + M*<a name="ILAENV.386"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGELQF.386"></a><a href="sgelqf.f.html#SGELQF.1">SGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1,
+</span>                  MAXWRK = M + M*<a name="ILAENV.386"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGELQF.386"></a><a href="sgelqf.f.html#SGELQF.1">SGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1,
      $                     -1 )
                   MAXWRK = MAX( MAXWRK, 3*M+2*M*
-     $                     <a name="ILAENV.389"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.389"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
+     $                     <a name="ILAENV.389"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.389"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
                   IF( WNTUO .OR. WNTUAS )
      $               MAXWRK = MAX( MAXWRK, 3*M+M*
-     $                        <a name="ILAENV.392"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.392"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, M, M, M, -1 ) )
+     $                        <a name="ILAENV.392"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.392"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, M, M, M, -1 ) )
                   MAXWRK = MAX( MAXWRK, BDSPAC )
                   MINWRK = MAX( 4*M, BDSPAC )
                ELSE IF( WNTVO .AND. WNTUN ) THEN
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 2t(N much larger than M, JOBU='N', JOBVT='O')
 </span><span class="comment">*</span><span class="comment">
-</span>                  WRKBL = M + M*<a name="ILAENV.399"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGELQF.399"></a><a href="sgelqf.f.html#SGELQF.1">SGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, M+M*<a name="ILAENV.400"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGLQ.400"></a><a href="sorglq.f.html#SORGLQ.1">SORGLQ</a>'</span>, <span class="string">' '</span>, M,
+</span>                  WRKBL = M + M*<a name="ILAENV.399"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGELQF.399"></a><a href="sgelqf.f.html#SGELQF.1">SGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+                  WRKBL = MAX( WRKBL, M+M*<a name="ILAENV.400"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGLQ.400"></a><a href="sorglq.f.html#SORGLQ.1">SORGLQ</a>'</span>, <span class="string">' '</span>, M,
      $                    N, M, -1 ) )
                   WRKBL = MAX( WRKBL, 3*M+2*M*
-     $                    <a name="ILAENV.403"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.403"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
+     $                    <a name="ILAENV.403"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.403"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
                   WRKBL = MAX( WRKBL, 3*M+( M-1 )*
-     $                    <a name="ILAENV.405"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.405"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, M, M, M, -1 ) )
+     $                    <a name="ILAENV.405"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.405"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, M, M, M, -1 ) )
                   WRKBL = MAX( WRKBL, BDSPAC )
                   MAXWRK = MAX( M*M+WRKBL, M*M+M*N+M )
                   MINWRK = MAX( 3*M+N, BDSPAC )
@@ -430,15 +430,15 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">                 Path 3t(N much larger than M, JOBU='S' or 'A',
 </span><span class="comment">*</span><span class="comment">                 JOBVT='O')
 </span><span class="comment">*</span><span class="comment">
-</span>                  WRKBL = M + M*<a name="ILAENV.414"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGELQF.414"></a><a href="sgelqf.f.html#SGELQF.1">SGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, M+M*<a name="ILAENV.415"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGLQ.415"></a><a href="sorglq.f.html#SORGLQ.1">SORGLQ</a>'</span>, <span class="string">' '</span>, M,
+</span>                  WRKBL = M + M*<a name="ILAENV.414"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGELQF.414"></a><a href="sgelqf.f.html#SGELQF.1">SGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+                  WRKBL = MAX( WRKBL, M+M*<a name="ILAENV.415"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGLQ.415"></a><a href="sorglq.f.html#SORGLQ.1">SORGLQ</a>'</span>, <span class="string">' '</span>, M,
      $                    N, M, -1 ) )
                   WRKBL = MAX( WRKBL, 3*M+2*M*
-     $                    <a name="ILAENV.418"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.418"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
+     $                    <a name="ILAENV.418"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.418"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
                   WRKBL = MAX( WRKBL, 3*M+( M-1 )*
-     $                    <a name="ILAENV.420"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.420"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, M, M, M, -1 ) )
+     $                    <a name="ILAENV.420"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.420"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, M, M, M, -1 ) )
                   WRKBL = MAX( WRKBL, 3*M+M*
-     $                    <a name="ILAENV.422"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.422"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, M, M, M, -1 ) )
+     $                    <a name="ILAENV.422"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.422"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, M, M, M, -1 ) )
                   WRKBL = MAX( WRKBL, BDSPAC )
                   MAXWRK = MAX( M*M+WRKBL, M*M+M*N+M )
                   MINWRK = MAX( 3*M+N, BDSPAC )
@@ -446,13 +446,13 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 4t(N much larger than M, JOBU='N', JOBVT='S')
 </span><span class="comment">*</span><span class="comment">
-</span>                  WRKBL = M + M*<a name="ILAENV.430"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGELQF.430"></a><a href="sgelqf.f.html#SGELQF.1">SGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, M+M*<a name="ILAENV.431"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGLQ.431"></a><a href="sorglq.f.html#SORGLQ.1">SORGLQ</a>'</span>, <span class="string">' '</span>, M,
+</span>                  WRKBL = M + M*<a name="ILAENV.430"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGELQF.430"></a><a href="sgelqf.f.html#SGELQF.1">SGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+                  WRKBL = MAX( WRKBL, M+M*<a name="ILAENV.431"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGLQ.431"></a><a href="sorglq.f.html#SORGLQ.1">SORGLQ</a>'</span>, <span class="string">' '</span>, M,
      $                    N, M, -1 ) )
                   WRKBL = MAX( WRKBL, 3*M+2*M*
-     $                    <a name="ILAENV.434"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.434"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
+     $                    <a name="ILAENV.434"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.434"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
                   WRKBL = MAX( WRKBL, 3*M+( M-1 )*
-     $                    <a name="ILAENV.436"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.436"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, M, M, M, -1 ) )
+     $                    <a name="ILAENV.436"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.436"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, M, M, M, -1 ) )
                   WRKBL = MAX( WRKBL, BDSPAC )
                   MAXWRK = M*M + WRKBL
                   MINWRK = MAX( 3*M+N, BDSPAC )
@@ -460,15 +460,15 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 5t(N much larger than M, JOBU='O', JOBVT='S')
 </span><span class="comment">*</span><span class="comment">
-</span>                  WRKBL = M + M*<a name="ILAENV.444"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGELQF.444"></a><a href="sgelqf.f.html#SGELQF.1">SGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, M+M*<a name="ILAENV.445"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGLQ.445"></a><a href="sorglq.f.html#SORGLQ.1">SORGLQ</a>'</span>, <span class="string">' '</span>, M,
+</span>                  WRKBL = M + M*<a name="ILAENV.444"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGELQF.444"></a><a href="sgelqf.f.html#SGELQF.1">SGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+                  WRKBL = MAX( WRKBL, M+M*<a name="ILAENV.445"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGLQ.445"></a><a href="sorglq.f.html#SORGLQ.1">SORGLQ</a>'</span>, <span class="string">' '</span>, M,
      $                    N, M, -1 ) )
                   WRKBL = MAX( WRKBL, 3*M+2*M*
-     $                    <a name="ILAENV.448"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.448"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
+     $                    <a name="ILAENV.448"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.448"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
                   WRKBL = MAX( WRKBL, 3*M+( M-1 )*
-     $                    <a name="ILAENV.450"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.450"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, M, M, M, -1 ) )
+     $                    <a name="ILAENV.450"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.450"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, M, M, M, -1 ) )
                   WRKBL = MAX( WRKBL, 3*M+M*
-     $                    <a name="ILAENV.452"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.452"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, M, M, M, -1 ) )
+     $                    <a name="ILAENV.452"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.452"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, M, M, M, -1 ) )
                   WRKBL = MAX( WRKBL, BDSPAC )
                   MAXWRK = 2*M*M + WRKBL
                   MINWRK = MAX( 3*M+N, BDSPAC )
@@ -478,15 +478,15 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">                 Path 6t(N much larger than M, JOBU='S' or 'A',
 </span><span class="comment">*</span><span class="comment">                 JOBVT='S')
 </span><span class="comment">*</span><span class="comment">
-</span>                  WRKBL = M + M*<a name="ILAENV.462"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGELQF.462"></a><a href="sgelqf.f.html#SGELQF.1">SGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, M+M*<a name="ILAENV.463"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGLQ.463"></a><a href="sorglq.f.html#SORGLQ.1">SORGLQ</a>'</span>, <span class="string">' '</span>, M,
+</span>                  WRKBL = M + M*<a name="ILAENV.462"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGELQF.462"></a><a href="sgelqf.f.html#SGELQF.1">SGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+                  WRKBL = MAX( WRKBL, M+M*<a name="ILAENV.463"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGLQ.463"></a><a href="sorglq.f.html#SORGLQ.1">SORGLQ</a>'</span>, <span class="string">' '</span>, M,
      $                    N, M, -1 ) )
                   WRKBL = MAX( WRKBL, 3*M+2*M*
-     $                    <a name="ILAENV.466"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.466"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
+     $                    <a name="ILAENV.466"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.466"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
                   WRKBL = MAX( WRKBL, 3*M+( M-1 )*
-     $                    <a name="ILAENV.468"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.468"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, M, M, M, -1 ) )
+     $                    <a name="ILAENV.468"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.468"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, M, M, M, -1 ) )
                   WRKBL = MAX( WRKBL, 3*M+M*
-     $                    <a name="ILAENV.470"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.470"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, M, M, M, -1 ) )
+     $                    <a name="ILAENV.470"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.470"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, M, M, M, -1 ) )
                   WRKBL = MAX( WRKBL, BDSPAC )
                   MAXWRK = M*M + WRKBL
                   MINWRK = MAX( 3*M+N, BDSPAC )
@@ -494,13 +494,13 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 7t(N much larger than M, JOBU='N', JOBVT='A')
 </span><span class="comment">*</span><span class="comment">
-</span>                  WRKBL = M + M*<a name="ILAENV.478"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGELQF.478"></a><a href="sgelqf.f.html#SGELQF.1">SGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, M+N*<a name="ILAENV.479"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGLQ.479"></a><a href="sorglq.f.html#SORGLQ.1">SORGLQ</a>'</span>, <span class="string">' '</span>, N,
+</span>                  WRKBL = M + M*<a name="ILAENV.478"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGELQF.478"></a><a href="sgelqf.f.html#SGELQF.1">SGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+                  WRKBL = MAX( WRKBL, M+N*<a name="ILAENV.479"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGLQ.479"></a><a href="sorglq.f.html#SORGLQ.1">SORGLQ</a>'</span>, <span class="string">' '</span>, N,
      $                    N, M, -1 ) )
                   WRKBL = MAX( WRKBL, 3*M+2*M*
-     $                    <a name="ILAENV.482"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.482"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
+     $                    <a name="ILAENV.482"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.482"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
                   WRKBL = MAX( WRKBL, 3*M+( M-1 )*
-     $                    <a name="ILAENV.484"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.484"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, M, M, M, -1 ) )
+     $                    <a name="ILAENV.484"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.484"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, M, M, M, -1 ) )
                   WRKBL = MAX( WRKBL, BDSPAC )
                   MAXWRK = M*M + WRKBL
                   MINWRK = MAX( 3*M+N, BDSPAC )
@@ -508,15 +508,15 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                 Path 8t(N much larger than M, JOBU='O', JOBVT='A')
 </span><span class="comment">*</span><span class="comment">
-</span>                  WRKBL = M + M*<a name="ILAENV.492"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGELQF.492"></a><a href="sgelqf.f.html#SGELQF.1">SGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, M+N*<a name="ILAENV.493"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGLQ.493"></a><a href="sorglq.f.html#SORGLQ.1">SORGLQ</a>'</span>, <span class="string">' '</span>, N,
+</span>                  WRKBL = M + M*<a name="ILAENV.492"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGELQF.492"></a><a href="sgelqf.f.html#SGELQF.1">SGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+                  WRKBL = MAX( WRKBL, M+N*<a name="ILAENV.493"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGLQ.493"></a><a href="sorglq.f.html#SORGLQ.1">SORGLQ</a>'</span>, <span class="string">' '</span>, N,
      $                    N, M, -1 ) )
                   WRKBL = MAX( WRKBL, 3*M+2*M*
-     $                    <a name="ILAENV.496"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.496"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
+     $                    <a name="ILAENV.496"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.496"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
                   WRKBL = MAX( WRKBL, 3*M+( M-1 )*
-     $                    <a name="ILAENV.498"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.498"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, M, M, M, -1 ) )
+     $                    <a name="ILAENV.498"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.498"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, M, M, M, -1 ) )
                   WRKBL = MAX( WRKBL, 3*M+M*
-     $                    <a name="ILAENV.500"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.500"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, M, M, M, -1 ) )
+     $                    <a name="ILAENV.500"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.500"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, M, M, M, -1 ) )
                   WRKBL = MAX( WRKBL, BDSPAC )
                   MAXWRK = 2*M*M + WRKBL
                   MINWRK = MAX( 3*M+N, BDSPAC )
@@ -525,15 +525,15 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">                 Path 9t(N much larger than M, JOBU='S' or 'A',
 </span><span class="comment">*</span><span class="comment">                 JOBVT='A')
 </span><span class="comment">*</span><span class="comment">
-</span>                  WRKBL = M + M*<a name="ILAENV.509"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGELQF.509"></a><a href="sgelqf.f.html#SGELQF.1">SGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-                  WRKBL = MAX( WRKBL, M+N*<a name="ILAENV.510"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGLQ.510"></a><a href="sorglq.f.html#SORGLQ.1">SORGLQ</a>'</span>, <span class="string">' '</span>, N,
+</span>                  WRKBL = M + M*<a name="ILAENV.509"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGELQF.509"></a><a href="sgelqf.f.html#SGELQF.1">SGELQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+                  WRKBL = MAX( WRKBL, M+N*<a name="ILAENV.510"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGLQ.510"></a><a href="sorglq.f.html#SORGLQ.1">SORGLQ</a>'</span>, <span class="string">' '</span>, N,
      $                    N, M, -1 ) )
                   WRKBL = MAX( WRKBL, 3*M+2*M*
-     $                    <a name="ILAENV.513"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.513"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
+     $                    <a name="ILAENV.513"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.513"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, M, M, -1, -1 ) )
                   WRKBL = MAX( WRKBL, 3*M+( M-1 )*
-     $                    <a name="ILAENV.515"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.515"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, M, M, M, -1 ) )
+     $                    <a name="ILAENV.515"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.515"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, M, M, M, -1 ) )
                   WRKBL = MAX( WRKBL, 3*M+M*
-     $                    <a name="ILAENV.517"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.517"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, M, M, M, -1 ) )
+     $                    <a name="ILAENV.517"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.517"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, M, M, M, -1 ) )
                   WRKBL = MAX( WRKBL, BDSPAC )
                   MAXWRK = M*M + WRKBL
                   MINWRK = MAX( 3*M+N, BDSPAC )
@@ -542,17 +542,17 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">              Path 10t(N greater than M, but not much larger)
 </span><span class="comment">*</span><span class="comment">
-</span>               MAXWRK = 3*M + ( M+N )*<a name="ILAENV.526"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.526"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, M, N,
+</span>               MAXWRK = 3*M + ( M+N )*<a name="ILAENV.526"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEBRD.526"></a><a href="sgebrd.f.html#SGEBRD.1">SGEBRD</a>'</span>, <span class="string">' '</span>, M, N,
      $                  -1, -1 )
                IF( WNTVS .OR. WNTVO )
      $            MAXWRK = MAX( MAXWRK, 3*M+M*
-     $                     <a name="ILAENV.530"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.530"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, M, N, M, -1 ) )
+     $                     <a name="ILAENV.530"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.530"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, M, N, M, -1 ) )
                IF( WNTVA )
      $            MAXWRK = MAX( MAXWRK, 3*M+N*
-     $                     <a name="ILAENV.533"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.533"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, N, N, M, -1 ) )
+     $                     <a name="ILAENV.533"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.533"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'P'</span>, N, N, M, -1 ) )
                IF( .NOT.WNTUN )
      $            MAXWRK = MAX( MAXWRK, 3*M+( M-1 )*
-     $                     <a name="ILAENV.536"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.536"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, M, M, M, -1 ) )
+     $                     <a name="ILAENV.536"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORGBR.536"></a><a href="sorgbr.f.html#SORGBR.1">SORGBR</a>'</span>, <span class="string">'Q'</span>, M, M, M, -1 ) )
                MAXWRK = MAX( MAXWRK, BDSPAC )
                MINWRK = MAX( 3*M+N, BDSPAC )
             END IF

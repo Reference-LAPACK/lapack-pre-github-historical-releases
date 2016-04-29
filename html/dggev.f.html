@@ -181,9 +181,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.164"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.165"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.165"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       DOUBLE PRECISION   <a name="DLAMCH.166"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANGE.166"></a><a href="dlange.f.html#DLANGE.1">DLANGE</a>
-      EXTERNAL           <a name="LSAME.167"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.167"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="DLAMCH.167"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANGE.167"></a><a href="dlange.f.html#DLANGE.1">DLANGE</a>
+      EXTERNAL           <a name="LSAME.167"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.167"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="DLAMCH.167"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANGE.167"></a><a href="dlange.f.html#DLANGE.1">DLANGE</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
 </span>      INTRINSIC          ABS, MAX, SQRT
@@ -240,18 +240,18 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">       minimal amount of workspace needed at that point in the code,
 </span><span class="comment">*</span><span class="comment">       as well as the preferred amount for good performance.
 </span><span class="comment">*</span><span class="comment">       NB refers to the optimal block size for the immediately
-</span><span class="comment">*</span><span class="comment">       following subroutine, as returned by <a name="ILAENV.224"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>. The workspace is
+</span><span class="comment">*</span><span class="comment">       following subroutine, as returned by <a name="ILAENV.224"></a><a href="hfy-index.html#ILAENV">ILAENV</a>. The workspace is
 </span><span class="comment">*</span><span class="comment">       computed assuming ILO = 1 and IHI = N, the worst case.)
 </span><span class="comment">*</span><span class="comment">
 </span>      IF( INFO.EQ.0 ) THEN
          MINWRK = MAX( 1, 8*N )
          MAXWRK = MAX( 1, N*( 7 +
-     $                 <a name="ILAENV.230"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DGEQRF.230"></a><a href="dgeqrf.f.html#DGEQRF.1">DGEQRF</a>'</span>, <span class="string">' '</span>, N, 1, N, 0 ) ) )
+     $                 <a name="ILAENV.230"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DGEQRF.230"></a><a href="dgeqrf.f.html#DGEQRF.1">DGEQRF</a>'</span>, <span class="string">' '</span>, N, 1, N, 0 ) ) )
          MAXWRK = MAX( MAXWRK, N*( 7 +
-     $                 <a name="ILAENV.232"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DORMQR.232"></a><a href="dormqr.f.html#DORMQR.1">DORMQR</a>'</span>, <span class="string">' '</span>, N, 1, N, 0 ) ) )
+     $                 <a name="ILAENV.232"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DORMQR.232"></a><a href="dormqr.f.html#DORMQR.1">DORMQR</a>'</span>, <span class="string">' '</span>, N, 1, N, 0 ) ) )
          IF( ILVL ) THEN
             MAXWRK = MAX( MAXWRK, N*( 7 +
-     $                 <a name="ILAENV.235"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DORGQR.235"></a><a href="dorgqr.f.html#DORGQR.1">DORGQR</a>'</span>, <span class="string">' '</span>, N, 1, N, -1 ) ) )
+     $                 <a name="ILAENV.235"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DORGQR.235"></a><a href="dorgqr.f.html#DORGQR.1">DORGQR</a>'</span>, <span class="string">' '</span>, N, 1, N, -1 ) ) )
          END IF
          WORK( 1 ) = MAXWRK
 <span class="comment">*</span><span class="comment">

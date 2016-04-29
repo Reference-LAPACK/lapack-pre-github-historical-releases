@@ -260,9 +260,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.243"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.244"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.244"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       DOUBLE PRECISION   <a name="DLAMCH.245"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="ZLANGE.245"></a><a href="zlange.f.html#ZLANGE.1">ZLANGE</a>
-      EXTERNAL           <a name="LSAME.246"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.246"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="DLAMCH.246"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="ZLANGE.246"></a><a href="zlange.f.html#ZLANGE.1">ZLANGE</a>
+      EXTERNAL           <a name="LSAME.246"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.246"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="DLAMCH.246"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="ZLANGE.246"></a><a href="zlange.f.html#ZLANGE.1">ZLANGE</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
 </span>      INTRINSIC          MAX, SQRT
@@ -338,17 +338,17 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">       minimal amount of workspace needed at that point in the code,
 </span><span class="comment">*</span><span class="comment">       as well as the preferred amount for good performance.
 </span><span class="comment">*</span><span class="comment">       NB refers to the optimal block size for the immediately
-</span><span class="comment">*</span><span class="comment">       following subroutine, as returned by <a name="ILAENV.322"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>.)
+</span><span class="comment">*</span><span class="comment">       following subroutine, as returned by <a name="ILAENV.322"></a><a href="hfy-index.html#ILAENV">ILAENV</a>.)
 </span><span class="comment">*</span><span class="comment">
 </span>      IF( INFO.EQ.0 ) THEN
          IF( N.GT.0) THEN
             MINWRK = 2*N
-            MAXWRK = N*(1 + <a name="ILAENV.327"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZGEQRF.327"></a><a href="zgeqrf.f.html#ZGEQRF.1">ZGEQRF</a>'</span>, <span class="string">' '</span>, N, 1, N, 0 ) )
+            MAXWRK = N*(1 + <a name="ILAENV.327"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZGEQRF.327"></a><a href="zgeqrf.f.html#ZGEQRF.1">ZGEQRF</a>'</span>, <span class="string">' '</span>, N, 1, N, 0 ) )
             MAXWRK = MAX( MAXWRK, N*( 1 +
-     $                    <a name="ILAENV.329"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNMQR.329"></a><a href="zunmqr.f.html#ZUNMQR.1">ZUNMQR</a>'</span>, <span class="string">' '</span>, N, 1, N, -1 ) ) )
+     $                    <a name="ILAENV.329"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNMQR.329"></a><a href="zunmqr.f.html#ZUNMQR.1">ZUNMQR</a>'</span>, <span class="string">' '</span>, N, 1, N, -1 ) ) )
             IF( ILVSL ) THEN
                MAXWRK = MAX( MAXWRK, N*( 1 +
-     $                       <a name="ILAENV.332"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNGQR.332"></a><a href="zungqr.f.html#ZUNGQR.1">ZUNGQR</a>'</span>, <span class="string">' '</span>, N, 1, N, -1 ) ) )
+     $                       <a name="ILAENV.332"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNGQR.332"></a><a href="zungqr.f.html#ZUNGQR.1">ZUNGQR</a>'</span>, <span class="string">' '</span>, N, 1, N, -1 ) ) )
             END IF
             LWRK = MAXWRK
             IF( IJOB.GE.1 )

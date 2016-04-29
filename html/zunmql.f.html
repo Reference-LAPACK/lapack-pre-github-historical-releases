@@ -130,8 +130,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.113"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.114"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="LSAME.115"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.115"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.114"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="LSAME.115"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.115"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           <a name="XERBLA.118"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, <a name="ZLARFB.118"></a><a href="zlarfb.f.html#ZLARFB.1">ZLARFB</a>, <a name="ZLARFT.118"></a><a href="zlarft.f.html#ZLARFT.1">ZLARFT</a>, <a name="ZUNM2L.118"></a><a href="zunm2l.f.html#ZUNM2L.1">ZUNM2L</a>
@@ -181,7 +181,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">           Determine the block size.  NB may be at most NBMAX, where
 </span><span class="comment">*</span><span class="comment">           NBMAX is used to define the local array T.
 </span><span class="comment">*</span><span class="comment">
-</span>            NB = MIN( NBMAX, <a name="ILAENV.165"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNMQL.165"></a><a href="zunmql.f.html#ZUNMQL.1">ZUNMQL</a>'</span>, SIDE // TRANS, M, N,
+</span>            NB = MIN( NBMAX, <a name="ILAENV.165"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNMQL.165"></a><a href="zunmql.f.html#ZUNMQL.1">ZUNMQL</a>'</span>, SIDE // TRANS, M, N,
      $                               K, -1 ) )
             LWKOPT = NW*NB
          END IF
@@ -211,7 +211,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
          IWS = NW*NB
          IF( LWORK.LT.IWS ) THEN
             NB = LWORK / LDWORK
-            NBMIN = MAX( 2, <a name="ILAENV.195"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 2, <span class="string">'<a name="ZUNMQL.195"></a><a href="zunmql.f.html#ZUNMQL.1">ZUNMQL</a>'</span>, SIDE // TRANS, M, N, K,
+            NBMIN = MAX( 2, <a name="ILAENV.195"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 2, <span class="string">'<a name="ZUNMQL.195"></a><a href="zunmql.f.html#ZUNMQL.1">ZUNMQL</a>'</span>, SIDE // TRANS, M, N, K,
      $              -1 ) )
          END IF
       ELSE

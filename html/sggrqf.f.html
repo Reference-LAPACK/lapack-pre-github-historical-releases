@@ -168,8 +168,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>      EXTERNAL           <a name="SGEQRF.149"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>, <a name="SGERQF.149"></a><a href="sgerqf.f.html#SGERQF.1">SGERQF</a>, <a name="SORMRQ.149"></a><a href="sormrq.f.html#SORMRQ.1">SORMRQ</a>, <a name="XERBLA.149"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      INTEGER            <a name="ILAENV.152"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> 
-      EXTERNAL           <a name="ILAENV.153"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a> 
+</span>      INTEGER            <a name="ILAENV.152"></a><a href="hfy-index.html#ILAENV">ILAENV</a> 
+      EXTERNAL           <a name="ILAENV.153"></a><a href="hfy-index.html#ILAENV">ILAENV</a> 
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
 </span>      INTRINSIC          INT, MAX, MIN
@@ -179,9 +179,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">     Test the input parameters
 </span><span class="comment">*</span><span class="comment">
 </span>      INFO = 0
-      NB1 = <a name="ILAENV.163"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGERQF.163"></a><a href="sgerqf.f.html#SGERQF.1">SGERQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
-      NB2 = <a name="ILAENV.164"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.164"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, P, N, -1, -1 )
-      NB3 = <a name="ILAENV.165"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="SORMRQ.165"></a><a href="sormrq.f.html#SORMRQ.1">SORMRQ</a>'</span>, <span class="string">' '</span>, M, N, P, -1 )
+      NB1 = <a name="ILAENV.163"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGERQF.163"></a><a href="sgerqf.f.html#SGERQF.1">SGERQF</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+      NB2 = <a name="ILAENV.164"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SGEQRF.164"></a><a href="sgeqrf.f.html#SGEQRF.1">SGEQRF</a>'</span>, <span class="string">' '</span>, P, N, -1, -1 )
+      NB3 = <a name="ILAENV.165"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="SORMRQ.165"></a><a href="sormrq.f.html#SORMRQ.1">SORMRQ</a>'</span>, <span class="string">' '</span>, M, N, P, -1 )
       NB = MAX( NB1, NB2, NB3 )
       LWKOPT = MAX( N, M, P)*NB
       WORK( 1 ) = LWKOPT

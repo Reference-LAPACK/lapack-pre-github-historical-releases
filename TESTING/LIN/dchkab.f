@@ -1,9 +1,9 @@
       PROGRAM DCHKAB
       IMPLICIT NONE
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     January 2007
 *
 *  Purpose
 *  =======
@@ -65,7 +65,8 @@
 *     .. Local Scalars ..
       LOGICAL            FATAL, TSTDRV, TSTERR
       INTEGER            I, LDA, NM, NMATS,
-     $                   NNS, NRHS, NTYPES
+     $                   NNS, NRHS, NTYPES,
+     $                   VERS_MAJOR, VERS_MINOR, VERS_PATCH
       DOUBLE PRECISION   EPS, S1, S2, THRESH
       REAL               SEPS
 *     ..
@@ -82,7 +83,7 @@
       EXTERNAL           DLAMCH, DSECND, SLAMCH
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           ALAREQ, DERRAB
+      EXTERNAL           ALAREQ, DERRAB, ILAVER
 *     ..
 *     .. Scalars in Common ..
       LOGICAL            LERR, OK
@@ -105,7 +106,8 @@
 *
 *     Report values of parameters.
 *
-      WRITE( NOUT, FMT = 9994 )
+      CALL ILAVER( VERS_MAJOR, VERS_MINOR, VERS_PATCH )
+      WRITE( NOUT, FMT = 9994 ) VERS_MAJOR, VERS_MINOR, VERS_PATCH
 *
 *     Read the values of M
 *
@@ -236,7 +238,7 @@
  9995 FORMAT( ' Invalid input value: ', A4, '=', I6, '; must be <=',
      $      I6 )
  9994 FORMAT( ' Tests of the DOUBLE PRECISION LAPACK DSGESV routines ',
-     $      / ' LAPACK VERSION 3.1, released October, 2006 ',
+     $      / ' LAPACK VERSION ', I1, '.', I1, '.', I1,
      $      / / ' The following parameter values will be used:' )
  9993 FORMAT( 4X, A4, ':  ', 10I6, / 11X, 10I6 )
  9992 FORMAT( / ' Routines pass computational tests if test ratio is ',

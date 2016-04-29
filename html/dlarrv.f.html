@@ -23,7 +23,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $                   IBLOCK, INDEXW, GERS, Z, LDZ, ISUPPZ,
      $                   WORK, IWORK, INFO )
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1.1) --
 </span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
 </span><span class="comment">*</span><span class="comment">     November 2006
 </span><span class="comment">*</span><span class="comment">
@@ -213,12 +213,11 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $                   SIGMA, SPDIAM, SSIGMA, TAU, TMP, TOL, ZTZ
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      DOUBLE PRECISION  <a name="DLAMCH.197"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
-      DOUBLE PRECISION   DDOT, DNRM2
-      EXTERNAL           DDOT, <a name="DLAMCH.199"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, DNRM2
+</span>      DOUBLE PRECISION   <a name="DLAMCH.197"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+      EXTERNAL           <a name="DLAMCH.198"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
-</span>      EXTERNAL           DAXPY, DCOPY, <a name="DLAR1V.202"></a><a href="dlar1v.f.html#DLAR1V.1">DLAR1V</a>, <a name="DLARRB.202"></a><a href="dlarrb.f.html#DLARRB.1">DLARRB</a>, <a name="DLARRF.202"></a><a href="dlarrf.f.html#DLARRF.1">DLARRF</a>, <a name="DLASET.202"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>,
+</span>      EXTERNAL           DCOPY, <a name="DLAR1V.201"></a><a href="dlar1v.f.html#DLAR1V.1">DLAR1V</a>, <a name="DLARRB.201"></a><a href="dlarrb.f.html#DLARRB.1">DLARRB</a>, <a name="DLARRF.201"></a><a href="dlarrf.f.html#DLARRF.1">DLARRF</a>, <a name="DLASET.201"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>,
      $                   DSCAL
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
@@ -265,10 +264,10 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>      ZUSEDW = ZUSEDU - ZUSEDL + 1
 
 
-      CALL <a name="DLASET.249"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'Full'</span>, N, ZUSEDW, ZERO, ZERO,
+      CALL <a name="DLASET.248"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'Full'</span>, N, ZUSEDW, ZERO, ZERO,
      $                    Z(1,ZUSEDL), LDZ )
 
-      EPS = <a name="DLAMCH.252"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Precision'</span> )
+      EPS = <a name="DLAMCH.251"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Precision'</span> )
       RQTOL = TWO * EPS
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     Set expert flags for standard code.
@@ -432,7 +431,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
                   SIGMA = Z( IEND, J+1 )
 
 <span class="comment">*</span><span class="comment">                 Set the corresponding entries in Z to zero
-</span>                  CALL <a name="DLASET.416"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'Full'</span>, IN, 2, ZERO, ZERO,
+</span>                  CALL <a name="DLASET.415"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'Full'</span>, IN, 2, ZERO, ZERO,
      $                         Z( IBEGIN, J), LDZ )
                END IF
 
@@ -454,7 +453,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
                   OFFSET = INDEXW( WBEGIN ) - 1
 <span class="comment">*</span><span class="comment">                 perform limited bisection (if necessary) to get approximate
 </span><span class="comment">*</span><span class="comment">                 eigenvalues to the precision needed.
-</span>                  CALL <a name="DLARRB.438"></a><a href="dlarrb.f.html#DLARRB.1">DLARRB</a>( IN, D( IBEGIN ),
+</span>                  CALL <a name="DLARRB.437"></a><a href="dlarrb.f.html#DLARRB.1">DLARRB</a>( IN, D( IBEGIN ),
      $                         WORK(INDLLD+IBEGIN-1),
      $                         P, Q, RTOL1, RTOL2, OFFSET,
      $                         WORK(WBEGIN),WGAP(WBEGIN),WERR(WBEGIN),
@@ -468,7 +467,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">                 of the unshifted matrix and must be used for computation
 </span><span class="comment">*</span><span class="comment">                 of WGAP, the entries of WORK might stem from RRRs with
 </span><span class="comment">*</span><span class="comment">                 different shifts. The gaps from WBEGIN-1+OLDFST to
-</span><span class="comment">*</span><span class="comment">                 WBEGIN-1+OLDLST are correctly computed in <a name="DLARRB.452"></a><a href="dlarrb.f.html#DLARRB.1">DLARRB</a>.
+</span><span class="comment">*</span><span class="comment">                 WBEGIN-1+OLDLST are correctly computed in <a name="DLARRB.451"></a><a href="dlarrb.f.html#DLARRB.1">DLARRB</a>.
 </span><span class="comment">*</span><span class="comment">                 However, we only allow the gaps to become greater since
 </span><span class="comment">*</span><span class="comment">                 this is what should happen when we decrease WERR
 </span>                  IF( OLDFST.GT.1) THEN
@@ -564,7 +563,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
                            P = INDEXW( WBEGIN-1+NEWLST )
                         ENDIF
                         OFFSET = INDEXW( WBEGIN ) - 1
-                        CALL <a name="DLARRB.548"></a><a href="dlarrb.f.html#DLARRB.1">DLARRB</a>( IN, D(IBEGIN),
+                        CALL <a name="DLARRB.547"></a><a href="dlarrb.f.html#DLARRB.1">DLARRB</a>( IN, D(IBEGIN),
      $                       WORK( INDLLD+IBEGIN-1 ),P,P,
      $                       RQTOL, RQTOL, OFFSET,
      $                       WORK(WBEGIN),WGAP(WBEGIN),
@@ -589,8 +588,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">                    Compute RRR of child cluster.
 </span><span class="comment">*</span><span class="comment">                    Note that the new RRR is stored in Z
 </span><span class="comment">*</span><span class="comment">
-</span>C                    <a name="DLARRF.573"></a><a href="dlarrf.f.html#DLARRF.1">DLARRF</a> needs LWORK = 2*N
-                     CALL <a name="DLARRF.574"></a><a href="dlarrf.f.html#DLARRF.1">DLARRF</a>( IN, D( IBEGIN ), L( IBEGIN ),
+</span>C                    <a name="DLARRF.572"></a><a href="dlarrf.f.html#DLARRF.1">DLARRF</a> needs LWORK = 2*N
+                     CALL <a name="DLARRF.573"></a><a href="dlarrf.f.html#DLARRF.1">DLARRF</a>( IN, D( IBEGIN ), L( IBEGIN ),
      $                         WORK(INDLD+IBEGIN-1),
      $                         NEWFST, NEWLST, WORK(WBEGIN),
      $                         WGAP(WBEGIN), WERR(WBEGIN),
@@ -598,7 +597,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $                         Z(IBEGIN, NEWFTT),Z(IBEGIN, NEWFTT+1),
      $                         WORK( INDWRK ), IINFO )
                      IF( IINFO.EQ.0 ) THEN
-<span class="comment">*</span><span class="comment">                       a new RRR for the cluster was found by <a name="DLARRF.582"></a><a href="dlarrf.f.html#DLARRF.1">DLARRF</a>
+<span class="comment">*</span><span class="comment">                       a new RRR for the cluster was found by <a name="DLARRF.581"></a><a href="dlarrf.f.html#DLARRF.1">DLARRF</a>
 </span><span class="comment">*</span><span class="comment">                       update shift and store it
 </span>                        SSIGMA = SIGMA + TAU
                         Z( IEND, NEWFTT+1 ) = SSIGMA
@@ -719,7 +718,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>                        USEDBS = .TRUE.
                         ITMP1 = IWORK( IINDR+WINDEX )
                         OFFSET = INDEXW( WBEGIN ) - 1
-                        CALL <a name="DLARRB.703"></a><a href="dlarrb.f.html#DLARRB.1">DLARRB</a>( IN, D(IBEGIN),
+                        CALL <a name="DLARRB.702"></a><a href="dlarrb.f.html#DLARRB.1">DLARRB</a>( IN, D(IBEGIN),
      $                       WORK(INDLLD+IBEGIN-1),INDEIG,INDEIG,
      $                       ZERO, TWO*EPS, OFFSET,
      $                       WORK(WBEGIN),WGAP(WBEGIN),
@@ -736,7 +735,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>                        IWORK( IINDR+WINDEX ) = 0
                      ENDIF
 <span class="comment">*</span><span class="comment">                    Given LAMBDA, compute the eigenvector.
-</span>                     CALL <a name="DLAR1V.720"></a><a href="dlar1v.f.html#DLAR1V.1">DLAR1V</a>( IN, 1, IN, LAMBDA, D( IBEGIN ),
+</span>                     CALL <a name="DLAR1V.719"></a><a href="dlar1v.f.html#DLAR1V.1">DLAR1V</a>( IN, 1, IN, LAMBDA, D( IBEGIN ),
      $                    L( IBEGIN ), WORK(INDLD+IBEGIN-1),
      $                    WORK(INDLLD+IBEGIN-1),
      $                    PIVMIN, GAPTOL, Z( IBEGIN, WINDEX ),
@@ -836,7 +835,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
                         ENDIF
                         IF (STP2II) THEN
 <span class="comment">*</span><span class="comment">                          improve error angle by second step
-</span>                           CALL <a name="DLAR1V.820"></a><a href="dlar1v.f.html#DLAR1V.1">DLAR1V</a>( IN, 1, IN, LAMBDA,
+</span>                           CALL <a name="DLAR1V.819"></a><a href="dlar1v.f.html#DLAR1V.1">DLAR1V</a>( IN, 1, IN, LAMBDA,
      $                          D( IBEGIN ), L( IBEGIN ),
      $                          WORK(INDLD+IBEGIN-1),
      $                          WORK(INDLLD+IBEGIN-1),
@@ -910,7 +909,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>
       RETURN
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">     End of <a name="DLARRV.894"></a><a href="dlarrv.f.html#DLARRV.1">DLARRV</a>
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLARRV.893"></a><a href="dlarrv.f.html#DLARRV.1">DLARRV</a>
 </span><span class="comment">*</span><span class="comment">
 </span>      END
 

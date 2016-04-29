@@ -2,9 +2,9 @@
      $                   NBVAL, NXVAL, THRESH, TSTERR, A, COPYA, B,
      $                   COPYB, C, S, COPYS, WORK, IWORK, NOUT )
 *
-*  -- LAPACK test routine (version 3.1) --
+*  -- LAPACK test routine (version 3.1.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     January 2007
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -140,7 +140,7 @@
 *     .. External Subroutines ..
       EXTERNAL           ALAERH, ALAHD, ALASVM, SAXPY, SERRLS, SGELS,
      $                   SGELSD, SGELSS, SGELSX, SGELSY, SGEMM, SLACPY,
-     $                   SLARNV, SLASRT, SQRT13, SQRT15, SQRT16, SSCAL,
+     $                   SLARNV, SQRT13, SQRT15, SQRT16, SSCAL,
      $                   XLAENV
 *     ..
 *     .. Intrinsic Functions ..
@@ -178,6 +178,8 @@
 *
 *     Test the error exits
 *
+      CALL XLAENV( 2, 2 )
+      CALL XLAENV( 9, SMLSIZ )
       IF( TSTERR )
      $   CALL SERRLS( PATH, NOUT )
 *
@@ -186,8 +188,6 @@
       IF( ( NM.EQ.0 .OR. NN.EQ.0 ) .AND. THRESH.EQ.ZERO )
      $   CALL ALAHD( NOUT, PATH )
       INFOT = 0
-      CALL XLAENV( 2, 2 )
-      CALL XLAENV( 9, SMLSIZ )
 *
       DO 150 IM = 1, NM
          M = MVAL( IM )

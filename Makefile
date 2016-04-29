@@ -1,7 +1,7 @@
 #
 #  Top Level Makefile for LAPACK
-#  Version 3.0
-#  June 30, 1999
+#  Version 3.1.1
+#  February 2007
 #
 
 include make.inc
@@ -37,22 +37,14 @@ blas_testing:
 	           ./xblat1z > zblat1.out    ) 
 	( cd BLAS/TESTING; $(MAKE) -f Makeblat2 )
 	( cd BLAS; ./xblat2s < sblat2.in     ; \
-	           mv SBLAT2.SUMM sblat2.out ; \
 	           ./xblat2d < dblat2.in     ; \
-	           mv DBLAT2.SUMM dblat2.out ; \
 	           ./xblat2c < cblat2.in     ; \
-	           mv CBLAT2.SUMM cblat2.out ; \
-	           ./xblat2z < zblat2.in     ; \
-	           mv ZBLAT2.SUMM zblat2.out )
+	           ./xblat2z < zblat2.in     )
 	( cd BLAS/TESTING; $(MAKE) -f Makeblat3 )
 	( cd BLAS; ./xblat3s < sblat3.in     ; \
-	           mv SBLAT3.SUMM sblat3.out ; \
 	           ./xblat3d < dblat3.in     ; \
-	           mv DBLAT3.SUMM dblat3.out ; \
 	           ./xblat3c < cblat3.in     ; \
-	           mv CBLAT3.SUMM cblat3.out ; \
-	           ./xblat3z < zblat3.in     ; \
-	           mv ZBLAT3.SUMM zblat3.out )
+	           ./xblat3z < zblat3.in     ) 
 
 cleanlib:
 	( cd INSTALL; $(MAKE) clean )
@@ -64,7 +56,7 @@ cleanblas_testing:
 	( cd BLAS/TESTING; $(MAKE) -f Makeblat1 clean )
 	( cd BLAS/TESTING; $(MAKE) -f Makeblat2 clean )
 	( cd BLAS/TESTING; $(MAKE) -f Makeblat3 clean )
-	( cd BLAS; rm -f *.SUMM xblat* )
+	( cd BLAS; rm -f xblat* )
 
 cleantesting:
 	( cd TESTING/LIN; $(MAKE) clean )

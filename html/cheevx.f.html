@@ -146,7 +146,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">          otherwise 2*N.
 </span><span class="comment">*</span><span class="comment">          For optimal efficiency, LWORK &gt;= (NB+1)*N,
 </span><span class="comment">*</span><span class="comment">          where NB is the max of the blocksize for <a name="CHETRD.129"></a><a href="chetrd.f.html#CHETRD.1">CHETRD</a> and for
-</span><span class="comment">*</span><span class="comment">          <a name="CUNMTR.130"></a><a href="cunmtr.f.html#CUNMTR.1">CUNMTR</a> as returned by <a name="ILAENV.130"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>.
+</span><span class="comment">*</span><span class="comment">          <a name="CUNMTR.130"></a><a href="cunmtr.f.html#CUNMTR.1">CUNMTR</a> as returned by <a name="ILAENV.130"></a><a href="hfy-index.html#ILAENV">ILAENV</a>.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">          If LWORK = -1, then a workspace query is assumed; the routine
 </span><span class="comment">*</span><span class="comment">          only calculates the optimal size of the WORK array, returns
@@ -190,9 +190,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.173"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.174"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.174"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
       REAL               <a name="CLANHE.175"></a><a href="clanhe.f.html#CLANHE.1">CLANHE</a>, <a name="SLAMCH.175"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
-      EXTERNAL           <a name="LSAME.176"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.176"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>, <a name="CLANHE.176"></a><a href="clanhe.f.html#CLANHE.1">CLANHE</a>, <a name="SLAMCH.176"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      EXTERNAL           <a name="LSAME.176"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.176"></a><a href="hfy-index.html#ILAENV">ILAENV</a>, <a name="CLANHE.176"></a><a href="clanhe.f.html#CLANHE.1">CLANHE</a>, <a name="SLAMCH.176"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           <a name="CHETRD.179"></a><a href="chetrd.f.html#CHETRD.1">CHETRD</a>, <a name="CLACPY.179"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>, CSSCAL, <a name="CSTEIN.179"></a><a href="cstein.f.html#CSTEIN.1">CSTEIN</a>, <a name="CSTEQR.179"></a><a href="csteqr.f.html#CSTEQR.1">CSTEQR</a>, CSWAP,
@@ -248,8 +248,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
             WORK( 1 ) = LWKMIN
          ELSE
             LWKMIN = 2*N
-            NB = <a name="ILAENV.232"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CHETRD.232"></a><a href="chetrd.f.html#CHETRD.1">CHETRD</a>'</span>, UPLO, N, -1, -1, -1 )
-            NB = MAX( NB, <a name="ILAENV.233"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNMTR.233"></a><a href="cunmtr.f.html#CUNMTR.1">CUNMTR</a>'</span>, UPLO, N, -1, -1, -1 ) )
+            NB = <a name="ILAENV.232"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CHETRD.232"></a><a href="chetrd.f.html#CHETRD.1">CHETRD</a>'</span>, UPLO, N, -1, -1, -1 )
+            NB = MAX( NB, <a name="ILAENV.233"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNMTR.233"></a><a href="cunmtr.f.html#CUNMTR.1">CUNMTR</a>'</span>, UPLO, N, -1, -1, -1 ) )
             LWKOPT = MAX( 1, ( NB + 1 )*N )
             WORK( 1 ) = LWKOPT
          END IF

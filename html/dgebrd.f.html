@@ -171,15 +171,15 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>      INTRINSIC          DBLE, MAX, MIN
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      INTEGER            <a name="ILAENV.155"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="ILAENV.156"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+</span>      INTEGER            <a name="ILAENV.155"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="ILAENV.156"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     Test the input parameters
 </span><span class="comment">*</span><span class="comment">
 </span>      INFO = 0
-      NB = MAX( 1, <a name="ILAENV.163"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="DGEBRD.163"></a><a href="dgebrd.f.html#DGEBRD.1">DGEBRD</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 ) )
+      NB = MAX( 1, <a name="ILAENV.163"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="DGEBRD.163"></a><a href="dgebrd.f.html#DGEBRD.1">DGEBRD</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 ) )
       LWKOPT = ( M+N )*NB
       WORK( 1 ) = DBLE( LWKOPT )
       LQUERY = ( LWORK.EQ.-1 )
@@ -215,7 +215,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">        Set the crossover point NX.
 </span><span class="comment">*</span><span class="comment">
-</span>         NX = MAX( NB, <a name="ILAENV.199"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 3, <span class="string">'<a name="DGEBRD.199"></a><a href="dgebrd.f.html#DGEBRD.1">DGEBRD</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 ) )
+</span>         NX = MAX( NB, <a name="ILAENV.199"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 3, <span class="string">'<a name="DGEBRD.199"></a><a href="dgebrd.f.html#DGEBRD.1">DGEBRD</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 ) )
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">        Determine when to switch from blocked to unblocked code.
 </span><span class="comment">*</span><span class="comment">
@@ -226,7 +226,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">              Not enough work space for the optimal NB, consider using
 </span><span class="comment">*</span><span class="comment">              a smaller block size.
 </span><span class="comment">*</span><span class="comment">
-</span>               NBMIN = <a name="ILAENV.210"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 2, <span class="string">'<a name="DGEBRD.210"></a><a href="dgebrd.f.html#DGEBRD.1">DGEBRD</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
+</span>               NBMIN = <a name="ILAENV.210"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 2, <span class="string">'<a name="DGEBRD.210"></a><a href="dgebrd.f.html#DGEBRD.1">DGEBRD</a>'</span>, <span class="string">' '</span>, M, N, -1, -1 )
                IF( LWORK.GE.( M+N )*NBMIN ) THEN
                   NB = LWORK / ( M+N )
                ELSE

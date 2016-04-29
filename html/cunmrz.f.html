@@ -20,23 +20,22 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       SUBROUTINE <a name="CUNMRZ.1"></a><a href="cunmrz.f.html#CUNMRZ.1">CUNMRZ</a>( SIDE, TRANS, M, N, K, L, A, LDA, TAU, C, LDC,
      $                   WORK, LWORK, INFO )
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1.1) --
 </span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">     January 2007
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
 </span>      CHARACTER          SIDE, TRANS
       INTEGER            INFO, K, L, LDA, LDC, LWORK, M, N
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
-</span>      COMPLEX            A( LDA, * ), C( LDC, * ), TAU( * ),
-     $                   WORK( * )
+</span>      COMPLEX            A( LDA, * ), C( LDC, * ), TAU( * ), WORK( * )
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  Purpose
 </span><span class="comment">*</span><span class="comment">  =======
 </span><span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  <a name="CUNMRZ.20"></a><a href="cunmrz.f.html#CUNMRZ.1">CUNMRZ</a> overwrites the general complex M-by-N matrix C with
+</span><span class="comment">*</span><span class="comment">  <a name="CUNMRZ.19"></a><a href="cunmrz.f.html#CUNMRZ.1">CUNMRZ</a> overwrites the general complex M-by-N matrix C with
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">                  SIDE = 'L'     SIDE = 'R'
 </span><span class="comment">*</span><span class="comment">  TRANS = 'N':      Q * C          C * Q
@@ -47,7 +46,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">        Q = H(1) H(2) . . . H(k)
 </span><span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  as returned by <a name="CTZRZF.31"></a><a href="ctzrzf.f.html#CTZRZF.1">CTZRZF</a>. Q is of order M if SIDE = 'L' and of order N
+</span><span class="comment">*</span><span class="comment">  as returned by <a name="CTZRZF.30"></a><a href="ctzrzf.f.html#CTZRZF.1">CTZRZF</a>. Q is of order M if SIDE = 'L' and of order N
 </span><span class="comment">*</span><span class="comment">  if SIDE = 'R'.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  Arguments
@@ -83,7 +82,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">                               (LDA,N) if SIDE = 'R'
 </span><span class="comment">*</span><span class="comment">          The i-th row must contain the vector which defines the
 </span><span class="comment">*</span><span class="comment">          elementary reflector H(i), for i = 1,2,...,k, as returned by
-</span><span class="comment">*</span><span class="comment">          <a name="CTZRZF.67"></a><a href="ctzrzf.f.html#CTZRZF.1">CTZRZF</a> in the last k rows of its array argument A.
+</span><span class="comment">*</span><span class="comment">          <a name="CTZRZF.66"></a><a href="ctzrzf.f.html#CTZRZF.1">CTZRZF</a> in the last k rows of its array argument A.
 </span><span class="comment">*</span><span class="comment">          A is modified by the routine but restored on exit.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
@@ -91,7 +90,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  TAU     (input) COMPLEX array, dimension (K)
 </span><span class="comment">*</span><span class="comment">          TAU(i) must contain the scalar factor of the elementary
-</span><span class="comment">*</span><span class="comment">          reflector H(i), as returned by <a name="CTZRZF.75"></a><a href="ctzrzf.f.html#CTZRZF.1">CTZRZF</a>.
+</span><span class="comment">*</span><span class="comment">          reflector H(i), as returned by <a name="CTZRZF.74"></a><a href="ctzrzf.f.html#CTZRZF.1">CTZRZF</a>.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  C       (input/output) COMPLEX array, dimension (LDC,N)
 </span><span class="comment">*</span><span class="comment">          On entry, the M-by-N matrix C.
@@ -114,7 +113,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">          If LWORK = -1, then a workspace query is assumed; the routine
 </span><span class="comment">*</span><span class="comment">          only calculates the optimal size of the WORK array, returns
 </span><span class="comment">*</span><span class="comment">          this value as the first entry of the WORK array, and no error
-</span><span class="comment">*</span><span class="comment">          message related to LWORK is issued by <a name="XERBLA.98"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
+</span><span class="comment">*</span><span class="comment">          message related to LWORK is issued by <a name="XERBLA.97"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
 </span><span class="comment">*</span><span class="comment">          = 0:  successful exit
@@ -142,12 +141,12 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>      COMPLEX            T( LDT, NBMAX )
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
-</span>      LOGICAL            <a name="LSAME.126"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.127"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="LSAME.128"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.128"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+</span>      LOGICAL            <a name="LSAME.125"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      INTEGER            <a name="ILAENV.126"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="LSAME.127"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.127"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
-</span>      EXTERNAL           <a name="CLARZB.131"></a><a href="clarzb.f.html#CLARZB.1">CLARZB</a>, <a name="CLARZT.131"></a><a href="clarzt.f.html#CLARZT.1">CLARZT</a>, <a name="CUNMR3.131"></a><a href="cunmr3.f.html#CUNMR3.1">CUNMR3</a>, <a name="XERBLA.131"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+</span>      EXTERNAL           <a name="CLARZB.130"></a><a href="clarzb.f.html#CLARZB.1">CLARZB</a>, <a name="CLARZT.130"></a><a href="clarzt.f.html#CLARZT.1">CLARZT</a>, <a name="CUNMR3.130"></a><a href="cunmr3.f.html#CUNMR3.1">CUNMR3</a>, <a name="XERBLA.130"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
 </span>      INTRINSIC          MAX, MIN
@@ -157,8 +156,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">     Test the input arguments
 </span><span class="comment">*</span><span class="comment">
 </span>      INFO = 0
-      LEFT = <a name="LSAME.141"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'L'</span> )
-      NOTRAN = <a name="LSAME.142"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'N'</span> )
+      LEFT = <a name="LSAME.140"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'L'</span> )
+      NOTRAN = <a name="LSAME.141"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'N'</span> )
       LQUERY = ( LWORK.EQ.-1 )
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     NQ is the order of Q and NW is the minimum dimension of WORK
@@ -170,9 +169,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
          NQ = N
          NW = MAX( 1, M )
       END IF
-      IF( .NOT.LEFT .AND. .NOT.<a name="LSAME.154"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'R'</span> ) ) THEN
+      IF( .NOT.LEFT .AND. .NOT.<a name="LSAME.153"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'R'</span> ) ) THEN
          INFO = -1
-      ELSE IF( .NOT.NOTRAN .AND. .NOT.<a name="LSAME.156"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'C'</span> ) ) THEN
+      ELSE IF( .NOT.NOTRAN .AND. .NOT.<a name="LSAME.155"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'C'</span> ) ) THEN
          INFO = -2
       ELSE IF( M.LT.0 ) THEN
          INFO = -3
@@ -192,11 +191,12 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>      IF( INFO.EQ.0 ) THEN
          IF( M.EQ.0 .OR. N.EQ.0 ) THEN
             LWKOPT = 1
+         ELSE
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">           Determine the block size.  NB may be at most NBMAX, where
 </span><span class="comment">*</span><span class="comment">           NBMAX is used to define the local array T.
 </span><span class="comment">*</span><span class="comment">
-</span>            NB = MIN( NBMAX, <a name="ILAENV.180"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNMRQ.180"></a><a href="cunmrq.f.html#CUNMRQ.1">CUNMRQ</a>'</span>, SIDE // TRANS, M, N,
+</span>            NB = MIN( NBMAX, <a name="ILAENV.180"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNMRQ.180"></a><a href="cunmrq.f.html#CUNMRQ.1">CUNMRQ</a>'</span>, SIDE // TRANS, M, N,
      $                               K, -1 ) )
             LWKOPT = NW*NB
          END IF
@@ -223,7 +223,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">     Determine the block size.  NB may be at most NBMAX, where NBMAX
 </span><span class="comment">*</span><span class="comment">     is used to define the local array T.
 </span><span class="comment">*</span><span class="comment">
-</span>      NB = MIN( NBMAX, <a name="ILAENV.207"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="CUNMRQ.207"></a><a href="cunmrq.f.html#CUNMRQ.1">CUNMRQ</a>'</span>, SIDE // TRANS, M, N, K,
+</span>      NB = MIN( NBMAX, <a name="ILAENV.207"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="CUNMRQ.207"></a><a href="cunmrq.f.html#CUNMRQ.1">CUNMRQ</a>'</span>, SIDE // TRANS, M, N, K,
      $     -1 ) )
       NBMIN = 2
       LDWORK = NW
@@ -231,7 +231,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
          IWS = NW*NB
          IF( LWORK.LT.IWS ) THEN
             NB = LWORK / LDWORK
-            NBMIN = MAX( 2, <a name="ILAENV.215"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 2, <span class="string">'<a name="CUNMRQ.215"></a><a href="cunmrq.f.html#CUNMRQ.1">CUNMRQ</a>'</span>, SIDE // TRANS, M, N, K,
+            NBMIN = MAX( 2, <a name="ILAENV.215"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 2, <span class="string">'<a name="CUNMRQ.215"></a><a href="cunmrq.f.html#CUNMRQ.1">CUNMRQ</a>'</span>, SIDE // TRANS, M, N, K,
      $              -1 ) )
          END IF
       ELSE

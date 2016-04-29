@@ -21,9 +21,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
      $                   ALPHAR, ALPHAI, BETA, Q, LDQ, Z, LDZ, M, PL,
      $                   PR, DIF, WORK, LWORK, IWORK, LIWORK, INFO )
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1.1) --
 </span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">     January 2007
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     Modified to call <a name="DLACN2.9"></a><a href="dlacn2.f.html#DLACN2.1">DLACN2</a> in place of <a name="DLACON.9"></a><a href="dlacon.f.html#DLACON.1">DLACON</a>, 5 Feb 03, SJH.
 </span><span class="comment">*</span><span class="comment">
@@ -182,9 +182,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">          If M = 0 or N, DIF(1:2) = F-norm([A, B]).
 </span><span class="comment">*</span><span class="comment">          If IJOB = 0 or 1, DIF is not referenced.
 </span><span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  WORK    (workspace/output) DOUBLE PRECISION array, dimension (MAX(1,LWORK))
-</span><span class="comment">*</span><span class="comment">          IF IJOB = 0, WORK is not referenced.  Otherwise,
-</span><span class="comment">*</span><span class="comment">          on exit, if INFO = 0, WORK(1) returns the optimal LWORK.
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace/output) DOUBLE PRECISION array,
+</span><span class="comment">*</span><span class="comment">          dimension (MAX(1,LWORK)) 
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">  LWORK   (input) INTEGER
 </span><span class="comment">*</span><span class="comment">          The dimension of the array WORK. LWORK &gt;=  4*N+16.

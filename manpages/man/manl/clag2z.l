@@ -1,18 +1,18 @@
-.TH  CLAG2Z 1 "November 2006" " LAPACK PROTOTYPE auxilary routine (version 3.1) " " LAPACK PROTOTYPE driver routine (version 3.1) "
 .SH NAME
 CLAG2Z - a COMPLEX SINGLE PRECISION matrix, SA, to a COMPLEX DOUBLE PRECISION matrix, A
 .SH SYNOPSIS
-.TP 42
-SUBROUTINE CLAG2Z(M,N,SA,LDSA,A,LDA,INFO)
-.TP 42
+.TP 19
+SUBROUTINE CLAG2Z(
+M, N, SA, LDSA, A, LDA, INFO)
+.TP 19
 .ti +4
 INTEGER
 INFO,LDA,LDSA,M,N
-.TP 42
+.TP 19
 .ti +4
 COMPLEX
 SA(LDSA,*)
-.TP 42
+.TP 19
 .ti +4
 COMPLEX*16
 A(LDA,*)
@@ -50,3 +50,10 @@ The leading dimension of the array A.  LDA >= max(1,M).
 INFO    (output) INTEGER
 = 0:  successful exit
 =========
+
+.. Local Scalars ..
+
+..
+.. Executable Statements ..
+
+End of CLAG2Z

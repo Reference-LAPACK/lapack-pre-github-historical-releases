@@ -20,9 +20,9 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       SUBROUTINE <a name="ZUNMRZ.1"></a><a href="zunmrz.f.html#ZUNMRZ.1">ZUNMRZ</a>( SIDE, TRANS, M, N, K, L, A, LDA, TAU, C, LDC,
      $                   WORK, LWORK, INFO )
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1.1) --
 </span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">     January 2007
 </span><span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
 </span>      CHARACTER          SIDE, TRANS
@@ -142,8 +142,8 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Functions ..
 </span>      LOGICAL            <a name="LSAME.125"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
-      INTEGER            <a name="ILAENV.126"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
-      EXTERNAL           <a name="LSAME.127"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.127"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>
+      INTEGER            <a name="ILAENV.126"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
+      EXTERNAL           <a name="LSAME.127"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="ILAENV.127"></a><a href="hfy-index.html#ILAENV">ILAENV</a>
 <span class="comment">*</span><span class="comment">     ..
 </span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
 </span>      EXTERNAL           <a name="XERBLA.130"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, <a name="ZLARZB.130"></a><a href="zlarzb.f.html#ZLARZB.1">ZLARZB</a>, <a name="ZLARZT.130"></a><a href="zlarzt.f.html#ZLARZT.1">ZLARZT</a>, <a name="ZUNMR3.130"></a><a href="zunmr3.f.html#ZUNMR3.1">ZUNMR3</a>
@@ -191,11 +191,12 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span>      IF( INFO.EQ.0 ) THEN
          IF( M.EQ.0 .OR. N.EQ.0 ) THEN
             LWKOPT = 1
+         ELSE
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">           Determine the block size.  NB may be at most NBMAX, where
 </span><span class="comment">*</span><span class="comment">           NBMAX is used to define the local array T.
 </span><span class="comment">*</span><span class="comment">
-</span>            NB = MIN( NBMAX, <a name="ILAENV.179"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNMRQ.179"></a><a href="zunmrq.f.html#ZUNMRQ.1">ZUNMRQ</a>'</span>, SIDE // TRANS, M, N,
+</span>            NB = MIN( NBMAX, <a name="ILAENV.180"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNMRQ.180"></a><a href="zunmrq.f.html#ZUNMRQ.1">ZUNMRQ</a>'</span>, SIDE // TRANS, M, N,
      $                               K, -1 ) )
             LWKOPT = NW*NB
          END IF
@@ -207,7 +208,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
       END IF
 <span class="comment">*</span><span class="comment">
 </span>      IF( INFO.NE.0 ) THEN
-         CALL <a name="XERBLA.191"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZUNMRZ.191"></a><a href="zunmrz.f.html#ZUNMRZ.1">ZUNMRZ</a>'</span>, -INFO )
+         CALL <a name="XERBLA.192"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZUNMRZ.192"></a><a href="zunmrz.f.html#ZUNMRZ.1">ZUNMRZ</a>'</span>, -INFO )
          RETURN
       ELSE IF( LQUERY ) THEN
          RETURN
@@ -222,7 +223,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">     Determine the block size.  NB may be at most NBMAX, where NBMAX
 </span><span class="comment">*</span><span class="comment">     is used to define the local array T.
 </span><span class="comment">*</span><span class="comment">
-</span>      NB = MIN( NBMAX, <a name="ILAENV.206"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 1, <span class="string">'<a name="ZUNMRQ.206"></a><a href="zunmrq.f.html#ZUNMRQ.1">ZUNMRQ</a>'</span>, SIDE // TRANS, M, N, K,
+</span>      NB = MIN( NBMAX, <a name="ILAENV.207"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 1, <span class="string">'<a name="ZUNMRQ.207"></a><a href="zunmrq.f.html#ZUNMRQ.1">ZUNMRQ</a>'</span>, SIDE // TRANS, M, N, K,
      $     -1 ) )
       NBMIN = 2
       LDWORK = NW
@@ -230,7 +231,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
          IWS = NW*NB
          IF( LWORK.LT.IWS ) THEN
             NB = LWORK / LDWORK
-            NBMIN = MAX( 2, <a name="ILAENV.214"></a><a href="ilaenv.f.html#ILAENV.1">ILAENV</a>( 2, <span class="string">'<a name="ZUNMRQ.214"></a><a href="zunmrq.f.html#ZUNMRQ.1">ZUNMRQ</a>'</span>, SIDE // TRANS, M, N, K,
+            NBMIN = MAX( 2, <a name="ILAENV.215"></a><a href="hfy-index.html#ILAENV">ILAENV</a>( 2, <span class="string">'<a name="ZUNMRQ.215"></a><a href="zunmrq.f.html#ZUNMRQ.1">ZUNMRQ</a>'</span>, SIDE // TRANS, M, N, K,
      $              -1 ) )
          END IF
       ELSE
@@ -241,7 +242,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">        Use unblocked code
 </span><span class="comment">*</span><span class="comment">
-</span>         CALL <a name="ZUNMR3.225"></a><a href="zunmr3.f.html#ZUNMR3.1">ZUNMR3</a>( SIDE, TRANS, M, N, K, L, A, LDA, TAU, C, LDC,
+</span>         CALL <a name="ZUNMR3.226"></a><a href="zunmr3.f.html#ZUNMR3.1">ZUNMR3</a>( SIDE, TRANS, M, N, K, L, A, LDA, TAU, C, LDC,
      $                WORK, IINFO )
       ELSE
 <span class="comment">*</span><span class="comment">
@@ -280,7 +281,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 </span><span class="comment">*</span><span class="comment">           Form the triangular factor of the block reflector
 </span><span class="comment">*</span><span class="comment">           H = H(i+ib-1) . . . H(i+1) H(i)
 </span><span class="comment">*</span><span class="comment">
-</span>            CALL <a name="ZLARZT.264"></a><a href="zlarzt.f.html#ZLARZT.1">ZLARZT</a>( <span class="string">'Backward'</span>, <span class="string">'Rowwise'</span>, L, IB, A( I, JA ), LDA,
+</span>            CALL <a name="ZLARZT.265"></a><a href="zlarzt.f.html#ZLARZT.1">ZLARZT</a>( <span class="string">'Backward'</span>, <span class="string">'Rowwise'</span>, L, IB, A( I, JA ), LDA,
      $                   TAU( I ), T, LDT )
 <span class="comment">*</span><span class="comment">
 </span>            IF( LEFT ) THEN
@@ -299,7 +300,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span><span class="comment">*</span><span class="comment">           Apply H or H'
 </span><span class="comment">*</span><span class="comment">
-</span>            CALL <a name="ZLARZB.283"></a><a href="zlarzb.f.html#ZLARZB.1">ZLARZB</a>( SIDE, TRANST, <span class="string">'Backward'</span>, <span class="string">'Rowwise'</span>, MI, NI,
+</span>            CALL <a name="ZLARZB.284"></a><a href="zlarzb.f.html#ZLARZB.1">ZLARZB</a>( SIDE, TRANST, <span class="string">'Backward'</span>, <span class="string">'Rowwise'</span>, MI, NI,
      $                   IB, L, A( I, JA ), LDA, T, LDT, C( IC, JC ),
      $                   LDC, WORK, LDWORK )
    10    CONTINUE
@@ -310,7 +311,7 @@ span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font
 <span class="comment">*</span><span class="comment">
 </span>      RETURN
 <span class="comment">*</span><span class="comment">
-</span><span class="comment">*</span><span class="comment">     End of <a name="ZUNMRZ.294"></a><a href="zunmrz.f.html#ZUNMRZ.1">ZUNMRZ</a>
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZUNMRZ.295"></a><a href="zunmrz.f.html#ZUNMRZ.1">ZUNMRZ</a>
 </span><span class="comment">*</span><span class="comment">
 </span>      END
 
