@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>spbequ.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SPBEQU.1"></a><a href="spbequ.f.html#SPBEQU.1">SPBEQU</a>( UPLO, N, KD, AB, LDAB, S, SCOND, AMAX, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          UPLO
+      INTEGER            INFO, KD, LDAB, N
+      REAL               AMAX, SCOND
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               AB( LDAB, * ), S( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SPBEQU.19"></a><a href="spbequ.f.html#SPBEQU.1">SPBEQU</a> computes row and column scalings intended to equilibrate a
+</span><span class="comment">*</span><span class="comment">  symmetric positive definite band matrix A and reduce its condition
+</span><span class="comment">*</span><span class="comment">  number (with respect to the two-norm).  S contains the scale factors,
+</span><span class="comment">*</span><span class="comment">  S(i) = 1/sqrt(A(i,i)), chosen so that the scaled matrix B with
+</span><span class="comment">*</span><span class="comment">  elements B(i,j) = S(i)*A(i,j)*S(j) has ones on the diagonal.  This
+</span><span class="comment">*</span><span class="comment">  choice of S puts the condition number of B within a factor N of the
+</span><span class="comment">*</span><span class="comment">  smallest possible condition number over all possible diagonal
+</span><span class="comment">*</span><span class="comment">  scalings.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangular of A is stored;
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangular of A is stored.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KD      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of superdiagonals of the matrix A if UPLO = 'U',
+</span><span class="comment">*</span><span class="comment">          or the number of subdiagonals if UPLO = 'L'.  KD &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AB      (input) REAL array, dimension (LDAB,N)
+</span><span class="comment">*</span><span class="comment">          The upper or lower triangle of the symmetric band matrix A,
+</span><span class="comment">*</span><span class="comment">          stored in the first KD+1 rows of the array.  The j-th column
+</span><span class="comment">*</span><span class="comment">          of A is stored in the j-th column of the array AB as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', AB(kd+1+i-j,j) = A(i,j) for max(1,j-kd)&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', AB(1+i-j,j)    = A(i,j) for j&lt;=i&lt;=min(n,j+kd).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDAB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDAB &gt;= KD+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  S       (output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          If INFO = 0, S contains the scale factors for A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SCOND   (output) REAL
+</span><span class="comment">*</span><span class="comment">          If INFO = 0, S contains the ratio of the smallest S(i) to
+</span><span class="comment">*</span><span class="comment">          the largest S(i).  If SCOND &gt;= 0.1 and AMAX is neither too
+</span><span class="comment">*</span><span class="comment">          large nor too small, it is not worth scaling by S.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AMAX    (output) REAL
+</span><span class="comment">*</span><span class="comment">          Absolute value of largest matrix element.  If AMAX is very
+</span><span class="comment">*</span><span class="comment">          close to overflow or very close to underflow, the matrix
+</span><span class="comment">*</span><span class="comment">          should be scaled.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = i, the i-th diagonal element is nonpositive.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, ONE
+      PARAMETER          ( ZERO = 0.0E+0, ONE = 1.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            UPPER
+      INTEGER            I, J
+      REAL               SMIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.82"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.83"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.86"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX, MIN, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      UPPER = <a name="LSAME.96"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> )
+      IF( .NOT.UPPER .AND. .NOT.<a name="LSAME.97"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( KD.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( LDAB.LT.KD+1 ) THEN
+         INFO = -5
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.107"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="SPBEQU.107"></a><a href="spbequ.f.html#SPBEQU.1">SPBEQU</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 ) THEN
+         SCOND = ONE
+         AMAX = ZERO
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( UPPER ) THEN
+         J = KD + 1
+      ELSE
+         J = 1
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Initialize SMIN and AMAX.
+</span><span class="comment">*</span><span class="comment">
+</span>      S( 1 ) = AB( J, 1 )
+      SMIN = S( 1 )
+      AMAX = S( 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Find the minimum and maximum diagonal elements.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 10 I = 2, N
+         S( I ) = AB( J, I )
+         SMIN = MIN( SMIN, S( I ) )
+         AMAX = MAX( AMAX, S( I ) )
+   10 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      IF( SMIN.LE.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find the first non-positive diagonal element and return.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 20 I = 1, N
+            IF( S( I ).LE.ZERO ) THEN
+               INFO = I
+               RETURN
+            END IF
+   20    CONTINUE
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Set the scale factors to the reciprocals
+</span><span class="comment">*</span><span class="comment">        of the diagonal elements.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 30 I = 1, N
+            S( I ) = ONE / SQRT( S( I ) )
+   30    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute SCOND = min(S(I)) / max(S(I))
+</span><span class="comment">*</span><span class="comment">
+</span>         SCOND = SQRT( SMIN ) / SQRT( AMAX )
+      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SPBEQU.164"></a><a href="spbequ.f.html#SPBEQU.1">SPBEQU</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dtrcon.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DTRCON.1"></a><a href="dtrcon.f.html#DTRCON.1">DTRCON</a>( NORM, UPLO, DIAG, N, A, LDA, RCOND, WORK,
+     $                   IWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Modified to call <a name="DLACN2.8"></a><a href="dlacn2.f.html#DLACN2.1">DLACN2</a> in place of <a name="DLACON.8"></a><a href="dlacon.f.html#DLACON.1">DLACON</a>, 5 Feb 03, SJH.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          DIAG, NORM, UPLO
+      INTEGER            INFO, LDA, N
+      DOUBLE PRECISION   RCOND
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IWORK( * )
+      DOUBLE PRECISION   A( LDA, * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DTRCON.23"></a><a href="dtrcon.f.html#DTRCON.1">DTRCON</a> estimates the reciprocal of the condition number of a
+</span><span class="comment">*</span><span class="comment">  triangular matrix A, in either the 1-norm or the infinity-norm.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The norm of A is computed and an estimate is obtained for
+</span><span class="comment">*</span><span class="comment">  norm(inv(A)), then the reciprocal of the condition number is
+</span><span class="comment">*</span><span class="comment">  computed as
+</span><span class="comment">*</span><span class="comment">     RCOND = 1 / ( norm(A) * norm(inv(A)) ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NORM    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether the 1-norm condition number or the
+</span><span class="comment">*</span><span class="comment">          infinity-norm condition number is required:
+</span><span class="comment">*</span><span class="comment">          = '1' or 'O':  1-norm;
+</span><span class="comment">*</span><span class="comment">          = 'I':         Infinity-norm.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  A is upper triangular;
+</span><span class="comment">*</span><span class="comment">          = 'L':  A is lower triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIAG    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'N':  A is non-unit triangular;
+</span><span class="comment">*</span><span class="comment">          = 'U':  A is unit triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input) DOUBLE PRECISION array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          The triangular matrix A.  If UPLO = 'U', the leading N-by-N
+</span><span class="comment">*</span><span class="comment">          upper triangular part of the array A contains the upper
+</span><span class="comment">*</span><span class="comment">          triangular matrix, and the strictly lower triangular part of
+</span><span class="comment">*</span><span class="comment">          A is not referenced.  If UPLO = 'L', the leading N-by-N lower
+</span><span class="comment">*</span><span class="comment">          triangular part of the array A contains the lower triangular
+</span><span class="comment">*</span><span class="comment">          matrix, and the strictly upper triangular part of A is not
+</span><span class="comment">*</span><span class="comment">          referenced.  If DIAG = 'U', the diagonal elements of A are
+</span><span class="comment">*</span><span class="comment">          also not referenced and are assumed to be 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RCOND   (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The reciprocal of the condition number of the matrix A,
+</span><span class="comment">*</span><span class="comment">          computed as RCOND = 1/(norm(A) * norm(inv(A))).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) DOUBLE PRECISION array, dimension (3*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK   (workspace) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ONE, ZERO
+      PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            NOUNIT, ONENRM, UPPER
+      CHARACTER          NORMIN
+      INTEGER            IX, KASE, KASE1
+      DOUBLE PRECISION   AINVNM, ANORM, SCALE, SMLNUM, XNORM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      INTEGER            ISAVE( 3 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.92"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      INTEGER            IDAMAX
+      DOUBLE PRECISION   <a name="DLAMCH.94"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANTR.94"></a><a href="dlantr.f.html#DLANTR.1">DLANTR</a>
+      EXTERNAL           <a name="LSAME.95"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, IDAMAX, <a name="DLAMCH.95"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANTR.95"></a><a href="dlantr.f.html#DLANTR.1">DLANTR</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DLACN2.98"></a><a href="dlacn2.f.html#DLACN2.1">DLACN2</a>, <a name="DLATRS.98"></a><a href="dlatrs.f.html#DLATRS.1">DLATRS</a>, <a name="DRSCL.98"></a><a href="drscl.f.html#DRSCL.1">DRSCL</a>, <a name="XERBLA.98"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, DBLE, MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      UPPER = <a name="LSAME.108"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> )
+      ONENRM = NORM.EQ.<span class="string">'1'</span> .OR. <a name="LSAME.109"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'O'</span> )
+      NOUNIT = <a name="LSAME.110"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIAG, <span class="string">'N'</span> )
+<span class="comment">*</span><span class="comment">
+</span>      IF( .NOT.ONENRM .AND. .NOT.<a name="LSAME.112"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'I'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.UPPER .AND. .NOT.<a name="LSAME.114"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) THEN
+         INFO = -2
+      ELSE IF( .NOT.NOUNIT .AND. .NOT.<a name="LSAME.116"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIAG, <span class="string">'U'</span> ) ) THEN
+         INFO = -3
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+         INFO = -6
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.124"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DTRCON.124"></a><a href="dtrcon.f.html#DTRCON.1">DTRCON</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 ) THEN
+         RCOND = ONE
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RCOND = ZERO
+      SMLNUM = <a name="DLAMCH.136"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Safe minimum'</span> )*DBLE( MAX( 1, N ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the norm of the triangular matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span>      ANORM = <a name="DLANTR.140"></a><a href="dlantr.f.html#DLANTR.1">DLANTR</a>( NORM, UPLO, DIAG, N, N, A, LDA, WORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Continue only if ANORM &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ANORM.GT.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Estimate the norm of the inverse of A.
+</span><span class="comment">*</span><span class="comment">
+</span>         AINVNM = ZERO
+         NORMIN = <span class="string">'N'</span>
+         IF( ONENRM ) THEN
+            KASE1 = 1
+         ELSE
+            KASE1 = 2
+         END IF
+         KASE = 0
+   10    CONTINUE
+         CALL <a name="DLACN2.157"></a><a href="dlacn2.f.html#DLACN2.1">DLACN2</a>( N, WORK( N+1 ), WORK, IWORK, AINVNM, KASE, ISAVE )
+         IF( KASE.NE.0 ) THEN
+            IF( KASE.EQ.KASE1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Multiply by inv(A).
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="DLATRS.163"></a><a href="dlatrs.f.html#DLATRS.1">DLATRS</a>( UPLO, <span class="string">'No transpose'</span>, DIAG, NORMIN, N, A,
+     $                      LDA, WORK, SCALE, WORK( 2*N+1 ), INFO )
+            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Multiply by inv(A').
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="DLATRS.169"></a><a href="dlatrs.f.html#DLATRS.1">DLATRS</a>( UPLO, <span class="string">'Transpose'</span>, DIAG, NORMIN, N, A, LDA,
+     $                      WORK, SCALE, WORK( 2*N+1 ), INFO )
+            END IF
+            NORMIN = <span class="string">'Y'</span>
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Multiply by 1/SCALE if doing so will not cause overflow.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( SCALE.NE.ONE ) THEN
+               IX = IDAMAX( N, WORK, 1 )
+               XNORM = ABS( WORK( IX ) )
+               IF( SCALE.LT.XNORM*SMLNUM .OR. SCALE.EQ.ZERO )
+     $            GO TO 20
+               CALL <a name="DRSCL.181"></a><a href="drscl.f.html#DRSCL.1">DRSCL</a>( N, SCALE, WORK, 1 )
+            END IF
+            GO TO 10
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute the estimate of the reciprocal condition number.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( AINVNM.NE.ZERO )
+     $      RCOND = ( ONE / ANORM ) / AINVNM
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>   20 CONTINUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DTRCON.195"></a><a href="dtrcon.f.html#DTRCON.1">DTRCON</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

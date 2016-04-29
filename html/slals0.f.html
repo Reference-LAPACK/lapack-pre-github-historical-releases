@@ -1,0 +1,401 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slals0.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLALS0.1"></a><a href="slals0.f.html#SLALS0.1">SLALS0</a>( ICOMPQ, NL, NR, SQRE, NRHS, B, LDB, BX, LDBX,
+     $                   PERM, GIVPTR, GIVCOL, LDGCOL, GIVNUM, LDGNUM,
+     $                   POLES, DIFL, DIFR, Z, K, C, S, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            GIVPTR, ICOMPQ, INFO, K, LDB, LDBX, LDGCOL,
+     $                   LDGNUM, NL, NR, NRHS, SQRE
+      REAL               C, S
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            GIVCOL( LDGCOL, * ), PERM( * )
+      REAL               B( LDB, * ), BX( LDBX, * ), DIFL( * ),
+     $                   DIFR( LDGNUM, * ), GIVNUM( LDGNUM, * ),
+     $                   POLES( LDGNUM, * ), WORK( * ), Z( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLALS0.24"></a><a href="slals0.f.html#SLALS0.1">SLALS0</a> applies back the multiplying factors of either the left or the
+</span><span class="comment">*</span><span class="comment">  right singular vector matrix of a diagonal matrix appended by a row
+</span><span class="comment">*</span><span class="comment">  to the right hand side matrix B in solving the least squares problem
+</span><span class="comment">*</span><span class="comment">  using the divide-and-conquer SVD approach.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  For the left singular vector matrix, three types of orthogonal
+</span><span class="comment">*</span><span class="comment">  matrices are involved:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  (1L) Givens rotations: the number of such rotations is GIVPTR; the
+</span><span class="comment">*</span><span class="comment">       pairs of columns/rows they were applied to are stored in GIVCOL;
+</span><span class="comment">*</span><span class="comment">       and the C- and S-values of these rotations are stored in GIVNUM.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  (2L) Permutation. The (NL+1)-st row of B is to be moved to the first
+</span><span class="comment">*</span><span class="comment">       row, and for J=2:N, PERM(J)-th row of B is to be moved to the
+</span><span class="comment">*</span><span class="comment">       J-th row.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  (3L) The left singular vector matrix of the remaining matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  For the right singular vector matrix, four types of orthogonal
+</span><span class="comment">*</span><span class="comment">  matrices are involved:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  (1R) The right singular vector matrix of the remaining matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  (2R) If SQRE = 1, one extra Givens rotation to generate the right
+</span><span class="comment">*</span><span class="comment">       null space.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  (3R) The inverse transformation of (2L).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  (4R) The inverse transformation of (1L).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ICOMPQ (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         Specifies whether singular vectors are to be computed in
+</span><span class="comment">*</span><span class="comment">         factored form:
+</span><span class="comment">*</span><span class="comment">         = 0: Left singular vector matrix.
+</span><span class="comment">*</span><span class="comment">         = 1: Right singular vector matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NL     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The row dimension of the upper block. NL &gt;= 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NR     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The row dimension of the lower block. NR &gt;= 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SQRE   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         = 0: the lower block is an NR-by-NR square matrix.
+</span><span class="comment">*</span><span class="comment">         = 1: the lower block is an NR-by-(NR+1) rectangular matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">         The bidiagonal matrix has row dimension N = NL + NR + 1,
+</span><span class="comment">*</span><span class="comment">         and column dimension M = N + SQRE.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NRHS   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The number of columns of B and BX. NRHS must be at least 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B      (input/output) REAL array, dimension ( LDB, NRHS )
+</span><span class="comment">*</span><span class="comment">         On input, B contains the right hand sides of the least
+</span><span class="comment">*</span><span class="comment">         squares problem in rows 1 through M. On output, B contains
+</span><span class="comment">*</span><span class="comment">         the solution X in rows 1 through N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of B. LDB must be at least
+</span><span class="comment">*</span><span class="comment">         max(1,MAX( M, N ) ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BX     (workspace) REAL array, dimension ( LDBX, NRHS )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDBX   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of BX.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  PERM   (input) INTEGER array, dimension ( N )
+</span><span class="comment">*</span><span class="comment">         The permutations (from deflation and sorting) applied
+</span><span class="comment">*</span><span class="comment">         to the two blocks.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GIVPTR (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The number of Givens rotations which took place in this
+</span><span class="comment">*</span><span class="comment">         subproblem.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GIVCOL (input) INTEGER array, dimension ( LDGCOL, 2 )
+</span><span class="comment">*</span><span class="comment">         Each pair of numbers indicates a pair of rows/columns
+</span><span class="comment">*</span><span class="comment">         involved in a Givens rotation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDGCOL (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of GIVCOL, must be at least N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GIVNUM (input) REAL array, dimension ( LDGNUM, 2 )
+</span><span class="comment">*</span><span class="comment">         Each number indicates the C or S value used in the
+</span><span class="comment">*</span><span class="comment">         corresponding Givens rotation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDGNUM (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of arrays DIFR, POLES and
+</span><span class="comment">*</span><span class="comment">         GIVNUM, must be at least K.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  POLES  (input) REAL array, dimension ( LDGNUM, 2 )
+</span><span class="comment">*</span><span class="comment">         On entry, POLES(1:K, 1) contains the new singular
+</span><span class="comment">*</span><span class="comment">         values obtained from solving the secular equation, and
+</span><span class="comment">*</span><span class="comment">         POLES(1:K, 2) is an array containing the poles in the secular
+</span><span class="comment">*</span><span class="comment">         equation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIFL   (input) REAL array, dimension ( K ).
+</span><span class="comment">*</span><span class="comment">         On entry, DIFL(I) is the distance between I-th updated
+</span><span class="comment">*</span><span class="comment">         (undeflated) singular value and the I-th (undeflated) old
+</span><span class="comment">*</span><span class="comment">         singular value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIFR   (input) REAL array, dimension ( LDGNUM, 2 ).
+</span><span class="comment">*</span><span class="comment">         On entry, DIFR(I, 1) contains the distances between I-th
+</span><span class="comment">*</span><span class="comment">         updated (undeflated) singular value and the I+1-th
+</span><span class="comment">*</span><span class="comment">         (undeflated) old singular value. And DIFR(I, 2) is the
+</span><span class="comment">*</span><span class="comment">         normalizing factor for the I-th right singular vector.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z      (input) REAL array, dimension ( K )
+</span><span class="comment">*</span><span class="comment">         Contain the components of the deflation-adjusted updating row
+</span><span class="comment">*</span><span class="comment">         vector.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  K      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         Contains the dimension of the non-deflated matrix,
+</span><span class="comment">*</span><span class="comment">         This is the order of the related secular equation. 1 &lt;= K &lt;=N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C      (input) REAL
+</span><span class="comment">*</span><span class="comment">         C contains garbage if SQRE =0 and the C-value of a Givens
+</span><span class="comment">*</span><span class="comment">         rotation related to the right null space if SQRE = 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  S      (input) REAL
+</span><span class="comment">*</span><span class="comment">         S contains garbage if SQRE =0 and the S-value of a Givens
+</span><span class="comment">*</span><span class="comment">         rotation related to the right null space if SQRE = 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK   (workspace) REAL array, dimension ( K )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO   (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit.
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Ming Gu and Ren-Cang Li, Computer Science Division, University of
+</span><span class="comment">*</span><span class="comment">       California at Berkeley, USA
+</span><span class="comment">*</span><span class="comment">     Osni Marques, LBNL/NERSC, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ONE, ZERO, NEGONE
+      PARAMETER          ( ONE = 1.0E0, ZERO = 0.0E0, NEGONE = -1.0E0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, J, M, N, NLP1
+      REAL               DIFLJ, DIFRJ, DJ, DSIGJ, DSIGJP, TEMP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           SCOPY, SGEMV, <a name="SLACPY.174"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>, <a name="SLASCL.174"></a><a href="slascl.f.html#SLASCL.1">SLASCL</a>, SROT, SSCAL,
+     $                   <a name="XERBLA.175"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      REAL               <a name="SLAMC3.178"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>, SNRM2
+      EXTERNAL           <a name="SLAMC3.179"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>, SNRM2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+<span class="comment">*</span><span class="comment">
+</span>      IF( ( ICOMPQ.LT.0 ) .OR. ( ICOMPQ.GT.1 ) ) THEN
+         INFO = -1
+      ELSE IF( NL.LT.1 ) THEN
+         INFO = -2
+      ELSE IF( NR.LT.1 ) THEN
+         INFO = -3
+      ELSE IF( ( SQRE.LT.0 ) .OR. ( SQRE.GT.1 ) ) THEN
+         INFO = -4
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      N = NL + NR + 1
+<span class="comment">*</span><span class="comment">
+</span>      IF( NRHS.LT.1 ) THEN
+         INFO = -5
+      ELSE IF( LDB.LT.N ) THEN
+         INFO = -7
+      ELSE IF( LDBX.LT.N ) THEN
+         INFO = -9
+      ELSE IF( GIVPTR.LT.0 ) THEN
+         INFO = -11
+      ELSE IF( LDGCOL.LT.N ) THEN
+         INFO = -13
+      ELSE IF( LDGNUM.LT.N ) THEN
+         INFO = -15
+      ELSE IF( K.LT.1 ) THEN
+         INFO = -20
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.218"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="SLALS0.218"></a><a href="slals0.f.html#SLALS0.1">SLALS0</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      M = N + SQRE
+      NLP1 = NL + 1
+<span class="comment">*</span><span class="comment">
+</span>      IF( ICOMPQ.EQ.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Apply back orthogonal transformations from the left.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Step (1L): apply back the Givens rotations performed.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 10 I = 1, GIVPTR
+            CALL SROT( NRHS, B( GIVCOL( I, 2 ), 1 ), LDB,
+     $                 B( GIVCOL( I, 1 ), 1 ), LDB, GIVNUM( I, 2 ),
+     $                 GIVNUM( I, 1 ) )
+   10    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Step (2L): permute rows of B.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL SCOPY( NRHS, B( NLP1, 1 ), LDB, BX( 1, 1 ), LDBX )
+         DO 20 I = 2, N
+            CALL SCOPY( NRHS, B( PERM( I ), 1 ), LDB, BX( I, 1 ), LDBX )
+   20    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Step (3L): apply the inverse of the left singular vector
+</span><span class="comment">*</span><span class="comment">        matrix to BX.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( K.EQ.1 ) THEN
+            CALL SCOPY( NRHS, BX, LDBX, B, LDB )
+            IF( Z( 1 ).LT.ZERO ) THEN
+               CALL SSCAL( NRHS, NEGONE, B, LDB )
+            END IF
+         ELSE
+            DO 50 J = 1, K
+               DIFLJ = DIFL( J )
+               DJ = POLES( J, 1 )
+               DSIGJ = -POLES( J, 2 )
+               IF( J.LT.K ) THEN
+                  DIFRJ = -DIFR( J, 1 )
+                  DSIGJP = -POLES( J+1, 2 )
+               END IF
+               IF( ( Z( J ).EQ.ZERO ) .OR. ( POLES( J, 2 ).EQ.ZERO ) )
+     $              THEN
+                  WORK( J ) = ZERO
+               ELSE
+                  WORK( J ) = -POLES( J, 2 )*Z( J ) / DIFLJ /
+     $                        ( POLES( J, 2 )+DJ )
+               END IF
+               DO 30 I = 1, J - 1
+                  IF( ( Z( I ).EQ.ZERO ) .OR.
+     $                ( POLES( I, 2 ).EQ.ZERO ) ) THEN
+                     WORK( I ) = ZERO
+                  ELSE
+                     WORK( I ) = POLES( I, 2 )*Z( I ) /
+     $                           ( <a name="SLAMC3.274"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( POLES( I, 2 ), DSIGJ )-
+     $                           DIFLJ ) / ( POLES( I, 2 )+DJ )
+                  END IF
+   30          CONTINUE
+               DO 40 I = J + 1, K
+                  IF( ( Z( I ).EQ.ZERO ) .OR.
+     $                ( POLES( I, 2 ).EQ.ZERO ) ) THEN
+                     WORK( I ) = ZERO
+                  ELSE
+                     WORK( I ) = POLES( I, 2 )*Z( I ) /
+     $                           ( <a name="SLAMC3.284"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( POLES( I, 2 ), DSIGJP )+
+     $                           DIFRJ ) / ( POLES( I, 2 )+DJ )
+                  END IF
+   40          CONTINUE
+               WORK( 1 ) = NEGONE
+               TEMP = SNRM2( K, WORK, 1 )
+               CALL SGEMV( <span class="string">'T'</span>, K, NRHS, ONE, BX, LDBX, WORK, 1, ZERO,
+     $                     B( J, 1 ), LDB )
+               CALL <a name="SLASCL.292"></a><a href="slascl.f.html#SLASCL.1">SLASCL</a>( <span class="string">'G'</span>, 0, 0, TEMP, ONE, 1, NRHS, B( J, 1 ),
+     $                      LDB, INFO )
+   50       CONTINUE
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Move the deflated rows of BX to B also.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( K.LT.MAX( M, N ) )
+     $      CALL <a name="SLACPY.300"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'A'</span>, N-K, NRHS, BX( K+1, 1 ), LDBX,
+     $                   B( K+1, 1 ), LDB )
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Apply back the right orthogonal transformations.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Step (1R): apply back the new right singular vector matrix
+</span><span class="comment">*</span><span class="comment">        to B.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( K.EQ.1 ) THEN
+            CALL SCOPY( NRHS, B, LDB, BX, LDBX )
+         ELSE
+            DO 80 J = 1, K
+               DSIGJ = POLES( J, 2 )
+               IF( Z( J ).EQ.ZERO ) THEN
+                  WORK( J ) = ZERO
+               ELSE
+                  WORK( J ) = -Z( J ) / DIFL( J ) /
+     $                        ( DSIGJ+POLES( J, 1 ) ) / DIFR( J, 2 )
+               END IF
+               DO 60 I = 1, J - 1
+                  IF( Z( J ).EQ.ZERO ) THEN
+                     WORK( I ) = ZERO
+                  ELSE
+                     WORK( I ) = Z( J ) / ( <a name="SLAMC3.324"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( DSIGJ, -POLES( I+1,
+     $                           2 ) )-DIFR( I, 1 ) ) /
+     $                           ( DSIGJ+POLES( I, 1 ) ) / DIFR( I, 2 )
+                  END IF
+   60          CONTINUE
+               DO 70 I = J + 1, K
+                  IF( Z( J ).EQ.ZERO ) THEN
+                     WORK( I ) = ZERO
+                  ELSE
+                     WORK( I ) = Z( J ) / ( <a name="SLAMC3.333"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( DSIGJ, -POLES( I,
+     $                           2 ) )-DIFL( I ) ) /
+     $                           ( DSIGJ+POLES( I, 1 ) ) / DIFR( I, 2 )
+                  END IF
+   70          CONTINUE
+               CALL SGEMV( <span class="string">'T'</span>, K, NRHS, ONE, B, LDB, WORK, 1, ZERO,
+     $                     BX( J, 1 ), LDBX )
+   80       CONTINUE
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Step (2R): if SQRE = 1, apply back the rotation that is
+</span><span class="comment">*</span><span class="comment">        related to the right null space of the subproblem.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( SQRE.EQ.1 ) THEN
+            CALL SCOPY( NRHS, B( M, 1 ), LDB, BX( M, 1 ), LDBX )
+            CALL SROT( NRHS, BX( 1, 1 ), LDBX, BX( M, 1 ), LDBX, C, S )
+         END IF
+         IF( K.LT.MAX( M, N ) )
+     $      CALL <a name="SLACPY.351"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'A'</span>, N-K, NRHS, B( K+1, 1 ), LDB, BX( K+1, 1 ),
+     $                   LDBX )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Step (3R): permute rows of B.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL SCOPY( NRHS, BX( 1, 1 ), LDBX, B( NLP1, 1 ), LDB )
+         IF( SQRE.EQ.1 ) THEN
+            CALL SCOPY( NRHS, BX( M, 1 ), LDBX, B( M, 1 ), LDB )
+         END IF
+         DO 90 I = 2, N
+            CALL SCOPY( NRHS, BX( I, 1 ), LDBX, B( PERM( I ), 1 ), LDB )
+   90    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Step (4R): apply back the Givens rotations performed.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 100 I = GIVPTR, 1, -1
+            CALL SROT( NRHS, B( GIVCOL( I, 2 ), 1 ), LDB,
+     $                 B( GIVCOL( I, 1 ), 1 ), LDB, GIVNUM( I, 2 ),
+     $                 -GIVNUM( I, 1 ) )
+  100    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLALS0.375"></a><a href="slals0.f.html#SLALS0.1">SLALS0</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

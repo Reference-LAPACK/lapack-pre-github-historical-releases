@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>claev2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CLAEV2.1"></a><a href="claev2.f.html#CLAEV2.1">CLAEV2</a>( A, B, C, RT1, RT2, CS1, SN1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      REAL               CS1, RT1, RT2
+      COMPLEX            A, B, C, SN1
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CLAEV2.15"></a><a href="claev2.f.html#CLAEV2.1">CLAEV2</a> computes the eigendecomposition of a 2-by-2 Hermitian matrix
+</span><span class="comment">*</span><span class="comment">     [  A         B  ]
+</span><span class="comment">*</span><span class="comment">     [  CONJG(B)  C  ].
+</span><span class="comment">*</span><span class="comment">  On return, RT1 is the eigenvalue of larger absolute value, RT2 is the
+</span><span class="comment">*</span><span class="comment">  eigenvalue of smaller absolute value, and (CS1,SN1) is the unit right
+</span><span class="comment">*</span><span class="comment">  eigenvector for RT1, giving the decomposition
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  [ CS1  CONJG(SN1) ] [    A     B ] [ CS1 -CONJG(SN1) ] = [ RT1  0  ]
+</span><span class="comment">*</span><span class="comment">  [-SN1     CS1     ] [ CONJG(B) C ] [ SN1     CS1     ]   [  0  RT2 ].
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A      (input) COMPLEX
+</span><span class="comment">*</span><span class="comment">         The (1,1) element of the 2-by-2 matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B      (input) COMPLEX
+</span><span class="comment">*</span><span class="comment">         The (1,2) element and the conjugate of the (2,1) element of
+</span><span class="comment">*</span><span class="comment">         the 2-by-2 matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C      (input) COMPLEX
+</span><span class="comment">*</span><span class="comment">         The (2,2) element of the 2-by-2 matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RT1    (output) REAL
+</span><span class="comment">*</span><span class="comment">         The eigenvalue of larger absolute value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RT2    (output) REAL
+</span><span class="comment">*</span><span class="comment">         The eigenvalue of smaller absolute value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CS1    (output) REAL
+</span><span class="comment">*</span><span class="comment">  SN1    (output) COMPLEX
+</span><span class="comment">*</span><span class="comment">         The vector (CS1, SN1) is a unit right eigenvector for RT1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RT1 is accurate to a few ulps barring over/underflow.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RT2 may be inaccurate if there is massive cancellation in the
+</span><span class="comment">*</span><span class="comment">  determinant A*C-B*B; higher precision or correctly rounded or
+</span><span class="comment">*</span><span class="comment">  correctly truncated arithmetic would be needed to compute RT2
+</span><span class="comment">*</span><span class="comment">  accurately in all cases.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CS1 and SN1 are accurate to a few ulps barring over/underflow.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Overflow is possible only if RT1 is within a factor of 5 of overflow.
+</span><span class="comment">*</span><span class="comment">  Underflow is harmless if the input data is 0 or exceeds
+</span><span class="comment">*</span><span class="comment">     underflow_threshold / macheps.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment"> =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO
+      PARAMETER          ( ZERO = 0.0E0 )
+      REAL               ONE
+      PARAMETER          ( ONE = 1.0E0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      REAL               T
+      COMPLEX            W
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="SLAEV2.77"></a><a href="slaev2.f.html#SLAEV2.1">SLAEV2</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, CONJG, REAL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ABS( B ).EQ.ZERO ) THEN
+         W = ONE
+      ELSE
+         W = CONJG( B ) / ABS( B )
+      END IF
+      CALL <a name="SLAEV2.89"></a><a href="slaev2.f.html#SLAEV2.1">SLAEV2</a>( REAL( A ), ABS( B ), REAL( C ), RT1, RT2, CS1, T )
+      SN1 = W*T
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CLAEV2.93"></a><a href="claev2.f.html#CLAEV2.1">CLAEV2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

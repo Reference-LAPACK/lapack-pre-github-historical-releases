@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>srscl.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SRSCL.1"></a><a href="srscl.f.html#SRSCL.1">SRSCL</a>( N, SA, SX, INCX )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INCX, N
+      REAL               SA
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               SX( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SRSCL.18"></a><a href="srscl.f.html#SRSCL.1">SRSCL</a> multiplies an n-element real vector x by the real scalar 1/a.
+</span><span class="comment">*</span><span class="comment">  This is done without overflow or underflow as long as
+</span><span class="comment">*</span><span class="comment">  the final result x/a does not overflow or underflow.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of components of the vector x.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SA      (input) REAL
+</span><span class="comment">*</span><span class="comment">          The scalar a which is used to divide each component of x.
+</span><span class="comment">*</span><span class="comment">          SA must be &gt;= 0, or the subroutine will divide by zero.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SX      (input/output) REAL array, dimension
+</span><span class="comment">*</span><span class="comment">                         (1+(N-1)*abs(INCX))
+</span><span class="comment">*</span><span class="comment">          The n-element vector x.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INCX    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The increment between successive values of the vector SX.
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  SX(1) = X(1) and SX(1+(i-1)*INCX) = x(i),     1&lt; i&lt;= n
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment"> =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ONE, ZERO
+      PARAMETER          ( ONE = 1.0E+0, ZERO = 0.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            DONE
+      REAL               BIGNUM, CDEN, CDEN1, CNUM, CNUM1, MUL, SMLNUM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      REAL               <a name="SLAMCH.51"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      EXTERNAL           <a name="SLAMCH.52"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="SLABAD.55"></a><a href="slabad.f.html#SLABAD.1">SLABAD</a>, SSCAL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.LE.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Get machine parameters
+</span><span class="comment">*</span><span class="comment">
+</span>      SMLNUM = <a name="SLAMCH.69"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'S'</span> )
+      BIGNUM = ONE / SMLNUM
+      CALL <a name="SLABAD.71"></a><a href="slabad.f.html#SLABAD.1">SLABAD</a>( SMLNUM, BIGNUM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Initialize the denominator to SA and the numerator to 1.
+</span><span class="comment">*</span><span class="comment">
+</span>      CDEN = SA
+      CNUM = ONE
+<span class="comment">*</span><span class="comment">
+</span>   10 CONTINUE
+      CDEN1 = CDEN*SMLNUM
+      CNUM1 = CNUM / BIGNUM
+      IF( ABS( CDEN1 ).GT.ABS( CNUM ) .AND. CNUM.NE.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Pre-multiply X by SMLNUM if CDEN is large compared to CNUM.
+</span><span class="comment">*</span><span class="comment">
+</span>         MUL = SMLNUM
+         DONE = .FALSE.
+         CDEN = CDEN1
+      ELSE IF( ABS( CNUM1 ).GT.ABS( CDEN ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Pre-multiply X by BIGNUM if CDEN is small compared to CNUM.
+</span><span class="comment">*</span><span class="comment">
+</span>         MUL = BIGNUM
+         DONE = .FALSE.
+         CNUM = CNUM1
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Multiply X by CNUM / CDEN and return.
+</span><span class="comment">*</span><span class="comment">
+</span>         MUL = CNUM / CDEN
+         DONE = .TRUE.
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Scale the vector X by MUL
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL SSCAL( N, MUL, SX, INCX )
+<span class="comment">*</span><span class="comment">
+</span>      IF( .NOT.DONE )
+     $   GO TO 10
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SRSCL.112"></a><a href="srscl.f.html#SRSCL.1">SRSCL</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

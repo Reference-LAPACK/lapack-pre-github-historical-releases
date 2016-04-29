@@ -1,0 +1,202 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>sstegr.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SSTEGR.1"></a><a href="sstegr.f.html#SSTEGR.1">SSTEGR</a>( JOBZ, RANGE, N, D, E, VL, VU, IL, IU,
+     $           ABSTOL, M, W, Z, LDZ, ISUPPZ, WORK, LWORK, IWORK,
+     $           LIWORK, INFO )
+
+      IMPLICIT NONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK computational routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          JOBZ, RANGE
+      INTEGER            IL, INFO, IU, LDZ, LIWORK, LWORK, M, N
+      REAL             ABSTOL, VL, VU
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            ISUPPZ( * ), IWORK( * )
+      REAL               D( * ), E( * ), W( * ), WORK( * )
+      REAL               Z( LDZ, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SSTEGR.26"></a><a href="sstegr.f.html#SSTEGR.1">SSTEGR</a> computes selected eigenvalues and, optionally, eigenvectors
+</span><span class="comment">*</span><span class="comment">  of a real symmetric tridiagonal matrix T. Any such unreduced matrix has
+</span><span class="comment">*</span><span class="comment">  a well defined set of pairwise different real eigenvalues, the corresponding
+</span><span class="comment">*</span><span class="comment">  real eigenvectors are pairwise orthogonal.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The spectrum may be computed either completely or partially by specifying
+</span><span class="comment">*</span><span class="comment">  either an interval (VL,VU] or a range of indices IL:IU for the desired
+</span><span class="comment">*</span><span class="comment">  eigenvalues.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SSTEGR.35"></a><a href="sstegr.f.html#SSTEGR.1">SSTEGR</a> is a compatability wrapper around the improved <a name="SSTEMR.35"></a><a href="sstemr.f.html#SSTEMR.1">SSTEMR</a> routine.
+</span><span class="comment">*</span><span class="comment">  See <a name="SSTEMR.36"></a><a href="sstemr.f.html#SSTEMR.1">SSTEMR</a> for further details.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  One important change is that the ABSTOL parameter no longer provides any
+</span><span class="comment">*</span><span class="comment">  benefit and hence is no longer used.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Note : <a name="SSTEGR.41"></a><a href="sstegr.f.html#SSTEGR.1">SSTEGR</a> and <a name="SSTEMR.41"></a><a href="sstemr.f.html#SSTEMR.1">SSTEMR</a> work only on machines which follow
+</span><span class="comment">*</span><span class="comment">  IEEE-754 floating-point standard in their handling of infinities and
+</span><span class="comment">*</span><span class="comment">  NaNs.  Normal execution may create these exceptiona values and hence
+</span><span class="comment">*</span><span class="comment">  may abort due to a floating point exception in environments which
+</span><span class="comment">*</span><span class="comment">  do not conform to the IEEE-754 standard.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOBZ    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'N':  Compute eigenvalues only;
+</span><span class="comment">*</span><span class="comment">          = 'V':  Compute eigenvalues and eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RANGE   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'A': all eigenvalues will be found.
+</span><span class="comment">*</span><span class="comment">          = 'V': all eigenvalues in the half-open interval (VL,VU]
+</span><span class="comment">*</span><span class="comment">                 will be found.
+</span><span class="comment">*</span><span class="comment">          = 'I': the IL-th through IU-th eigenvalues will be found.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input/output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On entry, the N diagonal elements of the tridiagonal matrix
+</span><span class="comment">*</span><span class="comment">          T. On exit, D is overwritten.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E       (input/output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On entry, the (N-1) subdiagonal elements of the tridiagonal
+</span><span class="comment">*</span><span class="comment">          matrix T in elements 1 to N-1 of E. E(N) need not be set on
+</span><span class="comment">*</span><span class="comment">          input, but is used internally as workspace.
+</span><span class="comment">*</span><span class="comment">          On exit, E is overwritten.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VL      (input) REAL
+</span><span class="comment">*</span><span class="comment">  VU      (input) REAL
+</span><span class="comment">*</span><span class="comment">          If RANGE='V', the lower and upper bounds of the interval to
+</span><span class="comment">*</span><span class="comment">          be searched for eigenvalues. VL &lt; VU.
+</span><span class="comment">*</span><span class="comment">          Not referenced if RANGE = 'A' or 'I'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IL      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">  IU      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          If RANGE='I', the indices (in ascending order) of the
+</span><span class="comment">*</span><span class="comment">          smallest and largest eigenvalues to be returned.
+</span><span class="comment">*</span><span class="comment">          1 &lt;= IL &lt;= IU &lt;= N, if N &gt; 0.
+</span><span class="comment">*</span><span class="comment">          Not referenced if RANGE = 'A' or 'V'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ABSTOL  (input) REAL
+</span><span class="comment">*</span><span class="comment">          Unused.  Was the absolute error tolerance for the
+</span><span class="comment">*</span><span class="comment">          eigenvalues/eigenvectors in previous versions.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          The total number of eigenvalues found.  0 &lt;= M &lt;= N.
+</span><span class="comment">*</span><span class="comment">          If RANGE = 'A', M = N, and if RANGE = 'I', M = IU-IL+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  W       (output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The first M elements contain the selected eigenvalues in
+</span><span class="comment">*</span><span class="comment">          ascending order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z       (output) REAL array, dimension (LDZ, max(1,M) )
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'V', and if INFO = 0, then the first M columns of Z
+</span><span class="comment">*</span><span class="comment">          contain the orthonormal eigenvectors of the matrix T
+</span><span class="comment">*</span><span class="comment">          corresponding to the selected eigenvalues, with the i-th
+</span><span class="comment">*</span><span class="comment">          column of Z holding the eigenvector associated with W(i).
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'N', then Z is not referenced.
+</span><span class="comment">*</span><span class="comment">          Note: the user must ensure that at least max(1,M) columns are
+</span><span class="comment">*</span><span class="comment">          supplied in the array Z; if RANGE = 'V', the exact value of M
+</span><span class="comment">*</span><span class="comment">          is not known in advance and an upper bound must be used.
+</span><span class="comment">*</span><span class="comment">          Supplying N columns is always safe.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDZ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Z.  LDZ &gt;= 1, and if
+</span><span class="comment">*</span><span class="comment">          JOBZ = 'V', then LDZ &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ISUPPZ  (output) INTEGER ARRAY, dimension ( 2*max(1,M) )
+</span><span class="comment">*</span><span class="comment">          The support of the eigenvectors in Z, i.e., the indices
+</span><span class="comment">*</span><span class="comment">          indicating the nonzero elements in Z. The i-th computed eigenvector
+</span><span class="comment">*</span><span class="comment">          is nonzero only in elements ISUPPZ( 2*i-1 ) through
+</span><span class="comment">*</span><span class="comment">          ISUPPZ( 2*i ). This is relevant in the case when the matrix
+</span><span class="comment">*</span><span class="comment">          is split. ISUPPZ is only accessed when JOBZ is 'V' and N &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace/output) REAL array, dimension (LWORK)
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, WORK(1) returns the optimal
+</span><span class="comment">*</span><span class="comment">          (and minimal) LWORK.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LWORK   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The dimension of the array WORK. LWORK &gt;= max(1,18*N)
+</span><span class="comment">*</span><span class="comment">          if JOBZ = 'V', and LWORK &gt;= max(1,12*N) if JOBZ = 'N'.
+</span><span class="comment">*</span><span class="comment">          If LWORK = -1, then a workspace query is assumed; the routine
+</span><span class="comment">*</span><span class="comment">          only calculates the optimal size of the WORK array, returns
+</span><span class="comment">*</span><span class="comment">          this value as the first entry of the WORK array, and no error
+</span><span class="comment">*</span><span class="comment">          message related to LWORK is issued by <a name="XERBLA.130"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK   (workspace/output) INTEGER array, dimension (LIWORK)
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, IWORK(1) returns the optimal LIWORK.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LIWORK  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The dimension of the array IWORK.  LIWORK &gt;= max(1,10*N)
+</span><span class="comment">*</span><span class="comment">          if the eigenvectors are desired, and LIWORK &gt;= max(1,8*N)
+</span><span class="comment">*</span><span class="comment">          if only the eigenvalues are to be computed.
+</span><span class="comment">*</span><span class="comment">          If LIWORK = -1, then a workspace query is assumed; the
+</span><span class="comment">*</span><span class="comment">          routine only calculates the optimal size of the IWORK array,
+</span><span class="comment">*</span><span class="comment">          returns this value as the first entry of the IWORK array, and
+</span><span class="comment">*</span><span class="comment">          no error message related to LIWORK is issued by <a name="XERBLA.142"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          On exit, INFO
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = 1X, internal error in <a name="SLARRE.148"></a><a href="slarre.f.html#SLARRE.1">SLARRE</a>,
+</span><span class="comment">*</span><span class="comment">                if INFO = 2X, internal error in <a name="SLARRV.149"></a><a href="slarrv.f.html#SLARRV.1">SLARRV</a>.
+</span><span class="comment">*</span><span class="comment">                Here, the digit X = ABS( IINFO ) &lt; 10, where IINFO is
+</span><span class="comment">*</span><span class="comment">                the nonzero error code returned by <a name="SLARRE.151"></a><a href="slarre.f.html#SLARRE.1">SLARRE</a> or
+</span><span class="comment">*</span><span class="comment">                <a name="SLARRV.152"></a><a href="slarrv.f.html#SLARRV.1">SLARRV</a>, respectively.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Inderjit Dhillon, IBM Almaden, USA
+</span><span class="comment">*</span><span class="comment">     Osni Marques, LBNL/NERSC, USA
+</span><span class="comment">*</span><span class="comment">     Christof Voemel, LBNL/NERSC, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL TRYRAC
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL <a name="SSTEMR.168"></a><a href="sstemr.f.html#SSTEMR.1">SSTEMR</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span>      INFO = 0
+      TRYRAC = .FALSE.
+
+      CALL <a name="SSTEMR.174"></a><a href="sstemr.f.html#SSTEMR.1">SSTEMR</a>( JOBZ, RANGE, N, D, E, VL, VU, IL, IU,
+     $                   M, W, Z, LDZ, N, ISUPPZ, TRYRAC, WORK, LWORK,
+     $                   IWORK, LIWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SSTEGR.178"></a><a href="sstegr.f.html#SSTEGR.1">SSTEGR</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

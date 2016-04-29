@@ -1,0 +1,405 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>sppsvx.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SPPSVX.1"></a><a href="sppsvx.f.html#SPPSVX.1">SPPSVX</a>( FACT, UPLO, N, NRHS, AP, AFP, EQUED, S, B, LDB,
+     $                   X, LDX, RCOND, FERR, BERR, WORK, IWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK driver routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          EQUED, FACT, UPLO
+      INTEGER            INFO, LDB, LDX, N, NRHS
+      REAL               RCOND
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IWORK( * )
+      REAL               AFP( * ), AP( * ), B( LDB, * ), BERR( * ),
+     $                   FERR( * ), S( * ), WORK( * ), X( LDX, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SPPSVX.22"></a><a href="sppsvx.f.html#SPPSVX.1">SPPSVX</a> uses the Cholesky factorization A = U**T*U or A = L*L**T to
+</span><span class="comment">*</span><span class="comment">  compute the solution to a real system of linear equations
+</span><span class="comment">*</span><span class="comment">     A * X = B,
+</span><span class="comment">*</span><span class="comment">  where A is an N-by-N symmetric positive definite matrix stored in
+</span><span class="comment">*</span><span class="comment">  packed format and X and B are N-by-NRHS matrices.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Error bounds on the solution and a condition estimate are also
+</span><span class="comment">*</span><span class="comment">  provided.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Description
+</span><span class="comment">*</span><span class="comment">  ===========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The following steps are performed:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  1. If FACT = 'E', real scaling factors are computed to equilibrate
+</span><span class="comment">*</span><span class="comment">     the system:
+</span><span class="comment">*</span><span class="comment">        diag(S) * A * diag(S) * inv(diag(S)) * X = diag(S) * B
+</span><span class="comment">*</span><span class="comment">     Whether or not the system will be equilibrated depends on the
+</span><span class="comment">*</span><span class="comment">     scaling of the matrix A, but if equilibration is used, A is
+</span><span class="comment">*</span><span class="comment">     overwritten by diag(S)*A*diag(S) and B by diag(S)*B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  2. If FACT = 'N' or 'E', the Cholesky decomposition is used to
+</span><span class="comment">*</span><span class="comment">     factor the matrix A (after equilibration if FACT = 'E') as
+</span><span class="comment">*</span><span class="comment">        A = U**T* U,  if UPLO = 'U', or
+</span><span class="comment">*</span><span class="comment">        A = L * L**T,  if UPLO = 'L',
+</span><span class="comment">*</span><span class="comment">     where U is an upper triangular matrix and L is a lower triangular
+</span><span class="comment">*</span><span class="comment">     matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  3. If the leading i-by-i principal minor is not positive definite,
+</span><span class="comment">*</span><span class="comment">     then the routine returns with INFO = i. Otherwise, the factored
+</span><span class="comment">*</span><span class="comment">     form of A is used to estimate the condition number of the matrix
+</span><span class="comment">*</span><span class="comment">     A.  If the reciprocal of the condition number is less than machine
+</span><span class="comment">*</span><span class="comment">     precision, INFO = N+1 is returned as a warning, but the routine
+</span><span class="comment">*</span><span class="comment">     still goes on to solve for X and compute error bounds as
+</span><span class="comment">*</span><span class="comment">     described below.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  4. The system of equations is solved for X using the factored form
+</span><span class="comment">*</span><span class="comment">     of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  5. Iterative refinement is applied to improve the computed solution
+</span><span class="comment">*</span><span class="comment">     matrix and calculate error bounds and backward error estimates
+</span><span class="comment">*</span><span class="comment">     for it.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  6. If equilibration was used, the matrix X is premultiplied by
+</span><span class="comment">*</span><span class="comment">     diag(S) so that it solves the original system before
+</span><span class="comment">*</span><span class="comment">     equilibration.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  FACT    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether or not the factored form of the matrix A is
+</span><span class="comment">*</span><span class="comment">          supplied on entry, and if not, whether the matrix A should be
+</span><span class="comment">*</span><span class="comment">          equilibrated before it is factored.
+</span><span class="comment">*</span><span class="comment">          = 'F':  On entry, AFP contains the factored form of A.
+</span><span class="comment">*</span><span class="comment">                  If EQUED = 'Y', the matrix A has been equilibrated
+</span><span class="comment">*</span><span class="comment">                  with scaling factors given by S.  AP and AFP will not
+</span><span class="comment">*</span><span class="comment">                  be modified.
+</span><span class="comment">*</span><span class="comment">          = 'N':  The matrix A will be copied to AFP and factored.
+</span><span class="comment">*</span><span class="comment">          = 'E':  The matrix A will be equilibrated if necessary, then
+</span><span class="comment">*</span><span class="comment">                  copied to AFP and factored.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangle of A is stored;
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangle of A is stored.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of linear equations, i.e., the order of the
+</span><span class="comment">*</span><span class="comment">          matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NRHS    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of right hand sides, i.e., the number of columns
+</span><span class="comment">*</span><span class="comment">          of the matrices B and X.  NRHS &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AP      (input/output) REAL array, dimension (N*(N+1)/2)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper or lower triangle of the symmetric matrix
+</span><span class="comment">*</span><span class="comment">          A, packed columnwise in a linear array, except if FACT = 'F'
+</span><span class="comment">*</span><span class="comment">          and EQUED = 'Y', then A must contain the equilibrated matrix
+</span><span class="comment">*</span><span class="comment">          diag(S)*A*diag(S).  The j-th column of A is stored in the
+</span><span class="comment">*</span><span class="comment">          array AP as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', AP(i + (j-1)*j/2) = A(i,j) for 1&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', AP(i + (j-1)*(2n-j)/2) = A(i,j) for j&lt;=i&lt;=n.
+</span><span class="comment">*</span><span class="comment">          See below for further details.  A is not modified if
+</span><span class="comment">*</span><span class="comment">          FACT = 'F' or 'N', or if FACT = 'E' and EQUED = 'N' on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, if FACT = 'E' and EQUED = 'Y', A is overwritten by
+</span><span class="comment">*</span><span class="comment">          diag(S)*A*diag(S).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AFP     (input or output) REAL array, dimension
+</span><span class="comment">*</span><span class="comment">                            (N*(N+1)/2)
+</span><span class="comment">*</span><span class="comment">          If FACT = 'F', then AFP is an input argument and on entry
+</span><span class="comment">*</span><span class="comment">          contains the triangular factor U or L from the Cholesky
+</span><span class="comment">*</span><span class="comment">          factorization A = U'*U or A = L*L', in the same storage
+</span><span class="comment">*</span><span class="comment">          format as A.  If EQUED .ne. 'N', then AFP is the factored
+</span><span class="comment">*</span><span class="comment">          form of the equilibrated matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If FACT = 'N', then AFP is an output argument and on exit
+</span><span class="comment">*</span><span class="comment">          returns the triangular factor U or L from the Cholesky
+</span><span class="comment">*</span><span class="comment">          factorization A = U'*U or A = L*L' of the original matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If FACT = 'E', then AFP is an output argument and on exit
+</span><span class="comment">*</span><span class="comment">          returns the triangular factor U or L from the Cholesky
+</span><span class="comment">*</span><span class="comment">          factorization A = U'*U or A = L*L' of the equilibrated
+</span><span class="comment">*</span><span class="comment">          matrix A (see the description of AP for the form of the
+</span><span class="comment">*</span><span class="comment">          equilibrated matrix).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  EQUED   (input or output) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies the form of equilibration that was done.
+</span><span class="comment">*</span><span class="comment">          = 'N':  No equilibration (always true if FACT = 'N').
+</span><span class="comment">*</span><span class="comment">          = 'Y':  Equilibration was done, i.e., A has been replaced by
+</span><span class="comment">*</span><span class="comment">                  diag(S) * A * diag(S).
+</span><span class="comment">*</span><span class="comment">          EQUED is an input argument if FACT = 'F'; otherwise, it is an
+</span><span class="comment">*</span><span class="comment">          output argument.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  S       (input or output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The scale factors for A; not accessed if EQUED = 'N'.  S is
+</span><span class="comment">*</span><span class="comment">          an input argument if FACT = 'F'; otherwise, S is an output
+</span><span class="comment">*</span><span class="comment">          argument.  If FACT = 'F' and EQUED = 'Y', each element of S
+</span><span class="comment">*</span><span class="comment">          must be positive.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input/output) REAL array, dimension (LDB,NRHS)
+</span><span class="comment">*</span><span class="comment">          On entry, the N-by-NRHS right hand side matrix B.
+</span><span class="comment">*</span><span class="comment">          On exit, if EQUED = 'N', B is not modified; if EQUED = 'Y',
+</span><span class="comment">*</span><span class="comment">          B is overwritten by diag(S) * B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B.  LDB &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X       (output) REAL array, dimension (LDX,NRHS)
+</span><span class="comment">*</span><span class="comment">          If INFO = 0 or INFO = N+1, the N-by-NRHS solution matrix X to
+</span><span class="comment">*</span><span class="comment">          the original system of equations.  Note that if EQUED = 'Y',
+</span><span class="comment">*</span><span class="comment">          A and B are modified on exit, and the solution to the
+</span><span class="comment">*</span><span class="comment">          equilibrated system is inv(diag(S))*X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDX     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array X.  LDX &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RCOND   (output) REAL
+</span><span class="comment">*</span><span class="comment">          The estimate of the reciprocal condition number of the matrix
+</span><span class="comment">*</span><span class="comment">          A after equilibration (if done).  If RCOND is less than the
+</span><span class="comment">*</span><span class="comment">          machine precision (in particular, if RCOND = 0), the matrix
+</span><span class="comment">*</span><span class="comment">          is singular to working precision.  This condition is
+</span><span class="comment">*</span><span class="comment">          indicated by a return code of INFO &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  FERR    (output) REAL array, dimension (NRHS)
+</span><span class="comment">*</span><span class="comment">          The estimated forward error bound for each solution vector
+</span><span class="comment">*</span><span class="comment">          X(j) (the j-th column of the solution matrix X).
+</span><span class="comment">*</span><span class="comment">          If XTRUE is the true solution corresponding to X(j), FERR(j)
+</span><span class="comment">*</span><span class="comment">          is an estimated upper bound for the magnitude of the largest
+</span><span class="comment">*</span><span class="comment">          element in (X(j) - XTRUE) divided by the magnitude of the
+</span><span class="comment">*</span><span class="comment">          largest element in X(j).  The estimate is as reliable as
+</span><span class="comment">*</span><span class="comment">          the estimate for RCOND, and is almost always a slight
+</span><span class="comment">*</span><span class="comment">          overestimate of the true error.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BERR    (output) REAL array, dimension (NRHS)
+</span><span class="comment">*</span><span class="comment">          The componentwise relative backward error of each solution
+</span><span class="comment">*</span><span class="comment">          vector X(j) (i.e., the smallest relative change in
+</span><span class="comment">*</span><span class="comment">          any element of A or B that makes X(j) an exact solution).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) REAL array, dimension (3*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK   (workspace) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = i, and i is
+</span><span class="comment">*</span><span class="comment">                &lt;= N:  the leading minor of order i of A is
+</span><span class="comment">*</span><span class="comment">                       not positive definite, so the factorization
+</span><span class="comment">*</span><span class="comment">                       could not be completed, and the solution has not
+</span><span class="comment">*</span><span class="comment">                       been computed. RCOND = 0 is returned.
+</span><span class="comment">*</span><span class="comment">                = N+1: U is nonsingular, but RCOND is less than machine
+</span><span class="comment">*</span><span class="comment">                       precision, meaning that the matrix is singular
+</span><span class="comment">*</span><span class="comment">                       to working precision.  Nevertheless, the
+</span><span class="comment">*</span><span class="comment">                       solution and error bounds are computed because
+</span><span class="comment">*</span><span class="comment">                       there are a number of situations where the
+</span><span class="comment">*</span><span class="comment">                       computed solution can be more accurate than the
+</span><span class="comment">*</span><span class="comment">                       value of RCOND would suggest.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The packed storage scheme is illustrated by the following example
+</span><span class="comment">*</span><span class="comment">  when N = 4, UPLO = 'U':
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Two-dimensional storage of the symmetric matrix A:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     a11 a12 a13 a14
+</span><span class="comment">*</span><span class="comment">         a22 a23 a24
+</span><span class="comment">*</span><span class="comment">             a33 a34     (aij = conjg(aji))
+</span><span class="comment">*</span><span class="comment">                 a44
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Packed storage of the upper triangle of A:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AP = [ a11, a12, a22, a13, a23, a33, a14, a24, a34, a44 ]
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, ONE
+      PARAMETER          ( ZERO = 0.0E+0, ONE = 1.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            EQUIL, NOFACT, RCEQU
+      INTEGER            I, INFEQU, J
+      REAL               AMAX, ANORM, BIGNUM, SCOND, SMAX, SMIN, SMLNUM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.230"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      REAL               <a name="SLAMCH.231"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANSP.231"></a><a href="slansp.f.html#SLANSP.1">SLANSP</a>
+      EXTERNAL           <a name="LSAME.232"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="SLAMCH.232"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANSP.232"></a><a href="slansp.f.html#SLANSP.1">SLANSP</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           SCOPY, <a name="SLACPY.235"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>, <a name="SLAQSP.235"></a><a href="slaqsp.f.html#SLAQSP.1">SLAQSP</a>, <a name="SPPCON.235"></a><a href="sppcon.f.html#SPPCON.1">SPPCON</a>, <a name="SPPEQU.235"></a><a href="sppequ.f.html#SPPEQU.1">SPPEQU</a>, <a name="SPPRFS.235"></a><a href="spprfs.f.html#SPPRFS.1">SPPRFS</a>,
+     $                   <a name="SPPTRF.236"></a><a href="spptrf.f.html#SPPTRF.1">SPPTRF</a>, <a name="SPPTRS.236"></a><a href="spptrs.f.html#SPPTRS.1">SPPTRS</a>, <a name="XERBLA.236"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      NOFACT = <a name="LSAME.244"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( FACT, <span class="string">'N'</span> )
+      EQUIL = <a name="LSAME.245"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( FACT, <span class="string">'E'</span> )
+      IF( NOFACT .OR. EQUIL ) THEN
+         EQUED = <span class="string">'N'</span>
+         RCEQU = .FALSE.
+      ELSE
+         RCEQU = <a name="LSAME.250"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( EQUED, <span class="string">'Y'</span> )
+         SMLNUM = <a name="SLAMCH.251"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Safe minimum'</span> )
+         BIGNUM = ONE / SMLNUM
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( .NOT.NOFACT .AND. .NOT.EQUIL .AND. .NOT.<a name="LSAME.257"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( FACT, <span class="string">'F'</span> ) )
+     $     THEN
+         INFO = -1
+      ELSE IF( .NOT.<a name="LSAME.260"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) .AND. .NOT.<a name="LSAME.260"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) )
+     $          THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( NRHS.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( <a name="LSAME.267"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( FACT, <span class="string">'F'</span> ) .AND. .NOT.
+     $         ( RCEQU .OR. <a name="LSAME.268"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( EQUED, <span class="string">'N'</span> ) ) ) THEN
+         INFO = -7
+      ELSE
+         IF( RCEQU ) THEN
+            SMIN = BIGNUM
+            SMAX = ZERO
+            DO 10 J = 1, N
+               SMIN = MIN( SMIN, S( J ) )
+               SMAX = MAX( SMAX, S( J ) )
+   10       CONTINUE
+            IF( SMIN.LE.ZERO ) THEN
+               INFO = -8
+            ELSE IF( N.GT.0 ) THEN
+               SCOND = MAX( SMIN, SMLNUM ) / MIN( SMAX, BIGNUM )
+            ELSE
+               SCOND = ONE
+            END IF
+         END IF
+         IF( INFO.EQ.0 ) THEN
+            IF( LDB.LT.MAX( 1, N ) ) THEN
+               INFO = -10
+            ELSE IF( LDX.LT.MAX( 1, N ) ) THEN
+               INFO = -12
+            END IF
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.296"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="SPPSVX.296"></a><a href="sppsvx.f.html#SPPSVX.1">SPPSVX</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( EQUIL ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute row and column scalings to equilibrate the matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="SPPEQU.304"></a><a href="sppequ.f.html#SPPEQU.1">SPPEQU</a>( UPLO, N, AP, S, SCOND, AMAX, INFEQU )
+         IF( INFEQU.EQ.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Equilibrate the matrix.
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="SLAQSP.309"></a><a href="slaqsp.f.html#SLAQSP.1">SLAQSP</a>( UPLO, N, AP, S, SCOND, AMAX, EQUED )
+            RCEQU = <a name="LSAME.310"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( EQUED, <span class="string">'Y'</span> )
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Scale the right-hand side.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( RCEQU ) THEN
+         DO 30 J = 1, NRHS
+            DO 20 I = 1, N
+               B( I, J ) = S( I )*B( I, J )
+   20       CONTINUE
+   30    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( NOFACT .OR. EQUIL ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute the Cholesky factorization A = U'*U or A = L*L'.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL SCOPY( N*( N+1 ) / 2, AP, 1, AFP, 1 )
+         CALL <a name="SPPTRF.329"></a><a href="spptrf.f.html#SPPTRF.1">SPPTRF</a>( UPLO, N, AFP, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Return if INFO is non-zero.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( INFO.GT.0 )THEN
+            RCOND = ZERO
+            RETURN
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the norm of the matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span>      ANORM = <a name="SLANSP.341"></a><a href="slansp.f.html#SLANSP.1">SLANSP</a>( <span class="string">'I'</span>, UPLO, N, AP, WORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the reciprocal of the condition number of A.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="SPPCON.345"></a><a href="sppcon.f.html#SPPCON.1">SPPCON</a>( UPLO, N, AFP, ANORM, RCOND, WORK, IWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the solution matrix X.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="SLACPY.349"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, N, NRHS, B, LDB, X, LDX )
+      CALL <a name="SPPTRS.350"></a><a href="spptrs.f.html#SPPTRS.1">SPPTRS</a>( UPLO, N, NRHS, AFP, X, LDX, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Use iterative refinement to improve the computed solution and
+</span><span class="comment">*</span><span class="comment">     compute error bounds and backward error estimates for it.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="SPPRFS.355"></a><a href="spprfs.f.html#SPPRFS.1">SPPRFS</a>( UPLO, N, NRHS, AP, AFP, B, LDB, X, LDX, FERR, BERR,
+     $             WORK, IWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Transform the solution matrix X to a solution of the original
+</span><span class="comment">*</span><span class="comment">     system.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( RCEQU ) THEN
+         DO 50 J = 1, NRHS
+            DO 40 I = 1, N
+               X( I, J ) = S( I )*X( I, J )
+   40       CONTINUE
+   50    CONTINUE
+         DO 60 J = 1, NRHS
+            FERR( J ) = FERR( J ) / SCOND
+   60    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set INFO = N+1 if the matrix is singular to working precision.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( RCOND.LT.<a name="SLAMCH.374"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Epsilon'</span> ) )
+     $   INFO = N + 1
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SPPSVX.379"></a><a href="sppsvx.f.html#SPPSVX.1">SPPSVX</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

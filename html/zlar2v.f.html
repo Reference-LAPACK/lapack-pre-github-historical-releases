@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zlar2v.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZLAR2V.1"></a><a href="zlar2v.f.html#ZLAR2V.1">ZLAR2V</a>( N, X, Y, Z, INCX, C, S, INCC )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INCC, INCX, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   C( * )
+      COMPLEX*16         S( * ), X( * ), Y( * ), Z( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZLAR2V.18"></a><a href="zlar2v.f.html#ZLAR2V.1">ZLAR2V</a> applies a vector of complex plane rotations with real cosines
+</span><span class="comment">*</span><span class="comment">  from both sides to a sequence of 2-by-2 complex Hermitian matrices,
+</span><span class="comment">*</span><span class="comment">  defined by the elements of the vectors x, y and z. For i = 1,2,...,n
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     (       x(i)  z(i) ) :=
+</span><span class="comment">*</span><span class="comment">     ( conjg(z(i)) y(i) )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">       (  c(i) conjg(s(i)) ) (       x(i)  z(i) ) ( c(i) -conjg(s(i)) )
+</span><span class="comment">*</span><span class="comment">       ( -s(i)       c(i)  ) ( conjg(z(i)) y(i) ) ( s(i)        c(i)  )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of plane rotations to be applied.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X       (input/output) COMPLEX*16 array, dimension (1+(N-1)*INCX)
+</span><span class="comment">*</span><span class="comment">          The vector x; the elements of x are assumed to be real.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Y       (input/output) COMPLEX*16 array, dimension (1+(N-1)*INCX)
+</span><span class="comment">*</span><span class="comment">          The vector y; the elements of y are assumed to be real.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z       (input/output) COMPLEX*16 array, dimension (1+(N-1)*INCX)
+</span><span class="comment">*</span><span class="comment">          The vector z.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INCX    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The increment between elements of X, Y and Z. INCX &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C       (input) DOUBLE PRECISION array, dimension (1+(N-1)*INCC)
+</span><span class="comment">*</span><span class="comment">          The cosines of the plane rotations.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  S       (input) COMPLEX*16 array, dimension (1+(N-1)*INCC)
+</span><span class="comment">*</span><span class="comment">          The sines of the plane rotations.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INCC    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The increment between elements of C and S. INCC &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, IC, IX
+      DOUBLE PRECISION   CI, SII, SIR, T1I, T1R, T5, T6, XI, YI, ZII,
+     $                   ZIR
+      COMPLEX*16         SI, T2, T3, T4, ZI
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          DBLE, DCMPLX, DCONJG, DIMAG
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      IX = 1
+      IC = 1
+      DO 10 I = 1, N
+         XI = DBLE( X( IX ) )
+         YI = DBLE( Y( IX ) )
+         ZI = Z( IX )
+         ZIR = DBLE( ZI )
+         ZII = DIMAG( ZI )
+         CI = C( IC )
+         SI = S( IC )
+         SIR = DBLE( SI )
+         SII = DIMAG( SI )
+         T1R = SIR*ZIR - SII*ZII
+         T1I = SIR*ZII + SII*ZIR
+         T2 = CI*ZI
+         T3 = T2 - DCONJG( SI )*XI
+         T4 = DCONJG( T2 ) + SI*YI
+         T5 = CI*XI + T1R
+         T6 = CI*YI - T1R
+         X( IX ) = CI*T5 + ( SIR*DBLE( T4 )+SII*DIMAG( T4 ) )
+         Y( IX ) = CI*T6 - ( SIR*DBLE( T3 )-SII*DIMAG( T3 ) )
+         Z( IX ) = CI*T3 + DCONJG( SI )*DCMPLX( T6, T1I )
+         IX = IX + INCX
+         IC = IC + INCC
+   10 CONTINUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZLAR2V.95"></a><a href="zlar2v.f.html#ZLAR2V.1">ZLAR2V</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

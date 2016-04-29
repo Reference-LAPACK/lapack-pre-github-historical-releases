@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>ztrti2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZTRTI2.1"></a><a href="ztrti2.f.html#ZTRTI2.1">ZTRTI2</a>( UPLO, DIAG, N, A, LDA, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          DIAG, UPLO
+      INTEGER            INFO, LDA, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX*16         A( LDA, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZTRTI2.18"></a><a href="ztrti2.f.html#ZTRTI2.1">ZTRTI2</a> computes the inverse of a complex upper or lower triangular
+</span><span class="comment">*</span><span class="comment">  matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This is the Level 2 BLAS version of the algorithm.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether the matrix A is upper or lower triangular.
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangular
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangular
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIAG    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether or not the matrix A is unit triangular.
+</span><span class="comment">*</span><span class="comment">          = 'N':  Non-unit triangular
+</span><span class="comment">*</span><span class="comment">          = 'U':  Unit triangular
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) COMPLEX*16 array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the triangular matrix A.  If UPLO = 'U', the
+</span><span class="comment">*</span><span class="comment">          leading n by n upper triangular part of the array A contains
+</span><span class="comment">*</span><span class="comment">          the upper triangular matrix, and the strictly lower
+</span><span class="comment">*</span><span class="comment">          triangular part of A is not referenced.  If UPLO = 'L', the
+</span><span class="comment">*</span><span class="comment">          leading n by n lower triangular part of the array A contains
+</span><span class="comment">*</span><span class="comment">          the lower triangular matrix, and the strictly upper
+</span><span class="comment">*</span><span class="comment">          triangular part of A is not referenced.  If DIAG = 'U', the
+</span><span class="comment">*</span><span class="comment">          diagonal elements of A are also not referenced and are
+</span><span class="comment">*</span><span class="comment">          assumed to be 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, the (triangular) inverse of the original matrix, in
+</span><span class="comment">*</span><span class="comment">          the same storage format.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0: successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0: if INFO = -k, the k-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      COMPLEX*16         ONE
+      PARAMETER          ( ONE = ( 1.0D+0, 0.0D+0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            NOUNIT, UPPER
+      INTEGER            J
+      COMPLEX*16         AJJ
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.72"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.73"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.76"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, ZSCAL, ZTRMV
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      UPPER = <a name="LSAME.86"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> )
+      NOUNIT = <a name="LSAME.87"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIAG, <span class="string">'N'</span> )
+      IF( .NOT.UPPER .AND. .NOT.<a name="LSAME.88"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.NOUNIT .AND. .NOT.<a name="LSAME.90"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIAG, <span class="string">'U'</span> ) ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+         INFO = -5
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.98"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZTRTI2.98"></a><a href="ztrti2.f.html#ZTRTI2.1">ZTRTI2</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( UPPER ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute inverse of upper triangular matrix.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 10 J = 1, N
+            IF( NOUNIT ) THEN
+               A( J, J ) = ONE / A( J, J )
+               AJJ = -A( J, J )
+            ELSE
+               AJJ = -ONE
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute elements 1:j-1 of j-th column.
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL ZTRMV( <span class="string">'Upper'</span>, <span class="string">'No transpose'</span>, DIAG, J-1, A, LDA,
+     $                  A( 1, J ), 1 )
+            CALL ZSCAL( J-1, AJJ, A( 1, J ), 1 )
+   10    CONTINUE
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute inverse of lower triangular matrix.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 20 J = N, 1, -1
+            IF( NOUNIT ) THEN
+               A( J, J ) = ONE / A( J, J )
+               AJJ = -A( J, J )
+            ELSE
+               AJJ = -ONE
+            END IF
+            IF( J.LT.N ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Compute elements j+1:n of j-th column.
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL ZTRMV( <span class="string">'Lower'</span>, <span class="string">'No transpose'</span>, DIAG, N-J,
+     $                     A( J+1, J+1 ), LDA, A( J+1, J ), 1 )
+               CALL ZSCAL( N-J, AJJ, A( J+1, J ), 1 )
+            END IF
+   20    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZTRTI2.144"></a><a href="ztrti2.f.html#ZTRTI2.1">ZTRTI2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

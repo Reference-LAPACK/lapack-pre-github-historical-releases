@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zgetrs.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZGETRS.1"></a><a href="zgetrs.f.html#ZGETRS.1">ZGETRS</a>( TRANS, N, NRHS, A, LDA, IPIV, B, LDB, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          TRANS
+      INTEGER            INFO, LDA, LDB, N, NRHS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IPIV( * )
+      COMPLEX*16         A( LDA, * ), B( LDB, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZGETRS.19"></a><a href="zgetrs.f.html#ZGETRS.1">ZGETRS</a> solves a system of linear equations
+</span><span class="comment">*</span><span class="comment">     A * X = B,  A**T * X = B,  or  A**H * X = B
+</span><span class="comment">*</span><span class="comment">  with a general N-by-N matrix A using the LU factorization computed
+</span><span class="comment">*</span><span class="comment">  by <a name="ZGETRF.22"></a><a href="zgetrf.f.html#ZGETRF.1">ZGETRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TRANS   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies the form of the system of equations:
+</span><span class="comment">*</span><span class="comment">          = 'N':  A * X = B     (No transpose)
+</span><span class="comment">*</span><span class="comment">          = 'T':  A**T * X = B  (Transpose)
+</span><span class="comment">*</span><span class="comment">          = 'C':  A**H * X = B  (Conjugate transpose)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NRHS    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of right hand sides, i.e., the number of columns
+</span><span class="comment">*</span><span class="comment">          of the matrix B.  NRHS &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input) COMPLEX*16 array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          The factors L and U from the factorization A = P*L*U
+</span><span class="comment">*</span><span class="comment">          as computed by <a name="ZGETRF.42"></a><a href="zgetrf.f.html#ZGETRF.1">ZGETRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IPIV    (input) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The pivot indices from <a name="ZGETRF.48"></a><a href="zgetrf.f.html#ZGETRF.1">ZGETRF</a>; for 1&lt;=i&lt;=N, row i of the
+</span><span class="comment">*</span><span class="comment">          matrix was interchanged with row IPIV(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input/output) COMPLEX*16 array, dimension (LDB,NRHS)
+</span><span class="comment">*</span><span class="comment">          On entry, the right hand side matrix B.
+</span><span class="comment">*</span><span class="comment">          On exit, the solution matrix X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B.  LDB &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      COMPLEX*16         ONE
+      PARAMETER          ( ONE = ( 1.0D+0, 0.0D+0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            NOTRAN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.72"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.73"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.76"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, <a name="ZLASWP.76"></a><a href="zlaswp.f.html#ZLASWP.1">ZLASWP</a>, ZTRSM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      NOTRAN = <a name="LSAME.86"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'N'</span> )
+      IF( .NOT.NOTRAN .AND. .NOT.<a name="LSAME.87"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'T'</span> ) .AND. .NOT.
+     $    <a name="LSAME.88"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'C'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( NRHS.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+         INFO = -5
+      ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
+         INFO = -8
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.100"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZGETRS.100"></a><a href="zgetrs.f.html#ZGETRS.1">ZGETRS</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 .OR. NRHS.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      IF( NOTRAN ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve A * X = B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Apply row interchanges to the right hand sides.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="ZLASWP.115"></a><a href="zlaswp.f.html#ZLASWP.1">ZLASWP</a>( NRHS, B, LDB, 1, N, IPIV, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve L*X = B, overwriting B with X.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL ZTRSM( <span class="string">'Left'</span>, <span class="string">'Lower'</span>, <span class="string">'No transpose'</span>, <span class="string">'Unit'</span>, N, NRHS,
+     $               ONE, A, LDA, B, LDB )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve U*X = B, overwriting B with X.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL ZTRSM( <span class="string">'Left'</span>, <span class="string">'Upper'</span>, <span class="string">'No transpose'</span>, <span class="string">'Non-unit'</span>, N,
+     $               NRHS, ONE, A, LDA, B, LDB )
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve A**T * X = B  or A**H * X = B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve U'*X = B, overwriting B with X.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL ZTRSM( <span class="string">'Left'</span>, <span class="string">'Upper'</span>, TRANS, <span class="string">'Non-unit'</span>, N, NRHS, ONE,
+     $               A, LDA, B, LDB )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve L'*X = B, overwriting B with X.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL ZTRSM( <span class="string">'Left'</span>, <span class="string">'Lower'</span>, TRANS, <span class="string">'Unit'</span>, N, NRHS, ONE, A,
+     $               LDA, B, LDB )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Apply row interchanges to the solution vectors.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="ZLASWP.142"></a><a href="zlaswp.f.html#ZLASWP.1">ZLASWP</a>( NRHS, B, LDB, 1, N, IPIV, -1 )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZGETRS.147"></a><a href="zgetrs.f.html#ZGETRS.1">ZGETRS</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

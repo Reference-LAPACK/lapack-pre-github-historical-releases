@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slarz.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLARZ.1"></a><a href="slarz.f.html#SLARZ.1">SLARZ</a>( SIDE, M, N, L, V, INCV, TAU, C, LDC, WORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          SIDE
+      INTEGER            INCV, L, LDC, M, N
+      REAL               TAU
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               C( LDC, * ), V( * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLARZ.19"></a><a href="slarz.f.html#SLARZ.1">SLARZ</a> applies a real elementary reflector H to a real M-by-N
+</span><span class="comment">*</span><span class="comment">  matrix C, from either the left or the right. H is represented in the
+</span><span class="comment">*</span><span class="comment">  form
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        H = I - tau * v * v'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where tau is a real scalar and v is a real vector.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If tau = 0, then H is taken to be the unit matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  H is a product of k elementary reflectors as returned by <a name="STZRZF.30"></a><a href="stzrzf.f.html#STZRZF.1">STZRZF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SIDE    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'L': form  H * C
+</span><span class="comment">*</span><span class="comment">          = 'R': form  C * H
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix C.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix C.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  L       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of entries of the vector V containing
+</span><span class="comment">*</span><span class="comment">          the meaningful part of the Householder vectors.
+</span><span class="comment">*</span><span class="comment">          If SIDE = 'L', M &gt;= L &gt;= 0, if SIDE = 'R', N &gt;= L &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  V       (input) REAL array, dimension (1+(L-1)*abs(INCV))
+</span><span class="comment">*</span><span class="comment">          The vector v in the representation of H as returned by
+</span><span class="comment">*</span><span class="comment">          <a name="STZRZF.52"></a><a href="stzrzf.f.html#STZRZF.1">STZRZF</a>. V is not used if TAU = 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INCV    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The increment between elements of v. INCV &lt;&gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TAU     (input) REAL
+</span><span class="comment">*</span><span class="comment">          The value tau in the representation of H.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C       (input/output) REAL array, dimension (LDC,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the M-by-N matrix C.
+</span><span class="comment">*</span><span class="comment">          On exit, C is overwritten by the matrix H * C if SIDE = 'L',
+</span><span class="comment">*</span><span class="comment">          or C * H if SIDE = 'R'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDC     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array C. LDC &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) REAL array, dimension
+</span><span class="comment">*</span><span class="comment">                         (N) if SIDE = 'L'
+</span><span class="comment">*</span><span class="comment">                      or (M) if SIDE = 'R'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">    A. Petitet, Computer Science Dept., Univ. of Tenn., Knoxville, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ONE, ZERO
+      PARAMETER          ( ONE = 1.0E+0, ZERO = 0.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           SAXPY, SCOPY, SGEMV, SGER
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.88"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.89"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( <a name="LSAME.93"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'L'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Form  H * C
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( TAU.NE.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           w( 1:n ) = C( 1, 1:n )
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL SCOPY( N, C, LDC, WORK, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           w( 1:n ) = w( 1:n ) + C( m-l+1:m, 1:n )' * v( 1:l )
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL SGEMV( <span class="string">'Transpose'</span>, L, N, ONE, C( M-L+1, 1 ), LDC, V,
+     $                  INCV, ONE, WORK, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           C( 1, 1:n ) = C( 1, 1:n ) - tau * w( 1:n )
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL SAXPY( N, -TAU, WORK, 1, C, LDC )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           C( m-l+1:m, 1:n ) = C( m-l+1:m, 1:n ) - ...
+</span><span class="comment">*</span><span class="comment">                               tau * v( 1:l ) * w( 1:n )'
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL SGER( L, N, -TAU, V, INCV, WORK, 1, C( M-L+1, 1 ),
+     $                 LDC )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Form  C * H
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( TAU.NE.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           w( 1:m ) = C( 1:m, 1 )
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL SCOPY( M, C, 1, WORK, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           w( 1:m ) = w( 1:m ) + C( 1:m, n-l+1:n, 1:n ) * v( 1:l )
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL SGEMV( <span class="string">'No transpose'</span>, M, L, ONE, C( 1, N-L+1 ), LDC,
+     $                  V, INCV, ONE, WORK, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           C( 1:m, 1 ) = C( 1:m, 1 ) - tau * w( 1:m )
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL SAXPY( M, -TAU, WORK, 1, C, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           C( 1:m, n-l+1:n ) = C( 1:m, n-l+1:n ) - ...
+</span><span class="comment">*</span><span class="comment">                               tau * w( 1:m ) * v( 1:l )'
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL SGER( M, L, -TAU, WORK, 1, V, INCV, C( 1, N-L+1 ),
+     $                 LDC )
+<span class="comment">*</span><span class="comment">
+</span>         END IF
+<span class="comment">*</span><span class="comment">
+</span>      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLARZ.150"></a><a href="slarz.f.html#SLARZ.1">SLARZ</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

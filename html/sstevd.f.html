@@ -1,0 +1,243 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>sstevd.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SSTEVD.1"></a><a href="sstevd.f.html#SSTEVD.1">SSTEVD</a>( JOBZ, N, D, E, Z, LDZ, WORK, LWORK, IWORK,
+     $                   LIWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK driver routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          JOBZ
+      INTEGER            INFO, LDZ, LIWORK, LWORK, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IWORK( * )
+      REAL               D( * ), E( * ), WORK( * ), Z( LDZ, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SSTEVD.20"></a><a href="sstevd.f.html#SSTEVD.1">SSTEVD</a> computes all eigenvalues and, optionally, eigenvectors of a
+</span><span class="comment">*</span><span class="comment">  real symmetric tridiagonal matrix. If eigenvectors are desired, it
+</span><span class="comment">*</span><span class="comment">  uses a divide and conquer algorithm.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The divide and conquer algorithm makes very mild assumptions about
+</span><span class="comment">*</span><span class="comment">  floating point arithmetic. It will work on machines with a guard
+</span><span class="comment">*</span><span class="comment">  digit in add/subtract, or on those binary machines without guard
+</span><span class="comment">*</span><span class="comment">  digits which subtract like the Cray X-MP, Cray Y-MP, Cray C-90, or
+</span><span class="comment">*</span><span class="comment">  Cray-2. It could conceivably fail on hexadecimal or decimal machines
+</span><span class="comment">*</span><span class="comment">  without guard digits, but we know of none.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOBZ    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'N':  Compute eigenvalues only;
+</span><span class="comment">*</span><span class="comment">          = 'V':  Compute eigenvalues and eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input/output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On entry, the n diagonal elements of the tridiagonal matrix
+</span><span class="comment">*</span><span class="comment">          A.
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, the eigenvalues in ascending order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E       (input/output) REAL array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          On entry, the (n-1) subdiagonal elements of the tridiagonal
+</span><span class="comment">*</span><span class="comment">          matrix A, stored in elements 1 to N-1 of E.
+</span><span class="comment">*</span><span class="comment">          On exit, the contents of E are destroyed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z       (output) REAL array, dimension (LDZ, N)
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'V', then if INFO = 0, Z contains the orthonormal
+</span><span class="comment">*</span><span class="comment">          eigenvectors of the matrix A, with the i-th column of Z
+</span><span class="comment">*</span><span class="comment">          holding the eigenvector associated with D(i).
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'N', then Z is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDZ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Z.  LDZ &gt;= 1, and if
+</span><span class="comment">*</span><span class="comment">          JOBZ = 'V', LDZ &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace/output) REAL array,
+</span><span class="comment">*</span><span class="comment">                                         dimension (LWORK)
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LWORK   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The dimension of the array WORK.
+</span><span class="comment">*</span><span class="comment">          If JOBZ  = 'N' or N &lt;= 1 then LWORK must be at least 1.
+</span><span class="comment">*</span><span class="comment">          If JOBZ  = 'V' and N &gt; 1 then LWORK must be at least
+</span><span class="comment">*</span><span class="comment">                         ( 1 + 4*N + N**2 ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If LWORK = -1, then a workspace query is assumed; the routine
+</span><span class="comment">*</span><span class="comment">          only calculates the optimal sizes of the WORK and IWORK
+</span><span class="comment">*</span><span class="comment">          arrays, returns these values as the first entries of the WORK
+</span><span class="comment">*</span><span class="comment">          and IWORK arrays, and no error message related to LWORK or
+</span><span class="comment">*</span><span class="comment">          LIWORK is issued by <a name="XERBLA.75"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK   (workspace/output) INTEGER array, dimension (MAX(1,LIWORK))
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, IWORK(1) returns the optimal LIWORK.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LIWORK  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The dimension of the array IWORK.
+</span><span class="comment">*</span><span class="comment">          If JOBZ  = 'N' or N &lt;= 1 then LIWORK must be at least 1.
+</span><span class="comment">*</span><span class="comment">          If JOBZ  = 'V' and N &gt; 1 then LIWORK must be at least 3+5*N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If LIWORK = -1, then a workspace query is assumed; the
+</span><span class="comment">*</span><span class="comment">          routine only calculates the optimal sizes of the WORK and
+</span><span class="comment">*</span><span class="comment">          IWORK arrays, returns these values as the first entries of
+</span><span class="comment">*</span><span class="comment">          the WORK and IWORK arrays, and no error message related to
+</span><span class="comment">*</span><span class="comment">          LWORK or LIWORK is issued by <a name="XERBLA.89"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = i, the algorithm failed to converge; i
+</span><span class="comment">*</span><span class="comment">                off-diagonal elements of E did not converge to zero.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, ONE
+      PARAMETER          ( ZERO = 0.0E0, ONE = 1.0E0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            LQUERY, WANTZ
+      INTEGER            ISCALE, LIWMIN, LWMIN
+      REAL               BIGNUM, EPS, RMAX, RMIN, SAFMIN, SIGMA, SMLNUM,
+     $                   TNRM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.110"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      REAL               <a name="SLAMCH.111"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANST.111"></a><a href="slanst.f.html#SLANST.1">SLANST</a>
+      EXTERNAL           <a name="LSAME.112"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="SLAMCH.112"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANST.112"></a><a href="slanst.f.html#SLANST.1">SLANST</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           SSCAL, <a name="SSTEDC.115"></a><a href="sstedc.f.html#SSTEDC.1">SSTEDC</a>, <a name="SSTERF.115"></a><a href="ssterf.f.html#SSTERF.1">SSTERF</a>, <a name="XERBLA.115"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      WANTZ = <a name="LSAME.124"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBZ, <span class="string">'V'</span> )
+      LQUERY = ( LWORK.EQ.-1 .OR. LIWORK.EQ.-1 )
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      LIWMIN = 1
+      LWMIN = 1
+      IF( N.GT.1 .AND. WANTZ ) THEN
+         LWMIN = 1 + 4*N + N**2
+         LIWMIN = 3 + 5*N
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( .NOT.( WANTZ .OR. <a name="LSAME.135"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBZ, <span class="string">'N'</span> ) ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDZ.LT.1 .OR. ( WANTZ .AND. LDZ.LT.N ) ) THEN
+         INFO = -6
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.EQ.0 ) THEN
+         WORK( 1 ) = LWMIN
+         IWORK( 1 ) = LIWMIN
+<span class="comment">*</span><span class="comment">
+</span>         IF( LWORK.LT.LWMIN .AND. .NOT.LQUERY ) THEN
+            INFO = -8
+         ELSE IF( LIWORK.LT.LIWMIN .AND. .NOT.LQUERY ) THEN
+            INFO = -10
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.155"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="SSTEVD.155"></a><a href="sstevd.f.html#SSTEVD.1">SSTEVD</a>'</span>, -INFO )
+         RETURN 
+      ELSE IF( LQUERY ) THEN
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN 
+<span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.1 ) THEN
+         IF( WANTZ )
+     $      Z( 1, 1 ) = ONE
+         RETURN 
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Get machine constants.
+</span><span class="comment">*</span><span class="comment">
+</span>      SAFMIN = <a name="SLAMCH.174"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Safe minimum'</span> )
+      EPS = <a name="SLAMCH.175"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Precision'</span> )
+      SMLNUM = SAFMIN / EPS
+      BIGNUM = ONE / SMLNUM
+      RMIN = SQRT( SMLNUM )
+      RMAX = SQRT( BIGNUM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Scale matrix to allowable range, if necessary.
+</span><span class="comment">*</span><span class="comment">
+</span>      ISCALE = 0
+      TNRM = <a name="SLANST.184"></a><a href="slanst.f.html#SLANST.1">SLANST</a>( <span class="string">'M'</span>, N, D, E )
+      IF( TNRM.GT.ZERO .AND. TNRM.LT.RMIN ) THEN
+         ISCALE = 1
+         SIGMA = RMIN / TNRM
+      ELSE IF( TNRM.GT.RMAX ) THEN
+         ISCALE = 1
+         SIGMA = RMAX / TNRM
+      END IF
+      IF( ISCALE.EQ.1 ) THEN
+         CALL SSCAL( N, SIGMA, D, 1 )
+         CALL SSCAL( N-1, SIGMA, E( 1 ), 1 )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     For eigenvalues only, call <a name="SSTERF.197"></a><a href="ssterf.f.html#SSTERF.1">SSTERF</a>.  For eigenvalues and
+</span><span class="comment">*</span><span class="comment">     eigenvectors, call <a name="SSTEDC.198"></a><a href="sstedc.f.html#SSTEDC.1">SSTEDC</a>.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( .NOT.WANTZ ) THEN
+         CALL <a name="SSTERF.201"></a><a href="ssterf.f.html#SSTERF.1">SSTERF</a>( N, D, E, INFO )
+      ELSE
+         CALL <a name="SSTEDC.203"></a><a href="sstedc.f.html#SSTEDC.1">SSTEDC</a>( <span class="string">'I'</span>, N, D, E, Z, LDZ, WORK, LWORK, IWORK, LIWORK,
+     $                INFO )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If matrix was scaled, then rescale eigenvalues appropriately.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ISCALE.EQ.1 )
+     $   CALL SSCAL( N, ONE / SIGMA, D, 1 )
+<span class="comment">*</span><span class="comment">
+</span>      WORK( 1 ) = LWMIN
+      IWORK( 1 ) = LIWMIN
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SSTEVD.217"></a><a href="sstevd.f.html#SSTEVD.1">SSTEVD</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

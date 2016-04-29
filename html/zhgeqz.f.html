@@ -1,0 +1,783 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zhgeqz.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZHGEQZ.1"></a><a href="zhgeqz.f.html#ZHGEQZ.1">ZHGEQZ</a>( JOB, COMPQ, COMPZ, N, ILO, IHI, H, LDH, T, LDT,
+     $                   ALPHA, BETA, Q, LDQ, Z, LDZ, WORK, LWORK,
+     $                   RWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          COMPQ, COMPZ, JOB
+      INTEGER            IHI, ILO, INFO, LDH, LDQ, LDT, LDZ, LWORK, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   RWORK( * )
+      COMPLEX*16         ALPHA( * ), BETA( * ), H( LDH, * ),
+     $                   Q( LDQ, * ), T( LDT, * ), WORK( * ),
+     $                   Z( LDZ, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZHGEQZ.23"></a><a href="zhgeqz.f.html#ZHGEQZ.1">ZHGEQZ</a> computes the eigenvalues of a complex matrix pair (H,T),
+</span><span class="comment">*</span><span class="comment">  where H is an upper Hessenberg matrix and T is upper triangular,
+</span><span class="comment">*</span><span class="comment">  using the single-shift QZ method.
+</span><span class="comment">*</span><span class="comment">  Matrix pairs of this type are produced by the reduction to
+</span><span class="comment">*</span><span class="comment">  generalized upper Hessenberg form of a complex matrix pair (A,B):
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">     A = Q1*H*Z1**H,  B = Q1*T*Z1**H,
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  as computed by <a name="ZGGHRD.31"></a><a href="zgghrd.f.html#ZGGHRD.1">ZGGHRD</a>.
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  If JOB='S', then the Hessenberg-triangular pair (H,T) is
+</span><span class="comment">*</span><span class="comment">  also reduced to generalized Schur form,
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">     H = Q*S*Z**H,  T = Q*P*Z**H,
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  where Q and Z are unitary matrices and S and P are upper triangular.
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  Optionally, the unitary matrix Q from the generalized Schur
+</span><span class="comment">*</span><span class="comment">  factorization may be postmultiplied into an input matrix Q1, and the
+</span><span class="comment">*</span><span class="comment">  unitary matrix Z may be postmultiplied into an input matrix Z1.
+</span><span class="comment">*</span><span class="comment">  If Q1 and Z1 are the unitary matrices from <a name="ZGGHRD.43"></a><a href="zgghrd.f.html#ZGGHRD.1">ZGGHRD</a> that reduced
+</span><span class="comment">*</span><span class="comment">  the matrix pair (A,B) to generalized Hessenberg form, then the output
+</span><span class="comment">*</span><span class="comment">  matrices Q1*Q and Z1*Z are the unitary factors from the generalized
+</span><span class="comment">*</span><span class="comment">  Schur factorization of (A,B):
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">     A = (Q1*Q)*S*(Z1*Z)**H,  B = (Q1*Q)*P*(Z1*Z)**H.
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  To avoid overflow, eigenvalues of the matrix pair (H,T)
+</span><span class="comment">*</span><span class="comment">  (equivalently, of (A,B)) are computed as a pair of complex values
+</span><span class="comment">*</span><span class="comment">  (alpha,beta).  If beta is nonzero, lambda = alpha / beta is an
+</span><span class="comment">*</span><span class="comment">  eigenvalue of the generalized nonsymmetric eigenvalue problem (GNEP)
+</span><span class="comment">*</span><span class="comment">     A*x = lambda*B*x
+</span><span class="comment">*</span><span class="comment">  and if alpha is nonzero, mu = beta / alpha is an eigenvalue of the
+</span><span class="comment">*</span><span class="comment">  alternate form of the GNEP
+</span><span class="comment">*</span><span class="comment">     mu*A*y = B*y.
+</span><span class="comment">*</span><span class="comment">  The values of alpha and beta for the i-th eigenvalue can be read
+</span><span class="comment">*</span><span class="comment">  directly from the generalized Schur form:  alpha = S(i,i),
+</span><span class="comment">*</span><span class="comment">  beta = P(i,i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Ref: C.B. Moler &amp; G.W. Stewart, &quot;An Algorithm for Generalized Matrix
+</span><span class="comment">*</span><span class="comment">       Eigenvalue Problems&quot;, SIAM J. Numer. Anal., 10(1973),
+</span><span class="comment">*</span><span class="comment">       pp. 241--256.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOB     (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'E': Compute eigenvalues only;
+</span><span class="comment">*</span><span class="comment">          = 'S': Computer eigenvalues and the Schur form.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  COMPQ   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'N': Left Schur vectors (Q) are not computed;
+</span><span class="comment">*</span><span class="comment">          = 'I': Q is initialized to the unit matrix and the matrix Q
+</span><span class="comment">*</span><span class="comment">                 of left Schur vectors of (H,T) is returned;
+</span><span class="comment">*</span><span class="comment">          = 'V': Q must contain a unitary matrix Q1 on entry and
+</span><span class="comment">*</span><span class="comment">                 the product Q1*Q is returned.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  COMPZ   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'N': Right Schur vectors (Z) are not computed;
+</span><span class="comment">*</span><span class="comment">          = 'I': Q is initialized to the unit matrix and the matrix Z
+</span><span class="comment">*</span><span class="comment">                 of right Schur vectors of (H,T) is returned;
+</span><span class="comment">*</span><span class="comment">          = 'V': Z must contain a unitary matrix Z1 on entry and
+</span><span class="comment">*</span><span class="comment">                 the product Z1*Z is returned.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrices H, T, Q, and Z.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ILO     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">  IHI     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          ILO and IHI mark the rows and columns of H which are in
+</span><span class="comment">*</span><span class="comment">          Hessenberg form.  It is assumed that A is already upper
+</span><span class="comment">*</span><span class="comment">          triangular in rows and columns 1:ILO-1 and IHI+1:N.
+</span><span class="comment">*</span><span class="comment">          If N &gt; 0, 1 &lt;= ILO &lt;= IHI &lt;= N; if N = 0, ILO=1 and IHI=0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  H       (input/output) COMPLEX*16 array, dimension (LDH, N)
+</span><span class="comment">*</span><span class="comment">          On entry, the N-by-N upper Hessenberg matrix H.
+</span><span class="comment">*</span><span class="comment">          On exit, if JOB = 'S', H contains the upper triangular
+</span><span class="comment">*</span><span class="comment">          matrix S from the generalized Schur factorization.
+</span><span class="comment">*</span><span class="comment">          If JOB = 'E', the diagonal of H matches that of S, but
+</span><span class="comment">*</span><span class="comment">          the rest of H is unspecified.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDH     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array H.  LDH &gt;= max( 1, N ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  T       (input/output) COMPLEX*16 array, dimension (LDT, N)
+</span><span class="comment">*</span><span class="comment">          On entry, the N-by-N upper triangular matrix T.
+</span><span class="comment">*</span><span class="comment">          On exit, if JOB = 'S', T contains the upper triangular
+</span><span class="comment">*</span><span class="comment">          matrix P from the generalized Schur factorization.
+</span><span class="comment">*</span><span class="comment">          If JOB = 'E', the diagonal of T matches that of P, but
+</span><span class="comment">*</span><span class="comment">          the rest of T is unspecified.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDT     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array T.  LDT &gt;= max( 1, N ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ALPHA   (output) COMPLEX*16 array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The complex scalars alpha that define the eigenvalues of
+</span><span class="comment">*</span><span class="comment">          GNEP.  ALPHA(i) = S(i,i) in the generalized Schur
+</span><span class="comment">*</span><span class="comment">          factorization.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BETA    (output) COMPLEX*16 array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The real non-negative scalars beta that define the
+</span><span class="comment">*</span><span class="comment">          eigenvalues of GNEP.  BETA(i) = P(i,i) in the generalized
+</span><span class="comment">*</span><span class="comment">          Schur factorization.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          Together, the quantities alpha = ALPHA(j) and beta = BETA(j)
+</span><span class="comment">*</span><span class="comment">          represent the j-th eigenvalue of the matrix pair (A,B), in
+</span><span class="comment">*</span><span class="comment">          one of the forms lambda = alpha/beta or mu = beta/alpha.
+</span><span class="comment">*</span><span class="comment">          Since either lambda or mu may overflow, they should not,
+</span><span class="comment">*</span><span class="comment">          in general, be computed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Q       (input/output) COMPLEX*16 array, dimension (LDQ, N)
+</span><span class="comment">*</span><span class="comment">          On entry, if COMPZ = 'V', the unitary matrix Q1 used in the
+</span><span class="comment">*</span><span class="comment">          reduction of (A,B) to generalized Hessenberg form.
+</span><span class="comment">*</span><span class="comment">          On exit, if COMPZ = 'I', the unitary matrix of left Schur
+</span><span class="comment">*</span><span class="comment">          vectors of (H,T), and if COMPZ = 'V', the unitary matrix of
+</span><span class="comment">*</span><span class="comment">          left Schur vectors of (A,B).
+</span><span class="comment">*</span><span class="comment">          Not referenced if COMPZ = 'N'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDQ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Q.  LDQ &gt;= 1.
+</span><span class="comment">*</span><span class="comment">          If COMPQ='V' or 'I', then LDQ &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z       (input/output) COMPLEX*16 array, dimension (LDZ, N)
+</span><span class="comment">*</span><span class="comment">          On entry, if COMPZ = 'V', the unitary matrix Z1 used in the
+</span><span class="comment">*</span><span class="comment">          reduction of (A,B) to generalized Hessenberg form.
+</span><span class="comment">*</span><span class="comment">          On exit, if COMPZ = 'I', the unitary matrix of right Schur
+</span><span class="comment">*</span><span class="comment">          vectors of (H,T), and if COMPZ = 'V', the unitary matrix of
+</span><span class="comment">*</span><span class="comment">          right Schur vectors of (A,B).
+</span><span class="comment">*</span><span class="comment">          Not referenced if COMPZ = 'N'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDZ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Z.  LDZ &gt;= 1.
+</span><span class="comment">*</span><span class="comment">          If COMPZ='V' or 'I', then LDZ &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace/output) COMPLEX*16 array, dimension (MAX(1,LWORK))
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO &gt;= 0, WORK(1) returns the optimal LWORK.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LWORK   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The dimension of the array WORK.  LWORK &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If LWORK = -1, then a workspace query is assumed; the routine
+</span><span class="comment">*</span><span class="comment">          only calculates the optimal size of the WORK array, returns
+</span><span class="comment">*</span><span class="comment">          this value as the first entry of the WORK array, and no error
+</span><span class="comment">*</span><span class="comment">          message related to LWORK is issued by <a name="XERBLA.166"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RWORK   (workspace) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0: successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0: if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          = 1,...,N: the QZ iteration did not converge.  (H,T) is not
+</span><span class="comment">*</span><span class="comment">                     in Schur form, but ALPHA(i) and BETA(i),
+</span><span class="comment">*</span><span class="comment">                     i=INFO+1,...,N should be correct.
+</span><span class="comment">*</span><span class="comment">          = N+1,...,2*N: the shift calculation failed.  (H,T) is not
+</span><span class="comment">*</span><span class="comment">                     in Schur form, but ALPHA(i) and BETA(i),
+</span><span class="comment">*</span><span class="comment">                     i=INFO-N+1,...,N should be correct.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  We assume that complex ABS works as long as its value is less than
+</span><span class="comment">*</span><span class="comment">  overflow.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      COMPLEX*16         CZERO, CONE
+      PARAMETER          ( CZERO = ( 0.0D+0, 0.0D+0 ),
+     $                   CONE = ( 1.0D+0, 0.0D+0 ) )
+      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+      DOUBLE PRECISION   HALF
+      PARAMETER          ( HALF = 0.5D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            ILAZR2, ILAZRO, ILQ, ILSCHR, ILZ, LQUERY
+      INTEGER            ICOMPQ, ICOMPZ, IFIRST, IFRSTM, IITER, ILAST,
+     $                   ILASTM, IN, ISCHUR, ISTART, J, JC, JCH, JITER,
+     $                   JR, MAXIT
+      DOUBLE PRECISION   ABSB, ANORM, ASCALE, ATOL, BNORM, BSCALE, BTOL,
+     $                   C, SAFMIN, TEMP, TEMP2, TEMPR, ULP
+      COMPLEX*16         ABI22, AD11, AD12, AD21, AD22, CTEMP, CTEMP2,
+     $                   CTEMP3, ESHIFT, RTDISC, S, SHIFT, SIGNBC, T1,
+     $                   U12, X
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.209"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      DOUBLE PRECISION   <a name="DLAMCH.210"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="ZLANHS.210"></a><a href="zlanhs.f.html#ZLANHS.1">ZLANHS</a>
+      EXTERNAL           <a name="LSAME.211"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="DLAMCH.211"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="ZLANHS.211"></a><a href="zlanhs.f.html#ZLANHS.1">ZLANHS</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.214"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, <a name="ZLARTG.214"></a><a href="zlartg.f.html#ZLARTG.1">ZLARTG</a>, <a name="ZLASET.214"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>, <a name="ZROT.214"></a><a href="zrot.f.html#ZROT.1">ZROT</a>, ZSCAL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, DBLE, DCMPLX, DCONJG, DIMAG, MAX, MIN,
+     $                   SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Functions ..
+</span>      DOUBLE PRECISION   ABS1
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Function definitions ..
+</span>      ABS1( X ) = ABS( DBLE( X ) ) + ABS( DIMAG( X ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Decode JOB, COMPQ, COMPZ
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( <a name="LSAME.230"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'E'</span> ) ) THEN
+         ILSCHR = .FALSE.
+         ISCHUR = 1
+      ELSE IF( <a name="LSAME.233"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'S'</span> ) ) THEN
+         ILSCHR = .TRUE.
+         ISCHUR = 2
+      ELSE
+         ISCHUR = 0
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( <a name="LSAME.240"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( COMPQ, <span class="string">'N'</span> ) ) THEN
+         ILQ = .FALSE.
+         ICOMPQ = 1
+      ELSE IF( <a name="LSAME.243"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( COMPQ, <span class="string">'V'</span> ) ) THEN
+         ILQ = .TRUE.
+         ICOMPQ = 2
+      ELSE IF( <a name="LSAME.246"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( COMPQ, <span class="string">'I'</span> ) ) THEN
+         ILQ = .TRUE.
+         ICOMPQ = 3
+      ELSE
+         ICOMPQ = 0
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( <a name="LSAME.253"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( COMPZ, <span class="string">'N'</span> ) ) THEN
+         ILZ = .FALSE.
+         ICOMPZ = 1
+      ELSE IF( <a name="LSAME.256"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( COMPZ, <span class="string">'V'</span> ) ) THEN
+         ILZ = .TRUE.
+         ICOMPZ = 2
+      ELSE IF( <a name="LSAME.259"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( COMPZ, <span class="string">'I'</span> ) ) THEN
+         ILZ = .TRUE.
+         ICOMPZ = 3
+      ELSE
+         ICOMPZ = 0
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Check Argument Values
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      WORK( 1 ) = MAX( 1, N )
+      LQUERY = ( LWORK.EQ.-1 )
+      IF( ISCHUR.EQ.0 ) THEN
+         INFO = -1
+      ELSE IF( ICOMPQ.EQ.0 ) THEN
+         INFO = -2
+      ELSE IF( ICOMPZ.EQ.0 ) THEN
+         INFO = -3
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( ILO.LT.1 ) THEN
+         INFO = -5
+      ELSE IF( IHI.GT.N .OR. IHI.LT.ILO-1 ) THEN
+         INFO = -6
+      ELSE IF( LDH.LT.N ) THEN
+         INFO = -8
+      ELSE IF( LDT.LT.N ) THEN
+         INFO = -10
+      ELSE IF( LDQ.LT.1 .OR. ( ILQ .AND. LDQ.LT.N ) ) THEN
+         INFO = -14
+      ELSE IF( LDZ.LT.1 .OR. ( ILZ .AND. LDZ.LT.N ) ) THEN
+         INFO = -16
+      ELSE IF( LWORK.LT.MAX( 1, N ) .AND. .NOT.LQUERY ) THEN
+         INFO = -18
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.295"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZHGEQZ.295"></a><a href="zhgeqz.f.html#ZHGEQZ.1">ZHGEQZ</a>'</span>, -INFO )
+         RETURN
+      ELSE IF( LQUERY ) THEN
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     WORK( 1 ) = CMPLX( 1 )
+</span>      IF( N.LE.0 ) THEN
+         WORK( 1 ) = DCMPLX( 1 )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Initialize Q and Z
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ICOMPQ.EQ.3 )
+     $   CALL <a name="ZLASET.312"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'Full'</span>, N, N, CZERO, CONE, Q, LDQ )
+      IF( ICOMPZ.EQ.3 )
+     $   CALL <a name="ZLASET.314"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'Full'</span>, N, N, CZERO, CONE, Z, LDZ )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Machine Constants
+</span><span class="comment">*</span><span class="comment">
+</span>      IN = IHI + 1 - ILO
+      SAFMIN = <a name="DLAMCH.319"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'S'</span> )
+      ULP = <a name="DLAMCH.320"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'E'</span> )*<a name="DLAMCH.320"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'B'</span> )
+      ANORM = <a name="ZLANHS.321"></a><a href="zlanhs.f.html#ZLANHS.1">ZLANHS</a>( <span class="string">'F'</span>, IN, H( ILO, ILO ), LDH, RWORK )
+      BNORM = <a name="ZLANHS.322"></a><a href="zlanhs.f.html#ZLANHS.1">ZLANHS</a>( <span class="string">'F'</span>, IN, T( ILO, ILO ), LDT, RWORK )
+      ATOL = MAX( SAFMIN, ULP*ANORM )
+      BTOL = MAX( SAFMIN, ULP*BNORM )
+      ASCALE = ONE / MAX( SAFMIN, ANORM )
+      BSCALE = ONE / MAX( SAFMIN, BNORM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set Eigenvalues IHI+1:N
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 10 J = IHI + 1, N
+         ABSB = ABS( T( J, J ) )
+         IF( ABSB.GT.SAFMIN ) THEN
+            SIGNBC = DCONJG( T( J, J ) / ABSB )
+            T( J, J ) = ABSB
+            IF( ILSCHR ) THEN
+               CALL ZSCAL( J-1, SIGNBC, T( 1, J ), 1 )
+               CALL ZSCAL( J, SIGNBC, H( 1, J ), 1 )
+            ELSE
+               H( J, J ) = H( J, J )*SIGNBC
+            END IF
+            IF( ILZ )
+     $         CALL ZSCAL( N, SIGNBC, Z( 1, J ), 1 )
+         ELSE
+            T( J, J ) = CZERO
+         END IF
+         ALPHA( J ) = H( J, J )
+         BETA( J ) = T( J, J )
+   10 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If IHI &lt; ILO, skip QZ steps
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( IHI.LT.ILO )
+     $   GO TO 190
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     MAIN QZ ITERATION LOOP
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Initialize dynamic indices
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Eigenvalues ILAST+1:N have been found.
+</span><span class="comment">*</span><span class="comment">        Column operations modify rows IFRSTM:whatever
+</span><span class="comment">*</span><span class="comment">        Row operations modify columns whatever:ILASTM
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If only eigenvalues are being computed, then
+</span><span class="comment">*</span><span class="comment">        IFRSTM is the row of the last splitting row above row ILAST;
+</span><span class="comment">*</span><span class="comment">        this is always at least ILO.
+</span><span class="comment">*</span><span class="comment">     IITER counts iterations since the last eigenvalue was found,
+</span><span class="comment">*</span><span class="comment">        to tell when to use an extraordinary shift.
+</span><span class="comment">*</span><span class="comment">     MAXIT is the maximum number of QZ sweeps allowed.
+</span><span class="comment">*</span><span class="comment">
+</span>      ILAST = IHI
+      IF( ILSCHR ) THEN
+         IFRSTM = 1
+         ILASTM = N
+      ELSE
+         IFRSTM = ILO
+         ILASTM = IHI
+      END IF
+      IITER = 0
+      ESHIFT = CZERO
+      MAXIT = 30*( IHI-ILO+1 )
+<span class="comment">*</span><span class="comment">
+</span>      DO 170 JITER = 1, MAXIT
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Check for too many iterations.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( JITER.GT.MAXIT )
+     $      GO TO 180
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Split the matrix if possible.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Two tests:
+</span><span class="comment">*</span><span class="comment">           1: H(j,j-1)=0  or  j=ILO
+</span><span class="comment">*</span><span class="comment">           2: T(j,j)=0
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Special case: j=ILAST
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( ILAST.EQ.ILO ) THEN
+            GO TO 60
+         ELSE
+            IF( ABS1( H( ILAST, ILAST-1 ) ).LE.ATOL ) THEN
+               H( ILAST, ILAST-1 ) = CZERO
+               GO TO 60
+            END IF
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( ABS( T( ILAST, ILAST ) ).LE.BTOL ) THEN
+            T( ILAST, ILAST ) = CZERO
+            GO TO 50
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        General case: j&lt;ILAST
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 40 J = ILAST - 1, ILO, -1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Test 1: for H(j,j-1)=0 or j=ILO
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( J.EQ.ILO ) THEN
+               ILAZRO = .TRUE.
+            ELSE
+               IF( ABS1( H( J, J-1 ) ).LE.ATOL ) THEN
+                  H( J, J-1 ) = CZERO
+                  ILAZRO = .TRUE.
+               ELSE
+                  ILAZRO = .FALSE.
+               END IF
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Test 2: for T(j,j)=0
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( ABS( T( J, J ) ).LT.BTOL ) THEN
+               T( J, J ) = CZERO
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Test 1a: Check for 2 consecutive small subdiagonals in A
+</span><span class="comment">*</span><span class="comment">
+</span>               ILAZR2 = .FALSE.
+               IF( .NOT.ILAZRO ) THEN
+                  IF( ABS1( H( J, J-1 ) )*( ASCALE*ABS1( H( J+1,
+     $                J ) ) ).LE.ABS1( H( J, J ) )*( ASCALE*ATOL ) )
+     $                ILAZR2 = .TRUE.
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              If both tests pass (1 &amp; 2), i.e., the leading diagonal
+</span><span class="comment">*</span><span class="comment">              element of B in the block is zero, split a 1x1 block off
+</span><span class="comment">*</span><span class="comment">              at the top. (I.e., at the J-th row/column) The leading
+</span><span class="comment">*</span><span class="comment">              diagonal element of the remainder can also be zero, so
+</span><span class="comment">*</span><span class="comment">              this may have to be done repeatedly.
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( ILAZRO .OR. ILAZR2 ) THEN
+                  DO 20 JCH = J, ILAST - 1
+                     CTEMP = H( JCH, JCH )
+                     CALL <a name="ZLARTG.452"></a><a href="zlartg.f.html#ZLARTG.1">ZLARTG</a>( CTEMP, H( JCH+1, JCH ), C, S,
+     $                            H( JCH, JCH ) )
+                     H( JCH+1, JCH ) = CZERO
+                     CALL <a name="ZROT.455"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( ILASTM-JCH, H( JCH, JCH+1 ), LDH,
+     $                          H( JCH+1, JCH+1 ), LDH, C, S )
+                     CALL <a name="ZROT.457"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( ILASTM-JCH, T( JCH, JCH+1 ), LDT,
+     $                          T( JCH+1, JCH+1 ), LDT, C, S )
+                     IF( ILQ )
+     $                  CALL <a name="ZROT.460"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( N, Q( 1, JCH ), 1, Q( 1, JCH+1 ), 1,
+     $                             C, DCONJG( S ) )
+                     IF( ILAZR2 )
+     $                  H( JCH, JCH-1 ) = H( JCH, JCH-1 )*C
+                     ILAZR2 = .FALSE.
+                     IF( ABS1( T( JCH+1, JCH+1 ) ).GE.BTOL ) THEN
+                        IF( JCH+1.GE.ILAST ) THEN
+                           GO TO 60
+                        ELSE
+                           IFIRST = JCH + 1
+                           GO TO 70
+                        END IF
+                     END IF
+                     T( JCH+1, JCH+1 ) = CZERO
+   20             CONTINUE
+                  GO TO 50
+               ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 Only test 2 passed -- chase the zero to T(ILAST,ILAST)
+</span><span class="comment">*</span><span class="comment">                 Then process as in the case T(ILAST,ILAST)=0
+</span><span class="comment">*</span><span class="comment">
+</span>                  DO 30 JCH = J, ILAST - 1
+                     CTEMP = T( JCH, JCH+1 )
+                     CALL <a name="ZLARTG.483"></a><a href="zlartg.f.html#ZLARTG.1">ZLARTG</a>( CTEMP, T( JCH+1, JCH+1 ), C, S,
+     $                            T( JCH, JCH+1 ) )
+                     T( JCH+1, JCH+1 ) = CZERO
+                     IF( JCH.LT.ILASTM-1 )
+     $                  CALL <a name="ZROT.487"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( ILASTM-JCH-1, T( JCH, JCH+2 ), LDT,
+     $                             T( JCH+1, JCH+2 ), LDT, C, S )
+                     CALL <a name="ZROT.489"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( ILASTM-JCH+2, H( JCH, JCH-1 ), LDH,
+     $                          H( JCH+1, JCH-1 ), LDH, C, S )
+                     IF( ILQ )
+     $                  CALL <a name="ZROT.492"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( N, Q( 1, JCH ), 1, Q( 1, JCH+1 ), 1,
+     $                             C, DCONJG( S ) )
+                     CTEMP = H( JCH+1, JCH )
+                     CALL <a name="ZLARTG.495"></a><a href="zlartg.f.html#ZLARTG.1">ZLARTG</a>( CTEMP, H( JCH+1, JCH-1 ), C, S,
+     $                            H( JCH+1, JCH ) )
+                     H( JCH+1, JCH-1 ) = CZERO
+                     CALL <a name="ZROT.498"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( JCH+1-IFRSTM, H( IFRSTM, JCH ), 1,
+     $                          H( IFRSTM, JCH-1 ), 1, C, S )
+                     CALL <a name="ZROT.500"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( JCH-IFRSTM, T( IFRSTM, JCH ), 1,
+     $                          T( IFRSTM, JCH-1 ), 1, C, S )
+                     IF( ILZ )
+     $                  CALL <a name="ZROT.503"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( N, Z( 1, JCH ), 1, Z( 1, JCH-1 ), 1,
+     $                             C, S )
+   30             CONTINUE
+                  GO TO 50
+               END IF
+            ELSE IF( ILAZRO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Only test 1 passed -- work on J:ILAST
+</span><span class="comment">*</span><span class="comment">
+</span>               IFIRST = J
+               GO TO 70
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Neither test passed -- try next J
+</span><span class="comment">*</span><span class="comment">
+</span>   40    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        (Drop-through is &quot;impossible&quot;)
+</span><span class="comment">*</span><span class="comment">
+</span>         INFO = 2*N + 1
+         GO TO 210
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        T(ILAST,ILAST)=0 -- clear H(ILAST,ILAST-1) to split off a
+</span><span class="comment">*</span><span class="comment">        1x1 block.
+</span><span class="comment">*</span><span class="comment">
+</span>   50    CONTINUE
+         CTEMP = H( ILAST, ILAST )
+         CALL <a name="ZLARTG.530"></a><a href="zlartg.f.html#ZLARTG.1">ZLARTG</a>( CTEMP, H( ILAST, ILAST-1 ), C, S,
+     $                H( ILAST, ILAST ) )
+         H( ILAST, ILAST-1 ) = CZERO
+         CALL <a name="ZROT.533"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( ILAST-IFRSTM, H( IFRSTM, ILAST ), 1,
+     $              H( IFRSTM, ILAST-1 ), 1, C, S )
+         CALL <a name="ZROT.535"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( ILAST-IFRSTM, T( IFRSTM, ILAST ), 1,
+     $              T( IFRSTM, ILAST-1 ), 1, C, S )
+         IF( ILZ )
+     $      CALL <a name="ZROT.538"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( N, Z( 1, ILAST ), 1, Z( 1, ILAST-1 ), 1, C, S )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        H(ILAST,ILAST-1)=0 -- Standardize B, set ALPHA and BETA
+</span><span class="comment">*</span><span class="comment">
+</span>   60    CONTINUE
+         ABSB = ABS( T( ILAST, ILAST ) )
+         IF( ABSB.GT.SAFMIN ) THEN
+            SIGNBC = DCONJG( T( ILAST, ILAST ) / ABSB )
+            T( ILAST, ILAST ) = ABSB
+            IF( ILSCHR ) THEN
+               CALL ZSCAL( ILAST-IFRSTM, SIGNBC, T( IFRSTM, ILAST ), 1 )
+               CALL ZSCAL( ILAST+1-IFRSTM, SIGNBC, H( IFRSTM, ILAST ),
+     $                     1 )
+            ELSE
+               H( ILAST, ILAST ) = H( ILAST, ILAST )*SIGNBC
+            END IF
+            IF( ILZ )
+     $         CALL ZSCAL( N, SIGNBC, Z( 1, ILAST ), 1 )
+         ELSE
+            T( ILAST, ILAST ) = CZERO
+         END IF
+         ALPHA( ILAST ) = H( ILAST, ILAST )
+         BETA( ILAST ) = T( ILAST, ILAST )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Go to next block -- exit if finished.
+</span><span class="comment">*</span><span class="comment">
+</span>         ILAST = ILAST - 1
+         IF( ILAST.LT.ILO )
+     $      GO TO 190
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Reset counters
+</span><span class="comment">*</span><span class="comment">
+</span>         IITER = 0
+         ESHIFT = CZERO
+         IF( .NOT.ILSCHR ) THEN
+            ILASTM = ILAST
+            IF( IFRSTM.GT.ILAST )
+     $         IFRSTM = ILO
+         END IF
+         GO TO 160
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        QZ step
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        This iteration only involves rows/columns IFIRST:ILAST.  We
+</span><span class="comment">*</span><span class="comment">        assume IFIRST &lt; ILAST, and that the diagonal of B is non-zero.
+</span><span class="comment">*</span><span class="comment">
+</span>   70    CONTINUE
+         IITER = IITER + 1
+         IF( .NOT.ILSCHR ) THEN
+            IFRSTM = IFIRST
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute the Shift.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        At this point, IFIRST &lt; ILAST, and the diagonal elements of
+</span><span class="comment">*</span><span class="comment">        T(IFIRST:ILAST,IFIRST,ILAST) are larger than BTOL (in
+</span><span class="comment">*</span><span class="comment">        magnitude)
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( ( IITER / 10 )*10.NE.IITER ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           The Wilkinson shift (AEP p.512), i.e., the eigenvalue of
+</span><span class="comment">*</span><span class="comment">           the bottom-right 2x2 block of A inv(B) which is nearest to
+</span><span class="comment">*</span><span class="comment">           the bottom-right element.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           We factor B as U*D, where U has unit diagonals, and
+</span><span class="comment">*</span><span class="comment">           compute (A*inv(D))*inv(U).
+</span><span class="comment">*</span><span class="comment">
+</span>            U12 = ( BSCALE*T( ILAST-1, ILAST ) ) /
+     $            ( BSCALE*T( ILAST, ILAST ) )
+            AD11 = ( ASCALE*H( ILAST-1, ILAST-1 ) ) /
+     $             ( BSCALE*T( ILAST-1, ILAST-1 ) )
+            AD21 = ( ASCALE*H( ILAST, ILAST-1 ) ) /
+     $             ( BSCALE*T( ILAST-1, ILAST-1 ) )
+            AD12 = ( ASCALE*H( ILAST-1, ILAST ) ) /
+     $             ( BSCALE*T( ILAST, ILAST ) )
+            AD22 = ( ASCALE*H( ILAST, ILAST ) ) /
+     $             ( BSCALE*T( ILAST, ILAST ) )
+            ABI22 = AD22 - U12*AD21
+<span class="comment">*</span><span class="comment">
+</span>            T1 = HALF*( AD11+ABI22 )
+            RTDISC = SQRT( T1**2+AD12*AD21-AD11*AD22 )
+            TEMP = DBLE( T1-ABI22 )*DBLE( RTDISC ) +
+     $             DIMAG( T1-ABI22 )*DIMAG( RTDISC )
+            IF( TEMP.LE.ZERO ) THEN
+               SHIFT = T1 + RTDISC
+            ELSE
+               SHIFT = T1 - RTDISC
+            END IF
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Exceptional shift.  Chosen for no particularly good reason.
+</span><span class="comment">*</span><span class="comment">
+</span>            ESHIFT = ESHIFT + DCONJG( ( ASCALE*H( ILAST-1, ILAST ) ) /
+     $               ( BSCALE*T( ILAST-1, ILAST-1 ) ) )
+            SHIFT = ESHIFT
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Now check for two consecutive small subdiagonals.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 80 J = ILAST - 1, IFIRST + 1, -1
+            ISTART = J
+            CTEMP = ASCALE*H( J, J ) - SHIFT*( BSCALE*T( J, J ) )
+            TEMP = ABS1( CTEMP )
+            TEMP2 = ASCALE*ABS1( H( J+1, J ) )
+            TEMPR = MAX( TEMP, TEMP2 )
+            IF( TEMPR.LT.ONE .AND. TEMPR.NE.ZERO ) THEN
+               TEMP = TEMP / TEMPR
+               TEMP2 = TEMP2 / TEMPR
+            END IF
+            IF( ABS1( H( J, J-1 ) )*TEMP2.LE.TEMP*ATOL )
+     $         GO TO 90
+   80    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         ISTART = IFIRST
+         CTEMP = ASCALE*H( IFIRST, IFIRST ) -
+     $           SHIFT*( BSCALE*T( IFIRST, IFIRST ) )
+   90    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Do an implicit-shift QZ sweep.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Initial Q
+</span><span class="comment">*</span><span class="comment">
+</span>         CTEMP2 = ASCALE*H( ISTART+1, ISTART )
+         CALL <a name="ZLARTG.661"></a><a href="zlartg.f.html#ZLARTG.1">ZLARTG</a>( CTEMP, CTEMP2, C, S, CTEMP3 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Sweep
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 150 J = ISTART, ILAST - 1
+            IF( J.GT.ISTART ) THEN
+               CTEMP = H( J, J-1 )
+               CALL <a name="ZLARTG.668"></a><a href="zlartg.f.html#ZLARTG.1">ZLARTG</a>( CTEMP, H( J+1, J-1 ), C, S, H( J, J-1 ) )
+               H( J+1, J-1 ) = CZERO
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>            DO 100 JC = J, ILASTM
+               CTEMP = C*H( J, JC ) + S*H( J+1, JC )
+               H( J+1, JC ) = -DCONJG( S )*H( J, JC ) + C*H( J+1, JC )
+               H( J, JC ) = CTEMP
+               CTEMP2 = C*T( J, JC ) + S*T( J+1, JC )
+               T( J+1, JC ) = -DCONJG( S )*T( J, JC ) + C*T( J+1, JC )
+               T( J, JC ) = CTEMP2
+  100       CONTINUE
+            IF( ILQ ) THEN
+               DO 110 JR = 1, N
+                  CTEMP = C*Q( JR, J ) + DCONJG( S )*Q( JR, J+1 )
+                  Q( JR, J+1 ) = -S*Q( JR, J ) + C*Q( JR, J+1 )
+                  Q( JR, J ) = CTEMP
+  110          CONTINUE
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>            CTEMP = T( J+1, J+1 )
+            CALL <a name="ZLARTG.689"></a><a href="zlartg.f.html#ZLARTG.1">ZLARTG</a>( CTEMP, T( J+1, J ), C, S, T( J+1, J+1 ) )
+            T( J+1, J ) = CZERO
+<span class="comment">*</span><span class="comment">
+</span>            DO 120 JR = IFRSTM, MIN( J+2, ILAST )
+               CTEMP = C*H( JR, J+1 ) + S*H( JR, J )
+               H( JR, J ) = -DCONJG( S )*H( JR, J+1 ) + C*H( JR, J )
+               H( JR, J+1 ) = CTEMP
+  120       CONTINUE
+            DO 130 JR = IFRSTM, J
+               CTEMP = C*T( JR, J+1 ) + S*T( JR, J )
+               T( JR, J ) = -DCONJG( S )*T( JR, J+1 ) + C*T( JR, J )
+               T( JR, J+1 ) = CTEMP
+  130       CONTINUE
+            IF( ILZ ) THEN
+               DO 140 JR = 1, N
+                  CTEMP = C*Z( JR, J+1 ) + S*Z( JR, J )
+                  Z( JR, J ) = -DCONJG( S )*Z( JR, J+1 ) + C*Z( JR, J )
+                  Z( JR, J+1 ) = CTEMP
+  140          CONTINUE
+            END IF
+  150    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>  160    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>  170 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Drop-through = non-convergence
+</span><span class="comment">*</span><span class="comment">
+</span>  180 CONTINUE
+      INFO = ILAST
+      GO TO 210
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Successful completion of all QZ steps
+</span><span class="comment">*</span><span class="comment">
+</span>  190 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set Eigenvalues 1:ILO-1
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 200 J = 1, ILO - 1
+         ABSB = ABS( T( J, J ) )
+         IF( ABSB.GT.SAFMIN ) THEN
+            SIGNBC = DCONJG( T( J, J ) / ABSB )
+            T( J, J ) = ABSB
+            IF( ILSCHR ) THEN
+               CALL ZSCAL( J-1, SIGNBC, T( 1, J ), 1 )
+               CALL ZSCAL( J, SIGNBC, H( 1, J ), 1 )
+            ELSE
+               H( J, J ) = H( J, J )*SIGNBC
+            END IF
+            IF( ILZ )
+     $         CALL ZSCAL( N, SIGNBC, Z( 1, J ), 1 )
+         ELSE
+            T( J, J ) = CZERO
+         END IF
+         ALPHA( J ) = H( J, J )
+         BETA( J ) = T( J, J )
+  200 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Normal Termination
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Exit (other than argument error) -- return optimal workspace size
+</span><span class="comment">*</span><span class="comment">
+</span>  210 CONTINUE
+      WORK( 1 ) = DCMPLX( N )
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZHGEQZ.757"></a><a href="zhgeqz.f.html#ZHGEQZ.1">ZHGEQZ</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

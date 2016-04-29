@@ -1,0 +1,255 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dgeqpf.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DGEQPF.1"></a><a href="dgeqpf.f.html#DGEQPF.1">DGEQPF</a>( M, N, A, LDA, JPVT, TAU, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK deprecated driver routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, LDA, M, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            JPVT( * )
+      DOUBLE PRECISION   A( LDA, * ), TAU( * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This routine is deprecated and has been replaced by routine <a name="DGEQP3.18"></a><a href="dgeqp3.f.html#DGEQP3.1">DGEQP3</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DGEQPF.20"></a><a href="dgeqpf.f.html#DGEQPF.1">DGEQPF</a> computes a QR factorization with column pivoting of a
+</span><span class="comment">*</span><span class="comment">  real M-by-N matrix A: A*P = Q*R.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix A. M &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix A. N &gt;= 0
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) DOUBLE PRECISION array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the M-by-N matrix A.
+</span><span class="comment">*</span><span class="comment">          On exit, the upper triangle of the array contains the
+</span><span class="comment">*</span><span class="comment">          min(M,N)-by-N upper triangular matrix R; the elements
+</span><span class="comment">*</span><span class="comment">          below the diagonal, together with the array TAU,
+</span><span class="comment">*</span><span class="comment">          represent the orthogonal matrix Q as a product of
+</span><span class="comment">*</span><span class="comment">          min(m,n) elementary reflectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A. LDA &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JPVT    (input/output) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On entry, if JPVT(i) .ne. 0, the i-th column of A is permuted
+</span><span class="comment">*</span><span class="comment">          to the front of A*P (a leading column); if JPVT(i) = 0,
+</span><span class="comment">*</span><span class="comment">          the i-th column of A is a free column.
+</span><span class="comment">*</span><span class="comment">          On exit, if JPVT(i) = k, then the i-th column of A*P
+</span><span class="comment">*</span><span class="comment">          was the k-th column of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TAU     (output) DOUBLE PRECISION array, dimension (min(M,N))
+</span><span class="comment">*</span><span class="comment">          The scalar factors of the elementary reflectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) DOUBLE PRECISION array, dimension (3*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The matrix Q is represented as a product of elementary reflectors
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Q = H(1) H(2) . . . H(n)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Each H(i) has the form
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     H = I - tau * v * v'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where tau is a real scalar, and v is a real vector with
+</span><span class="comment">*</span><span class="comment">  v(1:i-1) = 0 and v(i) = 1; v(i+1:m) is stored on exit in A(i+1:m,i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The matrix P is represented in jpvt as follows: If
+</span><span class="comment">*</span><span class="comment">     jpvt(j) = i
+</span><span class="comment">*</span><span class="comment">  then the jth column of P is the ith canonical unit vector.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Partial column norm updating strategy modified by
+</span><span class="comment">*</span><span class="comment">    Z. Drmac and Z. Bujanovic, Dept. of Mathematics,
+</span><span class="comment">*</span><span class="comment">    University of Zagreb, Croatia.
+</span><span class="comment">*</span><span class="comment">    June 2006.
+</span><span class="comment">*</span><span class="comment">  For more details see LAPACK Working Note 176.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, ITEMP, J, MA, MN, PVT
+      DOUBLE PRECISION   AII, TEMP, TEMP2, TOL3Z
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DGEQR2.94"></a><a href="dgeqr2.f.html#DGEQR2.1">DGEQR2</a>, <a name="DLARF.94"></a><a href="dlarf.f.html#DLARF.1">DLARF</a>, <a name="DLARFG.94"></a><a href="dlarfg.f.html#DLARFG.1">DLARFG</a>, <a name="DORM2R.94"></a><a href="dorm2r.f.html#DORM2R.1">DORM2R</a>, DSWAP, <a name="XERBLA.94"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX, MIN, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      INTEGER            IDAMAX
+      DOUBLE PRECISION   <a name="DLAMCH.101"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, DNRM2
+      EXTERNAL           IDAMAX, <a name="DLAMCH.102"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, DNRM2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input arguments
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( M.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -4
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.117"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DGEQPF.117"></a><a href="dgeqpf.f.html#DGEQPF.1">DGEQPF</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      MN = MIN( M, N )
+      TOL3Z = SQRT(<a name="DLAMCH.122"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>(<span class="string">'Epsilon'</span>))
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Move initial columns up front
+</span><span class="comment">*</span><span class="comment">
+</span>      ITEMP = 1
+      DO 10 I = 1, N
+         IF( JPVT( I ).NE.0 ) THEN
+            IF( I.NE.ITEMP ) THEN
+               CALL DSWAP( M, A( 1, I ), 1, A( 1, ITEMP ), 1 )
+               JPVT( I ) = JPVT( ITEMP )
+               JPVT( ITEMP ) = I
+            ELSE
+               JPVT( I ) = I
+            END IF
+            ITEMP = ITEMP + 1
+         ELSE
+            JPVT( I ) = I
+         END IF
+   10 CONTINUE
+      ITEMP = ITEMP - 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the QR factorization and update remaining columns
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ITEMP.GT.0 ) THEN
+         MA = MIN( ITEMP, M )
+         CALL <a name="DGEQR2.147"></a><a href="dgeqr2.f.html#DGEQR2.1">DGEQR2</a>( M, MA, A, LDA, TAU, WORK, INFO )
+         IF( MA.LT.N ) THEN
+            CALL <a name="DORM2R.149"></a><a href="dorm2r.f.html#DORM2R.1">DORM2R</a>( <span class="string">'Left'</span>, <span class="string">'Transpose'</span>, M, N-MA, MA, A, LDA, TAU,
+     $                   A( 1, MA+1 ), LDA, WORK, INFO )
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( ITEMP.LT.MN ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Initialize partial column norms. The first n elements of
+</span><span class="comment">*</span><span class="comment">        work store the exact column norms.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 20 I = ITEMP + 1, N
+            WORK( I ) = DNRM2( M-ITEMP, A( ITEMP+1, I ), 1 )
+            WORK( N+I ) = WORK( I )
+   20    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute factorization
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 40 I = ITEMP + 1, MN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Determine ith pivot column and swap if necessary
+</span><span class="comment">*</span><span class="comment">
+</span>            PVT = ( I-1 ) + IDAMAX( N-I+1, WORK( I ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>            IF( PVT.NE.I ) THEN
+               CALL DSWAP( M, A( 1, PVT ), 1, A( 1, I ), 1 )
+               ITEMP = JPVT( PVT )
+               JPVT( PVT ) = JPVT( I )
+               JPVT( I ) = ITEMP
+               WORK( PVT ) = WORK( I )
+               WORK( N+PVT ) = WORK( N+I )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Generate elementary reflector H(i)
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( I.LT.M ) THEN
+               CALL <a name="DLARFG.184"></a><a href="dlarfg.f.html#DLARFG.1">DLARFG</a>( M-I+1, A( I, I ), A( I+1, I ), 1, TAU( I ) )
+            ELSE
+               CALL <a name="DLARFG.186"></a><a href="dlarfg.f.html#DLARFG.1">DLARFG</a>( 1, A( M, M ), A( M, M ), 1, TAU( M ) )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>            IF( I.LT.N ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Apply H(i) to A(i:m,i+1:n) from the left
+</span><span class="comment">*</span><span class="comment">
+</span>               AII = A( I, I )
+               A( I, I ) = ONE
+               CALL <a name="DLARF.195"></a><a href="dlarf.f.html#DLARF.1">DLARF</a>( <span class="string">'LEFT'</span>, M-I+1, N-I, A( I, I ), 1, TAU( I ),
+     $                     A( I, I+1 ), LDA, WORK( 2*N+1 ) )
+               A( I, I ) = AII
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Update partial column norms
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 30 J = I + 1, N
+               IF( WORK( J ).NE.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 NOTE: The following 4 lines follow from the analysis in
+</span><span class="comment">*</span><span class="comment">                 Lapack Working Note 176.
+</span><span class="comment">*</span><span class="comment">                 
+</span>                  TEMP = ABS( A( I, J ) ) / WORK( J )
+                  TEMP = MAX( ZERO, ( ONE+TEMP )*( ONE-TEMP ) )
+                  TEMP2 = TEMP*( WORK( J ) / WORK( N+J ) )**2
+                  IF( TEMP2 .LE. TOL3Z ) THEN 
+                     IF( M-I.GT.0 ) THEN
+                        WORK( J ) = DNRM2( M-I, A( I+1, J ), 1 )
+                        WORK( N+J ) = WORK( J )
+                     ELSE
+                        WORK( J ) = ZERO
+                        WORK( N+J ) = ZERO
+                     END IF
+                  ELSE
+                     WORK( J ) = WORK( J )*SQRT( TEMP )
+                  END IF
+               END IF
+   30       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>   40    CONTINUE
+      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DGEQPF.229"></a><a href="dgeqpf.f.html#DGEQPF.1">DGEQPF</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

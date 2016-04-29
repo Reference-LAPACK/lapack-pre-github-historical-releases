@@ -1,0 +1,230 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>ztgexc.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZTGEXC.1"></a><a href="ztgexc.f.html#ZTGEXC.1">ZTGEXC</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ, Z,
+     $                   LDZ, IFST, ILST, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      LOGICAL            WANTQ, WANTZ
+      INTEGER            IFST, ILST, INFO, LDA, LDB, LDQ, LDZ, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX*16         A( LDA, * ), B( LDB, * ), Q( LDQ, * ),
+     $                   Z( LDZ, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZTGEXC.20"></a><a href="ztgexc.f.html#ZTGEXC.1">ZTGEXC</a> reorders the generalized Schur decomposition of a complex
+</span><span class="comment">*</span><span class="comment">  matrix pair (A,B), using an unitary equivalence transformation
+</span><span class="comment">*</span><span class="comment">  (A, B) := Q * (A, B) * Z', so that the diagonal block of (A, B) with
+</span><span class="comment">*</span><span class="comment">  row index IFST is moved to row ILST.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  (A, B) must be in generalized Schur canonical form, that is, A and
+</span><span class="comment">*</span><span class="comment">  B are both upper triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Optionally, the matrices Q and Z of generalized Schur vectors are
+</span><span class="comment">*</span><span class="comment">  updated.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">         Q(in) * A(in) * Z(in)' = Q(out) * A(out) * Z(out)'
+</span><span class="comment">*</span><span class="comment">         Q(in) * B(in) * Z(in)' = Q(out) * B(out) * Z(out)'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WANTQ   (input) LOGICAL
+</span><span class="comment">*</span><span class="comment">          .TRUE. : update the left transformation matrix Q;
+</span><span class="comment">*</span><span class="comment">          .FALSE.: do not update Q.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WANTZ   (input) LOGICAL
+</span><span class="comment">*</span><span class="comment">          .TRUE. : update the right transformation matrix Z;
+</span><span class="comment">*</span><span class="comment">          .FALSE.: do not update Z.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrices A and B. N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) COMPLEX*16 array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper triangular matrix A in the pair (A, B).
+</span><span class="comment">*</span><span class="comment">          On exit, the updated matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input)  INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A. LDA &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input/output) COMPLEX*16 array, dimension (LDB,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper triangular matrix B in the pair (A, B).
+</span><span class="comment">*</span><span class="comment">          On exit, the updated matrix B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input)  INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B. LDB &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Q       (input/output) COMPLEX*16 array, dimension (LDZ,N)
+</span><span class="comment">*</span><span class="comment">          On entry, if WANTQ = .TRUE., the unitary matrix Q.
+</span><span class="comment">*</span><span class="comment">          On exit, the updated matrix Q.
+</span><span class="comment">*</span><span class="comment">          If WANTQ = .FALSE., Q is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDQ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Q. LDQ &gt;= 1;
+</span><span class="comment">*</span><span class="comment">          If WANTQ = .TRUE., LDQ &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z       (input/output) COMPLEX*16 array, dimension (LDZ,N)
+</span><span class="comment">*</span><span class="comment">          On entry, if WANTZ = .TRUE., the unitary matrix Z.
+</span><span class="comment">*</span><span class="comment">          On exit, the updated matrix Z.
+</span><span class="comment">*</span><span class="comment">          If WANTZ = .FALSE., Z is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDZ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Z. LDZ &gt;= 1;
+</span><span class="comment">*</span><span class="comment">          If WANTZ = .TRUE., LDZ &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IFST    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">  ILST    (input/output) INTEGER
+</span><span class="comment">*</span><span class="comment">          Specify the reordering of the diagonal blocks of (A, B).
+</span><span class="comment">*</span><span class="comment">          The block with row index IFST is moved to row ILST, by a
+</span><span class="comment">*</span><span class="comment">          sequence of swapping between adjacent blocks.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">           =0:  Successful exit.
+</span><span class="comment">*</span><span class="comment">           &lt;0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">           =1:  The transformed matrix pair (A, B) would be too far
+</span><span class="comment">*</span><span class="comment">                from generalized Schur form; the problem is ill-
+</span><span class="comment">*</span><span class="comment">                conditioned. (A, B) may have been partially reordered,
+</span><span class="comment">*</span><span class="comment">                and ILST points to the first row of the current
+</span><span class="comment">*</span><span class="comment">                position of the block being moved.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Bo Kagstrom and Peter Poromaa, Department of Computing Science,
+</span><span class="comment">*</span><span class="comment">     Umea University, S-901 87 Umea, Sweden.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  [1] B. Kagstrom; A Direct Method for Reordering Eigenvalues in the
+</span><span class="comment">*</span><span class="comment">      Generalized Real Schur Form of a Regular Matrix Pair (A, B), in
+</span><span class="comment">*</span><span class="comment">      M.S. Moonen et al (eds), Linear Algebra for Large Scale and
+</span><span class="comment">*</span><span class="comment">      Real-Time Applications, Kluwer Academic Publ. 1993, pp 195-218.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  [2] B. Kagstrom and P. Poromaa; Computing Eigenspaces with Specified
+</span><span class="comment">*</span><span class="comment">      Eigenvalues of a Regular Matrix Pair (A, B) and Condition
+</span><span class="comment">*</span><span class="comment">      Estimation: Theory, Algorithms and Software, Report
+</span><span class="comment">*</span><span class="comment">      UMINF - 94.04, Department of Computing Science, Umea University,
+</span><span class="comment">*</span><span class="comment">      S-901 87 Umea, Sweden, 1994. Also as LAPACK Working Note 87.
+</span><span class="comment">*</span><span class="comment">      To appear in Numerical Algorithms, 1996.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  [3] B. Kagstrom and P. Poromaa, LAPACK-Style Algorithms and Software
+</span><span class="comment">*</span><span class="comment">      for Solving the Generalized Sylvester Equation and Estimating the
+</span><span class="comment">*</span><span class="comment">      Separation between Regular Matrix Pairs, Report UMINF - 93.23,
+</span><span class="comment">*</span><span class="comment">      Department of Computing Science, Umea University, S-901 87 Umea,
+</span><span class="comment">*</span><span class="comment">      Sweden, December 1993, Revised April 1994, Also as LAPACK working
+</span><span class="comment">*</span><span class="comment">      Note 75. To appear in ACM Trans. on Math. Software, Vol 22, No 1,
+</span><span class="comment">*</span><span class="comment">      1996.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            HERE
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.129"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, <a name="ZTGEX2.129"></a><a href="ztgex2.f.html#ZTGEX2.1">ZTGEX2</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Decode and test input arguments.
+</span>      INFO = 0
+      IF( N.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+         INFO = -5
+      ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
+         INFO = -7
+      ELSE IF( LDQ.LT.1 .OR. WANTQ .AND. ( LDQ.LT.MAX( 1, N ) ) ) THEN
+         INFO = -9
+      ELSE IF( LDZ.LT.1 .OR. WANTZ .AND. ( LDZ.LT.MAX( 1, N ) ) ) THEN
+         INFO = -11
+      ELSE IF( IFST.LT.1 .OR. IFST.GT.N ) THEN
+         INFO = -12
+      ELSE IF( ILST.LT.1 .OR. ILST.GT.N ) THEN
+         INFO = -13
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.154"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZTGEXC.154"></a><a href="ztgexc.f.html#ZTGEXC.1">ZTGEXC</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.LE.1 )
+     $   RETURN
+      IF( IFST.EQ.ILST )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      IF( IFST.LT.ILST ) THEN
+<span class="comment">*</span><span class="comment">
+</span>         HERE = IFST
+<span class="comment">*</span><span class="comment">
+</span>   10    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Swap with next one below
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="ZTGEX2.173"></a><a href="ztgex2.f.html#ZTGEX2.1">ZTGEX2</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ, Z, LDZ,
+     $                HERE, INFO )
+         IF( INFO.NE.0 ) THEN
+            ILST = HERE
+            RETURN
+         END IF
+         HERE = HERE + 1
+         IF( HERE.LT.ILST )
+     $      GO TO 10
+         HERE = HERE - 1
+      ELSE
+         HERE = IFST - 1
+<span class="comment">*</span><span class="comment">
+</span>   20    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Swap with next one above
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="ZTGEX2.190"></a><a href="ztgex2.f.html#ZTGEX2.1">ZTGEX2</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ, Z, LDZ,
+     $                HERE, INFO )
+         IF( INFO.NE.0 ) THEN
+            ILST = HERE
+            RETURN
+         END IF
+         HERE = HERE - 1
+         IF( HERE.GE.ILST )
+     $      GO TO 20
+         HERE = HERE + 1
+      END IF
+      ILST = HERE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZTGEXC.204"></a><a href="ztgexc.f.html#ZTGEXC.1">ZTGEXC</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

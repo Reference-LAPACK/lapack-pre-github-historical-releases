@@ -1,0 +1,382 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slasd3.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLASD3.1"></a><a href="slasd3.f.html#SLASD3.1">SLASD3</a>( NL, NR, SQRE, K, D, Q, LDQ, DSIGMA, U, LDU, U2,
+     $                   LDU2, VT, LDVT, VT2, LDVT2, IDXC, CTOT, Z,
+     $                   INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, K, LDQ, LDU, LDU2, LDVT, LDVT2, NL, NR,
+     $                   SQRE
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            CTOT( * ), IDXC( * )
+      REAL               D( * ), DSIGMA( * ), Q( LDQ, * ), U( LDU, * ),
+     $                   U2( LDU2, * ), VT( LDVT, * ), VT2( LDVT2, * ),
+     $                   Z( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLASD3.23"></a><a href="slasd3.f.html#SLASD3.1">SLASD3</a> finds all the square roots of the roots of the secular
+</span><span class="comment">*</span><span class="comment">  equation, as defined by the values in D and Z.  It makes the
+</span><span class="comment">*</span><span class="comment">  appropriate calls to <a name="SLASD4.25"></a><a href="slasd4.f.html#SLASD4.1">SLASD4</a> and then updates the singular
+</span><span class="comment">*</span><span class="comment">  vectors by matrix multiplication.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This code makes very mild assumptions about floating point
+</span><span class="comment">*</span><span class="comment">  arithmetic. It will work on machines with a guard digit in
+</span><span class="comment">*</span><span class="comment">  add/subtract, or on those binary machines without guard digits
+</span><span class="comment">*</span><span class="comment">  which subtract like the Cray XMP, Cray YMP, Cray C 90, or Cray 2.
+</span><span class="comment">*</span><span class="comment">  It could conceivably fail on hexadecimal or decimal machines
+</span><span class="comment">*</span><span class="comment">  without guard digits, but we know of none.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLASD3.35"></a><a href="slasd3.f.html#SLASD3.1">SLASD3</a> is called from <a name="SLASD1.35"></a><a href="slasd1.f.html#SLASD1.1">SLASD1</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NL     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The row dimension of the upper block.  NL &gt;= 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NR     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The row dimension of the lower block.  NR &gt;= 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SQRE   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         = 0: the lower block is an NR-by-NR square matrix.
+</span><span class="comment">*</span><span class="comment">         = 1: the lower block is an NR-by-(NR+1) rectangular matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">         The bidiagonal matrix has N = NL + NR + 1 rows and
+</span><span class="comment">*</span><span class="comment">         M = N + SQRE &gt;= N columns.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  K      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The size of the secular equation, 1 =&lt; K = &lt; N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D      (output) REAL array, dimension(K)
+</span><span class="comment">*</span><span class="comment">         On exit the square roots of the roots of the secular equation,
+</span><span class="comment">*</span><span class="comment">         in ascending order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Q      (workspace) REAL array,
+</span><span class="comment">*</span><span class="comment">                     dimension at least (LDQ,K).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDQ    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of the array Q.  LDQ &gt;= K.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DSIGMA (input/output) REAL array, dimension(K)
+</span><span class="comment">*</span><span class="comment">         The first K elements of this array contain the old roots
+</span><span class="comment">*</span><span class="comment">         of the deflated updating problem.  These are the poles
+</span><span class="comment">*</span><span class="comment">         of the secular equation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  U      (output) REAL array, dimension (LDU, N)
+</span><span class="comment">*</span><span class="comment">         The last N - K columns of this matrix contain the deflated
+</span><span class="comment">*</span><span class="comment">         left singular vectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDU    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of the array U.  LDU &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  U2     (input) REAL array, dimension (LDU2, N)
+</span><span class="comment">*</span><span class="comment">         The first K columns of this matrix contain the non-deflated
+</span><span class="comment">*</span><span class="comment">         left singular vectors for the split problem.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDU2   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of the array U2.  LDU2 &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VT     (output) REAL array, dimension (LDVT, M)
+</span><span class="comment">*</span><span class="comment">         The last M - K columns of VT' contain the deflated
+</span><span class="comment">*</span><span class="comment">         right singular vectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDVT   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of the array VT.  LDVT &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VT2    (input/output) REAL array, dimension (LDVT2, N)
+</span><span class="comment">*</span><span class="comment">         The first K columns of VT2' contain the non-deflated
+</span><span class="comment">*</span><span class="comment">         right singular vectors for the split problem.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDVT2  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of the array VT2.  LDVT2 &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IDXC   (input) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         The permutation used to arrange the columns of U (and rows of
+</span><span class="comment">*</span><span class="comment">         VT) into three groups:  the first group contains non-zero
+</span><span class="comment">*</span><span class="comment">         entries only at and above (or before) NL +1; the second
+</span><span class="comment">*</span><span class="comment">         contains non-zero entries only at and below (or after) NL+2;
+</span><span class="comment">*</span><span class="comment">         and the third is dense. The first column of U and the row of
+</span><span class="comment">*</span><span class="comment">         VT are treated separately, however.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">         The rows of the singular vectors found by <a name="SLASD4.107"></a><a href="slasd4.f.html#SLASD4.1">SLASD4</a>
+</span><span class="comment">*</span><span class="comment">         must be likewise permuted before the matrix multiplies can
+</span><span class="comment">*</span><span class="comment">         take place.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CTOT   (input) INTEGER array, dimension (4)
+</span><span class="comment">*</span><span class="comment">         A count of the total number of the various types of columns
+</span><span class="comment">*</span><span class="comment">         in U (or rows in VT), as described in IDXC. The fourth column
+</span><span class="comment">*</span><span class="comment">         type is any column which has been deflated.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z      (input/output) REAL array, dimension (K)
+</span><span class="comment">*</span><span class="comment">         The first K elements of this array contain the components
+</span><span class="comment">*</span><span class="comment">         of the deflation-adjusted updating row vector.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO   (output) INTEGER
+</span><span class="comment">*</span><span class="comment">         = 0:  successful exit.
+</span><span class="comment">*</span><span class="comment">         &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">         &gt; 0:  if INFO = 1, an singular value did not converge
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Ming Gu and Huan Ren, Computer Science Division, University of
+</span><span class="comment">*</span><span class="comment">     California at Berkeley, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ONE, ZERO, NEGONE
+      PARAMETER          ( ONE = 1.0E+0, ZERO = 0.0E+0,
+     $                     NEGONE = -1.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            CTEMP, I, J, JC, KTEMP, M, N, NLP1, NLP2, NRP1
+      REAL               RHO, TEMP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      REAL               <a name="SLAMC3.144"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>, SNRM2
+      EXTERNAL           <a name="SLAMC3.145"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>, SNRM2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           SCOPY, SGEMM, <a name="SLACPY.148"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>, <a name="SLASCL.148"></a><a href="slascl.f.html#SLASCL.1">SLASCL</a>, <a name="SLASD4.148"></a><a href="slasd4.f.html#SLASD4.1">SLASD4</a>, <a name="XERBLA.148"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, SIGN, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+<span class="comment">*</span><span class="comment">
+</span>      IF( NL.LT.1 ) THEN
+         INFO = -1
+      ELSE IF( NR.LT.1 ) THEN
+         INFO = -2
+      ELSE IF( ( SQRE.NE.1 ) .AND. ( SQRE.NE.0 ) ) THEN
+         INFO = -3
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      N = NL + NR + 1
+      M = N + SQRE
+      NLP1 = NL + 1
+      NLP2 = NL + 2
+<span class="comment">*</span><span class="comment">
+</span>      IF( ( K.LT.1 ) .OR. ( K.GT.N ) ) THEN
+         INFO = -4
+      ELSE IF( LDQ.LT.K ) THEN
+         INFO = -7
+      ELSE IF( LDU.LT.N ) THEN
+         INFO = -10
+      ELSE IF( LDU2.LT.N ) THEN
+         INFO = -12
+      ELSE IF( LDVT.LT.M ) THEN
+         INFO = -14
+      ELSE IF( LDVT2.LT.M ) THEN
+         INFO = -16
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.186"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="SLASD3.186"></a><a href="slasd3.f.html#SLASD3.1">SLASD3</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( K.EQ.1 ) THEN
+         D( 1 ) = ABS( Z( 1 ) )
+         CALL SCOPY( M, VT2( 1, 1 ), LDVT2, VT( 1, 1 ), LDVT )
+         IF( Z( 1 ).GT.ZERO ) THEN
+            CALL SCOPY( N, U2( 1, 1 ), 1, U( 1, 1 ), 1 )
+         ELSE
+            DO 10 I = 1, N
+               U( I, 1 ) = -U2( I, 1 )
+   10       CONTINUE
+         END IF
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Modify values DSIGMA(i) to make sure all DSIGMA(i)-DSIGMA(j) can
+</span><span class="comment">*</span><span class="comment">     be computed with high relative accuracy (barring over/underflow).
+</span><span class="comment">*</span><span class="comment">     This is a problem on machines without a guard digit in
+</span><span class="comment">*</span><span class="comment">     add/subtract (Cray XMP, Cray YMP, Cray C 90 and Cray 2).
+</span><span class="comment">*</span><span class="comment">     The following code replaces DSIGMA(I) by 2*DSIGMA(I)-DSIGMA(I),
+</span><span class="comment">*</span><span class="comment">     which on any of these machines zeros out the bottommost
+</span><span class="comment">*</span><span class="comment">     bit of DSIGMA(I) if it is 1; this makes the subsequent
+</span><span class="comment">*</span><span class="comment">     subtractions DSIGMA(I)-DSIGMA(J) unproblematic when cancellation
+</span><span class="comment">*</span><span class="comment">     occurs. On binary machines with a guard digit (almost all
+</span><span class="comment">*</span><span class="comment">     machines) it does not change DSIGMA(I) at all. On hexadecimal
+</span><span class="comment">*</span><span class="comment">     and decimal machines with a guard digit, it slightly
+</span><span class="comment">*</span><span class="comment">     changes the bottommost bits of DSIGMA(I). It does not account
+</span><span class="comment">*</span><span class="comment">     for hexadecimal or decimal machines without guard digits
+</span><span class="comment">*</span><span class="comment">     (we know of none). We use a subroutine call to compute
+</span><span class="comment">*</span><span class="comment">     2*DSIGMA(I) to prevent optimizing compilers from eliminating
+</span><span class="comment">*</span><span class="comment">     this code.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 20 I = 1, K
+         DSIGMA( I ) = <a name="SLAMC3.223"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( DSIGMA( I ), DSIGMA( I ) ) - DSIGMA( I )
+   20 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Keep a copy of Z.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL SCOPY( K, Z, 1, Q, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Normalize Z.
+</span><span class="comment">*</span><span class="comment">
+</span>      RHO = SNRM2( K, Z, 1 )
+      CALL <a name="SLASCL.233"></a><a href="slascl.f.html#SLASCL.1">SLASCL</a>( <span class="string">'G'</span>, 0, 0, RHO, ONE, K, 1, Z, K, INFO )
+      RHO = RHO*RHO
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Find the new singular values.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 30 J = 1, K
+         CALL <a name="SLASD4.239"></a><a href="slasd4.f.html#SLASD4.1">SLASD4</a>( K, J, DSIGMA, Z, U( 1, J ), RHO, D( J ),
+     $                VT( 1, J ), INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        If the zero finder fails, the computation is terminated.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( INFO.NE.0 ) THEN
+            RETURN
+         END IF
+   30 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute updated Z.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 60 I = 1, K
+         Z( I ) = U( I, K )*VT( I, K )
+         DO 40 J = 1, I - 1
+            Z( I ) = Z( I )*( U( I, J )*VT( I, J ) /
+     $               ( DSIGMA( I )-DSIGMA( J ) ) /
+     $               ( DSIGMA( I )+DSIGMA( J ) ) )
+   40    CONTINUE
+         DO 50 J = I, K - 1
+            Z( I ) = Z( I )*( U( I, J )*VT( I, J ) /
+     $               ( DSIGMA( I )-DSIGMA( J+1 ) ) /
+     $               ( DSIGMA( I )+DSIGMA( J+1 ) ) )
+   50    CONTINUE
+         Z( I ) = SIGN( SQRT( ABS( Z( I ) ) ), Q( I, 1 ) )
+   60 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute left singular vectors of the modified diagonal matrix,
+</span><span class="comment">*</span><span class="comment">     and store related information for the right singular vectors.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 90 I = 1, K
+         VT( 1, I ) = Z( 1 ) / U( 1, I ) / VT( 1, I )
+         U( 1, I ) = NEGONE
+         DO 70 J = 2, K
+            VT( J, I ) = Z( J ) / U( J, I ) / VT( J, I )
+            U( J, I ) = DSIGMA( J )*VT( J, I )
+   70    CONTINUE
+         TEMP = SNRM2( K, U( 1, I ), 1 )
+         Q( 1, I ) = U( 1, I ) / TEMP
+         DO 80 J = 2, K
+            JC = IDXC( J )
+            Q( J, I ) = U( JC, I ) / TEMP
+   80    CONTINUE
+   90 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Update the left singular vector matrix.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( K.EQ.2 ) THEN
+         CALL SGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, N, K, K, ONE, U2, LDU2, Q, LDQ, ZERO, U,
+     $               LDU )
+         GO TO 100
+      END IF
+      IF( CTOT( 1 ).GT.0 ) THEN
+         CALL SGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, NL, K, CTOT( 1 ), ONE, U2( 1, 2 ), LDU2,
+     $               Q( 2, 1 ), LDQ, ZERO, U( 1, 1 ), LDU )
+         IF( CTOT( 3 ).GT.0 ) THEN
+            KTEMP = 2 + CTOT( 1 ) + CTOT( 2 )
+            CALL SGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, NL, K, CTOT( 3 ), ONE, U2( 1, KTEMP ),
+     $                  LDU2, Q( KTEMP, 1 ), LDQ, ONE, U( 1, 1 ), LDU )
+         END IF
+      ELSE IF( CTOT( 3 ).GT.0 ) THEN
+         KTEMP = 2 + CTOT( 1 ) + CTOT( 2 )
+         CALL SGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, NL, K, CTOT( 3 ), ONE, U2( 1, KTEMP ),
+     $               LDU2, Q( KTEMP, 1 ), LDQ, ZERO, U( 1, 1 ), LDU )
+      ELSE
+         CALL <a name="SLACPY.304"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'F'</span>, NL, K, U2, LDU2, U, LDU )
+      END IF
+      CALL SCOPY( K, Q( 1, 1 ), LDQ, U( NLP1, 1 ), LDU )
+      KTEMP = 2 + CTOT( 1 )
+      CTEMP = CTOT( 2 ) + CTOT( 3 )
+      CALL SGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, NR, K, CTEMP, ONE, U2( NLP2, KTEMP ), LDU2,
+     $            Q( KTEMP, 1 ), LDQ, ZERO, U( NLP2, 1 ), LDU )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Generate the right singular vectors.
+</span><span class="comment">*</span><span class="comment">
+</span>  100 CONTINUE
+      DO 120 I = 1, K
+         TEMP = SNRM2( K, VT( 1, I ), 1 )
+         Q( I, 1 ) = VT( 1, I ) / TEMP
+         DO 110 J = 2, K
+            JC = IDXC( J )
+            Q( I, J ) = VT( JC, I ) / TEMP
+  110    CONTINUE
+  120 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Update the right singular vector matrix.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( K.EQ.2 ) THEN
+         CALL SGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, K, M, K, ONE, Q, LDQ, VT2, LDVT2, ZERO,
+     $               VT, LDVT )
+         RETURN
+      END IF
+      KTEMP = 1 + CTOT( 1 )
+      CALL SGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, K, NLP1, KTEMP, ONE, Q( 1, 1 ), LDQ,
+     $            VT2( 1, 1 ), LDVT2, ZERO, VT( 1, 1 ), LDVT )
+      KTEMP = 2 + CTOT( 1 ) + CTOT( 2 )
+      IF( KTEMP.LE.LDVT2 )
+     $   CALL SGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, K, NLP1, CTOT( 3 ), ONE, Q( 1, KTEMP ),
+     $               LDQ, VT2( KTEMP, 1 ), LDVT2, ONE, VT( 1, 1 ),
+     $               LDVT )
+<span class="comment">*</span><span class="comment">
+</span>      KTEMP = CTOT( 1 ) + 1
+      NRP1 = NR + SQRE
+      IF( KTEMP.GT.1 ) THEN
+         DO 130 I = 1, K
+            Q( I, KTEMP ) = Q( I, 1 )
+  130    CONTINUE
+         DO 140 I = NLP2, M
+            VT2( KTEMP, I ) = VT2( 1, I )
+  140    CONTINUE
+      END IF
+      CTEMP = 1 + CTOT( 2 ) + CTOT( 3 )
+      CALL SGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, K, NRP1, CTEMP, ONE, Q( 1, KTEMP ), LDQ,
+     $            VT2( KTEMP, NLP2 ), LDVT2, ZERO, VT( 1, NLP2 ), LDVT )
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLASD3.356"></a><a href="slasd3.f.html#SLASD3.1">SLASD3</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlags2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLAGS2.1"></a><a href="dlags2.f.html#DLAGS2.1">DLAGS2</a>( UPPER, A1, A2, A3, B1, B2, B3, CSU, SNU, CSV,
+     $                   SNV, CSQ, SNQ )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      LOGICAL            UPPER
+      DOUBLE PRECISION   A1, A2, A3, B1, B2, B3, CSQ, CSU, CSV, SNQ,
+     $                   SNU, SNV
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLAGS2.17"></a><a href="dlags2.f.html#DLAGS2.1">DLAGS2</a> computes 2-by-2 orthogonal matrices U, V and Q, such
+</span><span class="comment">*</span><span class="comment">  that if ( UPPER ) then
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">            U'*A*Q = U'*( A1 A2 )*Q = ( x  0  )
+</span><span class="comment">*</span><span class="comment">                        ( 0  A3 )     ( x  x  )
+</span><span class="comment">*</span><span class="comment">  and
+</span><span class="comment">*</span><span class="comment">            V'*B*Q = V'*( B1 B2 )*Q = ( x  0  )
+</span><span class="comment">*</span><span class="comment">                        ( 0  B3 )     ( x  x  )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  or if ( .NOT.UPPER ) then
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">            U'*A*Q = U'*( A1 0  )*Q = ( x  x  )
+</span><span class="comment">*</span><span class="comment">                        ( A2 A3 )     ( 0  x  )
+</span><span class="comment">*</span><span class="comment">  and
+</span><span class="comment">*</span><span class="comment">            V'*B*Q = V'*( B1 0  )*Q = ( x  x  )
+</span><span class="comment">*</span><span class="comment">                        ( B2 B3 )     ( 0  x  )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The rows of the transformed A and B are parallel, where
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">    U = (  CSU  SNU ), V = (  CSV SNV ), Q = (  CSQ   SNQ )
+</span><span class="comment">*</span><span class="comment">        ( -SNU  CSU )      ( -SNV CSV )      ( -SNQ   CSQ )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z' denotes the transpose of Z.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPPER   (input) LOGICAL
+</span><span class="comment">*</span><span class="comment">          = .TRUE.: the input matrices A and B are upper triangular.
+</span><span class="comment">*</span><span class="comment">          = .FALSE.: the input matrices A and B are lower triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A1      (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">  A2      (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">  A3      (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          On entry, A1, A2 and A3 are elements of the input 2-by-2
+</span><span class="comment">*</span><span class="comment">          upper (lower) triangular matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B1      (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">  B2      (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">  B3      (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          On entry, B1, B2 and B3 are elements of the input 2-by-2
+</span><span class="comment">*</span><span class="comment">          upper (lower) triangular matrix B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CSU     (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">  SNU     (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The desired orthogonal matrix U.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CSV     (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">  SNV     (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The desired orthogonal matrix V.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CSQ     (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">  SNQ     (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The desired orthogonal matrix Q.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO
+      PARAMETER          ( ZERO = 0.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      DOUBLE PRECISION   A, AUA11, AUA12, AUA21, AUA22, AVB11, AVB12,
+     $                   AVB21, AVB22, B, C, CSL, CSR, D, R, S1, S2,
+     $                   SNL, SNR, UA11, UA11R, UA12, UA21, UA22, UA22R,
+     $                   VB11, VB11R, VB12, VB21, VB22, VB22R
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DLARTG.86"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>, <a name="DLASV2.86"></a><a href="dlasv2.f.html#DLASV2.1">DLASV2</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( UPPER ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Input matrices A and B are upper triangular matrices
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Form matrix C = A*adj(B) = ( a b )
+</span><span class="comment">*</span><span class="comment">                                   ( 0 d )
+</span><span class="comment">*</span><span class="comment">
+</span>         A = A1*B3
+         D = A3*B1
+         B = A2*B1 - A1*B2
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        The SVD of real 2-by-2 triangular C
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">         ( CSL -SNL )*( A B )*(  CSR  SNR ) = ( R 0 )
+</span><span class="comment">*</span><span class="comment">         ( SNL  CSL ) ( 0 D ) ( -SNR  CSR )   ( 0 T )
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DLASV2.109"></a><a href="dlasv2.f.html#DLASV2.1">DLASV2</a>( A, B, D, S1, S2, SNR, CSR, SNL, CSL )
+<span class="comment">*</span><span class="comment">
+</span>         IF( ABS( CSL ).GE.ABS( SNL ) .OR. ABS( CSR ).GE.ABS( SNR ) )
+     $        THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute the (1,1) and (1,2) elements of U'*A and V'*B,
+</span><span class="comment">*</span><span class="comment">           and (1,2) element of |U|'*|A| and |V|'*|B|.
+</span><span class="comment">*</span><span class="comment">
+</span>            UA11R = CSL*A1
+            UA12 = CSL*A2 + SNL*A3
+<span class="comment">*</span><span class="comment">
+</span>            VB11R = CSR*B1
+            VB12 = CSR*B2 + SNR*B3
+<span class="comment">*</span><span class="comment">
+</span>            AUA12 = ABS( CSL )*ABS( A2 ) + ABS( SNL )*ABS( A3 )
+            AVB12 = ABS( CSR )*ABS( B2 ) + ABS( SNR )*ABS( B3 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           zero (1,2) elements of U'*A and V'*B
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( ( ABS( UA11R )+ABS( UA12 ) ).NE.ZERO ) THEN
+               IF( AUA12 / ( ABS( UA11R )+ABS( UA12 ) ).LE.AVB12 /
+     $             ( ABS( VB11R )+ABS( VB12 ) ) ) THEN
+                  CALL <a name="DLARTG.131"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( -UA11R, UA12, CSQ, SNQ, R )
+               ELSE
+                  CALL <a name="DLARTG.133"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( -VB11R, VB12, CSQ, SNQ, R )
+               END IF
+            ELSE
+               CALL <a name="DLARTG.136"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( -VB11R, VB12, CSQ, SNQ, R )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>            CSU = CSL
+            SNU = -SNL
+            CSV = CSR
+            SNV = -SNR
+<span class="comment">*</span><span class="comment">
+</span>         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute the (2,1) and (2,2) elements of U'*A and V'*B,
+</span><span class="comment">*</span><span class="comment">           and (2,2) element of |U|'*|A| and |V|'*|B|.
+</span><span class="comment">*</span><span class="comment">
+</span>            UA21 = -SNL*A1
+            UA22 = -SNL*A2 + CSL*A3
+<span class="comment">*</span><span class="comment">
+</span>            VB21 = -SNR*B1
+            VB22 = -SNR*B2 + CSR*B3
+<span class="comment">*</span><span class="comment">
+</span>            AUA22 = ABS( SNL )*ABS( A2 ) + ABS( CSL )*ABS( A3 )
+            AVB22 = ABS( SNR )*ABS( B2 ) + ABS( CSR )*ABS( B3 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           zero (2,2) elements of U'*A and V'*B, and then swap.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( ( ABS( UA21 )+ABS( UA22 ) ).NE.ZERO ) THEN
+               IF( AUA22 / ( ABS( UA21 )+ABS( UA22 ) ).LE.AVB22 /
+     $             ( ABS( VB21 )+ABS( VB22 ) ) ) THEN
+                  CALL <a name="DLARTG.163"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( -UA21, UA22, CSQ, SNQ, R )
+               ELSE
+                  CALL <a name="DLARTG.165"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( -VB21, VB22, CSQ, SNQ, R )
+               END IF
+            ELSE
+               CALL <a name="DLARTG.168"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( -VB21, VB22, CSQ, SNQ, R )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>            CSU = SNL
+            SNU = CSL
+            CSV = SNR
+            SNV = CSR
+<span class="comment">*</span><span class="comment">
+</span>         END IF
+<span class="comment">*</span><span class="comment">
+</span>      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Input matrices A and B are lower triangular matrices
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Form matrix C = A*adj(B) = ( a 0 )
+</span><span class="comment">*</span><span class="comment">                                   ( c d )
+</span><span class="comment">*</span><span class="comment">
+</span>         A = A1*B3
+         D = A3*B1
+         C = A2*B3 - A3*B2
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        The SVD of real 2-by-2 triangular C
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">         ( CSL -SNL )*( A 0 )*(  CSR  SNR ) = ( R 0 )
+</span><span class="comment">*</span><span class="comment">         ( SNL  CSL ) ( C D ) ( -SNR  CSR )   ( 0 T )
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DLASV2.194"></a><a href="dlasv2.f.html#DLASV2.1">DLASV2</a>( A, C, D, S1, S2, SNR, CSR, SNL, CSL )
+<span class="comment">*</span><span class="comment">
+</span>         IF( ABS( CSR ).GE.ABS( SNR ) .OR. ABS( CSL ).GE.ABS( SNL ) )
+     $        THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute the (2,1) and (2,2) elements of U'*A and V'*B,
+</span><span class="comment">*</span><span class="comment">           and (2,1) element of |U|'*|A| and |V|'*|B|.
+</span><span class="comment">*</span><span class="comment">
+</span>            UA21 = -SNR*A1 + CSR*A2
+            UA22R = CSR*A3
+<span class="comment">*</span><span class="comment">
+</span>            VB21 = -SNL*B1 + CSL*B2
+            VB22R = CSL*B3
+<span class="comment">*</span><span class="comment">
+</span>            AUA21 = ABS( SNR )*ABS( A1 ) + ABS( CSR )*ABS( A2 )
+            AVB21 = ABS( SNL )*ABS( B1 ) + ABS( CSL )*ABS( B2 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           zero (2,1) elements of U'*A and V'*B.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( ( ABS( UA21 )+ABS( UA22R ) ).NE.ZERO ) THEN
+               IF( AUA21 / ( ABS( UA21 )+ABS( UA22R ) ).LE.AVB21 /
+     $             ( ABS( VB21 )+ABS( VB22R ) ) ) THEN
+                  CALL <a name="DLARTG.216"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( UA22R, UA21, CSQ, SNQ, R )
+               ELSE
+                  CALL <a name="DLARTG.218"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( VB22R, VB21, CSQ, SNQ, R )
+               END IF
+            ELSE
+               CALL <a name="DLARTG.221"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( VB22R, VB21, CSQ, SNQ, R )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>            CSU = CSR
+            SNU = -SNR
+            CSV = CSL
+            SNV = -SNL
+<span class="comment">*</span><span class="comment">
+</span>         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute the (1,1) and (1,2) elements of U'*A and V'*B,
+</span><span class="comment">*</span><span class="comment">           and (1,1) element of |U|'*|A| and |V|'*|B|.
+</span><span class="comment">*</span><span class="comment">
+</span>            UA11 = CSR*A1 + SNR*A2
+            UA12 = SNR*A3
+<span class="comment">*</span><span class="comment">
+</span>            VB11 = CSL*B1 + SNL*B2
+            VB12 = SNL*B3
+<span class="comment">*</span><span class="comment">
+</span>            AUA11 = ABS( CSR )*ABS( A1 ) + ABS( SNR )*ABS( A2 )
+            AVB11 = ABS( CSL )*ABS( B1 ) + ABS( SNL )*ABS( B2 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           zero (1,1) elements of U'*A and V'*B, and then swap.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( ( ABS( UA11 )+ABS( UA12 ) ).NE.ZERO ) THEN
+               IF( AUA11 / ( ABS( UA11 )+ABS( UA12 ) ).LE.AVB11 /
+     $             ( ABS( VB11 )+ABS( VB12 ) ) ) THEN
+                  CALL <a name="DLARTG.248"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( UA12, UA11, CSQ, SNQ, R )
+               ELSE
+                  CALL <a name="DLARTG.250"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( VB12, VB11, CSQ, SNQ, R )
+               END IF
+            ELSE
+               CALL <a name="DLARTG.253"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( VB12, VB11, CSQ, SNQ, R )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>            CSU = SNR
+            SNU = CSR
+            CSV = SNL
+            SNV = CSL
+<span class="comment">*</span><span class="comment">
+</span>         END IF
+<span class="comment">*</span><span class="comment">
+</span>      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLAGS2.267"></a><a href="dlags2.f.html#DLAGS2.1">DLAGS2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

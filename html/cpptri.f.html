@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>cpptri.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CPPTRI.1"></a><a href="cpptri.f.html#CPPTRI.1">CPPTRI</a>( UPLO, N, AP, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          UPLO
+      INTEGER            INFO, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX            AP( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CPPTRI.18"></a><a href="cpptri.f.html#CPPTRI.1">CPPTRI</a> computes the inverse of a complex Hermitian positive definite
+</span><span class="comment">*</span><span class="comment">  matrix A using the Cholesky factorization A = U**H*U or A = L*L**H
+</span><span class="comment">*</span><span class="comment">  computed by <a name="CPPTRF.20"></a><a href="cpptrf.f.html#CPPTRF.1">CPPTRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangular factor is stored in AP;
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangular factor is stored in AP.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AP      (input/output) COMPLEX array, dimension (N*(N+1)/2)
+</span><span class="comment">*</span><span class="comment">          On entry, the triangular factor U or L from the Cholesky
+</span><span class="comment">*</span><span class="comment">          factorization A = U**H*U or A = L*L**H, packed columnwise as
+</span><span class="comment">*</span><span class="comment">          a linear array.  The j-th column of U or L is stored in the
+</span><span class="comment">*</span><span class="comment">          array AP as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', AP(i + (j-1)*j/2) = U(i,j) for 1&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', AP(i + (j-1)*(2n-j)/2) = L(i,j) for j&lt;=i&lt;=n.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, the upper or lower triangle of the (Hermitian)
+</span><span class="comment">*</span><span class="comment">          inverse of A, overwriting the input factor U or L.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = i, the (i,i) element of the factor U or L is
+</span><span class="comment">*</span><span class="comment">                zero, and the inverse could not be computed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ONE
+      PARAMETER          ( ONE = 1.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            UPPER
+      INTEGER            J, JC, JJ, JJN
+      REAL               AJJ
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.61"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      COMPLEX            CDOTC
+      EXTERNAL           <a name="LSAME.63"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, CDOTC
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           CHPR, CSSCAL, CTPMV, <a name="CTPTRI.66"></a><a href="ctptri.f.html#CTPTRI.1">CTPTRI</a>, <a name="XERBLA.66"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          REAL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      UPPER = <a name="LSAME.76"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> )
+      IF( .NOT.UPPER .AND. .NOT.<a name="LSAME.77"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.83"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CPPTRI.83"></a><a href="cpptri.f.html#CPPTRI.1">CPPTRI</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Invert the triangular Cholesky factor U or L.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="CTPTRI.94"></a><a href="ctptri.f.html#CTPTRI.1">CTPTRI</a>( UPLO, <span class="string">'Non-unit'</span>, N, AP, INFO )
+      IF( INFO.GT.0 )
+     $   RETURN
+      IF( UPPER ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute the product inv(U) * inv(U)'.
+</span><span class="comment">*</span><span class="comment">
+</span>         JJ = 0
+         DO 10 J = 1, N
+            JC = JJ + 1
+            JJ = JJ + J
+            IF( J.GT.1 )
+     $         CALL CHPR( <span class="string">'Upper'</span>, J-1, ONE, AP( JC ), 1, AP )
+            AJJ = AP( JJ )
+            CALL CSSCAL( J, AJJ, AP( JC ), 1 )
+   10    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute the product inv(L)' * inv(L).
+</span><span class="comment">*</span><span class="comment">
+</span>         JJ = 1
+         DO 20 J = 1, N
+            JJN = JJ + N - J + 1
+            AP( JJ ) = REAL( CDOTC( N-J+1, AP( JJ ), 1, AP( JJ ), 1 ) )
+            IF( J.LT.N )
+     $         CALL CTPMV( <span class="string">'Lower'</span>, <span class="string">'Conjugate transpose'</span>, <span class="string">'Non-unit'</span>,
+     $                     N-J, AP( JJN ), AP( JJ+1 ), 1 )
+            JJ = JJN
+   20    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CPPTRI.128"></a><a href="cpptri.f.html#CPPTRI.1">CPPTRI</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,351 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>cherk.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CHERK.1"></a><a href="cherk.f.html#CHERK.1">CHERK</a>(UPLO,TRANS,N,K,ALPHA,A,LDA,BETA,C,LDC)
+<span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      REAL ALPHA,BETA
+      INTEGER K,LDA,LDC,N
+      CHARACTER TRANS,UPLO
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX A(LDA,*),C(LDC,*)
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CHERK.14"></a><a href="cherk.f.html#CHERK.1">CHERK</a>  performs one of the hermitian rank k operations
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     C := alpha*A*conjg( A' ) + beta*C,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  or
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     C := alpha*conjg( A' )*A + beta*C,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where  alpha and beta  are  real scalars,  C is an  n by n  hermitian
+</span><span class="comment">*</span><span class="comment">  matrix and  A  is an  n by k  matrix in the  first case and a  k by n
+</span><span class="comment">*</span><span class="comment">  matrix in the second case.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  ==========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO   - CHARACTER*1.
+</span><span class="comment">*</span><span class="comment">           On  entry,   UPLO  specifies  whether  the  upper  or  lower
+</span><span class="comment">*</span><span class="comment">           triangular  part  of the  array  C  is to be  referenced  as
+</span><span class="comment">*</span><span class="comment">           follows:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              UPLO = 'U' or 'u'   Only the  upper triangular part of  C
+</span><span class="comment">*</span><span class="comment">                                  is to be referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              UPLO = 'L' or 'l'   Only the  lower triangular part of  C
+</span><span class="comment">*</span><span class="comment">                                  is to be referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TRANS  - CHARACTER*1.
+</span><span class="comment">*</span><span class="comment">           On entry,  TRANS  specifies the operation to be performed as
+</span><span class="comment">*</span><span class="comment">           follows:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              TRANS = 'N' or 'n'   C := alpha*A*conjg( A' ) + beta*C.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              TRANS = 'C' or 'c'   C := alpha*conjg( A' )*A + beta*C.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N      - INTEGER.
+</span><span class="comment">*</span><span class="comment">           On entry,  N specifies the order of the matrix C.  N must be
+</span><span class="comment">*</span><span class="comment">           at least zero.
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  K      - INTEGER.
+</span><span class="comment">*</span><span class="comment">           On entry with  TRANS = 'N' or 'n',  K  specifies  the number
+</span><span class="comment">*</span><span class="comment">           of  columns   of  the   matrix   A,   and  on   entry   with
+</span><span class="comment">*</span><span class="comment">           TRANS = 'C' or 'c',  K  specifies  the number of rows of the
+</span><span class="comment">*</span><span class="comment">           matrix A.  K must be at least zero.
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ALPHA  - REAL            .
+</span><span class="comment">*</span><span class="comment">           On entry, ALPHA specifies the scalar alpha.
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A      - COMPLEX          array of DIMENSION ( LDA, ka ), where ka is
+</span><span class="comment">*</span><span class="comment">           k  when  TRANS = 'N' or 'n',  and is  n  otherwise.
+</span><span class="comment">*</span><span class="comment">           Before entry with  TRANS = 'N' or 'n',  the  leading  n by k
+</span><span class="comment">*</span><span class="comment">           part of the array  A  must contain the matrix  A,  otherwise
+</span><span class="comment">*</span><span class="comment">           the leading  k by n  part of the array  A  must contain  the
+</span><span class="comment">*</span><span class="comment">           matrix A.
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA    - INTEGER.
+</span><span class="comment">*</span><span class="comment">           On entry, LDA specifies the first dimension of A as declared
+</span><span class="comment">*</span><span class="comment">           in  the  calling  (sub)  program.   When  TRANS = 'N' or 'n'
+</span><span class="comment">*</span><span class="comment">           then  LDA must be at least  max( 1, n ), otherwise  LDA must
+</span><span class="comment">*</span><span class="comment">           be at least  max( 1, k ).
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BETA   - REAL            .
+</span><span class="comment">*</span><span class="comment">           On entry, BETA specifies the scalar beta.
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C      - COMPLEX          array of DIMENSION ( LDC, n ).
+</span><span class="comment">*</span><span class="comment">           Before entry  with  UPLO = 'U' or 'u',  the leading  n by n
+</span><span class="comment">*</span><span class="comment">           upper triangular part of the array C must contain the upper
+</span><span class="comment">*</span><span class="comment">           triangular part  of the  hermitian matrix  and the strictly
+</span><span class="comment">*</span><span class="comment">           lower triangular part of C is not referenced.  On exit, the
+</span><span class="comment">*</span><span class="comment">           upper triangular part of the array  C is overwritten by the
+</span><span class="comment">*</span><span class="comment">           upper triangular part of the updated matrix.
+</span><span class="comment">*</span><span class="comment">           Before entry  with  UPLO = 'L' or 'l',  the leading  n by n
+</span><span class="comment">*</span><span class="comment">           lower triangular part of the array C must contain the lower
+</span><span class="comment">*</span><span class="comment">           triangular part  of the  hermitian matrix  and the strictly
+</span><span class="comment">*</span><span class="comment">           upper triangular part of C is not referenced.  On exit, the
+</span><span class="comment">*</span><span class="comment">           lower triangular part of the array  C is overwritten by the
+</span><span class="comment">*</span><span class="comment">           lower triangular part of the updated matrix.
+</span><span class="comment">*</span><span class="comment">           Note that the imaginary parts of the diagonal elements need
+</span><span class="comment">*</span><span class="comment">           not be set,  they are assumed to be zero,  and on exit they
+</span><span class="comment">*</span><span class="comment">           are set to zero.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDC    - INTEGER.
+</span><span class="comment">*</span><span class="comment">           On entry, LDC specifies the first dimension of C as declared
+</span><span class="comment">*</span><span class="comment">           in  the  calling  (sub)  program.   LDC  must  be  at  least
+</span><span class="comment">*</span><span class="comment">           max( 1, n ).
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Level 3 Blas routine.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- Written on 8-February-1989.
+</span><span class="comment">*</span><span class="comment">     Jack Dongarra, Argonne National Laboratory.
+</span><span class="comment">*</span><span class="comment">     Iain Duff, AERE Harwell.
+</span><span class="comment">*</span><span class="comment">     Jeremy Du Croz, Numerical Algorithms Group Ltd.
+</span><span class="comment">*</span><span class="comment">     Sven Hammarling, Numerical Algorithms Group Ltd.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- Modified 8-Nov-93 to set C(J,J) to REAL( C(J,J) ) when BETA = 1.
+</span><span class="comment">*</span><span class="comment">     Ed Anderson, Cray Research Inc.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL <a name="LSAME.124"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL <a name="LSAME.125"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL <a name="XERBLA.128"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC CMPLX,CONJG,MAX,REAL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      COMPLEX TEMP
+      REAL RTEMP
+      INTEGER I,INFO,J,L,NROWA
+      LOGICAL UPPER
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL ONE,ZERO
+      PARAMETER (ONE=1.0E+0,ZERO=0.0E+0)
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF (<a name="LSAME.146"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(TRANS,<span class="string">'N'</span>)) THEN
+          NROWA = N
+      ELSE
+          NROWA = K
+      END IF
+      UPPER = <a name="LSAME.151"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(UPLO,<span class="string">'U'</span>)
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF ((.NOT.UPPER) .AND. (.NOT.<a name="LSAME.154"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(UPLO,<span class="string">'L'</span>))) THEN
+          INFO = 1
+      ELSE IF ((.NOT.<a name="LSAME.156"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(TRANS,<span class="string">'N'</span>)) .AND.
+     +         (.NOT.<a name="LSAME.157"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(TRANS,<span class="string">'C'</span>))) THEN
+          INFO = 2
+      ELSE IF (N.LT.0) THEN
+          INFO = 3
+      ELSE IF (K.LT.0) THEN
+          INFO = 4
+      ELSE IF (LDA.LT.MAX(1,NROWA)) THEN
+          INFO = 7
+      ELSE IF (LDC.LT.MAX(1,N)) THEN
+          INFO = 10
+      END IF
+      IF (INFO.NE.0) THEN
+          CALL <a name="XERBLA.169"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>(<span class="string">'<a name="CHERK.169"></a><a href="cherk.f.html#CHERK.1">CHERK</a> '</span>,INFO)
+          RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF ((N.EQ.0) .OR. (((ALPHA.EQ.ZERO).OR.
+     +    (K.EQ.0)).AND. (BETA.EQ.ONE))) RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     And when  alpha.eq.zero.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF (ALPHA.EQ.ZERO) THEN
+          IF (UPPER) THEN
+              IF (BETA.EQ.ZERO) THEN
+                  DO 20 J = 1,N
+                      DO 10 I = 1,J
+                          C(I,J) = ZERO
+   10                 CONTINUE
+   20             CONTINUE
+              ELSE
+                  DO 40 J = 1,N
+                      DO 30 I = 1,J - 1
+                          C(I,J) = BETA*C(I,J)
+   30                 CONTINUE
+                      C(J,J) = BETA*REAL(C(J,J))
+   40             CONTINUE
+              END IF
+          ELSE
+              IF (BETA.EQ.ZERO) THEN
+                  DO 60 J = 1,N
+                      DO 50 I = J,N
+                          C(I,J) = ZERO
+   50                 CONTINUE
+   60             CONTINUE
+              ELSE
+                  DO 80 J = 1,N
+                      C(J,J) = BETA*REAL(C(J,J))
+                      DO 70 I = J + 1,N
+                          C(I,J) = BETA*C(I,J)
+   70                 CONTINUE
+   80             CONTINUE
+              END IF
+          END IF
+          RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Start the operations.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF (<a name="LSAME.217"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(TRANS,<span class="string">'N'</span>)) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Form  C := alpha*A*conjg( A' ) + beta*C.
+</span><span class="comment">*</span><span class="comment">
+</span>          IF (UPPER) THEN
+              DO 130 J = 1,N
+                  IF (BETA.EQ.ZERO) THEN
+                      DO 90 I = 1,J
+                          C(I,J) = ZERO
+   90                 CONTINUE
+                  ELSE IF (BETA.NE.ONE) THEN
+                      DO 100 I = 1,J - 1
+                          C(I,J) = BETA*C(I,J)
+  100                 CONTINUE
+                      C(J,J) = BETA*REAL(C(J,J))
+                  ELSE
+                      C(J,J) = REAL(C(J,J))
+                  END IF
+                  DO 120 L = 1,K
+                      IF (A(J,L).NE.CMPLX(ZERO)) THEN
+                          TEMP = ALPHA*CONJG(A(J,L))
+                          DO 110 I = 1,J - 1
+                              C(I,J) = C(I,J) + TEMP*A(I,L)
+  110                     CONTINUE
+                          C(J,J) = REAL(C(J,J)) + REAL(TEMP*A(I,L))
+                      END IF
+  120             CONTINUE
+  130         CONTINUE
+          ELSE
+              DO 180 J = 1,N
+                  IF (BETA.EQ.ZERO) THEN
+                      DO 140 I = J,N
+                          C(I,J) = ZERO
+  140                 CONTINUE
+                  ELSE IF (BETA.NE.ONE) THEN
+                      C(J,J) = BETA*REAL(C(J,J))
+                      DO 150 I = J + 1,N
+                          C(I,J) = BETA*C(I,J)
+  150                 CONTINUE
+                  ELSE
+                      C(J,J) = REAL(C(J,J))
+                  END IF
+                  DO 170 L = 1,K
+                      IF (A(J,L).NE.CMPLX(ZERO)) THEN
+                          TEMP = ALPHA*CONJG(A(J,L))
+                          C(J,J) = REAL(C(J,J)) + REAL(TEMP*A(J,L))
+                          DO 160 I = J + 1,N
+                              C(I,J) = C(I,J) + TEMP*A(I,L)
+  160                     CONTINUE
+                      END IF
+  170             CONTINUE
+  180         CONTINUE
+          END IF
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Form  C := alpha*conjg( A' )*A + beta*C.
+</span><span class="comment">*</span><span class="comment">
+</span>          IF (UPPER) THEN
+              DO 220 J = 1,N
+                  DO 200 I = 1,J - 1
+                      TEMP = ZERO
+                      DO 190 L = 1,K
+                          TEMP = TEMP + CONJG(A(L,I))*A(L,J)
+  190                 CONTINUE
+                      IF (BETA.EQ.ZERO) THEN
+                          C(I,J) = ALPHA*TEMP
+                      ELSE
+                          C(I,J) = ALPHA*TEMP + BETA*C(I,J)
+                      END IF
+  200             CONTINUE
+                  RTEMP = ZERO
+                  DO 210 L = 1,K
+                      RTEMP = RTEMP + CONJG(A(L,J))*A(L,J)
+  210             CONTINUE
+                  IF (BETA.EQ.ZERO) THEN
+                      C(J,J) = ALPHA*RTEMP
+                  ELSE
+                      C(J,J) = ALPHA*RTEMP + BETA*REAL(C(J,J))
+                  END IF
+  220         CONTINUE
+          ELSE
+              DO 260 J = 1,N
+                  RTEMP = ZERO
+                  DO 230 L = 1,K
+                      RTEMP = RTEMP + CONJG(A(L,J))*A(L,J)
+  230             CONTINUE
+                  IF (BETA.EQ.ZERO) THEN
+                      C(J,J) = ALPHA*RTEMP
+                  ELSE
+                      C(J,J) = ALPHA*RTEMP + BETA*REAL(C(J,J))
+                  END IF
+                  DO 250 I = J + 1,N
+                      TEMP = ZERO
+                      DO 240 L = 1,K
+                          TEMP = TEMP + CONJG(A(L,I))*A(L,J)
+  240                 CONTINUE
+                      IF (BETA.EQ.ZERO) THEN
+                          C(I,J) = ALPHA*TEMP
+                      ELSE
+                          C(I,J) = ALPHA*TEMP + BETA*C(I,J)
+                      END IF
+  250             CONTINUE
+  260         CONTINUE
+          END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CHERK.325"></a><a href="cherk.f.html#CHERK.1">CHERK</a> .
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

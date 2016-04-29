@@ -1,0 +1,1005 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>strevc.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="STREVC.1"></a><a href="strevc.f.html#STREVC.1">STREVC</a>( SIDE, HOWMNY, SELECT, N, T, LDT, VL, LDVL, VR,
+     $                   LDVR, MM, M, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          HOWMNY, SIDE
+      INTEGER            INFO, LDT, LDVL, LDVR, M, MM, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      LOGICAL            SELECT( * )
+      REAL               T( LDT, * ), VL( LDVL, * ), VR( LDVR, * ),
+     $                   WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="STREVC.21"></a><a href="strevc.f.html#STREVC.1">STREVC</a> computes some or all of the right and/or left eigenvectors of
+</span><span class="comment">*</span><span class="comment">  a real upper quasi-triangular matrix T.
+</span><span class="comment">*</span><span class="comment">  Matrices of this type are produced by the Schur factorization of
+</span><span class="comment">*</span><span class="comment">  a real general matrix:  A = Q*T*Q**T, as computed by <a name="SHSEQR.24"></a><a href="shseqr.f.html#SHSEQR.1">SHSEQR</a>.
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  The right eigenvector x and the left eigenvector y of T corresponding
+</span><span class="comment">*</span><span class="comment">  to an eigenvalue w are defined by:
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">     T*x = w*x,     (y**H)*T = w*(y**H)
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  where y**H denotes the conjugate transpose of y.
+</span><span class="comment">*</span><span class="comment">  The eigenvalues are not input to this routine, but are read directly
+</span><span class="comment">*</span><span class="comment">  from the diagonal blocks of T.
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  This routine returns the matrices X and/or Y of right and left
+</span><span class="comment">*</span><span class="comment">  eigenvectors of T, or the products Q*X and/or Q*Y, where Q is an
+</span><span class="comment">*</span><span class="comment">  input matrix.  If Q is the orthogonal factor that reduces a matrix
+</span><span class="comment">*</span><span class="comment">  A to Schur form T, then Q*X and Q*Y are the matrices of right and
+</span><span class="comment">*</span><span class="comment">  left eigenvectors of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SIDE    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'R':  compute right eigenvectors only;
+</span><span class="comment">*</span><span class="comment">          = 'L':  compute left eigenvectors only;
+</span><span class="comment">*</span><span class="comment">          = 'B':  compute both right and left eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  HOWMNY  (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'A':  compute all right and/or left eigenvectors;
+</span><span class="comment">*</span><span class="comment">          = 'B':  compute all right and/or left eigenvectors,
+</span><span class="comment">*</span><span class="comment">                  backtransformed by the matrices in VR and/or VL;
+</span><span class="comment">*</span><span class="comment">          = 'S':  compute selected right and/or left eigenvectors,
+</span><span class="comment">*</span><span class="comment">                  as indicated by the logical array SELECT.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SELECT  (input/output) LOGICAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          If HOWMNY = 'S', SELECT specifies the eigenvectors to be
+</span><span class="comment">*</span><span class="comment">          computed.
+</span><span class="comment">*</span><span class="comment">          If w(j) is a real eigenvalue, the corresponding real
+</span><span class="comment">*</span><span class="comment">          eigenvector is computed if SELECT(j) is .TRUE..
+</span><span class="comment">*</span><span class="comment">          If w(j) and w(j+1) are the real and imaginary parts of a
+</span><span class="comment">*</span><span class="comment">          complex eigenvalue, the corresponding complex eigenvector is
+</span><span class="comment">*</span><span class="comment">          computed if either SELECT(j) or SELECT(j+1) is .TRUE., and
+</span><span class="comment">*</span><span class="comment">          on exit SELECT(j) is set to .TRUE. and SELECT(j+1) is set to
+</span><span class="comment">*</span><span class="comment">          .FALSE..
+</span><span class="comment">*</span><span class="comment">          Not referenced if HOWMNY = 'A' or 'B'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix T. N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  T       (input) REAL array, dimension (LDT,N)
+</span><span class="comment">*</span><span class="comment">          The upper quasi-triangular matrix T in Schur canonical form.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDT     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array T. LDT &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VL      (input/output) REAL array, dimension (LDVL,MM)
+</span><span class="comment">*</span><span class="comment">          On entry, if SIDE = 'L' or 'B' and HOWMNY = 'B', VL must
+</span><span class="comment">*</span><span class="comment">          contain an N-by-N matrix Q (usually the orthogonal matrix Q
+</span><span class="comment">*</span><span class="comment">          of Schur vectors returned by <a name="SHSEQR.80"></a><a href="shseqr.f.html#SHSEQR.1">SHSEQR</a>).
+</span><span class="comment">*</span><span class="comment">          On exit, if SIDE = 'L' or 'B', VL contains:
+</span><span class="comment">*</span><span class="comment">          if HOWMNY = 'A', the matrix Y of left eigenvectors of T;
+</span><span class="comment">*</span><span class="comment">          if HOWMNY = 'B', the matrix Q*Y;
+</span><span class="comment">*</span><span class="comment">          if HOWMNY = 'S', the left eigenvectors of T specified by
+</span><span class="comment">*</span><span class="comment">                           SELECT, stored consecutively in the columns
+</span><span class="comment">*</span><span class="comment">                           of VL, in the same order as their
+</span><span class="comment">*</span><span class="comment">                           eigenvalues.
+</span><span class="comment">*</span><span class="comment">          A complex eigenvector corresponding to a complex eigenvalue
+</span><span class="comment">*</span><span class="comment">          is stored in two consecutive columns, the first holding the
+</span><span class="comment">*</span><span class="comment">          real part, and the second the imaginary part.
+</span><span class="comment">*</span><span class="comment">          Not referenced if SIDE = 'R'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDVL    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array VL.  LDVL &gt;= 1, and if
+</span><span class="comment">*</span><span class="comment">          SIDE = 'L' or 'B', LDVL &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VR      (input/output) REAL array, dimension (LDVR,MM)
+</span><span class="comment">*</span><span class="comment">          On entry, if SIDE = 'R' or 'B' and HOWMNY = 'B', VR must
+</span><span class="comment">*</span><span class="comment">          contain an N-by-N matrix Q (usually the orthogonal matrix Q
+</span><span class="comment">*</span><span class="comment">          of Schur vectors returned by <a name="SHSEQR.100"></a><a href="shseqr.f.html#SHSEQR.1">SHSEQR</a>).
+</span><span class="comment">*</span><span class="comment">          On exit, if SIDE = 'R' or 'B', VR contains:
+</span><span class="comment">*</span><span class="comment">          if HOWMNY = 'A', the matrix X of right eigenvectors of T;
+</span><span class="comment">*</span><span class="comment">          if HOWMNY = 'B', the matrix Q*X;
+</span><span class="comment">*</span><span class="comment">          if HOWMNY = 'S', the right eigenvectors of T specified by
+</span><span class="comment">*</span><span class="comment">                           SELECT, stored consecutively in the columns
+</span><span class="comment">*</span><span class="comment">                           of VR, in the same order as their
+</span><span class="comment">*</span><span class="comment">                           eigenvalues.
+</span><span class="comment">*</span><span class="comment">          A complex eigenvector corresponding to a complex eigenvalue
+</span><span class="comment">*</span><span class="comment">          is stored in two consecutive columns, the first holding the
+</span><span class="comment">*</span><span class="comment">          real part and the second the imaginary part.
+</span><span class="comment">*</span><span class="comment">          Not referenced if SIDE = 'L'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDVR    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array VR.  LDVR &gt;= 1, and if
+</span><span class="comment">*</span><span class="comment">          SIDE = 'R' or 'B', LDVR &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  MM      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns in the arrays VL and/or VR. MM &gt;= M.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns in the arrays VL and/or VR actually
+</span><span class="comment">*</span><span class="comment">          used to store the eigenvectors.
+</span><span class="comment">*</span><span class="comment">          If HOWMNY = 'A' or 'B', M is set to N.
+</span><span class="comment">*</span><span class="comment">          Each selected real eigenvector occupies one column and each
+</span><span class="comment">*</span><span class="comment">          selected complex eigenvector occupies two columns.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) REAL array, dimension (3*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The algorithm used in this program is basically backward (forward)
+</span><span class="comment">*</span><span class="comment">  substitution, with scaling to make the the code robust against
+</span><span class="comment">*</span><span class="comment">  possible overflow.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Each eigenvector is normalized so that the element of largest
+</span><span class="comment">*</span><span class="comment">  magnitude has magnitude 1; here the magnitude of a complex number
+</span><span class="comment">*</span><span class="comment">  (x,y) is taken to be |x| + |y|.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, ONE
+      PARAMETER          ( ZERO = 0.0E+0, ONE = 1.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            ALLV, BOTHV, LEFTV, OVER, PAIR, RIGHTV, SOMEV
+      INTEGER            I, IERR, II, IP, IS, J, J1, J2, JNXT, K, KI, N2
+      REAL               BETA, BIGNUM, EMAX, OVFL, REC, REMAX, SCALE,
+     $                   SMIN, SMLNUM, ULP, UNFL, VCRIT, VMAX, WI, WR,
+     $                   XNORM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.158"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      INTEGER            ISAMAX
+      REAL               SDOT, <a name="SLAMCH.160"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      EXTERNAL           <a name="LSAME.161"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, ISAMAX, SDOT, <a name="SLAMCH.161"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           SAXPY, SCOPY, SGEMV, <a name="SLABAD.164"></a><a href="slabad.f.html#SLABAD.1">SLABAD</a>, <a name="SLALN2.164"></a><a href="slaln2.f.html#SLALN2.1">SLALN2</a>, SSCAL,
+     $                   <a name="XERBLA.165"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      REAL               X( 2, 2 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Decode and test the input parameters
+</span><span class="comment">*</span><span class="comment">
+</span>      BOTHV = <a name="LSAME.177"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'B'</span> )
+      RIGHTV = <a name="LSAME.178"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'R'</span> ) .OR. BOTHV
+      LEFTV = <a name="LSAME.179"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'L'</span> ) .OR. BOTHV
+<span class="comment">*</span><span class="comment">
+</span>      ALLV = <a name="LSAME.181"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( HOWMNY, <span class="string">'A'</span> )
+      OVER = <a name="LSAME.182"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( HOWMNY, <span class="string">'B'</span> )
+      SOMEV = <a name="LSAME.183"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( HOWMNY, <span class="string">'S'</span> )
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( .NOT.RIGHTV .AND. .NOT.LEFTV ) THEN
+         INFO = -1
+      ELSE IF( .NOT.ALLV .AND. .NOT.OVER .AND. .NOT.SOMEV ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( LDT.LT.MAX( 1, N ) ) THEN
+         INFO = -6
+      ELSE IF( LDVL.LT.1 .OR. ( LEFTV .AND. LDVL.LT.N ) ) THEN
+         INFO = -8
+      ELSE IF( LDVR.LT.1 .OR. ( RIGHTV .AND. LDVR.LT.N ) ) THEN
+         INFO = -10
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Set M to the number of columns required to store the selected
+</span><span class="comment">*</span><span class="comment">        eigenvectors, standardize the array SELECT if necessary, and
+</span><span class="comment">*</span><span class="comment">        test MM.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( SOMEV ) THEN
+            M = 0
+            PAIR = .FALSE.
+            DO 10 J = 1, N
+               IF( PAIR ) THEN
+                  PAIR = .FALSE.
+                  SELECT( J ) = .FALSE.
+               ELSE
+                  IF( J.LT.N ) THEN
+                     IF( T( J+1, J ).EQ.ZERO ) THEN
+                        IF( SELECT( J ) )
+     $                     M = M + 1
+                     ELSE
+                        PAIR = .TRUE.
+                        IF( SELECT( J ) .OR. SELECT( J+1 ) ) THEN
+                           SELECT( J ) = .TRUE.
+                           M = M + 2
+                        END IF
+                     END IF
+                  ELSE
+                     IF( SELECT( N ) )
+     $                  M = M + 1
+                  END IF
+               END IF
+   10       CONTINUE
+         ELSE
+            M = N
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( MM.LT.M ) THEN
+            INFO = -11
+         END IF
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.238"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="STREVC.238"></a><a href="strevc.f.html#STREVC.1">STREVC</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set the constants to control overflow.
+</span><span class="comment">*</span><span class="comment">
+</span>      UNFL = <a name="SLAMCH.249"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Safe minimum'</span> )
+      OVFL = ONE / UNFL
+      CALL <a name="SLABAD.251"></a><a href="slabad.f.html#SLABAD.1">SLABAD</a>( UNFL, OVFL )
+      ULP = <a name="SLAMCH.252"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Precision'</span> )
+      SMLNUM = UNFL*( N / ULP )
+      BIGNUM = ( ONE-ULP ) / SMLNUM
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute 1-norm of each column of strictly upper triangular
+</span><span class="comment">*</span><span class="comment">     part of T to control overflow in triangular solver.
+</span><span class="comment">*</span><span class="comment">
+</span>      WORK( 1 ) = ZERO
+      DO 30 J = 2, N
+         WORK( J ) = ZERO
+         DO 20 I = 1, J - 1
+            WORK( J ) = WORK( J ) + ABS( T( I, J ) )
+   20    CONTINUE
+   30 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Index IP is used to specify the real or complex eigenvalue:
+</span><span class="comment">*</span><span class="comment">       IP = 0, real eigenvalue,
+</span><span class="comment">*</span><span class="comment">            1, first of conjugate complex pair: (wr,wi)
+</span><span class="comment">*</span><span class="comment">           -1, second of conjugate complex pair: (wr,wi)
+</span><span class="comment">*</span><span class="comment">
+</span>      N2 = 2*N
+<span class="comment">*</span><span class="comment">
+</span>      IF( RIGHTV ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute right eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span>         IP = 0
+         IS = M
+         DO 140 KI = N, 1, -1
+<span class="comment">*</span><span class="comment">
+</span>            IF( IP.EQ.1 )
+     $         GO TO 130
+            IF( KI.EQ.1 )
+     $         GO TO 40
+            IF( T( KI, KI-1 ).EQ.ZERO )
+     $         GO TO 40
+            IP = -1
+<span class="comment">*</span><span class="comment">
+</span>   40       CONTINUE
+            IF( SOMEV ) THEN
+               IF( IP.EQ.0 ) THEN
+                  IF( .NOT.SELECT( KI ) )
+     $               GO TO 130
+               ELSE
+                  IF( .NOT.SELECT( KI-1 ) )
+     $               GO TO 130
+               END IF
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute the KI-th eigenvalue (WR,WI).
+</span><span class="comment">*</span><span class="comment">
+</span>            WR = T( KI, KI )
+            WI = ZERO
+            IF( IP.NE.0 )
+     $         WI = SQRT( ABS( T( KI, KI-1 ) ) )*
+     $              SQRT( ABS( T( KI-1, KI ) ) )
+            SMIN = MAX( ULP*( ABS( WR )+ABS( WI ) ), SMLNUM )
+<span class="comment">*</span><span class="comment">
+</span>            IF( IP.EQ.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Real right eigenvector
+</span><span class="comment">*</span><span class="comment">
+</span>               WORK( KI+N ) = ONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Form right-hand side
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 50 K = 1, KI - 1
+                  WORK( K+N ) = -T( K, KI )
+   50          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Solve the upper quasi-triangular system:
+</span><span class="comment">*</span><span class="comment">                 (T(1:KI-1,1:KI-1) - WR)*X = SCALE*WORK.
+</span><span class="comment">*</span><span class="comment">
+</span>               JNXT = KI - 1
+               DO 60 J = KI - 1, 1, -1
+                  IF( J.GT.JNXT )
+     $               GO TO 60
+                  J1 = J
+                  J2 = J
+                  JNXT = J - 1
+                  IF( J.GT.1 ) THEN
+                     IF( T( J, J-1 ).NE.ZERO ) THEN
+                        J1 = J - 1
+                        JNXT = J - 2
+                     END IF
+                  END IF
+<span class="comment">*</span><span class="comment">
+</span>                  IF( J1.EQ.J2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    1-by-1 diagonal block
+</span><span class="comment">*</span><span class="comment">
+</span>                     CALL <a name="SLALN2.343"></a><a href="slaln2.f.html#SLALN2.1">SLALN2</a>( .FALSE., 1, 1, SMIN, ONE, T( J, J ),
+     $                            LDT, ONE, ONE, WORK( J+N ), N, WR,
+     $                            ZERO, X, 2, SCALE, XNORM, IERR )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Scale X(1,1) to avoid overflow when updating
+</span><span class="comment">*</span><span class="comment">                    the right-hand side.
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( XNORM.GT.ONE ) THEN
+                        IF( WORK( J ).GT.BIGNUM / XNORM ) THEN
+                           X( 1, 1 ) = X( 1, 1 ) / XNORM
+                           SCALE = SCALE / XNORM
+                        END IF
+                     END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Scale if necessary
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( SCALE.NE.ONE )
+     $                  CALL SSCAL( KI, SCALE, WORK( 1+N ), 1 )
+                     WORK( J+N ) = X( 1, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Update right-hand side
+</span><span class="comment">*</span><span class="comment">
+</span>                     CALL SAXPY( J-1, -X( 1, 1 ), T( 1, J ), 1,
+     $                           WORK( 1+N ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>                  ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    2-by-2 diagonal block
+</span><span class="comment">*</span><span class="comment">
+</span>                     CALL <a name="SLALN2.372"></a><a href="slaln2.f.html#SLALN2.1">SLALN2</a>( .FALSE., 2, 1, SMIN, ONE,
+     $                            T( J-1, J-1 ), LDT, ONE, ONE,
+     $                            WORK( J-1+N ), N, WR, ZERO, X, 2,
+     $                            SCALE, XNORM, IERR )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Scale X(1,1) and X(2,1) to avoid overflow when
+</span><span class="comment">*</span><span class="comment">                    updating the right-hand side.
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( XNORM.GT.ONE ) THEN
+                        BETA = MAX( WORK( J-1 ), WORK( J ) )
+                        IF( BETA.GT.BIGNUM / XNORM ) THEN
+                           X( 1, 1 ) = X( 1, 1 ) / XNORM
+                           X( 2, 1 ) = X( 2, 1 ) / XNORM
+                           SCALE = SCALE / XNORM
+                        END IF
+                     END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Scale if necessary
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( SCALE.NE.ONE )
+     $                  CALL SSCAL( KI, SCALE, WORK( 1+N ), 1 )
+                     WORK( J-1+N ) = X( 1, 1 )
+                     WORK( J+N ) = X( 2, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Update right-hand side
+</span><span class="comment">*</span><span class="comment">
+</span>                     CALL SAXPY( J-2, -X( 1, 1 ), T( 1, J-1 ), 1,
+     $                           WORK( 1+N ), 1 )
+                     CALL SAXPY( J-2, -X( 2, 1 ), T( 1, J ), 1,
+     $                           WORK( 1+N ), 1 )
+                  END IF
+   60          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Copy the vector x or Q*x to VR and normalize.
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( .NOT.OVER ) THEN
+                  CALL SCOPY( KI, WORK( 1+N ), 1, VR( 1, IS ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>                  II = ISAMAX( KI, VR( 1, IS ), 1 )
+                  REMAX = ONE / ABS( VR( II, IS ) )
+                  CALL SSCAL( KI, REMAX, VR( 1, IS ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>                  DO 70 K = KI + 1, N
+                     VR( K, IS ) = ZERO
+   70             CONTINUE
+               ELSE
+                  IF( KI.GT.1 )
+     $               CALL SGEMV( <span class="string">'N'</span>, N, KI-1, ONE, VR, LDVR,
+     $                           WORK( 1+N ), 1, WORK( KI+N ),
+     $                           VR( 1, KI ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>                  II = ISAMAX( N, VR( 1, KI ), 1 )
+                  REMAX = ONE / ABS( VR( II, KI ) )
+                  CALL SSCAL( N, REMAX, VR( 1, KI ), 1 )
+               END IF
+<span class="comment">*</span><span class="comment">
+</span>            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Complex right eigenvector.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Initial solve
+</span><span class="comment">*</span><span class="comment">                [ (T(KI-1,KI-1) T(KI-1,KI) ) - (WR + I* WI)]*X = 0.
+</span><span class="comment">*</span><span class="comment">                [ (T(KI,KI-1)   T(KI,KI)   )               ]
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( ABS( T( KI-1, KI ) ).GE.ABS( T( KI, KI-1 ) ) ) THEN
+                  WORK( KI-1+N ) = ONE
+                  WORK( KI+N2 ) = WI / T( KI-1, KI )
+               ELSE
+                  WORK( KI-1+N ) = -WI / T( KI, KI-1 )
+                  WORK( KI+N2 ) = ONE
+               END IF
+               WORK( KI+N ) = ZERO
+               WORK( KI-1+N2 ) = ZERO
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Form right-hand side
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 80 K = 1, KI - 2
+                  WORK( K+N ) = -WORK( KI-1+N )*T( K, KI-1 )
+                  WORK( K+N2 ) = -WORK( KI+N2 )*T( K, KI )
+   80          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Solve upper quasi-triangular system:
+</span><span class="comment">*</span><span class="comment">              (T(1:KI-2,1:KI-2) - (WR+i*WI))*X = SCALE*(WORK+i*WORK2)
+</span><span class="comment">*</span><span class="comment">
+</span>               JNXT = KI - 2
+               DO 90 J = KI - 2, 1, -1
+                  IF( J.GT.JNXT )
+     $               GO TO 90
+                  J1 = J
+                  J2 = J
+                  JNXT = J - 1
+                  IF( J.GT.1 ) THEN
+                     IF( T( J, J-1 ).NE.ZERO ) THEN
+                        J1 = J - 1
+                        JNXT = J - 2
+                     END IF
+                  END IF
+<span class="comment">*</span><span class="comment">
+</span>                  IF( J1.EQ.J2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    1-by-1 diagonal block
+</span><span class="comment">*</span><span class="comment">
+</span>                     CALL <a name="SLALN2.474"></a><a href="slaln2.f.html#SLALN2.1">SLALN2</a>( .FALSE., 1, 2, SMIN, ONE, T( J, J ),
+     $                            LDT, ONE, ONE, WORK( J+N ), N, WR, WI,
+     $                            X, 2, SCALE, XNORM, IERR )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Scale X(1,1) and X(1,2) to avoid overflow when
+</span><span class="comment">*</span><span class="comment">                    updating the right-hand side.
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( XNORM.GT.ONE ) THEN
+                        IF( WORK( J ).GT.BIGNUM / XNORM ) THEN
+                           X( 1, 1 ) = X( 1, 1 ) / XNORM
+                           X( 1, 2 ) = X( 1, 2 ) / XNORM
+                           SCALE = SCALE / XNORM
+                        END IF
+                     END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Scale if necessary
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( SCALE.NE.ONE ) THEN
+                        CALL SSCAL( KI, SCALE, WORK( 1+N ), 1 )
+                        CALL SSCAL( KI, SCALE, WORK( 1+N2 ), 1 )
+                     END IF
+                     WORK( J+N ) = X( 1, 1 )
+                     WORK( J+N2 ) = X( 1, 2 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Update the right-hand side
+</span><span class="comment">*</span><span class="comment">
+</span>                     CALL SAXPY( J-1, -X( 1, 1 ), T( 1, J ), 1,
+     $                           WORK( 1+N ), 1 )
+                     CALL SAXPY( J-1, -X( 1, 2 ), T( 1, J ), 1,
+     $                           WORK( 1+N2 ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>                  ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    2-by-2 diagonal block
+</span><span class="comment">*</span><span class="comment">
+</span>                     CALL <a name="SLALN2.509"></a><a href="slaln2.f.html#SLALN2.1">SLALN2</a>( .FALSE., 2, 2, SMIN, ONE,
+     $                            T( J-1, J-1 ), LDT, ONE, ONE,
+     $                            WORK( J-1+N ), N, WR, WI, X, 2, SCALE,
+     $                            XNORM, IERR )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Scale X to avoid overflow when updating
+</span><span class="comment">*</span><span class="comment">                    the right-hand side.
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( XNORM.GT.ONE ) THEN
+                        BETA = MAX( WORK( J-1 ), WORK( J ) )
+                        IF( BETA.GT.BIGNUM / XNORM ) THEN
+                           REC = ONE / XNORM
+                           X( 1, 1 ) = X( 1, 1 )*REC
+                           X( 1, 2 ) = X( 1, 2 )*REC
+                           X( 2, 1 ) = X( 2, 1 )*REC
+                           X( 2, 2 ) = X( 2, 2 )*REC
+                           SCALE = SCALE*REC
+                        END IF
+                     END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Scale if necessary
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( SCALE.NE.ONE ) THEN
+                        CALL SSCAL( KI, SCALE, WORK( 1+N ), 1 )
+                        CALL SSCAL( KI, SCALE, WORK( 1+N2 ), 1 )
+                     END IF
+                     WORK( J-1+N ) = X( 1, 1 )
+                     WORK( J+N ) = X( 2, 1 )
+                     WORK( J-1+N2 ) = X( 1, 2 )
+                     WORK( J+N2 ) = X( 2, 2 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Update the right-hand side
+</span><span class="comment">*</span><span class="comment">
+</span>                     CALL SAXPY( J-2, -X( 1, 1 ), T( 1, J-1 ), 1,
+     $                           WORK( 1+N ), 1 )
+                     CALL SAXPY( J-2, -X( 2, 1 ), T( 1, J ), 1,
+     $                           WORK( 1+N ), 1 )
+                     CALL SAXPY( J-2, -X( 1, 2 ), T( 1, J-1 ), 1,
+     $                           WORK( 1+N2 ), 1 )
+                     CALL SAXPY( J-2, -X( 2, 2 ), T( 1, J ), 1,
+     $                           WORK( 1+N2 ), 1 )
+                  END IF
+   90          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Copy the vector x or Q*x to VR and normalize.
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( .NOT.OVER ) THEN
+                  CALL SCOPY( KI, WORK( 1+N ), 1, VR( 1, IS-1 ), 1 )
+                  CALL SCOPY( KI, WORK( 1+N2 ), 1, VR( 1, IS ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>                  EMAX = ZERO
+                  DO 100 K = 1, KI
+                     EMAX = MAX( EMAX, ABS( VR( K, IS-1 ) )+
+     $                      ABS( VR( K, IS ) ) )
+  100             CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>                  REMAX = ONE / EMAX
+                  CALL SSCAL( KI, REMAX, VR( 1, IS-1 ), 1 )
+                  CALL SSCAL( KI, REMAX, VR( 1, IS ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>                  DO 110 K = KI + 1, N
+                     VR( K, IS-1 ) = ZERO
+                     VR( K, IS ) = ZERO
+  110             CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>               ELSE
+<span class="comment">*</span><span class="comment">
+</span>                  IF( KI.GT.2 ) THEN
+                     CALL SGEMV( <span class="string">'N'</span>, N, KI-2, ONE, VR, LDVR,
+     $                           WORK( 1+N ), 1, WORK( KI-1+N ),
+     $                           VR( 1, KI-1 ), 1 )
+                     CALL SGEMV( <span class="string">'N'</span>, N, KI-2, ONE, VR, LDVR,
+     $                           WORK( 1+N2 ), 1, WORK( KI+N2 ),
+     $                           VR( 1, KI ), 1 )
+                  ELSE
+                     CALL SSCAL( N, WORK( KI-1+N ), VR( 1, KI-1 ), 1 )
+                     CALL SSCAL( N, WORK( KI+N2 ), VR( 1, KI ), 1 )
+                  END IF
+<span class="comment">*</span><span class="comment">
+</span>                  EMAX = ZERO
+                  DO 120 K = 1, N
+                     EMAX = MAX( EMAX, ABS( VR( K, KI-1 ) )+
+     $                      ABS( VR( K, KI ) ) )
+  120             CONTINUE
+                  REMAX = ONE / EMAX
+                  CALL SSCAL( N, REMAX, VR( 1, KI-1 ), 1 )
+                  CALL SSCAL( N, REMAX, VR( 1, KI ), 1 )
+               END IF
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>            IS = IS - 1
+            IF( IP.NE.0 )
+     $         IS = IS - 1
+  130       CONTINUE
+            IF( IP.EQ.1 )
+     $         IP = 0
+            IF( IP.EQ.-1 )
+     $         IP = 1
+  140    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( LEFTV ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute left eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span>         IP = 0
+         IS = 1
+         DO 260 KI = 1, N
+<span class="comment">*</span><span class="comment">
+</span>            IF( IP.EQ.-1 )
+     $         GO TO 250
+            IF( KI.EQ.N )
+     $         GO TO 150
+            IF( T( KI+1, KI ).EQ.ZERO )
+     $         GO TO 150
+            IP = 1
+<span class="comment">*</span><span class="comment">
+</span>  150       CONTINUE
+            IF( SOMEV ) THEN
+               IF( .NOT.SELECT( KI ) )
+     $            GO TO 250
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute the KI-th eigenvalue (WR,WI).
+</span><span class="comment">*</span><span class="comment">
+</span>            WR = T( KI, KI )
+            WI = ZERO
+            IF( IP.NE.0 )
+     $         WI = SQRT( ABS( T( KI, KI+1 ) ) )*
+     $              SQRT( ABS( T( KI+1, KI ) ) )
+            SMIN = MAX( ULP*( ABS( WR )+ABS( WI ) ), SMLNUM )
+<span class="comment">*</span><span class="comment">
+</span>            IF( IP.EQ.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Real left eigenvector.
+</span><span class="comment">*</span><span class="comment">
+</span>               WORK( KI+N ) = ONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Form right-hand side
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 160 K = KI + 1, N
+                  WORK( K+N ) = -T( KI, K )
+  160          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Solve the quasi-triangular system:
+</span><span class="comment">*</span><span class="comment">                 (T(KI+1:N,KI+1:N) - WR)'*X = SCALE*WORK
+</span><span class="comment">*</span><span class="comment">
+</span>               VMAX = ONE
+               VCRIT = BIGNUM
+<span class="comment">*</span><span class="comment">
+</span>               JNXT = KI + 1
+               DO 170 J = KI + 1, N
+                  IF( J.LT.JNXT )
+     $               GO TO 170
+                  J1 = J
+                  J2 = J
+                  JNXT = J + 1
+                  IF( J.LT.N ) THEN
+                     IF( T( J+1, J ).NE.ZERO ) THEN
+                        J2 = J + 1
+                        JNXT = J + 2
+                     END IF
+                  END IF
+<span class="comment">*</span><span class="comment">
+</span>                  IF( J1.EQ.J2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    1-by-1 diagonal block
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Scale if necessary to avoid overflow when forming
+</span><span class="comment">*</span><span class="comment">                    the right-hand side.
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( WORK( J ).GT.VCRIT ) THEN
+                        REC = ONE / VMAX
+                        CALL SSCAL( N-KI+1, REC, WORK( KI+N ), 1 )
+                        VMAX = ONE
+                        VCRIT = BIGNUM
+                     END IF
+<span class="comment">*</span><span class="comment">
+</span>                     WORK( J+N ) = WORK( J+N ) -
+     $                             SDOT( J-KI-1, T( KI+1, J ), 1,
+     $                             WORK( KI+1+N ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Solve (T(J,J)-WR)'*X = WORK
+</span><span class="comment">*</span><span class="comment">
+</span>                     CALL <a name="SLALN2.693"></a><a href="slaln2.f.html#SLALN2.1">SLALN2</a>( .FALSE., 1, 1, SMIN, ONE, T( J, J ),
+     $                            LDT, ONE, ONE, WORK( J+N ), N, WR,
+     $                            ZERO, X, 2, SCALE, XNORM, IERR )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Scale if necessary
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( SCALE.NE.ONE )
+     $                  CALL SSCAL( N-KI+1, SCALE, WORK( KI+N ), 1 )
+                     WORK( J+N ) = X( 1, 1 )
+                     VMAX = MAX( ABS( WORK( J+N ) ), VMAX )
+                     VCRIT = BIGNUM / VMAX
+<span class="comment">*</span><span class="comment">
+</span>                  ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    2-by-2 diagonal block
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Scale if necessary to avoid overflow when forming
+</span><span class="comment">*</span><span class="comment">                    the right-hand side.
+</span><span class="comment">*</span><span class="comment">
+</span>                     BETA = MAX( WORK( J ), WORK( J+1 ) )
+                     IF( BETA.GT.VCRIT ) THEN
+                        REC = ONE / VMAX
+                        CALL SSCAL( N-KI+1, REC, WORK( KI+N ), 1 )
+                        VMAX = ONE
+                        VCRIT = BIGNUM
+                     END IF
+<span class="comment">*</span><span class="comment">
+</span>                     WORK( J+N ) = WORK( J+N ) -
+     $                             SDOT( J-KI-1, T( KI+1, J ), 1,
+     $                             WORK( KI+1+N ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>                     WORK( J+1+N ) = WORK( J+1+N ) -
+     $                               SDOT( J-KI-1, T( KI+1, J+1 ), 1,
+     $                               WORK( KI+1+N ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Solve
+</span><span class="comment">*</span><span class="comment">                      [T(J,J)-WR   T(J,J+1)     ]'* X = SCALE*( WORK1 )
+</span><span class="comment">*</span><span class="comment">                      [T(J+1,J)    T(J+1,J+1)-WR]             ( WORK2 )
+</span><span class="comment">*</span><span class="comment">
+</span>                     CALL <a name="SLALN2.732"></a><a href="slaln2.f.html#SLALN2.1">SLALN2</a>( .TRUE., 2, 1, SMIN, ONE, T( J, J ),
+     $                            LDT, ONE, ONE, WORK( J+N ), N, WR,
+     $                            ZERO, X, 2, SCALE, XNORM, IERR )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Scale if necessary
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( SCALE.NE.ONE )
+     $                  CALL SSCAL( N-KI+1, SCALE, WORK( KI+N ), 1 )
+                     WORK( J+N ) = X( 1, 1 )
+                     WORK( J+1+N ) = X( 2, 1 )
+<span class="comment">*</span><span class="comment">
+</span>                     VMAX = MAX( ABS( WORK( J+N ) ),
+     $                      ABS( WORK( J+1+N ) ), VMAX )
+                     VCRIT = BIGNUM / VMAX
+<span class="comment">*</span><span class="comment">
+</span>                  END IF
+  170          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Copy the vector x or Q*x to VL and normalize.
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( .NOT.OVER ) THEN
+                  CALL SCOPY( N-KI+1, WORK( KI+N ), 1, VL( KI, IS ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>                  II = ISAMAX( N-KI+1, VL( KI, IS ), 1 ) + KI - 1
+                  REMAX = ONE / ABS( VL( II, IS ) )
+                  CALL SSCAL( N-KI+1, REMAX, VL( KI, IS ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>                  DO 180 K = 1, KI - 1
+                     VL( K, IS ) = ZERO
+  180             CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>               ELSE
+<span class="comment">*</span><span class="comment">
+</span>                  IF( KI.LT.N )
+     $               CALL SGEMV( <span class="string">'N'</span>, N, N-KI, ONE, VL( 1, KI+1 ), LDVL,
+     $                           WORK( KI+1+N ), 1, WORK( KI+N ),
+     $                           VL( 1, KI ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>                  II = ISAMAX( N, VL( 1, KI ), 1 )
+                  REMAX = ONE / ABS( VL( II, KI ) )
+                  CALL SSCAL( N, REMAX, VL( 1, KI ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>               END IF
+<span class="comment">*</span><span class="comment">
+</span>            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Complex left eigenvector.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">               Initial solve:
+</span><span class="comment">*</span><span class="comment">                 ((T(KI,KI)    T(KI,KI+1) )' - (WR - I* WI))*X = 0.
+</span><span class="comment">*</span><span class="comment">                 ((T(KI+1,KI) T(KI+1,KI+1))                )
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( ABS( T( KI, KI+1 ) ).GE.ABS( T( KI+1, KI ) ) ) THEN
+                  WORK( KI+N ) = WI / T( KI, KI+1 )
+                  WORK( KI+1+N2 ) = ONE
+               ELSE
+                  WORK( KI+N ) = ONE
+                  WORK( KI+1+N2 ) = -WI / T( KI+1, KI )
+               END IF
+               WORK( KI+1+N ) = ZERO
+               WORK( KI+N2 ) = ZERO
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Form right-hand side
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 190 K = KI + 2, N
+                  WORK( K+N ) = -WORK( KI+N )*T( KI, K )
+                  WORK( K+N2 ) = -WORK( KI+1+N2 )*T( KI+1, K )
+  190          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Solve complex quasi-triangular system:
+</span><span class="comment">*</span><span class="comment">              ( T(KI+2,N:KI+2,N) - (WR-i*WI) )*X = WORK1+i*WORK2
+</span><span class="comment">*</span><span class="comment">
+</span>               VMAX = ONE
+               VCRIT = BIGNUM
+<span class="comment">*</span><span class="comment">
+</span>               JNXT = KI + 2
+               DO 200 J = KI + 2, N
+                  IF( J.LT.JNXT )
+     $               GO TO 200
+                  J1 = J
+                  J2 = J
+                  JNXT = J + 1
+                  IF( J.LT.N ) THEN
+                     IF( T( J+1, J ).NE.ZERO ) THEN
+                        J2 = J + 1
+                        JNXT = J + 2
+                     END IF
+                  END IF
+<span class="comment">*</span><span class="comment">
+</span>                  IF( J1.EQ.J2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    1-by-1 diagonal block
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Scale if necessary to avoid overflow when
+</span><span class="comment">*</span><span class="comment">                    forming the right-hand side elements.
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( WORK( J ).GT.VCRIT ) THEN
+                        REC = ONE / VMAX
+                        CALL SSCAL( N-KI+1, REC, WORK( KI+N ), 1 )
+                        CALL SSCAL( N-KI+1, REC, WORK( KI+N2 ), 1 )
+                        VMAX = ONE
+                        VCRIT = BIGNUM
+                     END IF
+<span class="comment">*</span><span class="comment">
+</span>                     WORK( J+N ) = WORK( J+N ) -
+     $                             SDOT( J-KI-2, T( KI+2, J ), 1,
+     $                             WORK( KI+2+N ), 1 )
+                     WORK( J+N2 ) = WORK( J+N2 ) -
+     $                              SDOT( J-KI-2, T( KI+2, J ), 1,
+     $                              WORK( KI+2+N2 ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Solve (T(J,J)-(WR-i*WI))*(X11+i*X12)= WK+I*WK2
+</span><span class="comment">*</span><span class="comment">
+</span>                     CALL <a name="SLALN2.845"></a><a href="slaln2.f.html#SLALN2.1">SLALN2</a>( .FALSE., 1, 2, SMIN, ONE, T( J, J ),
+     $                            LDT, ONE, ONE, WORK( J+N ), N, WR,
+     $                            -WI, X, 2, SCALE, XNORM, IERR )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Scale if necessary
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( SCALE.NE.ONE ) THEN
+                        CALL SSCAL( N-KI+1, SCALE, WORK( KI+N ), 1 )
+                        CALL SSCAL( N-KI+1, SCALE, WORK( KI+N2 ), 1 )
+                     END IF
+                     WORK( J+N ) = X( 1, 1 )
+                     WORK( J+N2 ) = X( 1, 2 )
+                     VMAX = MAX( ABS( WORK( J+N ) ),
+     $                      ABS( WORK( J+N2 ) ), VMAX )
+                     VCRIT = BIGNUM / VMAX
+<span class="comment">*</span><span class="comment">
+</span>                  ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    2-by-2 diagonal block
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Scale if necessary to avoid overflow when forming
+</span><span class="comment">*</span><span class="comment">                    the right-hand side elements.
+</span><span class="comment">*</span><span class="comment">
+</span>                     BETA = MAX( WORK( J ), WORK( J+1 ) )
+                     IF( BETA.GT.VCRIT ) THEN
+                        REC = ONE / VMAX
+                        CALL SSCAL( N-KI+1, REC, WORK( KI+N ), 1 )
+                        CALL SSCAL( N-KI+1, REC, WORK( KI+N2 ), 1 )
+                        VMAX = ONE
+                        VCRIT = BIGNUM
+                     END IF
+<span class="comment">*</span><span class="comment">
+</span>                     WORK( J+N ) = WORK( J+N ) -
+     $                             SDOT( J-KI-2, T( KI+2, J ), 1,
+     $                             WORK( KI+2+N ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>                     WORK( J+N2 ) = WORK( J+N2 ) -
+     $                              SDOT( J-KI-2, T( KI+2, J ), 1,
+     $                              WORK( KI+2+N2 ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>                     WORK( J+1+N ) = WORK( J+1+N ) -
+     $                               SDOT( J-KI-2, T( KI+2, J+1 ), 1,
+     $                               WORK( KI+2+N ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>                     WORK( J+1+N2 ) = WORK( J+1+N2 ) -
+     $                                SDOT( J-KI-2, T( KI+2, J+1 ), 1,
+     $                                WORK( KI+2+N2 ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Solve 2-by-2 complex linear equation
+</span><span class="comment">*</span><span class="comment">                      ([T(j,j)   T(j,j+1)  ]'-(wr-i*wi)*I)*X = SCALE*B
+</span><span class="comment">*</span><span class="comment">                      ([T(j+1,j) T(j+1,j+1)]             )
+</span><span class="comment">*</span><span class="comment">
+</span>                     CALL <a name="SLALN2.897"></a><a href="slaln2.f.html#SLALN2.1">SLALN2</a>( .TRUE., 2, 2, SMIN, ONE, T( J, J ),
+     $                            LDT, ONE, ONE, WORK( J+N ), N, WR,
+     $                            -WI, X, 2, SCALE, XNORM, IERR )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Scale if necessary
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( SCALE.NE.ONE ) THEN
+                        CALL SSCAL( N-KI+1, SCALE, WORK( KI+N ), 1 )
+                        CALL SSCAL( N-KI+1, SCALE, WORK( KI+N2 ), 1 )
+                     END IF
+                     WORK( J+N ) = X( 1, 1 )
+                     WORK( J+N2 ) = X( 1, 2 )
+                     WORK( J+1+N ) = X( 2, 1 )
+                     WORK( J+1+N2 ) = X( 2, 2 )
+                     VMAX = MAX( ABS( X( 1, 1 ) ), ABS( X( 1, 2 ) ),
+     $                      ABS( X( 2, 1 ) ), ABS( X( 2, 2 ) ), VMAX )
+                     VCRIT = BIGNUM / VMAX
+<span class="comment">*</span><span class="comment">
+</span>                  END IF
+  200          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Copy the vector x or Q*x to VL and normalize.
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( .NOT.OVER ) THEN
+                  CALL SCOPY( N-KI+1, WORK( KI+N ), 1, VL( KI, IS ), 1 )
+                  CALL SCOPY( N-KI+1, WORK( KI+N2 ), 1, VL( KI, IS+1 ),
+     $                        1 )
+<span class="comment">*</span><span class="comment">
+</span>                  EMAX = ZERO
+                  DO 220 K = KI, N
+                     EMAX = MAX( EMAX, ABS( VL( K, IS ) )+
+     $                      ABS( VL( K, IS+1 ) ) )
+  220             CONTINUE
+                  REMAX = ONE / EMAX
+                  CALL SSCAL( N-KI+1, REMAX, VL( KI, IS ), 1 )
+                  CALL SSCAL( N-KI+1, REMAX, VL( KI, IS+1 ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>                  DO 230 K = 1, KI - 1
+                     VL( K, IS ) = ZERO
+                     VL( K, IS+1 ) = ZERO
+  230             CONTINUE
+               ELSE
+                  IF( KI.LT.N-1 ) THEN
+                     CALL SGEMV( <span class="string">'N'</span>, N, N-KI-1, ONE, VL( 1, KI+2 ),
+     $                           LDVL, WORK( KI+2+N ), 1, WORK( KI+N ),
+     $                           VL( 1, KI ), 1 )
+                     CALL SGEMV( <span class="string">'N'</span>, N, N-KI-1, ONE, VL( 1, KI+2 ),
+     $                           LDVL, WORK( KI+2+N2 ), 1,
+     $                           WORK( KI+1+N2 ), VL( 1, KI+1 ), 1 )
+                  ELSE
+                     CALL SSCAL( N, WORK( KI+N ), VL( 1, KI ), 1 )
+                     CALL SSCAL( N, WORK( KI+1+N2 ), VL( 1, KI+1 ), 1 )
+                  END IF
+<span class="comment">*</span><span class="comment">
+</span>                  EMAX = ZERO
+                  DO 240 K = 1, N
+                     EMAX = MAX( EMAX, ABS( VL( K, KI ) )+
+     $                      ABS( VL( K, KI+1 ) ) )
+  240             CONTINUE
+                  REMAX = ONE / EMAX
+                  CALL SSCAL( N, REMAX, VL( 1, KI ), 1 )
+                  CALL SSCAL( N, REMAX, VL( 1, KI+1 ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>               END IF
+<span class="comment">*</span><span class="comment">
+</span>            END IF
+<span class="comment">*</span><span class="comment">
+</span>            IS = IS + 1
+            IF( IP.NE.0 )
+     $         IS = IS + 1
+  250       CONTINUE
+            IF( IP.EQ.-1 )
+     $         IP = 0
+            IF( IP.EQ.1 )
+     $         IP = -1
+<span class="comment">*</span><span class="comment">
+</span>  260    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="STREVC.979"></a><a href="strevc.f.html#STREVC.1">STREVC</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>sstev.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SSTEV.1"></a><a href="sstev.f.html#SSTEV.1">SSTEV</a>( JOBZ, N, D, E, Z, LDZ, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK driver routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          JOBZ
+      INTEGER            INFO, LDZ, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               D( * ), E( * ), WORK( * ), Z( LDZ, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SSTEV.18"></a><a href="sstev.f.html#SSTEV.1">SSTEV</a> computes all eigenvalues and, optionally, eigenvectors of a
+</span><span class="comment">*</span><span class="comment">  real symmetric tridiagonal matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOBZ    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'N':  Compute eigenvalues only;
+</span><span class="comment">*</span><span class="comment">          = 'V':  Compute eigenvalues and eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input/output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On entry, the n diagonal elements of the tridiagonal matrix
+</span><span class="comment">*</span><span class="comment">          A.
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, the eigenvalues in ascending order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E       (input/output) REAL array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          On entry, the (n-1) subdiagonal elements of the tridiagonal
+</span><span class="comment">*</span><span class="comment">          matrix A, stored in elements 1 to N-1 of E.
+</span><span class="comment">*</span><span class="comment">          On exit, the contents of E are destroyed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z       (output) REAL array, dimension (LDZ, N)
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'V', then if INFO = 0, Z contains the orthonormal
+</span><span class="comment">*</span><span class="comment">          eigenvectors of the matrix A, with the i-th column of Z
+</span><span class="comment">*</span><span class="comment">          holding the eigenvector associated with D(i).
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'N', then Z is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDZ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Z.  LDZ &gt;= 1, and if
+</span><span class="comment">*</span><span class="comment">          JOBZ = 'V', LDZ &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) REAL array, dimension (max(1,2*N-2))
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'N', WORK is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = i, the algorithm failed to converge; i
+</span><span class="comment">*</span><span class="comment">                off-diagonal elements of E did not converge to zero.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, ONE
+      PARAMETER          ( ZERO = 0.0E0, ONE = 1.0E0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            WANTZ
+      INTEGER            IMAX, ISCALE
+      REAL               BIGNUM, EPS, RMAX, RMIN, SAFMIN, SIGMA, SMLNUM,
+     $                   TNRM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.73"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      REAL               <a name="SLAMCH.74"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANST.74"></a><a href="slanst.f.html#SLANST.1">SLANST</a>
+      EXTERNAL           <a name="LSAME.75"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="SLAMCH.75"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANST.75"></a><a href="slanst.f.html#SLANST.1">SLANST</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           SSCAL, <a name="SSTEQR.78"></a><a href="ssteqr.f.html#SSTEQR.1">SSTEQR</a>, <a name="SSTERF.78"></a><a href="ssterf.f.html#SSTERF.1">SSTERF</a>, <a name="XERBLA.78"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      WANTZ = <a name="LSAME.87"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBZ, <span class="string">'V'</span> )
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( .NOT.( WANTZ .OR. <a name="LSAME.90"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBZ, <span class="string">'N'</span> ) ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDZ.LT.1 .OR. ( WANTZ .AND. LDZ.LT.N ) ) THEN
+         INFO = -6
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.99"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="SSTEV.99"></a><a href="sstev.f.html#SSTEV.1">SSTEV</a> '</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.1 ) THEN
+         IF( WANTZ )
+     $      Z( 1, 1 ) = ONE
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Get machine constants.
+</span><span class="comment">*</span><span class="comment">
+</span>      SAFMIN = <a name="SLAMCH.116"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Safe minimum'</span> )
+      EPS = <a name="SLAMCH.117"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Precision'</span> )
+      SMLNUM = SAFMIN / EPS
+      BIGNUM = ONE / SMLNUM
+      RMIN = SQRT( SMLNUM )
+      RMAX = SQRT( BIGNUM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Scale matrix to allowable range, if necessary.
+</span><span class="comment">*</span><span class="comment">
+</span>      ISCALE = 0
+      TNRM = <a name="SLANST.126"></a><a href="slanst.f.html#SLANST.1">SLANST</a>( <span class="string">'M'</span>, N, D, E )
+      IF( TNRM.GT.ZERO .AND. TNRM.LT.RMIN ) THEN
+         ISCALE = 1
+         SIGMA = RMIN / TNRM
+      ELSE IF( TNRM.GT.RMAX ) THEN
+         ISCALE = 1
+         SIGMA = RMAX / TNRM
+      END IF
+      IF( ISCALE.EQ.1 ) THEN
+         CALL SSCAL( N, SIGMA, D, 1 )
+         CALL SSCAL( N-1, SIGMA, E( 1 ), 1 )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     For eigenvalues only, call <a name="SSTERF.139"></a><a href="ssterf.f.html#SSTERF.1">SSTERF</a>.  For eigenvalues and
+</span><span class="comment">*</span><span class="comment">     eigenvectors, call <a name="SSTEQR.140"></a><a href="ssteqr.f.html#SSTEQR.1">SSTEQR</a>.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( .NOT.WANTZ ) THEN
+         CALL <a name="SSTERF.143"></a><a href="ssterf.f.html#SSTERF.1">SSTERF</a>( N, D, E, INFO )
+      ELSE
+         CALL <a name="SSTEQR.145"></a><a href="ssteqr.f.html#SSTEQR.1">SSTEQR</a>( <span class="string">'I'</span>, N, D, E, Z, LDZ, WORK, INFO )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If matrix was scaled, then rescale eigenvalues appropriately.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ISCALE.EQ.1 ) THEN
+         IF( INFO.EQ.0 ) THEN
+            IMAX = N
+         ELSE
+            IMAX = INFO - 1
+         END IF
+         CALL SSCAL( IMAX, ONE / SIGMA, D, 1 )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SSTEV.161"></a><a href="sstev.f.html#SSTEV.1">SSTEV</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

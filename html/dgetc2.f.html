@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dgetc2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DGETC2.1"></a><a href="dgetc2.f.html#DGETC2.1">DGETC2</a>( N, A, LDA, IPIV, JPIV, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, LDA, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IPIV( * ), JPIV( * )
+      DOUBLE PRECISION   A( LDA, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DGETC2.18"></a><a href="dgetc2.f.html#DGETC2.1">DGETC2</a> computes an LU factorization with complete pivoting of the
+</span><span class="comment">*</span><span class="comment">  n-by-n matrix A. The factorization has the form A = P * L * U * Q,
+</span><span class="comment">*</span><span class="comment">  where P and Q are permutation matrices, L is lower triangular with
+</span><span class="comment">*</span><span class="comment">  unit diagonal elements and U is upper triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This is the Level 2 BLAS algorithm.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A. N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) DOUBLE PRECISION array, dimension (LDA, N)
+</span><span class="comment">*</span><span class="comment">          On entry, the n-by-n matrix A to be factored.
+</span><span class="comment">*</span><span class="comment">          On exit, the factors L and U from the factorization
+</span><span class="comment">*</span><span class="comment">          A = P*L*U*Q; the unit diagonal elements of L are not stored.
+</span><span class="comment">*</span><span class="comment">          If U(k, k) appears to be less than SMIN, U(k, k) is given the
+</span><span class="comment">*</span><span class="comment">          value of SMIN, i.e., giving a nonsingular perturbed system.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IPIV    (output) INTEGER array, dimension(N).
+</span><span class="comment">*</span><span class="comment">          The pivot indices; for 1 &lt;= i &lt;= N, row i of the
+</span><span class="comment">*</span><span class="comment">          matrix has been interchanged with row IPIV(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JPIV    (output) INTEGER array, dimension(N).
+</span><span class="comment">*</span><span class="comment">          The pivot indices; for 1 &lt;= j &lt;= N, column j of the
+</span><span class="comment">*</span><span class="comment">          matrix has been interchanged with column JPIV(j).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">           = 0: successful exit
+</span><span class="comment">*</span><span class="comment">           &gt; 0: if INFO = k, U(k, k) is likely to produce owerflow if
+</span><span class="comment">*</span><span class="comment">                we try to solve for x in Ax = b. So U is perturbed to
+</span><span class="comment">*</span><span class="comment">                avoid the overflow.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Bo Kagstrom and Peter Poromaa, Department of Computing Science,
+</span><span class="comment">*</span><span class="comment">     Umea University, S-901 87 Umea, Sweden.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, IP, IPV, J, JP, JPV
+      DOUBLE PRECISION   BIGNUM, EPS, SMIN, SMLNUM, XMAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DGER, DSWAP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      DOUBLE PRECISION   <a name="DLAMCH.76"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+      EXTERNAL           <a name="DLAMCH.77"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set constants to control overflow
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      EPS = <a name="DLAMCH.87"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'P'</span> )
+      SMLNUM = <a name="DLAMCH.88"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'S'</span> ) / EPS
+      BIGNUM = ONE / SMLNUM
+      CALL <a name="DLABAD.90"></a><a href="dlabad.f.html#DLABAD.1">DLABAD</a>( SMLNUM, BIGNUM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Factorize A using complete pivoting.
+</span><span class="comment">*</span><span class="comment">     Set pivots less than SMIN to SMIN.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 40 I = 1, N - 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find max element in matrix A
+</span><span class="comment">*</span><span class="comment">
+</span>         XMAX = ZERO
+         DO 20 IP = I, N
+            DO 10 JP = I, N
+               IF( ABS( A( IP, JP ) ).GE.XMAX ) THEN
+                  XMAX = ABS( A( IP, JP ) )
+                  IPV = IP
+                  JPV = JP
+               END IF
+   10       CONTINUE
+   20    CONTINUE
+         IF( I.EQ.1 )
+     $      SMIN = MAX( EPS*XMAX, SMLNUM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Swap rows
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( IPV.NE.I )
+     $      CALL DSWAP( N, A( IPV, 1 ), LDA, A( I, 1 ), LDA )
+         IPIV( I ) = IPV
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Swap columns
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( JPV.NE.I )
+     $      CALL DSWAP( N, A( 1, JPV ), 1, A( 1, I ), 1 )
+         JPIV( I ) = JPV
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Check for singularity
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( ABS( A( I, I ) ).LT.SMIN ) THEN
+            INFO = I
+            A( I, I ) = SMIN
+         END IF
+         DO 30 J = I + 1, N
+            A( J, I ) = A( J, I ) / A( I, I )
+   30    CONTINUE
+         CALL DGER( N-I, N-I, -ONE, A( I+1, I ), 1, A( I, I+1 ), LDA,
+     $              A( I+1, I+1 ), LDA )
+   40 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      IF( ABS( A( N, N ) ).LT.SMIN ) THEN
+         INFO = N
+         A( N, N ) = SMIN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DGETC2.144"></a><a href="dgetc2.f.html#DGETC2.1">DGETC2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

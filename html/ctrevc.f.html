@@ -1,0 +1,410 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>ctrevc.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CTREVC.1"></a><a href="ctrevc.f.html#CTREVC.1">CTREVC</a>( SIDE, HOWMNY, SELECT, N, T, LDT, VL, LDVL, VR,
+     $                   LDVR, MM, M, WORK, RWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          HOWMNY, SIDE
+      INTEGER            INFO, LDT, LDVL, LDVR, M, MM, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      LOGICAL            SELECT( * )
+      REAL               RWORK( * )
+      COMPLEX            T( LDT, * ), VL( LDVL, * ), VR( LDVR, * ),
+     $                   WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CTREVC.22"></a><a href="ctrevc.f.html#CTREVC.1">CTREVC</a> computes some or all of the right and/or left eigenvectors of
+</span><span class="comment">*</span><span class="comment">  a complex upper triangular matrix T.
+</span><span class="comment">*</span><span class="comment">  Matrices of this type are produced by the Schur factorization of
+</span><span class="comment">*</span><span class="comment">  a complex general matrix:  A = Q*T*Q**H, as computed by <a name="CHSEQR.25"></a><a href="chseqr.f.html#CHSEQR.1">CHSEQR</a>.
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  The right eigenvector x and the left eigenvector y of T corresponding
+</span><span class="comment">*</span><span class="comment">  to an eigenvalue w are defined by:
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">               T*x = w*x,     (y**H)*T = w*(y**H)
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  where y**H denotes the conjugate transpose of the vector y.
+</span><span class="comment">*</span><span class="comment">  The eigenvalues are not input to this routine, but are read directly
+</span><span class="comment">*</span><span class="comment">  from the diagonal of T.
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  This routine returns the matrices X and/or Y of right and left
+</span><span class="comment">*</span><span class="comment">  eigenvectors of T, or the products Q*X and/or Q*Y, where Q is an
+</span><span class="comment">*</span><span class="comment">  input matrix.  If Q is the unitary factor that reduces a matrix A to
+</span><span class="comment">*</span><span class="comment">  Schur form T, then Q*X and Q*Y are the matrices of right and left
+</span><span class="comment">*</span><span class="comment">  eigenvectors of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SIDE    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'R':  compute right eigenvectors only;
+</span><span class="comment">*</span><span class="comment">          = 'L':  compute left eigenvectors only;
+</span><span class="comment">*</span><span class="comment">          = 'B':  compute both right and left eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  HOWMNY  (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'A':  compute all right and/or left eigenvectors;
+</span><span class="comment">*</span><span class="comment">          = 'B':  compute all right and/or left eigenvectors,
+</span><span class="comment">*</span><span class="comment">                  backtransformed using the matrices supplied in
+</span><span class="comment">*</span><span class="comment">                  VR and/or VL;
+</span><span class="comment">*</span><span class="comment">          = 'S':  compute selected right and/or left eigenvectors,
+</span><span class="comment">*</span><span class="comment">                  as indicated by the logical array SELECT.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SELECT  (input) LOGICAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          If HOWMNY = 'S', SELECT specifies the eigenvectors to be
+</span><span class="comment">*</span><span class="comment">          computed.
+</span><span class="comment">*</span><span class="comment">          The eigenvector corresponding to the j-th eigenvalue is
+</span><span class="comment">*</span><span class="comment">          computed if SELECT(j) = .TRUE..
+</span><span class="comment">*</span><span class="comment">          Not referenced if HOWMNY = 'A' or 'B'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix T. N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  T       (input/output) COMPLEX array, dimension (LDT,N)
+</span><span class="comment">*</span><span class="comment">          The upper triangular matrix T.  T is modified, but restored
+</span><span class="comment">*</span><span class="comment">          on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDT     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array T. LDT &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VL      (input/output) COMPLEX array, dimension (LDVL,MM)
+</span><span class="comment">*</span><span class="comment">          On entry, if SIDE = 'L' or 'B' and HOWMNY = 'B', VL must
+</span><span class="comment">*</span><span class="comment">          contain an N-by-N matrix Q (usually the unitary matrix Q of
+</span><span class="comment">*</span><span class="comment">          Schur vectors returned by <a name="CHSEQR.78"></a><a href="chseqr.f.html#CHSEQR.1">CHSEQR</a>).
+</span><span class="comment">*</span><span class="comment">          On exit, if SIDE = 'L' or 'B', VL contains:
+</span><span class="comment">*</span><span class="comment">          if HOWMNY = 'A', the matrix Y of left eigenvectors of T;
+</span><span class="comment">*</span><span class="comment">          if HOWMNY = 'B', the matrix Q*Y;
+</span><span class="comment">*</span><span class="comment">          if HOWMNY = 'S', the left eigenvectors of T specified by
+</span><span class="comment">*</span><span class="comment">                           SELECT, stored consecutively in the columns
+</span><span class="comment">*</span><span class="comment">                           of VL, in the same order as their
+</span><span class="comment">*</span><span class="comment">                           eigenvalues.
+</span><span class="comment">*</span><span class="comment">          Not referenced if SIDE = 'R'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDVL    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array VL.  LDVL &gt;= 1, and if
+</span><span class="comment">*</span><span class="comment">          SIDE = 'L' or 'B', LDVL &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VR      (input/output) COMPLEX array, dimension (LDVR,MM)
+</span><span class="comment">*</span><span class="comment">          On entry, if SIDE = 'R' or 'B' and HOWMNY = 'B', VR must
+</span><span class="comment">*</span><span class="comment">          contain an N-by-N matrix Q (usually the unitary matrix Q of
+</span><span class="comment">*</span><span class="comment">          Schur vectors returned by <a name="CHSEQR.95"></a><a href="chseqr.f.html#CHSEQR.1">CHSEQR</a>).
+</span><span class="comment">*</span><span class="comment">          On exit, if SIDE = 'R' or 'B', VR contains:
+</span><span class="comment">*</span><span class="comment">          if HOWMNY = 'A', the matrix X of right eigenvectors of T;
+</span><span class="comment">*</span><span class="comment">          if HOWMNY = 'B', the matrix Q*X;
+</span><span class="comment">*</span><span class="comment">          if HOWMNY = 'S', the right eigenvectors of T specified by
+</span><span class="comment">*</span><span class="comment">                           SELECT, stored consecutively in the columns
+</span><span class="comment">*</span><span class="comment">                           of VR, in the same order as their
+</span><span class="comment">*</span><span class="comment">                           eigenvalues.
+</span><span class="comment">*</span><span class="comment">          Not referenced if SIDE = 'L'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDVR    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array VR.  LDVR &gt;= 1, and if
+</span><span class="comment">*</span><span class="comment">          SIDE = 'R' or 'B'; LDVR &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  MM      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns in the arrays VL and/or VR. MM &gt;= M.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns in the arrays VL and/or VR actually
+</span><span class="comment">*</span><span class="comment">          used to store the eigenvectors.  If HOWMNY = 'A' or 'B', M
+</span><span class="comment">*</span><span class="comment">          is set to N.  Each selected eigenvector occupies one
+</span><span class="comment">*</span><span class="comment">          column.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) COMPLEX array, dimension (2*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RWORK   (workspace) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The algorithm used in this program is basically backward (forward)
+</span><span class="comment">*</span><span class="comment">  substitution, with scaling to make the the code robust against
+</span><span class="comment">*</span><span class="comment">  possible overflow.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Each eigenvector is normalized so that the element of largest
+</span><span class="comment">*</span><span class="comment">  magnitude has magnitude 1; here the magnitude of a complex number
+</span><span class="comment">*</span><span class="comment">  (x,y) is taken to be |x| + |y|.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, ONE
+      PARAMETER          ( ZERO = 0.0E+0, ONE = 1.0E+0 )
+      COMPLEX            CMZERO, CMONE
+      PARAMETER          ( CMZERO = ( 0.0E+0, 0.0E+0 ),
+     $                   CMONE = ( 1.0E+0, 0.0E+0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            ALLV, BOTHV, LEFTV, OVER, RIGHTV, SOMEV
+      INTEGER            I, II, IS, J, K, KI
+      REAL               OVFL, REMAX, SCALE, SMIN, SMLNUM, ULP, UNFL
+      COMPLEX            CDUM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.153"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      INTEGER            ICAMAX
+      REAL               SCASUM, <a name="SLAMCH.155"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      EXTERNAL           <a name="LSAME.156"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, ICAMAX, SCASUM, <a name="SLAMCH.156"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           CCOPY, CGEMV, <a name="CLATRS.159"></a><a href="clatrs.f.html#CLATRS.1">CLATRS</a>, CSSCAL, <a name="SLABAD.159"></a><a href="slabad.f.html#SLABAD.1">SLABAD</a>, <a name="XERBLA.159"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, AIMAG, CMPLX, CONJG, MAX, REAL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Functions ..
+</span>      REAL               CABS1
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Function definitions ..
+</span>      CABS1( CDUM ) = ABS( REAL( CDUM ) ) + ABS( AIMAG( CDUM ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Decode and test the input parameters
+</span><span class="comment">*</span><span class="comment">
+</span>      BOTHV = <a name="LSAME.174"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'B'</span> )
+      RIGHTV = <a name="LSAME.175"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'R'</span> ) .OR. BOTHV
+      LEFTV = <a name="LSAME.176"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'L'</span> ) .OR. BOTHV
+<span class="comment">*</span><span class="comment">
+</span>      ALLV = <a name="LSAME.178"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( HOWMNY, <span class="string">'A'</span> )
+      OVER = <a name="LSAME.179"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( HOWMNY, <span class="string">'B'</span> )
+      SOMEV = <a name="LSAME.180"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( HOWMNY, <span class="string">'S'</span> )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set M to the number of columns required to store the selected
+</span><span class="comment">*</span><span class="comment">     eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( SOMEV ) THEN
+         M = 0
+         DO 10 J = 1, N
+            IF( SELECT( J ) )
+     $         M = M + 1
+   10    CONTINUE
+      ELSE
+         M = N
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( .NOT.RIGHTV .AND. .NOT.LEFTV ) THEN
+         INFO = -1
+      ELSE IF( .NOT.ALLV .AND. .NOT.OVER .AND. .NOT.SOMEV ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( LDT.LT.MAX( 1, N ) ) THEN
+         INFO = -6
+      ELSE IF( LDVL.LT.1 .OR. ( LEFTV .AND. LDVL.LT.N ) ) THEN
+         INFO = -8
+      ELSE IF( LDVR.LT.1 .OR. ( RIGHTV .AND. LDVR.LT.N ) ) THEN
+         INFO = -10
+      ELSE IF( MM.LT.M ) THEN
+         INFO = -11
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.212"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CTREVC.212"></a><a href="ctrevc.f.html#CTREVC.1">CTREVC</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set the constants to control overflow.
+</span><span class="comment">*</span><span class="comment">
+</span>      UNFL = <a name="SLAMCH.223"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Safe minimum'</span> )
+      OVFL = ONE / UNFL
+      CALL <a name="SLABAD.225"></a><a href="slabad.f.html#SLABAD.1">SLABAD</a>( UNFL, OVFL )
+      ULP = <a name="SLAMCH.226"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Precision'</span> )
+      SMLNUM = UNFL*( N / ULP )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Store the diagonal elements of T in working array WORK.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 20 I = 1, N
+         WORK( I+N ) = T( I, I )
+   20 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute 1-norm of each column of strictly upper triangular
+</span><span class="comment">*</span><span class="comment">     part of T to control overflow in triangular solver.
+</span><span class="comment">*</span><span class="comment">
+</span>      RWORK( 1 ) = ZERO
+      DO 30 J = 2, N
+         RWORK( J ) = SCASUM( J-1, T( 1, J ), 1 )
+   30 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      IF( RIGHTV ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute right eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span>         IS = M
+         DO 80 KI = N, 1, -1
+<span class="comment">*</span><span class="comment">
+</span>            IF( SOMEV ) THEN
+               IF( .NOT.SELECT( KI ) )
+     $            GO TO 80
+            END IF
+            SMIN = MAX( ULP*( CABS1( T( KI, KI ) ) ), SMLNUM )
+<span class="comment">*</span><span class="comment">
+</span>            WORK( 1 ) = CMONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Form right-hand side.
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 40 K = 1, KI - 1
+               WORK( K ) = -T( K, KI )
+   40       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Solve the triangular system:
+</span><span class="comment">*</span><span class="comment">              (T(1:KI-1,1:KI-1) - T(KI,KI))*X = SCALE*WORK.
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 50 K = 1, KI - 1
+               T( K, K ) = T( K, K ) - T( KI, KI )
+               IF( CABS1( T( K, K ) ).LT.SMIN )
+     $            T( K, K ) = SMIN
+   50       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            IF( KI.GT.1 ) THEN
+               CALL <a name="CLATRS.274"></a><a href="clatrs.f.html#CLATRS.1">CLATRS</a>( <span class="string">'Upper'</span>, <span class="string">'No transpose'</span>, <span class="string">'Non-unit'</span>, <span class="string">'Y'</span>,
+     $                      KI-1, T, LDT, WORK( 1 ), SCALE, RWORK,
+     $                      INFO )
+               WORK( KI ) = SCALE
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Copy the vector x or Q*x to VR and normalize.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( .NOT.OVER ) THEN
+               CALL CCOPY( KI, WORK( 1 ), 1, VR( 1, IS ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>               II = ICAMAX( KI, VR( 1, IS ), 1 )
+               REMAX = ONE / CABS1( VR( II, IS ) )
+               CALL CSSCAL( KI, REMAX, VR( 1, IS ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>               DO 60 K = KI + 1, N
+                  VR( K, IS ) = CMZERO
+   60          CONTINUE
+            ELSE
+               IF( KI.GT.1 )
+     $            CALL CGEMV( <span class="string">'N'</span>, N, KI-1, CMONE, VR, LDVR, WORK( 1 ),
+     $                        1, CMPLX( SCALE ), VR( 1, KI ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>               II = ICAMAX( N, VR( 1, KI ), 1 )
+               REMAX = ONE / CABS1( VR( II, KI ) )
+               CALL CSSCAL( N, REMAX, VR( 1, KI ), 1 )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Set back the original diagonal elements of T.
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 70 K = 1, KI - 1
+               T( K, K ) = WORK( K+N )
+   70       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            IS = IS - 1
+   80    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( LEFTV ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute left eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span>         IS = 1
+         DO 130 KI = 1, N
+<span class="comment">*</span><span class="comment">
+</span>            IF( SOMEV ) THEN
+               IF( .NOT.SELECT( KI ) )
+     $            GO TO 130
+            END IF
+            SMIN = MAX( ULP*( CABS1( T( KI, KI ) ) ), SMLNUM )
+<span class="comment">*</span><span class="comment">
+</span>            WORK( N ) = CMONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Form right-hand side.
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 90 K = KI + 1, N
+               WORK( K ) = -CONJG( T( KI, K ) )
+   90       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Solve the triangular system:
+</span><span class="comment">*</span><span class="comment">              (T(KI+1:N,KI+1:N) - T(KI,KI))'*X = SCALE*WORK.
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 100 K = KI + 1, N
+               T( K, K ) = T( K, K ) - T( KI, KI )
+               IF( CABS1( T( K, K ) ).LT.SMIN )
+     $            T( K, K ) = SMIN
+  100       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            IF( KI.LT.N ) THEN
+               CALL <a name="CLATRS.343"></a><a href="clatrs.f.html#CLATRS.1">CLATRS</a>( <span class="string">'Upper'</span>, <span class="string">'Conjugate transpose'</span>, <span class="string">'Non-unit'</span>,
+     $                      <span class="string">'Y'</span>, N-KI, T( KI+1, KI+1 ), LDT,
+     $                      WORK( KI+1 ), SCALE, RWORK, INFO )
+               WORK( KI ) = SCALE
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Copy the vector x or Q*x to VL and normalize.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( .NOT.OVER ) THEN
+               CALL CCOPY( N-KI+1, WORK( KI ), 1, VL( KI, IS ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>               II = ICAMAX( N-KI+1, VL( KI, IS ), 1 ) + KI - 1
+               REMAX = ONE / CABS1( VL( II, IS ) )
+               CALL CSSCAL( N-KI+1, REMAX, VL( KI, IS ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>               DO 110 K = 1, KI - 1
+                  VL( K, IS ) = CMZERO
+  110          CONTINUE
+            ELSE
+               IF( KI.LT.N )
+     $            CALL CGEMV( <span class="string">'N'</span>, N, N-KI, CMONE, VL( 1, KI+1 ), LDVL,
+     $                        WORK( KI+1 ), 1, CMPLX( SCALE ),
+     $                        VL( 1, KI ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>               II = ICAMAX( N, VL( 1, KI ), 1 )
+               REMAX = ONE / CABS1( VL( II, KI ) )
+               CALL CSSCAL( N, REMAX, VL( 1, KI ), 1 )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Set back the original diagonal elements of T.
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 120 K = KI + 1, N
+               T( K, K ) = WORK( K+N )
+  120       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            IS = IS + 1
+  130    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CTREVC.384"></a><a href="ctrevc.f.html#CTREVC.1">CTREVC</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

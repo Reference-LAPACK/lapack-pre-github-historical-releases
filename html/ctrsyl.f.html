@@ -1,0 +1,389 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>ctrsyl.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CTRSYL.1"></a><a href="ctrsyl.f.html#CTRSYL.1">CTRSYL</a>( TRANA, TRANB, ISGN, M, N, A, LDA, B, LDB, C,
+     $                   LDC, SCALE, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          TRANA, TRANB
+      INTEGER            INFO, ISGN, LDA, LDB, LDC, M, N
+      REAL               SCALE
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX            A( LDA, * ), B( LDB, * ), C( LDC, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CTRSYL.20"></a><a href="ctrsyl.f.html#CTRSYL.1">CTRSYL</a> solves the complex Sylvester matrix equation:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     op(A)*X + X*op(B) = scale*C or
+</span><span class="comment">*</span><span class="comment">     op(A)*X - X*op(B) = scale*C,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where op(A) = A or A**H, and A and B are both upper triangular. A is
+</span><span class="comment">*</span><span class="comment">  M-by-M and B is N-by-N; the right hand side C and the solution X are
+</span><span class="comment">*</span><span class="comment">  M-by-N; and scale is an output scale factor, set &lt;= 1 to avoid
+</span><span class="comment">*</span><span class="comment">  overflow in X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TRANA   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies the option op(A):
+</span><span class="comment">*</span><span class="comment">          = 'N': op(A) = A    (No transpose)
+</span><span class="comment">*</span><span class="comment">          = 'C': op(A) = A**H (Conjugate transpose)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TRANB   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies the option op(B):
+</span><span class="comment">*</span><span class="comment">          = 'N': op(B) = B    (No transpose)
+</span><span class="comment">*</span><span class="comment">          = 'C': op(B) = B**H (Conjugate transpose)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ISGN    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          Specifies the sign in the equation:
+</span><span class="comment">*</span><span class="comment">          = +1: solve op(A)*X + X*op(B) = scale*C
+</span><span class="comment">*</span><span class="comment">          = -1: solve op(A)*X - X*op(B) = scale*C
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A, and the number of rows in the
+</span><span class="comment">*</span><span class="comment">          matrices X and C. M &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix B, and the number of columns in the
+</span><span class="comment">*</span><span class="comment">          matrices X and C. N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input) COMPLEX array, dimension (LDA,M)
+</span><span class="comment">*</span><span class="comment">          The upper triangular matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A. LDA &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input) COMPLEX array, dimension (LDB,N)
+</span><span class="comment">*</span><span class="comment">          The upper triangular matrix B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B. LDB &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C       (input/output) COMPLEX array, dimension (LDC,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the M-by-N right hand side matrix C.
+</span><span class="comment">*</span><span class="comment">          On exit, C is overwritten by the solution matrix X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDC     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array C. LDC &gt;= max(1,M)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SCALE   (output) REAL
+</span><span class="comment">*</span><span class="comment">          The scale factor, scale, set &lt;= 1 to avoid overflow in X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0: successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0: if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          = 1: A and B have common or very close eigenvalues; perturbed
+</span><span class="comment">*</span><span class="comment">               values were used to solve the equation (but the matrices
+</span><span class="comment">*</span><span class="comment">               A and B are unchanged).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ONE
+      PARAMETER          ( ONE = 1.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            NOTRNA, NOTRNB
+      INTEGER            J, K, L
+      REAL               BIGNUM, DA11, DB, EPS, SCALOC, SGN, SMIN,
+     $                   SMLNUM
+      COMPLEX            A11, SUML, SUMR, VEC, X11
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      REAL               DUM( 1 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.102"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      REAL               <a name="CLANGE.103"></a><a href="clange.f.html#CLANGE.1">CLANGE</a>, <a name="SLAMCH.103"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      COMPLEX            CDOTC, CDOTU, <a name="CLADIV.104"></a><a href="cladiv.f.html#CLADIV.1">CLADIV</a>
+      EXTERNAL           <a name="LSAME.105"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="CLANGE.105"></a><a href="clange.f.html#CLANGE.1">CLANGE</a>, <a name="SLAMCH.105"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, CDOTC, CDOTU, <a name="CLADIV.105"></a><a href="cladiv.f.html#CLADIV.1">CLADIV</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           CSSCAL, <a name="SLABAD.108"></a><a href="slabad.f.html#SLABAD.1">SLABAD</a>, <a name="XERBLA.108"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, AIMAG, CMPLX, CONJG, MAX, MIN, REAL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Decode and Test input parameters
+</span><span class="comment">*</span><span class="comment">
+</span>      NOTRNA = <a name="LSAME.117"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANA, <span class="string">'N'</span> )
+      NOTRNB = <a name="LSAME.118"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANB, <span class="string">'N'</span> )
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( .NOT.NOTRNA .AND. .NOT.<a name="LSAME.121"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANA, <span class="string">'C'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.NOTRNB .AND. .NOT.<a name="LSAME.123"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANB, <span class="string">'C'</span> ) ) THEN
+         INFO = -2
+      ELSE IF( ISGN.NE.1 .AND. ISGN.NE.-1 ) THEN
+         INFO = -3
+      ELSE IF( M.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -5
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -7
+      ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
+         INFO = -9
+      ELSE IF( LDC.LT.MAX( 1, M ) ) THEN
+         INFO = -11
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.139"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CTRSYL.139"></a><a href="ctrsyl.f.html#CTRSYL.1">CTRSYL</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( M.EQ.0 .OR. N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set constants to control overflow
+</span><span class="comment">*</span><span class="comment">
+</span>      EPS = <a name="SLAMCH.150"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'P'</span> )
+      SMLNUM = <a name="SLAMCH.151"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'S'</span> )
+      BIGNUM = ONE / SMLNUM
+      CALL <a name="SLABAD.153"></a><a href="slabad.f.html#SLABAD.1">SLABAD</a>( SMLNUM, BIGNUM )
+      SMLNUM = SMLNUM*REAL( M*N ) / EPS
+      BIGNUM = ONE / SMLNUM
+      SMIN = MAX( SMLNUM, EPS*<a name="CLANGE.156"></a><a href="clange.f.html#CLANGE.1">CLANGE</a>( <span class="string">'M'</span>, M, M, A, LDA, DUM ),
+     $       EPS*<a name="CLANGE.157"></a><a href="clange.f.html#CLANGE.1">CLANGE</a>( <span class="string">'M'</span>, N, N, B, LDB, DUM ) )
+      SCALE = ONE
+      SGN = ISGN
+<span class="comment">*</span><span class="comment">
+</span>      IF( NOTRNA .AND. NOTRNB ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve    A*X + ISGN*X*B = scale*C.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        The (K,L)th block of X is determined starting from
+</span><span class="comment">*</span><span class="comment">        bottom-left corner column by column by
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">            A(K,K)*X(K,L) + ISGN*X(K,L)*B(L,L) = C(K,L) - R(K,L)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Where
+</span><span class="comment">*</span><span class="comment">                    M                        L-1
+</span><span class="comment">*</span><span class="comment">          R(K,L) = SUM [A(K,I)*X(I,L)] +ISGN*SUM [X(K,J)*B(J,L)].
+</span><span class="comment">*</span><span class="comment">                  I=K+1                      J=1
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 30 L = 1, N
+            DO 20 K = M, 1, -1
+<span class="comment">*</span><span class="comment">
+</span>               SUML = CDOTU( M-K, A( K, MIN( K+1, M ) ), LDA,
+     $                C( MIN( K+1, M ), L ), 1 )
+               SUMR = CDOTU( L-1, C( K, 1 ), LDC, B( 1, L ), 1 )
+               VEC = C( K, L ) - ( SUML+SGN*SUMR )
+<span class="comment">*</span><span class="comment">
+</span>               SCALOC = ONE
+               A11 = A( K, K ) + SGN*B( L, L )
+               DA11 = ABS( REAL( A11 ) ) + ABS( AIMAG( A11 ) )
+               IF( DA11.LE.SMIN ) THEN
+                  A11 = SMIN
+                  DA11 = SMIN
+                  INFO = 1
+               END IF
+               DB = ABS( REAL( VEC ) ) + ABS( AIMAG( VEC ) )
+               IF( DA11.LT.ONE .AND. DB.GT.ONE ) THEN
+                  IF( DB.GT.BIGNUM*DA11 )
+     $               SCALOC = ONE / DB
+               END IF
+               X11 = <a name="CLADIV.196"></a><a href="cladiv.f.html#CLADIV.1">CLADIV</a>( VEC*CMPLX( SCALOC ), A11 )
+<span class="comment">*</span><span class="comment">
+</span>               IF( SCALOC.NE.ONE ) THEN
+                  DO 10 J = 1, N
+                     CALL CSSCAL( M, SCALOC, C( 1, J ), 1 )
+   10             CONTINUE
+                  SCALE = SCALE*SCALOC
+               END IF
+               C( K, L ) = X11
+<span class="comment">*</span><span class="comment">
+</span>   20       CONTINUE
+   30    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      ELSE IF( .NOT.NOTRNA .AND. NOTRNB ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve    A' *X + ISGN*X*B = scale*C.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        The (K,L)th block of X is determined starting from
+</span><span class="comment">*</span><span class="comment">        upper-left corner column by column by
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">            A'(K,K)*X(K,L) + ISGN*X(K,L)*B(L,L) = C(K,L) - R(K,L)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Where
+</span><span class="comment">*</span><span class="comment">                   K-1                         L-1
+</span><span class="comment">*</span><span class="comment">          R(K,L) = SUM [A'(I,K)*X(I,L)] + ISGN*SUM [X(K,J)*B(J,L)]
+</span><span class="comment">*</span><span class="comment">                   I=1                         J=1
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 60 L = 1, N
+            DO 50 K = 1, M
+<span class="comment">*</span><span class="comment">
+</span>               SUML = CDOTC( K-1, A( 1, K ), 1, C( 1, L ), 1 )
+               SUMR = CDOTU( L-1, C( K, 1 ), LDC, B( 1, L ), 1 )
+               VEC = C( K, L ) - ( SUML+SGN*SUMR )
+<span class="comment">*</span><span class="comment">
+</span>               SCALOC = ONE
+               A11 = CONJG( A( K, K ) ) + SGN*B( L, L )
+               DA11 = ABS( REAL( A11 ) ) + ABS( AIMAG( A11 ) )
+               IF( DA11.LE.SMIN ) THEN
+                  A11 = SMIN
+                  DA11 = SMIN
+                  INFO = 1
+               END IF
+               DB = ABS( REAL( VEC ) ) + ABS( AIMAG( VEC ) )
+               IF( DA11.LT.ONE .AND. DB.GT.ONE ) THEN
+                  IF( DB.GT.BIGNUM*DA11 )
+     $               SCALOC = ONE / DB
+               END IF
+<span class="comment">*</span><span class="comment">
+</span>               X11 = <a name="CLADIV.244"></a><a href="cladiv.f.html#CLADIV.1">CLADIV</a>( VEC*CMPLX( SCALOC ), A11 )
+<span class="comment">*</span><span class="comment">
+</span>               IF( SCALOC.NE.ONE ) THEN
+                  DO 40 J = 1, N
+                     CALL CSSCAL( M, SCALOC, C( 1, J ), 1 )
+   40             CONTINUE
+                  SCALE = SCALE*SCALOC
+               END IF
+               C( K, L ) = X11
+<span class="comment">*</span><span class="comment">
+</span>   50       CONTINUE
+   60    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      ELSE IF( .NOT.NOTRNA .AND. .NOT.NOTRNB ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve    A'*X + ISGN*X*B' = C.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        The (K,L)th block of X is determined starting from
+</span><span class="comment">*</span><span class="comment">        upper-right corner column by column by
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">            A'(K,K)*X(K,L) + ISGN*X(K,L)*B'(L,L) = C(K,L) - R(K,L)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Where
+</span><span class="comment">*</span><span class="comment">                    K-1
+</span><span class="comment">*</span><span class="comment">           R(K,L) = SUM [A'(I,K)*X(I,L)] +
+</span><span class="comment">*</span><span class="comment">                    I=1
+</span><span class="comment">*</span><span class="comment">                           N
+</span><span class="comment">*</span><span class="comment">                     ISGN*SUM [X(K,J)*B'(L,J)].
+</span><span class="comment">*</span><span class="comment">                          J=L+1
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 90 L = N, 1, -1
+            DO 80 K = 1, M
+<span class="comment">*</span><span class="comment">
+</span>               SUML = CDOTC( K-1, A( 1, K ), 1, C( 1, L ), 1 )
+               SUMR = CDOTC( N-L, C( K, MIN( L+1, N ) ), LDC,
+     $                B( L, MIN( L+1, N ) ), LDB )
+               VEC = C( K, L ) - ( SUML+SGN*CONJG( SUMR ) )
+<span class="comment">*</span><span class="comment">
+</span>               SCALOC = ONE
+               A11 = CONJG( A( K, K )+SGN*B( L, L ) )
+               DA11 = ABS( REAL( A11 ) ) + ABS( AIMAG( A11 ) )
+               IF( DA11.LE.SMIN ) THEN
+                  A11 = SMIN
+                  DA11 = SMIN
+                  INFO = 1
+               END IF
+               DB = ABS( REAL( VEC ) ) + ABS( AIMAG( VEC ) )
+               IF( DA11.LT.ONE .AND. DB.GT.ONE ) THEN
+                  IF( DB.GT.BIGNUM*DA11 )
+     $               SCALOC = ONE / DB
+               END IF
+<span class="comment">*</span><span class="comment">
+</span>               X11 = <a name="CLADIV.296"></a><a href="cladiv.f.html#CLADIV.1">CLADIV</a>( VEC*CMPLX( SCALOC ), A11 )
+<span class="comment">*</span><span class="comment">
+</span>               IF( SCALOC.NE.ONE ) THEN
+                  DO 70 J = 1, N
+                     CALL CSSCAL( M, SCALOC, C( 1, J ), 1 )
+   70             CONTINUE
+                  SCALE = SCALE*SCALOC
+               END IF
+               C( K, L ) = X11
+<span class="comment">*</span><span class="comment">
+</span>   80       CONTINUE
+   90    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      ELSE IF( NOTRNA .AND. .NOT.NOTRNB ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve    A*X + ISGN*X*B' = C.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        The (K,L)th block of X is determined starting from
+</span><span class="comment">*</span><span class="comment">        bottom-left corner column by column by
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           A(K,K)*X(K,L) + ISGN*X(K,L)*B'(L,L) = C(K,L) - R(K,L)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Where
+</span><span class="comment">*</span><span class="comment">                    M                          N
+</span><span class="comment">*</span><span class="comment">          R(K,L) = SUM [A(K,I)*X(I,L)] + ISGN*SUM [X(K,J)*B'(L,J)]
+</span><span class="comment">*</span><span class="comment">                  I=K+1                      J=L+1
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 120 L = N, 1, -1
+            DO 110 K = M, 1, -1
+<span class="comment">*</span><span class="comment">
+</span>               SUML = CDOTU( M-K, A( K, MIN( K+1, M ) ), LDA,
+     $                C( MIN( K+1, M ), L ), 1 )
+               SUMR = CDOTC( N-L, C( K, MIN( L+1, N ) ), LDC,
+     $                B( L, MIN( L+1, N ) ), LDB )
+               VEC = C( K, L ) - ( SUML+SGN*CONJG( SUMR ) )
+<span class="comment">*</span><span class="comment">
+</span>               SCALOC = ONE
+               A11 = A( K, K ) + SGN*CONJG( B( L, L ) )
+               DA11 = ABS( REAL( A11 ) ) + ABS( AIMAG( A11 ) )
+               IF( DA11.LE.SMIN ) THEN
+                  A11 = SMIN
+                  DA11 = SMIN
+                  INFO = 1
+               END IF
+               DB = ABS( REAL( VEC ) ) + ABS( AIMAG( VEC ) )
+               IF( DA11.LT.ONE .AND. DB.GT.ONE ) THEN
+                  IF( DB.GT.BIGNUM*DA11 )
+     $               SCALOC = ONE / DB
+               END IF
+<span class="comment">*</span><span class="comment">
+</span>               X11 = <a name="CLADIV.346"></a><a href="cladiv.f.html#CLADIV.1">CLADIV</a>( VEC*CMPLX( SCALOC ), A11 )
+<span class="comment">*</span><span class="comment">
+</span>               IF( SCALOC.NE.ONE ) THEN
+                  DO 100 J = 1, N
+                     CALL CSSCAL( M, SCALOC, C( 1, J ), 1 )
+  100             CONTINUE
+                  SCALE = SCALE*SCALOC
+               END IF
+               C( K, L ) = X11
+<span class="comment">*</span><span class="comment">
+</span>  110       CONTINUE
+  120    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CTRSYL.363"></a><a href="ctrsyl.f.html#CTRSYL.1">CTRSYL</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

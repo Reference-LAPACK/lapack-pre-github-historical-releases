@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dgeqr2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DGEQR2.1"></a><a href="dgeqr2.f.html#DGEQR2.1">DGEQR2</a>( M, N, A, LDA, TAU, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, LDA, M, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   A( LDA, * ), TAU( * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DGEQR2.17"></a><a href="dgeqr2.f.html#DGEQR2.1">DGEQR2</a> computes a QR factorization of a real m by n matrix A:
+</span><span class="comment">*</span><span class="comment">  A = Q * R.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix A.  M &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) DOUBLE PRECISION array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the m by n matrix A.
+</span><span class="comment">*</span><span class="comment">          On exit, the elements on and above the diagonal of the array
+</span><span class="comment">*</span><span class="comment">          contain the min(m,n) by n upper trapezoidal matrix R (R is
+</span><span class="comment">*</span><span class="comment">          upper triangular if m &gt;= n); the elements below the diagonal,
+</span><span class="comment">*</span><span class="comment">          with the array TAU, represent the orthogonal matrix Q as a
+</span><span class="comment">*</span><span class="comment">          product of elementary reflectors (see Further Details).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TAU     (output) DOUBLE PRECISION array, dimension (min(M,N))
+</span><span class="comment">*</span><span class="comment">          The scalar factors of the elementary reflectors (see Further
+</span><span class="comment">*</span><span class="comment">          Details).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0: successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0: if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The matrix Q is represented as a product of elementary reflectors
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Q = H(1) H(2) . . . H(k), where k = min(m,n).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Each H(i) has the form
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     H(i) = I - tau * v * v'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where tau is a real scalar, and v is a real vector with
+</span><span class="comment">*</span><span class="comment">  v(1:i-1) = 0 and v(i) = 1; v(i+1:m) is stored on exit in A(i+1:m,i),
+</span><span class="comment">*</span><span class="comment">  and tau in TAU(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ONE
+      PARAMETER          ( ONE = 1.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, K
+      DOUBLE PRECISION   AII
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DLARF.76"></a><a href="dlarf.f.html#DLARF.1">DLARF</a>, <a name="DLARFG.76"></a><a href="dlarfg.f.html#DLARFG.1">DLARFG</a>, <a name="XERBLA.76"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input arguments
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( M.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -4
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.94"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DGEQR2.94"></a><a href="dgeqr2.f.html#DGEQR2.1">DGEQR2</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      K = MIN( M, N )
+<span class="comment">*</span><span class="comment">
+</span>      DO 10 I = 1, K
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Generate elementary reflector H(i) to annihilate A(i+1:m,i)
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DLARFG.104"></a><a href="dlarfg.f.html#DLARFG.1">DLARFG</a>( M-I+1, A( I, I ), A( MIN( I+1, M ), I ), 1,
+     $                TAU( I ) )
+         IF( I.LT.N ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Apply H(i) to A(i:m,i+1:n) from the left
+</span><span class="comment">*</span><span class="comment">
+</span>            AII = A( I, I )
+            A( I, I ) = ONE
+            CALL <a name="DLARF.112"></a><a href="dlarf.f.html#DLARF.1">DLARF</a>( <span class="string">'Left'</span>, M-I+1, N-I, A( I, I ), 1, TAU( I ),
+     $                  A( I, I+1 ), LDA, WORK )
+            A( I, I ) = AII
+         END IF
+   10 CONTINUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DGEQR2.119"></a><a href="dgeqr2.f.html#DGEQR2.1">DGEQR2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

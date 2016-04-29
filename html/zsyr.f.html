@@ -1,0 +1,222 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zsyr.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZSYR.1"></a><a href="zsyr.f.html#ZSYR.1">ZSYR</a>( UPLO, N, ALPHA, X, INCX, A, LDA )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          UPLO
+      INTEGER            INCX, LDA, N
+      COMPLEX*16         ALPHA
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX*16         A( LDA, * ), X( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZSYR.19"></a><a href="zsyr.f.html#ZSYR.1">ZSYR</a>   performs the symmetric rank 1 operation
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     A := alpha*x*( x' ) + A,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where alpha is a complex scalar, x is an n element vector and A is an
+</span><span class="comment">*</span><span class="comment">  n by n symmetric matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  ==========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO     (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">           On entry, UPLO specifies whether the upper or lower
+</span><span class="comment">*</span><span class="comment">           triangular part of the array A is to be referenced as
+</span><span class="comment">*</span><span class="comment">           follows:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              UPLO = 'U' or 'u'   Only the upper triangular part of A
+</span><span class="comment">*</span><span class="comment">                                  is to be referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              UPLO = 'L' or 'l'   Only the lower triangular part of A
+</span><span class="comment">*</span><span class="comment">                                  is to be referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N        (input) INTEGER
+</span><span class="comment">*</span><span class="comment">           On entry, N specifies the order of the matrix A.
+</span><span class="comment">*</span><span class="comment">           N must be at least zero.
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ALPHA    (input) COMPLEX*16
+</span><span class="comment">*</span><span class="comment">           On entry, ALPHA specifies the scalar alpha.
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X        (input) COMPLEX*16 array, dimension at least
+</span><span class="comment">*</span><span class="comment">           ( 1 + ( N - 1 )*abs( INCX ) ).
+</span><span class="comment">*</span><span class="comment">           Before entry, the incremented array X must contain the N-
+</span><span class="comment">*</span><span class="comment">           element vector x.
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INCX     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">           On entry, INCX specifies the increment for the elements of
+</span><span class="comment">*</span><span class="comment">           X. INCX must not be zero.
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A        (input/output) COMPLEX*16 array, dimension ( LDA, N )
+</span><span class="comment">*</span><span class="comment">           Before entry, with  UPLO = 'U' or 'u', the leading n by n
+</span><span class="comment">*</span><span class="comment">           upper triangular part of the array A must contain the upper
+</span><span class="comment">*</span><span class="comment">           triangular part of the symmetric matrix and the strictly
+</span><span class="comment">*</span><span class="comment">           lower triangular part of A is not referenced. On exit, the
+</span><span class="comment">*</span><span class="comment">           upper triangular part of the array A is overwritten by the
+</span><span class="comment">*</span><span class="comment">           upper triangular part of the updated matrix.
+</span><span class="comment">*</span><span class="comment">           Before entry, with UPLO = 'L' or 'l', the leading n by n
+</span><span class="comment">*</span><span class="comment">           lower triangular part of the array A must contain the lower
+</span><span class="comment">*</span><span class="comment">           triangular part of the symmetric matrix and the strictly
+</span><span class="comment">*</span><span class="comment">           upper triangular part of A is not referenced. On exit, the
+</span><span class="comment">*</span><span class="comment">           lower triangular part of the array A is overwritten by the
+</span><span class="comment">*</span><span class="comment">           lower triangular part of the updated matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">           On entry, LDA specifies the first dimension of A as declared
+</span><span class="comment">*</span><span class="comment">           in the calling (sub) program. LDA must be at least
+</span><span class="comment">*</span><span class="comment">           max( 1, N ).
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment"> =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      COMPLEX*16         ZERO
+      PARAMETER          ( ZERO = ( 0.0D+0, 0.0D+0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, INFO, IX, J, JX, KX
+      COMPLEX*16         TEMP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.93"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.94"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.97"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( .NOT.<a name="LSAME.107"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) .AND. .NOT.<a name="LSAME.107"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) THEN
+         INFO = 1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = 2
+      ELSE IF( INCX.EQ.0 ) THEN
+         INFO = 5
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+         INFO = 7
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.117"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZSYR.117"></a><a href="zsyr.f.html#ZSYR.1">ZSYR</a>  '</span>, INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ( N.EQ.0 ) .OR. ( ALPHA.EQ.ZERO ) )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set the start point in X if the increment is not unity.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( INCX.LE.0 ) THEN
+         KX = 1 - ( N-1 )*INCX
+      ELSE IF( INCX.NE.1 ) THEN
+         KX = 1
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Start the operations. In this version the elements of A are
+</span><span class="comment">*</span><span class="comment">     accessed sequentially with one pass through the triangular part
+</span><span class="comment">*</span><span class="comment">     of A.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( <a name="LSAME.138"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Form  A  when A is stored in upper triangle.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( INCX.EQ.1 ) THEN
+            DO 20 J = 1, N
+               IF( X( J ).NE.ZERO ) THEN
+                  TEMP = ALPHA*X( J )
+                  DO 10 I = 1, J
+                     A( I, J ) = A( I, J ) + X( I )*TEMP
+   10             CONTINUE
+               END IF
+   20       CONTINUE
+         ELSE
+            JX = KX
+            DO 40 J = 1, N
+               IF( X( JX ).NE.ZERO ) THEN
+                  TEMP = ALPHA*X( JX )
+                  IX = KX
+                  DO 30 I = 1, J
+                     A( I, J ) = A( I, J ) + X( IX )*TEMP
+                     IX = IX + INCX
+   30             CONTINUE
+               END IF
+               JX = JX + INCX
+   40       CONTINUE
+         END IF
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Form  A  when A is stored in lower triangle.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( INCX.EQ.1 ) THEN
+            DO 60 J = 1, N
+               IF( X( J ).NE.ZERO ) THEN
+                  TEMP = ALPHA*X( J )
+                  DO 50 I = J, N
+                     A( I, J ) = A( I, J ) + X( I )*TEMP
+   50             CONTINUE
+               END IF
+   60       CONTINUE
+         ELSE
+            JX = KX
+            DO 80 J = 1, N
+               IF( X( JX ).NE.ZERO ) THEN
+                  TEMP = ALPHA*X( JX )
+                  IX = JX
+                  DO 70 I = J, N
+                     A( I, J ) = A( I, J ) + X( IX )*TEMP
+                     IX = IX + INCX
+   70             CONTINUE
+               END IF
+               JX = JX + INCX
+   80       CONTINUE
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZSYR.196"></a><a href="zsyr.f.html#ZSYR.1">ZSYR</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,326 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlazq3.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLAZQ3.1"></a><a href="dlazq3.f.html#DLAZQ3.1">DLAZQ3</a>( I0, N0, Z, PP, DMIN, SIGMA, DESIG, QMAX, NFAIL,
+     $                   ITER, NDIV, IEEE, TTYPE, DMIN1, DMIN2, DN, DN1,
+     $                   DN2, TAU )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      LOGICAL            IEEE
+      INTEGER            I0, ITER, N0, NDIV, NFAIL, PP, TTYPE
+      DOUBLE PRECISION   DESIG, DMIN, DMIN1, DMIN2, DN, DN1, DN2, QMAX,
+     $                   SIGMA, TAU
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   Z( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLAZQ3.22"></a><a href="dlazq3.f.html#DLAZQ3.1">DLAZQ3</a> checks for deflation, computes a shift (TAU) and calls dqds.
+</span><span class="comment">*</span><span class="comment">  In case of failure it changes shifts, and tries again until output
+</span><span class="comment">*</span><span class="comment">  is positive.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  I0     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         First index.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N0     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         Last index.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z      (input) DOUBLE PRECISION array, dimension ( 4*N )
+</span><span class="comment">*</span><span class="comment">         Z holds the qd array.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  PP     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         PP=0 for ping, PP=1 for pong.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DMIN   (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">         Minimum value of d.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SIGMA  (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">         Sum of shifts used in current segment.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DESIG  (input/output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">         Lower order part of SIGMA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  QMAX   (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">         Maximum value of q.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NFAIL  (output) INTEGER
+</span><span class="comment">*</span><span class="comment">         Number of times shift was too big.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ITER   (output) INTEGER
+</span><span class="comment">*</span><span class="comment">         Number of iterations.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NDIV   (output) INTEGER
+</span><span class="comment">*</span><span class="comment">         Number of divisions.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IEEE   (input) LOGICAL
+</span><span class="comment">*</span><span class="comment">         Flag for IEEE or non IEEE arithmetic (passed to <a name="DLASQ5.63"></a><a href="dlasq5.f.html#DLASQ5.1">DLASQ5</a>).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TTYPE  (input/output) INTEGER
+</span><span class="comment">*</span><span class="comment">         Shift type.  TTYPE is passed as an argument in order to save
+</span><span class="comment">*</span><span class="comment">         its value between calls to <a name="DLAZQ3.67"></a><a href="dlazq3.f.html#DLAZQ3.1">DLAZQ3</a>
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DMIN1  (input/output) REAL
+</span><span class="comment">*</span><span class="comment">  DMIN2  (input/output) REAL
+</span><span class="comment">*</span><span class="comment">  DN     (input/output) REAL
+</span><span class="comment">*</span><span class="comment">  DN1    (input/output) REAL
+</span><span class="comment">*</span><span class="comment">  DN2    (input/output) REAL
+</span><span class="comment">*</span><span class="comment">  TAU    (input/output) REAL
+</span><span class="comment">*</span><span class="comment">         These are passed as arguments in order to save their values
+</span><span class="comment">*</span><span class="comment">         between calls to <a name="DLAZQ3.76"></a><a href="dlazq3.f.html#DLAZQ3.1">DLAZQ3</a>
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This is a thread safe version of <a name="DLASQ3.78"></a><a href="dlasq3.f.html#DLASQ3.1">DLASQ3</a>, which passes TTYPE, DMIN1,
+</span><span class="comment">*</span><span class="comment">  DMIN2, DN, DN1. DN2 and TAU through the argument list in place of
+</span><span class="comment">*</span><span class="comment">  declaring them in a SAVE statment.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   CBIAS
+      PARAMETER          ( CBIAS = 1.50D0 )
+      DOUBLE PRECISION   ZERO, QURTR, HALF, ONE, TWO, HUNDRD
+      PARAMETER          ( ZERO = 0.0D0, QURTR = 0.250D0, HALF = 0.5D0,
+     $                     ONE = 1.0D0, TWO = 2.0D0, HUNDRD = 100.0D0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            IPN4, J4, N0IN, NN
+      DOUBLE PRECISION   EPS, G, S, SAFMIN, T, TEMP, TOL, TOL2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DLASQ5.96"></a><a href="dlasq5.f.html#DLASQ5.1">DLASQ5</a>, <a name="DLASQ6.96"></a><a href="dlasq6.f.html#DLASQ6.1">DLASQ6</a>, <a name="DLAZQ4.96"></a><a href="dlazq4.f.html#DLAZQ4.1">DLAZQ4</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Function ..
+</span>      DOUBLE PRECISION   <a name="DLAMCH.99"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+      EXTERNAL           <a name="DLAMCH.100"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MIN, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      N0IN   = N0
+      EPS    = <a name="DLAMCH.108"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Precision'</span> )
+      SAFMIN = <a name="DLAMCH.109"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Safe minimum'</span> )
+      TOL    = EPS*HUNDRD
+      TOL2   = TOL**2
+      G      = ZERO
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Check for deflation.
+</span><span class="comment">*</span><span class="comment">
+</span>   10 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      IF( N0.LT.I0 )
+     $   RETURN
+      IF( N0.EQ.I0 )
+     $   GO TO 20
+      NN = 4*N0 + PP
+      IF( N0.EQ.( I0+1 ) )
+     $   GO TO 40
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Check whether E(N0-1) is negligible, 1 eigenvalue.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( Z( NN-5 ).GT.TOL2*( SIGMA+Z( NN-3 ) ) .AND.
+     $    Z( NN-2*PP-4 ).GT.TOL2*Z( NN-7 ) )
+     $   GO TO 30
+<span class="comment">*</span><span class="comment">
+</span>   20 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      Z( 4*N0-3 ) = Z( 4*N0+PP-3 ) + SIGMA
+      N0 = N0 - 1
+      GO TO 10
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Check  whether E(N0-2) is negligible, 2 eigenvalues.
+</span><span class="comment">*</span><span class="comment">
+</span>   30 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      IF( Z( NN-9 ).GT.TOL2*SIGMA .AND.
+     $    Z( NN-2*PP-8 ).GT.TOL2*Z( NN-11 ) )
+     $   GO TO 50
+<span class="comment">*</span><span class="comment">
+</span>   40 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      IF( Z( NN-3 ).GT.Z( NN-7 ) ) THEN
+         S = Z( NN-3 )
+         Z( NN-3 ) = Z( NN-7 )
+         Z( NN-7 ) = S
+      END IF
+      IF( Z( NN-5 ).GT.Z( NN-3 )*TOL2 ) THEN
+         T = HALF*( ( Z( NN-7 )-Z( NN-3 ) )+Z( NN-5 ) )
+         S = Z( NN-3 )*( Z( NN-5 ) / T )
+         IF( S.LE.T ) THEN
+            S = Z( NN-3 )*( Z( NN-5 ) /
+     $          ( T*( ONE+SQRT( ONE+S / T ) ) ) )
+         ELSE
+            S = Z( NN-3 )*( Z( NN-5 ) / ( T+SQRT( T )*SQRT( T+S ) ) )
+         END IF
+         T = Z( NN-7 ) + ( S+Z( NN-5 ) )
+         Z( NN-3 ) = Z( NN-3 )*( Z( NN-7 ) / T )
+         Z( NN-7 ) = T
+      END IF
+      Z( 4*N0-7 ) = Z( NN-7 ) + SIGMA
+      Z( 4*N0-3 ) = Z( NN-3 ) + SIGMA
+      N0 = N0 - 2
+      GO TO 10
+<span class="comment">*</span><span class="comment">
+</span>   50 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Reverse the qd-array, if warranted.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( DMIN.LE.ZERO .OR. N0.LT.N0IN ) THEN
+         IF( CBIAS*Z( 4*I0+PP-3 ).LT.Z( 4*N0+PP-3 ) ) THEN
+            IPN4 = 4*( I0+N0 )
+            DO 60 J4 = 4*I0, 2*( I0+N0-1 ), 4
+               TEMP = Z( J4-3 )
+               Z( J4-3 ) = Z( IPN4-J4-3 )
+               Z( IPN4-J4-3 ) = TEMP
+               TEMP = Z( J4-2 )
+               Z( J4-2 ) = Z( IPN4-J4-2 )
+               Z( IPN4-J4-2 ) = TEMP
+               TEMP = Z( J4-1 )
+               Z( J4-1 ) = Z( IPN4-J4-5 )
+               Z( IPN4-J4-5 ) = TEMP
+               TEMP = Z( J4 )
+               Z( J4 ) = Z( IPN4-J4-4 )
+               Z( IPN4-J4-4 ) = TEMP
+   60       CONTINUE
+            IF( N0-I0.LE.4 ) THEN
+               Z( 4*N0+PP-1 ) = Z( 4*I0+PP-1 )
+               Z( 4*N0-PP ) = Z( 4*I0-PP )
+            END IF
+            DMIN2 = MIN( DMIN2, Z( 4*N0+PP-1 ) )
+            Z( 4*N0+PP-1 ) = MIN( Z( 4*N0+PP-1 ), Z( 4*I0+PP-1 ),
+     $                            Z( 4*I0+PP+3 ) )
+            Z( 4*N0-PP ) = MIN( Z( 4*N0-PP ), Z( 4*I0-PP ),
+     $                          Z( 4*I0-PP+4 ) )
+            QMAX = MAX( QMAX, Z( 4*I0+PP-3 ), Z( 4*I0+PP+1 ) )
+            DMIN = -ZERO
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( DMIN.LT.ZERO .OR. SAFMIN*QMAX.LT.MIN( Z( 4*N0+PP-1 ),
+     $    Z( 4*N0+PP-9 ), DMIN2+Z( 4*N0-PP ) ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Choose a shift.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DLAZQ4.211"></a><a href="dlazq4.f.html#DLAZQ4.1">DLAZQ4</a>( I0, N0, Z, PP, N0IN, DMIN, DMIN1, DMIN2, DN, DN1,
+     $                DN2, TAU, TTYPE, G )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Call dqds until DMIN &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span>   80    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DLASQ5.218"></a><a href="dlasq5.f.html#DLASQ5.1">DLASQ5</a>( I0, N0, Z, PP, TAU, DMIN, DMIN1, DMIN2, DN,
+     $                DN1, DN2, IEEE )
+<span class="comment">*</span><span class="comment">
+</span>         NDIV = NDIV + ( N0-I0+2 )
+         ITER = ITER + 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Check status.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( DMIN.GE.ZERO .AND. DMIN1.GT.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Success.
+</span><span class="comment">*</span><span class="comment">
+</span>            GO TO 100
+<span class="comment">*</span><span class="comment">
+</span>         ELSE IF( DMIN.LT.ZERO .AND. DMIN1.GT.ZERO .AND.
+     $            Z( 4*( N0-1 )-PP ).LT.TOL*( SIGMA+DN1 ) .AND.
+     $            ABS( DN ).LT.TOL*SIGMA ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Convergence hidden by negative DN.
+</span><span class="comment">*</span><span class="comment">
+</span>            Z( 4*( N0-1 )-PP+2 ) = ZERO
+            DMIN = ZERO
+            GO TO 100
+         ELSE IF( DMIN.LT.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           TAU too big. Select new TAU and try again.
+</span><span class="comment">*</span><span class="comment">
+</span>            NFAIL = NFAIL + 1
+            IF( TTYPE.LT.-22 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Failed twice. Play it safe.
+</span><span class="comment">*</span><span class="comment">
+</span>               TAU = ZERO
+            ELSE IF( DMIN1.GT.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Late failure. Gives excellent shift.
+</span><span class="comment">*</span><span class="comment">
+</span>               TAU = ( TAU+DMIN )*( ONE-TWO*EPS )
+               TTYPE = TTYPE - 11
+            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Early failure. Divide by 4.
+</span><span class="comment">*</span><span class="comment">
+</span>               TAU = QURTR*TAU
+               TTYPE = TTYPE - 12
+            END IF
+            GO TO 80
+         ELSE IF( DMIN.NE.DMIN ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           NaN.
+</span><span class="comment">*</span><span class="comment">
+</span>            TAU = ZERO
+            GO TO 80
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Possible underflow. Play it safe.
+</span><span class="comment">*</span><span class="comment">
+</span>            GO TO 90
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Risk of underflow.
+</span><span class="comment">*</span><span class="comment">
+</span>   90 CONTINUE
+      CALL <a name="DLASQ6.282"></a><a href="dlasq6.f.html#DLASQ6.1">DLASQ6</a>( I0, N0, Z, PP, DMIN, DMIN1, DMIN2, DN, DN1, DN2 )
+      NDIV = NDIV + ( N0-I0+2 )
+      ITER = ITER + 1
+      TAU = ZERO
+<span class="comment">*</span><span class="comment">
+</span>  100 CONTINUE
+      IF( TAU.LT.SIGMA ) THEN
+         DESIG = DESIG + TAU
+         T = SIGMA + DESIG
+         DESIG = DESIG - ( T-SIGMA )
+      ELSE
+         T = SIGMA + TAU
+         DESIG = SIGMA - ( T-TAU ) + DESIG
+      END IF
+      SIGMA = T
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLAZQ3.300"></a><a href="dlazq3.f.html#DLAZQ3.1">DLAZQ3</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

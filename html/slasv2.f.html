@@ -1,0 +1,273 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slasv2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLASV2.1"></a><a href="slasv2.f.html#SLASV2.1">SLASV2</a>( F, G, H, SSMIN, SSMAX, SNR, CSR, SNL, CSL )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      REAL               CSL, CSR, F, G, H, SNL, SNR, SSMAX, SSMIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLASV2.14"></a><a href="slasv2.f.html#SLASV2.1">SLASV2</a> computes the singular value decomposition of a 2-by-2
+</span><span class="comment">*</span><span class="comment">  triangular matrix
+</span><span class="comment">*</span><span class="comment">     [  F   G  ]
+</span><span class="comment">*</span><span class="comment">     [  0   H  ].
+</span><span class="comment">*</span><span class="comment">  On return, abs(SSMAX) is the larger singular value, abs(SSMIN) is the
+</span><span class="comment">*</span><span class="comment">  smaller singular value, and (CSL,SNL) and (CSR,SNR) are the left and
+</span><span class="comment">*</span><span class="comment">  right singular vectors for abs(SSMAX), giving the decomposition
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     [ CSL  SNL ] [  F   G  ] [ CSR -SNR ]  =  [ SSMAX   0   ]
+</span><span class="comment">*</span><span class="comment">     [-SNL  CSL ] [  0   H  ] [ SNR  CSR ]     [  0    SSMIN ].
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  F       (input) REAL
+</span><span class="comment">*</span><span class="comment">          The (1,1) element of the 2-by-2 matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  G       (input) REAL
+</span><span class="comment">*</span><span class="comment">          The (1,2) element of the 2-by-2 matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  H       (input) REAL
+</span><span class="comment">*</span><span class="comment">          The (2,2) element of the 2-by-2 matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SSMIN   (output) REAL
+</span><span class="comment">*</span><span class="comment">          abs(SSMIN) is the smaller singular value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SSMAX   (output) REAL
+</span><span class="comment">*</span><span class="comment">          abs(SSMAX) is the larger singular value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SNL     (output) REAL
+</span><span class="comment">*</span><span class="comment">  CSL     (output) REAL
+</span><span class="comment">*</span><span class="comment">          The vector (CSL, SNL) is a unit left singular vector for the
+</span><span class="comment">*</span><span class="comment">          singular value abs(SSMAX).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SNR     (output) REAL
+</span><span class="comment">*</span><span class="comment">  CSR     (output) REAL
+</span><span class="comment">*</span><span class="comment">          The vector (CSR, SNR) is a unit right singular vector for the
+</span><span class="comment">*</span><span class="comment">          singular value abs(SSMAX).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Any input parameter may be aliased with any output parameter.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Barring over/underflow and assuming a guard digit in subtraction, all
+</span><span class="comment">*</span><span class="comment">  output quantities are correct to within a few units in the last
+</span><span class="comment">*</span><span class="comment">  place (ulps).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  In IEEE arithmetic, the code works correctly if one matrix element is
+</span><span class="comment">*</span><span class="comment">  infinite.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Overflow will not occur unless the largest singular value itself
+</span><span class="comment">*</span><span class="comment">  overflows or is within a few ulps of overflow. (On machines with
+</span><span class="comment">*</span><span class="comment">  partial overflow, like the Cray, overflow may occur if the largest
+</span><span class="comment">*</span><span class="comment">  singular value is within a factor of 2 of overflow.)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Underflow is harmless if underflow is gradual. Otherwise, results
+</span><span class="comment">*</span><span class="comment">  may correspond to a matrix modified by perturbations of size near
+</span><span class="comment">*</span><span class="comment">  the underflow threshold.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment"> =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO
+      PARAMETER          ( ZERO = 0.0E0 )
+      REAL               HALF
+      PARAMETER          ( HALF = 0.5E0 )
+      REAL               ONE
+      PARAMETER          ( ONE = 1.0E0 )
+      REAL               TWO
+      PARAMETER          ( TWO = 2.0E0 )
+      REAL               FOUR
+      PARAMETER          ( FOUR = 4.0E0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            GASMAL, SWAP
+      INTEGER            PMAX
+      REAL               A, CLT, CRT, D, FA, FT, GA, GT, HA, HT, L, M,
+     $                   MM, R, S, SLT, SRT, T, TEMP, TSIGN, TT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, SIGN, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      REAL               <a name="SLAMCH.98"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      EXTERNAL           <a name="SLAMCH.99"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      FT = F
+      FA = ABS( FT )
+      HT = H
+      HA = ABS( H )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     PMAX points to the maximum absolute element of matrix
+</span><span class="comment">*</span><span class="comment">       PMAX = 1 if F largest in absolute values
+</span><span class="comment">*</span><span class="comment">       PMAX = 2 if G largest in absolute values
+</span><span class="comment">*</span><span class="comment">       PMAX = 3 if H largest in absolute values
+</span><span class="comment">*</span><span class="comment">
+</span>      PMAX = 1
+      SWAP = ( HA.GT.FA )
+      IF( SWAP ) THEN
+         PMAX = 3
+         TEMP = FT
+         FT = HT
+         HT = TEMP
+         TEMP = FA
+         FA = HA
+         HA = TEMP
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Now FA .ge. HA
+</span><span class="comment">*</span><span class="comment">
+</span>      END IF
+      GT = G
+      GA = ABS( GT )
+      IF( GA.EQ.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Diagonal matrix
+</span><span class="comment">*</span><span class="comment">
+</span>         SSMIN = HA
+         SSMAX = FA
+         CLT = ONE
+         CRT = ONE
+         SLT = ZERO
+         SRT = ZERO
+      ELSE
+         GASMAL = .TRUE.
+         IF( GA.GT.FA ) THEN
+            PMAX = 2
+            IF( ( FA / GA ).LT.<a name="SLAMCH.143"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'EPS'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Case of very large GA
+</span><span class="comment">*</span><span class="comment">
+</span>               GASMAL = .FALSE.
+               SSMAX = GA
+               IF( HA.GT.ONE ) THEN
+                  SSMIN = FA / ( GA / HA )
+               ELSE
+                  SSMIN = ( FA / GA )*HA
+               END IF
+               CLT = ONE
+               SLT = HT / GT
+               SRT = ONE
+               CRT = FT / GT
+            END IF
+         END IF
+         IF( GASMAL ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Normal case
+</span><span class="comment">*</span><span class="comment">
+</span>            D = FA - HA
+            IF( D.EQ.FA ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Copes with infinite F or H
+</span><span class="comment">*</span><span class="comment">
+</span>               L = ONE
+            ELSE
+               L = D / FA
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Note that 0 .le. L .le. 1
+</span><span class="comment">*</span><span class="comment">
+</span>            M = GT / FT
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Note that abs(M) .le. 1/macheps
+</span><span class="comment">*</span><span class="comment">
+</span>            T = TWO - L
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Note that T .ge. 1
+</span><span class="comment">*</span><span class="comment">
+</span>            MM = M*M
+            TT = T*T
+            S = SQRT( TT+MM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Note that 1 .le. S .le. 1 + 1/macheps
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( L.EQ.ZERO ) THEN
+               R = ABS( M )
+            ELSE
+               R = SQRT( L*L+MM )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Note that 0 .le. R .le. 1 + 1/macheps
+</span><span class="comment">*</span><span class="comment">
+</span>            A = HALF*( S+R )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Note that 1 .le. A .le. 1 + abs(M)
+</span><span class="comment">*</span><span class="comment">
+</span>            SSMIN = HA / A
+            SSMAX = FA*A
+            IF( MM.EQ.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Note that M is very tiny
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( L.EQ.ZERO ) THEN
+                  T = SIGN( TWO, FT )*SIGN( ONE, GT )
+               ELSE
+                  T = GT / SIGN( D, FT ) + M / T
+               END IF
+            ELSE
+               T = ( M / ( S+T )+M / ( R+L ) )*( ONE+A )
+            END IF
+            L = SQRT( T*T+FOUR )
+            CRT = TWO / L
+            SRT = T / L
+            CLT = ( CRT+SRT*M ) / A
+            SLT = ( HT / FT )*SRT / A
+         END IF
+      END IF
+      IF( SWAP ) THEN
+         CSL = SRT
+         SNL = CRT
+         CSR = SLT
+         SNR = CLT
+      ELSE
+         CSL = CLT
+         SNL = SLT
+         CSR = CRT
+         SNR = SRT
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Correct signs of SSMAX and SSMIN
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( PMAX.EQ.1 )
+     $   TSIGN = SIGN( ONE, CSR )*SIGN( ONE, CSL )*SIGN( ONE, F )
+      IF( PMAX.EQ.2 )
+     $   TSIGN = SIGN( ONE, SNR )*SIGN( ONE, CSL )*SIGN( ONE, G )
+      IF( PMAX.EQ.3 )
+     $   TSIGN = SIGN( ONE, SNR )*SIGN( ONE, SNL )*SIGN( ONE, H )
+      SSMAX = SIGN( SSMAX, TSIGN )
+      SSMIN = SIGN( SSMIN, TSIGN*SIGN( ONE, F )*SIGN( ONE, H ) )
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLASV2.247"></a><a href="slasv2.f.html#SLASV2.1">SLASV2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

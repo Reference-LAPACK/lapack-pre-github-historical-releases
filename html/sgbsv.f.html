@@ -1,0 +1,166 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>sgbsv.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SGBSV.1"></a><a href="sgbsv.f.html#SGBSV.1">SGBSV</a>( N, KL, KU, NRHS, AB, LDAB, IPIV, B, LDB, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK driver routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, KL, KU, LDAB, LDB, N, NRHS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IPIV( * )
+      REAL               AB( LDAB, * ), B( LDB, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SGBSV.18"></a><a href="sgbsv.f.html#SGBSV.1">SGBSV</a> computes the solution to a real system of linear equations
+</span><span class="comment">*</span><span class="comment">  A * X = B, where A is a band matrix of order N with KL subdiagonals
+</span><span class="comment">*</span><span class="comment">  and KU superdiagonals, and X and B are N-by-NRHS matrices.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The LU decomposition with partial pivoting and row interchanges is
+</span><span class="comment">*</span><span class="comment">  used to factor A as A = L * U, where L is a product of permutation
+</span><span class="comment">*</span><span class="comment">  and unit lower triangular matrices with KL subdiagonals, and U is
+</span><span class="comment">*</span><span class="comment">  upper triangular with KL+KU superdiagonals.  The factored form of A
+</span><span class="comment">*</span><span class="comment">  is then used to solve the system of equations A * X = B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of linear equations, i.e., the order of the
+</span><span class="comment">*</span><span class="comment">          matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KL      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of subdiagonals within the band of A.  KL &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KU      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of superdiagonals within the band of A.  KU &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NRHS    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of right hand sides, i.e., the number of columns
+</span><span class="comment">*</span><span class="comment">          of the matrix B.  NRHS &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AB      (input/output) REAL array, dimension (LDAB,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the matrix A in band storage, in rows KL+1 to
+</span><span class="comment">*</span><span class="comment">          2*KL+KU+1; rows 1 to KL of the array need not be set.
+</span><span class="comment">*</span><span class="comment">          The j-th column of A is stored in the j-th column of the
+</span><span class="comment">*</span><span class="comment">          array AB as follows:
+</span><span class="comment">*</span><span class="comment">          AB(KL+KU+1+i-j,j) = A(i,j) for max(1,j-KU)&lt;=i&lt;=min(N,j+KL)
+</span><span class="comment">*</span><span class="comment">          On exit, details of the factorization: U is stored as an
+</span><span class="comment">*</span><span class="comment">          upper triangular band matrix with KL+KU superdiagonals in
+</span><span class="comment">*</span><span class="comment">          rows 1 to KL+KU+1, and the multipliers used during the
+</span><span class="comment">*</span><span class="comment">          factorization are stored in rows KL+KU+2 to 2*KL+KU+1.
+</span><span class="comment">*</span><span class="comment">          See below for further details.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDAB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array AB.  LDAB &gt;= 2*KL+KU+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IPIV    (output) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The pivot indices that define the permutation matrix P;
+</span><span class="comment">*</span><span class="comment">          row i of the matrix was interchanged with row IPIV(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input/output) REAL array, dimension (LDB,NRHS)
+</span><span class="comment">*</span><span class="comment">          On entry, the N-by-NRHS right hand side matrix B.
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, the N-by-NRHS solution matrix X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B.  LDB &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = i, U(i,i) is exactly zero.  The factorization
+</span><span class="comment">*</span><span class="comment">                has been completed, but the factor U is exactly
+</span><span class="comment">*</span><span class="comment">                singular, and the solution has not been computed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The band storage scheme is illustrated by the following example, when
+</span><span class="comment">*</span><span class="comment">  M = N = 6, KL = 2, KU = 1:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  On entry:                       On exit:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">      *    *    *    +    +    +       *    *    *   u14  u25  u36
+</span><span class="comment">*</span><span class="comment">      *    *    +    +    +    +       *    *   u13  u24  u35  u46
+</span><span class="comment">*</span><span class="comment">      *   a12  a23  a34  a45  a56      *   u12  u23  u34  u45  u56
+</span><span class="comment">*</span><span class="comment">     a11  a22  a33  a44  a55  a66     u11  u22  u33  u44  u55  u66
+</span><span class="comment">*</span><span class="comment">     a21  a32  a43  a54  a65   *      m21  m32  m43  m54  m65   *
+</span><span class="comment">*</span><span class="comment">     a31  a42  a53  a64   *    *      m31  m42  m53  m64   *    *
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Array elements marked * are not used by the routine; elements marked
+</span><span class="comment">*</span><span class="comment">  + need not be set on entry, but are required by the routine to store
+</span><span class="comment">*</span><span class="comment">  elements of U because of fill-in resulting from the row interchanges.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="SGBTRF.100"></a><a href="sgbtrf.f.html#SGBTRF.1">SGBTRF</a>, <a name="SGBTRS.100"></a><a href="sgbtrs.f.html#SGBTRS.1">SGBTRS</a>, <a name="XERBLA.100"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( N.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( KL.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( KU.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( NRHS.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( LDAB.LT.2*KL+KU+1 ) THEN
+         INFO = -6
+      ELSE IF( LDB.LT.MAX( N, 1 ) ) THEN
+         INFO = -9
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.124"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="SGBSV.124"></a><a href="sgbsv.f.html#SGBSV.1">SGBSV</a> '</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the LU factorization of the band matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="SGBTRF.130"></a><a href="sgbtrf.f.html#SGBTRF.1">SGBTRF</a>( N, N, KL, KU, AB, LDAB, IPIV, INFO )
+      IF( INFO.EQ.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve the system A*X = B, overwriting B with X.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="SGBTRS.135"></a><a href="sgbtrs.f.html#SGBTRS.1">SGBTRS</a>( <span class="string">'No transpose'</span>, N, KL, KU, NRHS, AB, LDAB, IPIV,
+     $                B, LDB, INFO )
+      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SGBSV.140"></a><a href="sgbsv.f.html#SGBSV.1">SGBSV</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slae2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLAE2.1"></a><a href="slae2.f.html#SLAE2.1">SLAE2</a>( A, B, C, RT1, RT2 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      REAL               A, B, C, RT1, RT2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLAE2.14"></a><a href="slae2.f.html#SLAE2.1">SLAE2</a>  computes the eigenvalues of a 2-by-2 symmetric matrix
+</span><span class="comment">*</span><span class="comment">     [  A   B  ]
+</span><span class="comment">*</span><span class="comment">     [  B   C  ].
+</span><span class="comment">*</span><span class="comment">  On return, RT1 is the eigenvalue of larger absolute value, and RT2
+</span><span class="comment">*</span><span class="comment">  is the eigenvalue of smaller absolute value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input) REAL
+</span><span class="comment">*</span><span class="comment">          The (1,1) element of the 2-by-2 matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input) REAL
+</span><span class="comment">*</span><span class="comment">          The (1,2) and (2,1) elements of the 2-by-2 matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C       (input) REAL
+</span><span class="comment">*</span><span class="comment">          The (2,2) element of the 2-by-2 matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RT1     (output) REAL
+</span><span class="comment">*</span><span class="comment">          The eigenvalue of larger absolute value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RT2     (output) REAL
+</span><span class="comment">*</span><span class="comment">          The eigenvalue of smaller absolute value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RT1 is accurate to a few ulps barring over/underflow.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RT2 may be inaccurate if there is massive cancellation in the
+</span><span class="comment">*</span><span class="comment">  determinant A*C-B*B; higher precision or correctly rounded or
+</span><span class="comment">*</span><span class="comment">  correctly truncated arithmetic would be needed to compute RT2
+</span><span class="comment">*</span><span class="comment">  accurately in all cases.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Overflow is possible only if RT1 is within a factor of 5 of overflow.
+</span><span class="comment">*</span><span class="comment">  Underflow is harmless if the input data is 0 or exceeds
+</span><span class="comment">*</span><span class="comment">     underflow_threshold / macheps.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment"> =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ONE
+      PARAMETER          ( ONE = 1.0E0 )
+      REAL               TWO
+      PARAMETER          ( TWO = 2.0E0 )
+      REAL               ZERO
+      PARAMETER          ( ZERO = 0.0E0 )
+      REAL               HALF
+      PARAMETER          ( HALF = 0.5E0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      REAL               AB, ACMN, ACMX, ADF, DF, RT, SM, TB
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the eigenvalues
+</span><span class="comment">*</span><span class="comment">
+</span>      SM = A + C
+      DF = A - C
+      ADF = ABS( DF )
+      TB = B + B
+      AB = ABS( TB )
+      IF( ABS( A ).GT.ABS( C ) ) THEN
+         ACMX = A
+         ACMN = C
+      ELSE
+         ACMX = C
+         ACMN = A
+      END IF
+      IF( ADF.GT.AB ) THEN
+         RT = ADF*SQRT( ONE+( AB / ADF )**2 )
+      ELSE IF( ADF.LT.AB ) THEN
+         RT = AB*SQRT( ONE+( ADF / AB )**2 )
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Includes case AB=ADF=0
+</span><span class="comment">*</span><span class="comment">
+</span>         RT = AB*SQRT( TWO )
+      END IF
+      IF( SM.LT.ZERO ) THEN
+         RT1 = HALF*( SM-RT )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Order of execution important.
+</span><span class="comment">*</span><span class="comment">        To get fully accurate smaller eigenvalue,
+</span><span class="comment">*</span><span class="comment">        next line needs to be executed in higher precision.
+</span><span class="comment">*</span><span class="comment">
+</span>         RT2 = ( ACMX / RT1 )*ACMN - ( B / RT1 )*B
+      ELSE IF( SM.GT.ZERO ) THEN
+         RT1 = HALF*( SM+RT )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Order of execution important.
+</span><span class="comment">*</span><span class="comment">        To get fully accurate smaller eigenvalue,
+</span><span class="comment">*</span><span class="comment">        next line needs to be executed in higher precision.
+</span><span class="comment">*</span><span class="comment">
+</span>         RT2 = ( ACMX / RT1 )*ACMN - ( B / RT1 )*B
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Includes case RT1 = RT2 = 0
+</span><span class="comment">*</span><span class="comment">
+</span>         RT1 = HALF*RT
+         RT2 = -HALF*RT
+      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLAE2.121"></a><a href="slae2.f.html#SLAE2.1">SLAE2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

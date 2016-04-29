@@ -1,0 +1,527 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>clalsa.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CLALSA.1"></a><a href="clalsa.f.html#CLALSA.1">CLALSA</a>( ICOMPQ, SMLSIZ, N, NRHS, B, LDB, BX, LDBX, U,
+     $                   LDU, VT, K, DIFL, DIFR, Z, POLES, GIVPTR,
+     $                   GIVCOL, LDGCOL, PERM, GIVNUM, C, S, RWORK,
+     $                   IWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            ICOMPQ, INFO, LDB, LDBX, LDGCOL, LDU, N, NRHS,
+     $                   SMLSIZ
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            GIVCOL( LDGCOL, * ), GIVPTR( * ), IWORK( * ),
+     $                   K( * ), PERM( LDGCOL, * )
+      REAL               C( * ), DIFL( LDU, * ), DIFR( LDU, * ),
+     $                   GIVNUM( LDU, * ), POLES( LDU, * ), RWORK( * ),
+     $                   S( * ), U( LDU, * ), VT( LDU, * ), Z( LDU, * )
+      COMPLEX            B( LDB, * ), BX( LDBX, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CLALSA.26"></a><a href="clalsa.f.html#CLALSA.1">CLALSA</a> is an itermediate step in solving the least squares problem
+</span><span class="comment">*</span><span class="comment">  by computing the SVD of the coefficient matrix in compact form (The
+</span><span class="comment">*</span><span class="comment">  singular vectors are computed as products of simple orthorgonal
+</span><span class="comment">*</span><span class="comment">  matrices.).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If ICOMPQ = 0, <a name="CLALSA.31"></a><a href="clalsa.f.html#CLALSA.1">CLALSA</a> applies the inverse of the left singular vector
+</span><span class="comment">*</span><span class="comment">  matrix of an upper bidiagonal matrix to the right hand side; and if
+</span><span class="comment">*</span><span class="comment">  ICOMPQ = 1, <a name="CLALSA.33"></a><a href="clalsa.f.html#CLALSA.1">CLALSA</a> applies the right singular vector matrix to the
+</span><span class="comment">*</span><span class="comment">  right hand side. The singular vector matrices were generated in
+</span><span class="comment">*</span><span class="comment">  compact form by <a name="CLALSA.35"></a><a href="clalsa.f.html#CLALSA.1">CLALSA</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ICOMPQ (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         Specifies whether the left or the right singular vector
+</span><span class="comment">*</span><span class="comment">         matrix is involved.
+</span><span class="comment">*</span><span class="comment">         = 0: Left singular vector matrix
+</span><span class="comment">*</span><span class="comment">         = 1: Right singular vector matrix
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SMLSIZ (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The maximum size of the subproblems at the bottom of the
+</span><span class="comment">*</span><span class="comment">         computation tree.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The row and column dimensions of the upper bidiagonal matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NRHS   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The number of columns of B and BX. NRHS must be at least 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B      (input/output) COMPLEX array, dimension ( LDB, NRHS )
+</span><span class="comment">*</span><span class="comment">         On input, B contains the right hand sides of the least
+</span><span class="comment">*</span><span class="comment">         squares problem in rows 1 through M.
+</span><span class="comment">*</span><span class="comment">         On output, B contains the solution X in rows 1 through N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of B in the calling subprogram.
+</span><span class="comment">*</span><span class="comment">         LDB must be at least max(1,MAX( M, N ) ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BX     (output) COMPLEX array, dimension ( LDBX, NRHS )
+</span><span class="comment">*</span><span class="comment">         On exit, the result of applying the left or right singular
+</span><span class="comment">*</span><span class="comment">         vector matrix to B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDBX   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of BX.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  U      (input) REAL array, dimension ( LDU, SMLSIZ ).
+</span><span class="comment">*</span><span class="comment">         On entry, U contains the left singular vector matrices of all
+</span><span class="comment">*</span><span class="comment">         subproblems at the bottom level.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDU    (input) INTEGER, LDU = &gt; N.
+</span><span class="comment">*</span><span class="comment">         The leading dimension of arrays U, VT, DIFL, DIFR,
+</span><span class="comment">*</span><span class="comment">         POLES, GIVNUM, and Z.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VT     (input) REAL array, dimension ( LDU, SMLSIZ+1 ).
+</span><span class="comment">*</span><span class="comment">         On entry, VT' contains the right singular vector matrices of
+</span><span class="comment">*</span><span class="comment">         all subproblems at the bottom level.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  K      (input) INTEGER array, dimension ( N ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIFL   (input) REAL array, dimension ( LDU, NLVL ).
+</span><span class="comment">*</span><span class="comment">         where NLVL = INT(log_2 (N/(SMLSIZ+1))) + 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIFR   (input) REAL array, dimension ( LDU, 2 * NLVL ).
+</span><span class="comment">*</span><span class="comment">         On entry, DIFL(*, I) and DIFR(*, 2 * I -1) record
+</span><span class="comment">*</span><span class="comment">         distances between singular values on the I-th level and
+</span><span class="comment">*</span><span class="comment">         singular values on the (I -1)-th level, and DIFR(*, 2 * I)
+</span><span class="comment">*</span><span class="comment">         record the normalizing factors of the right singular vectors
+</span><span class="comment">*</span><span class="comment">         matrices of subproblems on I-th level.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z      (input) REAL array, dimension ( LDU, NLVL ).
+</span><span class="comment">*</span><span class="comment">         On entry, Z(1, I) contains the components of the deflation-
+</span><span class="comment">*</span><span class="comment">         adjusted updating row vector for subproblems on the I-th
+</span><span class="comment">*</span><span class="comment">         level.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  POLES  (input) REAL array, dimension ( LDU, 2 * NLVL ).
+</span><span class="comment">*</span><span class="comment">         On entry, POLES(*, 2 * I -1: 2 * I) contains the new and old
+</span><span class="comment">*</span><span class="comment">         singular values involved in the secular equations on the I-th
+</span><span class="comment">*</span><span class="comment">         level.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GIVPTR (input) INTEGER array, dimension ( N ).
+</span><span class="comment">*</span><span class="comment">         On entry, GIVPTR( I ) records the number of Givens
+</span><span class="comment">*</span><span class="comment">         rotations performed on the I-th problem on the computation
+</span><span class="comment">*</span><span class="comment">         tree.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GIVCOL (input) INTEGER array, dimension ( LDGCOL, 2 * NLVL ).
+</span><span class="comment">*</span><span class="comment">         On entry, for each I, GIVCOL(*, 2 * I - 1: 2 * I) records the
+</span><span class="comment">*</span><span class="comment">         locations of Givens rotations performed on the I-th level on
+</span><span class="comment">*</span><span class="comment">         the computation tree.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDGCOL (input) INTEGER, LDGCOL = &gt; N.
+</span><span class="comment">*</span><span class="comment">         The leading dimension of arrays GIVCOL and PERM.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  PERM   (input) INTEGER array, dimension ( LDGCOL, NLVL ).
+</span><span class="comment">*</span><span class="comment">         On entry, PERM(*, I) records permutations done on the I-th
+</span><span class="comment">*</span><span class="comment">         level of the computation tree.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GIVNUM (input) REAL array, dimension ( LDU, 2 * NLVL ).
+</span><span class="comment">*</span><span class="comment">         On entry, GIVNUM(*, 2 *I -1 : 2 * I) records the C- and S-
+</span><span class="comment">*</span><span class="comment">         values of Givens rotations performed on the I-th level on the
+</span><span class="comment">*</span><span class="comment">         computation tree.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C      (input) REAL array, dimension ( N ).
+</span><span class="comment">*</span><span class="comment">         On entry, if the I-th subproblem is not square,
+</span><span class="comment">*</span><span class="comment">         C( I ) contains the C-value of a Givens rotation related to
+</span><span class="comment">*</span><span class="comment">         the right null space of the I-th subproblem.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  S      (input) REAL array, dimension ( N ).
+</span><span class="comment">*</span><span class="comment">         On entry, if the I-th subproblem is not square,
+</span><span class="comment">*</span><span class="comment">         S( I ) contains the S-value of a Givens rotation related to
+</span><span class="comment">*</span><span class="comment">         the right null space of the I-th subproblem.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RWORK  (workspace) REAL array, dimension at least
+</span><span class="comment">*</span><span class="comment">         max ( N, (SMLSZ+1)*NRHS*3 ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK  (workspace) INTEGER array.
+</span><span class="comment">*</span><span class="comment">         The dimension must be at least 3 * N
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO   (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit.
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Ming Gu and Ren-Cang Li, Computer Science Division, University of
+</span><span class="comment">*</span><span class="comment">       California at Berkeley, USA
+</span><span class="comment">*</span><span class="comment">     Osni Marques, LBNL/NERSC, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, ONE
+      PARAMETER          ( ZERO = 0.0E0, ONE = 1.0E0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, I1, IC, IM1, INODE, J, JCOL, JIMAG, JREAL,
+     $                   JROW, LF, LL, LVL, LVL2, ND, NDB1, NDIML,
+     $                   NDIMR, NL, NLF, NLP1, NLVL, NR, NRF, NRP1, SQRE
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           CCOPY, <a name="CLALS0.168"></a><a href="clals0.f.html#CLALS0.1">CLALS0</a>, SGEMM, <a name="SLASDT.168"></a><a href="slasdt.f.html#SLASDT.1">SLASDT</a>, <a name="XERBLA.168"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          AIMAG, CMPLX, REAL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+<span class="comment">*</span><span class="comment">
+</span>      IF( ( ICOMPQ.LT.0 ) .OR. ( ICOMPQ.GT.1 ) ) THEN
+         INFO = -1
+      ELSE IF( SMLSIZ.LT.3 ) THEN
+         INFO = -2
+      ELSE IF( N.LT.SMLSIZ ) THEN
+         INFO = -3
+      ELSE IF( NRHS.LT.1 ) THEN
+         INFO = -4
+      ELSE IF( LDB.LT.N ) THEN
+         INFO = -6
+      ELSE IF( LDBX.LT.N ) THEN
+         INFO = -8
+      ELSE IF( LDU.LT.N ) THEN
+         INFO = -10
+      ELSE IF( LDGCOL.LT.N ) THEN
+         INFO = -19
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.197"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CLALSA.197"></a><a href="clalsa.f.html#CLALSA.1">CLALSA</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Book-keeping and  setting up the computation tree.
+</span><span class="comment">*</span><span class="comment">
+</span>      INODE = 1
+      NDIML = INODE + N
+      NDIMR = NDIML + N
+<span class="comment">*</span><span class="comment">
+</span>      CALL <a name="SLASDT.207"></a><a href="slasdt.f.html#SLASDT.1">SLASDT</a>( N, NLVL, ND, IWORK( INODE ), IWORK( NDIML ),
+     $             IWORK( NDIMR ), SMLSIZ )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The following code applies back the left singular vector factors.
+</span><span class="comment">*</span><span class="comment">     For applying back the right singular vector factors, go to 170.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ICOMPQ.EQ.1 ) THEN
+         GO TO 170
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The nodes on the bottom level of the tree were solved
+</span><span class="comment">*</span><span class="comment">     by <a name="SLASDQ.218"></a><a href="slasdq.f.html#SLASDQ.1">SLASDQ</a>. The corresponding left and right singular vector
+</span><span class="comment">*</span><span class="comment">     matrices are in explicit form. First apply back the left
+</span><span class="comment">*</span><span class="comment">     singular vector matrices.
+</span><span class="comment">*</span><span class="comment">
+</span>      NDB1 = ( ND+1 ) / 2
+      DO 130 I = NDB1, ND
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        IC : center row of each node
+</span><span class="comment">*</span><span class="comment">        NL : number of rows of left  subproblem
+</span><span class="comment">*</span><span class="comment">        NR : number of rows of right subproblem
+</span><span class="comment">*</span><span class="comment">        NLF: starting row of the left   subproblem
+</span><span class="comment">*</span><span class="comment">        NRF: starting row of the right  subproblem
+</span><span class="comment">*</span><span class="comment">
+</span>         I1 = I - 1
+         IC = IWORK( INODE+I1 )
+         NL = IWORK( NDIML+I1 )
+         NR = IWORK( NDIMR+I1 )
+         NLF = IC - NL
+         NRF = IC + 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Since B and BX are complex, the following call to SGEMM
+</span><span class="comment">*</span><span class="comment">        is performed in two steps (real and imaginary parts).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        CALL SGEMM( 'T', 'N', NL, NRHS, NL, ONE, U( NLF, 1 ), LDU,
+</span><span class="comment">*</span><span class="comment">     $               B( NLF, 1 ), LDB, ZERO, BX( NLF, 1 ), LDBX )
+</span><span class="comment">*</span><span class="comment">
+</span>         J = NL*NRHS*2
+         DO 20 JCOL = 1, NRHS
+            DO 10 JROW = NLF, NLF + NL - 1
+               J = J + 1
+               RWORK( J ) = REAL( B( JROW, JCOL ) )
+   10       CONTINUE
+   20    CONTINUE
+         CALL SGEMM( <span class="string">'T'</span>, <span class="string">'N'</span>, NL, NRHS, NL, ONE, U( NLF, 1 ), LDU,
+     $               RWORK( 1+NL*NRHS*2 ), NL, ZERO, RWORK( 1 ), NL )
+         J = NL*NRHS*2
+         DO 40 JCOL = 1, NRHS
+            DO 30 JROW = NLF, NLF + NL - 1
+               J = J + 1
+               RWORK( J ) = AIMAG( B( JROW, JCOL ) )
+   30       CONTINUE
+   40    CONTINUE
+         CALL SGEMM( <span class="string">'T'</span>, <span class="string">'N'</span>, NL, NRHS, NL, ONE, U( NLF, 1 ), LDU,
+     $               RWORK( 1+NL*NRHS*2 ), NL, ZERO, RWORK( 1+NL*NRHS ),
+     $               NL )
+         JREAL = 0
+         JIMAG = NL*NRHS
+         DO 60 JCOL = 1, NRHS
+            DO 50 JROW = NLF, NLF + NL - 1
+               JREAL = JREAL + 1
+               JIMAG = JIMAG + 1
+               BX( JROW, JCOL ) = CMPLX( RWORK( JREAL ),
+     $                            RWORK( JIMAG ) )
+   50       CONTINUE
+   60    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Since B and BX are complex, the following call to SGEMM
+</span><span class="comment">*</span><span class="comment">        is performed in two steps (real and imaginary parts).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        CALL SGEMM( 'T', 'N', NR, NRHS, NR, ONE, U( NRF, 1 ), LDU,
+</span><span class="comment">*</span><span class="comment">    $               B( NRF, 1 ), LDB, ZERO, BX( NRF, 1 ), LDBX )
+</span><span class="comment">*</span><span class="comment">
+</span>         J = NR*NRHS*2
+         DO 80 JCOL = 1, NRHS
+            DO 70 JROW = NRF, NRF + NR - 1
+               J = J + 1
+               RWORK( J ) = REAL( B( JROW, JCOL ) )
+   70       CONTINUE
+   80    CONTINUE
+         CALL SGEMM( <span class="string">'T'</span>, <span class="string">'N'</span>, NR, NRHS, NR, ONE, U( NRF, 1 ), LDU,
+     $               RWORK( 1+NR*NRHS*2 ), NR, ZERO, RWORK( 1 ), NR )
+         J = NR*NRHS*2
+         DO 100 JCOL = 1, NRHS
+            DO 90 JROW = NRF, NRF + NR - 1
+               J = J + 1
+               RWORK( J ) = AIMAG( B( JROW, JCOL ) )
+   90       CONTINUE
+  100    CONTINUE
+         CALL SGEMM( <span class="string">'T'</span>, <span class="string">'N'</span>, NR, NRHS, NR, ONE, U( NRF, 1 ), LDU,
+     $               RWORK( 1+NR*NRHS*2 ), NR, ZERO, RWORK( 1+NR*NRHS ),
+     $               NR )
+         JREAL = 0
+         JIMAG = NR*NRHS
+         DO 120 JCOL = 1, NRHS
+            DO 110 JROW = NRF, NRF + NR - 1
+               JREAL = JREAL + 1
+               JIMAG = JIMAG + 1
+               BX( JROW, JCOL ) = CMPLX( RWORK( JREAL ),
+     $                            RWORK( JIMAG ) )
+  110       CONTINUE
+  120    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>  130 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Next copy the rows of B that correspond to unchanged rows
+</span><span class="comment">*</span><span class="comment">     in the bidiagonal matrix to BX.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 140 I = 1, ND
+         IC = IWORK( INODE+I-1 )
+         CALL CCOPY( NRHS, B( IC, 1 ), LDB, BX( IC, 1 ), LDBX )
+  140 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Finally go through the left singular vector matrices of all
+</span><span class="comment">*</span><span class="comment">     the other subproblems bottom-up on the tree.
+</span><span class="comment">*</span><span class="comment">
+</span>      J = 2**NLVL
+      SQRE = 0
+<span class="comment">*</span><span class="comment">
+</span>      DO 160 LVL = NLVL, 1, -1
+         LVL2 = 2*LVL - 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        find the first node LF and last node LL on
+</span><span class="comment">*</span><span class="comment">        the current level LVL
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( LVL.EQ.1 ) THEN
+            LF = 1
+            LL = 1
+         ELSE
+            LF = 2**( LVL-1 )
+            LL = 2*LF - 1
+         END IF
+         DO 150 I = LF, LL
+            IM1 = I - 1
+            IC = IWORK( INODE+IM1 )
+            NL = IWORK( NDIML+IM1 )
+            NR = IWORK( NDIMR+IM1 )
+            NLF = IC - NL
+            NRF = IC + 1
+            J = J - 1
+            CALL <a name="CLALS0.347"></a><a href="clals0.f.html#CLALS0.1">CLALS0</a>( ICOMPQ, NL, NR, SQRE, NRHS, BX( NLF, 1 ), LDBX,
+     $                   B( NLF, 1 ), LDB, PERM( NLF, LVL ),
+     $                   GIVPTR( J ), GIVCOL( NLF, LVL2 ), LDGCOL,
+     $                   GIVNUM( NLF, LVL2 ), LDU, POLES( NLF, LVL2 ),
+     $                   DIFL( NLF, LVL ), DIFR( NLF, LVL2 ),
+     $                   Z( NLF, LVL ), K( J ), C( J ), S( J ), RWORK,
+     $                   INFO )
+  150    CONTINUE
+  160 CONTINUE
+      GO TO 330
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ICOMPQ = 1: applying back the right singular vector factors.
+</span><span class="comment">*</span><span class="comment">
+</span>  170 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     First now go through the right singular vector matrices of all
+</span><span class="comment">*</span><span class="comment">     the tree nodes top-down.
+</span><span class="comment">*</span><span class="comment">
+</span>      J = 0
+      DO 190 LVL = 1, NLVL
+         LVL2 = 2*LVL - 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find the first node LF and last node LL on
+</span><span class="comment">*</span><span class="comment">        the current level LVL.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( LVL.EQ.1 ) THEN
+            LF = 1
+            LL = 1
+         ELSE
+            LF = 2**( LVL-1 )
+            LL = 2*LF - 1
+         END IF
+         DO 180 I = LL, LF, -1
+            IM1 = I - 1
+            IC = IWORK( INODE+IM1 )
+            NL = IWORK( NDIML+IM1 )
+            NR = IWORK( NDIMR+IM1 )
+            NLF = IC - NL
+            NRF = IC + 1
+            IF( I.EQ.LL ) THEN
+               SQRE = 0
+            ELSE
+               SQRE = 1
+            END IF
+            J = J + 1
+            CALL <a name="CLALS0.392"></a><a href="clals0.f.html#CLALS0.1">CLALS0</a>( ICOMPQ, NL, NR, SQRE, NRHS, B( NLF, 1 ), LDB,
+     $                   BX( NLF, 1 ), LDBX, PERM( NLF, LVL ),
+     $                   GIVPTR( J ), GIVCOL( NLF, LVL2 ), LDGCOL,
+     $                   GIVNUM( NLF, LVL2 ), LDU, POLES( NLF, LVL2 ),
+     $                   DIFL( NLF, LVL ), DIFR( NLF, LVL2 ),
+     $                   Z( NLF, LVL ), K( J ), C( J ), S( J ), RWORK,
+     $                   INFO )
+  180    CONTINUE
+  190 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The nodes on the bottom level of the tree were solved
+</span><span class="comment">*</span><span class="comment">     by <a name="SLASDQ.403"></a><a href="slasdq.f.html#SLASDQ.1">SLASDQ</a>. The corresponding right singular vector
+</span><span class="comment">*</span><span class="comment">     matrices are in explicit form. Apply them back.
+</span><span class="comment">*</span><span class="comment">
+</span>      NDB1 = ( ND+1 ) / 2
+      DO 320 I = NDB1, ND
+         I1 = I - 1
+         IC = IWORK( INODE+I1 )
+         NL = IWORK( NDIML+I1 )
+         NR = IWORK( NDIMR+I1 )
+         NLP1 = NL + 1
+         IF( I.EQ.ND ) THEN
+            NRP1 = NR
+         ELSE
+            NRP1 = NR + 1
+         END IF
+         NLF = IC - NL
+         NRF = IC + 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Since B and BX are complex, the following call to SGEMM is
+</span><span class="comment">*</span><span class="comment">        performed in two steps (real and imaginary parts).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        CALL SGEMM( 'T', 'N', NLP1, NRHS, NLP1, ONE, VT( NLF, 1 ), LDU,
+</span><span class="comment">*</span><span class="comment">    $               B( NLF, 1 ), LDB, ZERO, BX( NLF, 1 ), LDBX )
+</span><span class="comment">*</span><span class="comment">
+</span>         J = NLP1*NRHS*2
+         DO 210 JCOL = 1, NRHS
+            DO 200 JROW = NLF, NLF + NLP1 - 1
+               J = J + 1
+               RWORK( J ) = REAL( B( JROW, JCOL ) )
+  200       CONTINUE
+  210    CONTINUE
+         CALL SGEMM( <span class="string">'T'</span>, <span class="string">'N'</span>, NLP1, NRHS, NLP1, ONE, VT( NLF, 1 ), LDU,
+     $               RWORK( 1+NLP1*NRHS*2 ), NLP1, ZERO, RWORK( 1 ),
+     $               NLP1 )
+         J = NLP1*NRHS*2
+         DO 230 JCOL = 1, NRHS
+            DO 220 JROW = NLF, NLF + NLP1 - 1
+               J = J + 1
+               RWORK( J ) = AIMAG( B( JROW, JCOL ) )
+  220       CONTINUE
+  230    CONTINUE
+         CALL SGEMM( <span class="string">'T'</span>, <span class="string">'N'</span>, NLP1, NRHS, NLP1, ONE, VT( NLF, 1 ), LDU,
+     $               RWORK( 1+NLP1*NRHS*2 ), NLP1, ZERO,
+     $               RWORK( 1+NLP1*NRHS ), NLP1 )
+         JREAL = 0
+         JIMAG = NLP1*NRHS
+         DO 250 JCOL = 1, NRHS
+            DO 240 JROW = NLF, NLF + NLP1 - 1
+               JREAL = JREAL + 1
+               JIMAG = JIMAG + 1
+               BX( JROW, JCOL ) = CMPLX( RWORK( JREAL ),
+     $                            RWORK( JIMAG ) )
+  240       CONTINUE
+  250    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Since B and BX are complex, the following call to SGEMM is
+</span><span class="comment">*</span><span class="comment">        performed in two steps (real and imaginary parts).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        CALL SGEMM( 'T', 'N', NRP1, NRHS, NRP1, ONE, VT( NRF, 1 ), LDU,
+</span><span class="comment">*</span><span class="comment">    $               B( NRF, 1 ), LDB, ZERO, BX( NRF, 1 ), LDBX )
+</span><span class="comment">*</span><span class="comment">
+</span>         J = NRP1*NRHS*2
+         DO 270 JCOL = 1, NRHS
+            DO 260 JROW = NRF, NRF + NRP1 - 1
+               J = J + 1
+               RWORK( J ) = REAL( B( JROW, JCOL ) )
+  260       CONTINUE
+  270    CONTINUE
+         CALL SGEMM( <span class="string">'T'</span>, <span class="string">'N'</span>, NRP1, NRHS, NRP1, ONE, VT( NRF, 1 ), LDU,
+     $               RWORK( 1+NRP1*NRHS*2 ), NRP1, ZERO, RWORK( 1 ),
+     $               NRP1 )
+         J = NRP1*NRHS*2
+         DO 290 JCOL = 1, NRHS
+            DO 280 JROW = NRF, NRF + NRP1 - 1
+               J = J + 1
+               RWORK( J ) = AIMAG( B( JROW, JCOL ) )
+  280       CONTINUE
+  290    CONTINUE
+         CALL SGEMM( <span class="string">'T'</span>, <span class="string">'N'</span>, NRP1, NRHS, NRP1, ONE, VT( NRF, 1 ), LDU,
+     $               RWORK( 1+NRP1*NRHS*2 ), NRP1, ZERO,
+     $               RWORK( 1+NRP1*NRHS ), NRP1 )
+         JREAL = 0
+         JIMAG = NRP1*NRHS
+         DO 310 JCOL = 1, NRHS
+            DO 300 JROW = NRF, NRF + NRP1 - 1
+               JREAL = JREAL + 1
+               JIMAG = JIMAG + 1
+               BX( JROW, JCOL ) = CMPLX( RWORK( JREAL ),
+     $                            RWORK( JIMAG ) )
+  300       CONTINUE
+  310    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>  320 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>  330 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CLALSA.501"></a><a href="clalsa.f.html#CLALSA.1">CLALSA</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

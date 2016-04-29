@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlarf.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLARF.1"></a><a href="dlarf.f.html#DLARF.1">DLARF</a>( SIDE, M, N, V, INCV, TAU, C, LDC, WORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          SIDE
+      INTEGER            INCV, LDC, M, N
+      DOUBLE PRECISION   TAU
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   C( LDC, * ), V( * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLARF.19"></a><a href="dlarf.f.html#DLARF.1">DLARF</a> applies a real elementary reflector H to a real m by n matrix
+</span><span class="comment">*</span><span class="comment">  C, from either the left or the right. H is represented in the form
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        H = I - tau * v * v'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where tau is a real scalar and v is a real vector.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If tau = 0, then H is taken to be the unit matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SIDE    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'L': form  H * C
+</span><span class="comment">*</span><span class="comment">          = 'R': form  C * H
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix C.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix C.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  V       (input) DOUBLE PRECISION array, dimension
+</span><span class="comment">*</span><span class="comment">                     (1 + (M-1)*abs(INCV)) if SIDE = 'L'
+</span><span class="comment">*</span><span class="comment">                  or (1 + (N-1)*abs(INCV)) if SIDE = 'R'
+</span><span class="comment">*</span><span class="comment">          The vector v in the representation of H. V is not used if
+</span><span class="comment">*</span><span class="comment">          TAU = 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INCV    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The increment between elements of v. INCV &lt;&gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TAU     (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The value tau in the representation of H.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C       (input/output) DOUBLE PRECISION array, dimension (LDC,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the m by n matrix C.
+</span><span class="comment">*</span><span class="comment">          On exit, C is overwritten by the matrix H * C if SIDE = 'L',
+</span><span class="comment">*</span><span class="comment">          or C * H if SIDE = 'R'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDC     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array C. LDC &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) DOUBLE PRECISION array, dimension
+</span><span class="comment">*</span><span class="comment">                         (N) if SIDE = 'L'
+</span><span class="comment">*</span><span class="comment">                      or (M) if SIDE = 'R'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ONE, ZERO
+      PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DGEMV, DGER
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.75"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.76"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( <a name="LSAME.80"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'L'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Form  H * C
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( TAU.NE.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           w := C' * v
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL DGEMV( <span class="string">'Transpose'</span>, M, N, ONE, C, LDC, V, INCV, ZERO,
+     $                  WORK, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           C := C - v * w'
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL DGER( M, N, -TAU, V, INCV, WORK, 1, C, LDC )
+         END IF
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Form  C * H
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( TAU.NE.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           w := C * v
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL DGEMV( <span class="string">'No transpose'</span>, M, N, ONE, C, LDC, V, INCV,
+     $                  ZERO, WORK, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           C := C - w * v'
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL DGER( M, N, -TAU, WORK, 1, V, INCV, C, LDC )
+         END IF
+      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLARF.113"></a><a href="dlarf.f.html#DLARF.1">DLARF</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

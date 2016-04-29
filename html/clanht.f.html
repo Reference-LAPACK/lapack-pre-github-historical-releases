@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>clanht.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      REAL             FUNCTION <a name="CLANHT.1"></a><a href="clanht.f.html#CLANHT.1">CLANHT</a>( NORM, N, D, E )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          NORM
+      INTEGER            N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               D( * )
+      COMPLEX            E( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CLANHT.19"></a><a href="clanht.f.html#CLANHT.1">CLANHT</a>  returns the value of the one norm,  or the Frobenius norm, or
+</span><span class="comment">*</span><span class="comment">  the  infinity norm,  or the  element of  largest absolute value  of a
+</span><span class="comment">*</span><span class="comment">  complex Hermitian tridiagonal matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Description
+</span><span class="comment">*</span><span class="comment">  ===========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CLANHT.26"></a><a href="clanht.f.html#CLANHT.1">CLANHT</a> returns the value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     <a name="CLANHT.28"></a><a href="clanht.f.html#CLANHT.1">CLANHT</a> = ( max(abs(A(i,j))), NORM = 'M' or 'm'
+</span><span class="comment">*</span><span class="comment">              (
+</span><span class="comment">*</span><span class="comment">              ( norm1(A),         NORM = '1', 'O' or 'o'
+</span><span class="comment">*</span><span class="comment">              (
+</span><span class="comment">*</span><span class="comment">              ( normI(A),         NORM = 'I' or 'i'
+</span><span class="comment">*</span><span class="comment">              (
+</span><span class="comment">*</span><span class="comment">              ( normF(A),         NORM = 'F', 'f', 'E' or 'e'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where  norm1  denotes the  one norm of a matrix (maximum column sum),
+</span><span class="comment">*</span><span class="comment">  normI  denotes the  infinity norm  of a matrix  (maximum row sum) and
+</span><span class="comment">*</span><span class="comment">  normF  denotes the  Frobenius norm of a matrix (square root of sum of
+</span><span class="comment">*</span><span class="comment">  squares).  Note that  max(abs(A(i,j)))  is not a consistent matrix norm.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NORM    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies the value to be returned in <a name="CLANHT.45"></a><a href="clanht.f.html#CLANHT.1">CLANHT</a> as described
+</span><span class="comment">*</span><span class="comment">          above.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.  When N = 0, <a name="CLANHT.49"></a><a href="clanht.f.html#CLANHT.1">CLANHT</a> is
+</span><span class="comment">*</span><span class="comment">          set to zero.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The diagonal elements of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E       (input) COMPLEX array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          The (n-1) sub-diagonal or super-diagonal elements of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ONE, ZERO
+      PARAMETER          ( ONE = 1.0E+0, ZERO = 0.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I
+      REAL               ANORM, SCALE, SUM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.69"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.70"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="CLASSQ.73"></a><a href="classq.f.html#CLASSQ.1">CLASSQ</a>, <a name="SLASSQ.73"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.LE.0 ) THEN
+         ANORM = ZERO
+      ELSE IF( <a name="LSAME.82"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'M'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find max(abs(A(i,j))).
+</span><span class="comment">*</span><span class="comment">
+</span>         ANORM = ABS( D( N ) )
+         DO 10 I = 1, N - 1
+            ANORM = MAX( ANORM, ABS( D( I ) ) )
+            ANORM = MAX( ANORM, ABS( E( I ) ) )
+   10    CONTINUE
+      ELSE IF( <a name="LSAME.91"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'O'</span> ) .OR. NORM.EQ.<span class="string">'1'</span> .OR.
+     $         <a name="LSAME.92"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'I'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find norm1(A).
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( N.EQ.1 ) THEN
+            ANORM = ABS( D( 1 ) )
+         ELSE
+            ANORM = MAX( ABS( D( 1 ) )+ABS( E( 1 ) ),
+     $              ABS( E( N-1 ) )+ABS( D( N ) ) )
+            DO 20 I = 2, N - 1
+               ANORM = MAX( ANORM, ABS( D( I ) )+ABS( E( I ) )+
+     $                 ABS( E( I-1 ) ) )
+   20       CONTINUE
+         END IF
+      ELSE IF( ( <a name="LSAME.106"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'F'</span> ) ) .OR. ( <a name="LSAME.106"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'E'</span> ) ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find normF(A).
+</span><span class="comment">*</span><span class="comment">
+</span>         SCALE = ZERO
+         SUM = ONE
+         IF( N.GT.1 ) THEN
+            CALL <a name="CLASSQ.113"></a><a href="classq.f.html#CLASSQ.1">CLASSQ</a>( N-1, E, 1, SCALE, SUM )
+            SUM = 2*SUM
+         END IF
+         CALL <a name="SLASSQ.116"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>( N, D, 1, SCALE, SUM )
+         ANORM = SCALE*SQRT( SUM )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      <a name="CLANHT.120"></a><a href="clanht.f.html#CLANHT.1">CLANHT</a> = ANORM
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CLANHT.123"></a><a href="clanht.f.html#CLANHT.1">CLANHT</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

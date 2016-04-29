@@ -1,0 +1,379 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>ztrsna.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZTRSNA.1"></a><a href="ztrsna.f.html#ZTRSNA.1">ZTRSNA</a>( JOB, HOWMNY, SELECT, N, T, LDT, VL, LDVL, VR,
+     $                   LDVR, S, SEP, MM, M, WORK, LDWORK, RWORK,
+     $                   INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Modified to call <a name="ZLACN2.9"></a><a href="zlacn2.f.html#ZLACN2.1">ZLACN2</a> in place of <a name="ZLACON.9"></a><a href="zlacon.f.html#ZLACON.1">ZLACON</a>, 10 Feb 03, SJH.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          HOWMNY, JOB
+      INTEGER            INFO, LDT, LDVL, LDVR, LDWORK, M, MM, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      LOGICAL            SELECT( * )
+      DOUBLE PRECISION   RWORK( * ), S( * ), SEP( * )
+      COMPLEX*16         T( LDT, * ), VL( LDVL, * ), VR( LDVR, * ),
+     $                   WORK( LDWORK, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZTRSNA.25"></a><a href="ztrsna.f.html#ZTRSNA.1">ZTRSNA</a> estimates reciprocal condition numbers for specified
+</span><span class="comment">*</span><span class="comment">  eigenvalues and/or right eigenvectors of a complex upper triangular
+</span><span class="comment">*</span><span class="comment">  matrix T (or of any matrix Q*T*Q**H with Q unitary).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOB     (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether condition numbers are required for
+</span><span class="comment">*</span><span class="comment">          eigenvalues (S) or eigenvectors (SEP):
+</span><span class="comment">*</span><span class="comment">          = 'E': for eigenvalues only (S);
+</span><span class="comment">*</span><span class="comment">          = 'V': for eigenvectors only (SEP);
+</span><span class="comment">*</span><span class="comment">          = 'B': for both eigenvalues and eigenvectors (S and SEP).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  HOWMNY  (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'A': compute condition numbers for all eigenpairs;
+</span><span class="comment">*</span><span class="comment">          = 'S': compute condition numbers for selected eigenpairs
+</span><span class="comment">*</span><span class="comment">                 specified by the array SELECT.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SELECT  (input) LOGICAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          If HOWMNY = 'S', SELECT specifies the eigenpairs for which
+</span><span class="comment">*</span><span class="comment">          condition numbers are required. To select condition numbers
+</span><span class="comment">*</span><span class="comment">          for the j-th eigenpair, SELECT(j) must be set to .TRUE..
+</span><span class="comment">*</span><span class="comment">          If HOWMNY = 'A', SELECT is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix T. N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  T       (input) COMPLEX*16 array, dimension (LDT,N)
+</span><span class="comment">*</span><span class="comment">          The upper triangular matrix T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDT     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array T. LDT &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VL      (input) COMPLEX*16 array, dimension (LDVL,M)
+</span><span class="comment">*</span><span class="comment">          If JOB = 'E' or 'B', VL must contain left eigenvectors of T
+</span><span class="comment">*</span><span class="comment">          (or of any Q*T*Q**H with Q unitary), corresponding to the
+</span><span class="comment">*</span><span class="comment">          eigenpairs specified by HOWMNY and SELECT. The eigenvectors
+</span><span class="comment">*</span><span class="comment">          must be stored in consecutive columns of VL, as returned by
+</span><span class="comment">*</span><span class="comment">          <a name="ZHSEIN.64"></a><a href="zhsein.f.html#ZHSEIN.1">ZHSEIN</a> or <a name="ZTREVC.64"></a><a href="ztrevc.f.html#ZTREVC.1">ZTREVC</a>.
+</span><span class="comment">*</span><span class="comment">          If JOB = 'V', VL is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDVL    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array VL.
+</span><span class="comment">*</span><span class="comment">          LDVL &gt;= 1; and if JOB = 'E' or 'B', LDVL &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VR      (input) COMPLEX*16 array, dimension (LDVR,M)
+</span><span class="comment">*</span><span class="comment">          If JOB = 'E' or 'B', VR must contain right eigenvectors of T
+</span><span class="comment">*</span><span class="comment">          (or of any Q*T*Q**H with Q unitary), corresponding to the
+</span><span class="comment">*</span><span class="comment">          eigenpairs specified by HOWMNY and SELECT. The eigenvectors
+</span><span class="comment">*</span><span class="comment">          must be stored in consecutive columns of VR, as returned by
+</span><span class="comment">*</span><span class="comment">          <a name="ZHSEIN.76"></a><a href="zhsein.f.html#ZHSEIN.1">ZHSEIN</a> or <a name="ZTREVC.76"></a><a href="ztrevc.f.html#ZTREVC.1">ZTREVC</a>.
+</span><span class="comment">*</span><span class="comment">          If JOB = 'V', VR is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDVR    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array VR.
+</span><span class="comment">*</span><span class="comment">          LDVR &gt;= 1; and if JOB = 'E' or 'B', LDVR &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  S       (output) DOUBLE PRECISION array, dimension (MM)
+</span><span class="comment">*</span><span class="comment">          If JOB = 'E' or 'B', the reciprocal condition numbers of the
+</span><span class="comment">*</span><span class="comment">          selected eigenvalues, stored in consecutive elements of the
+</span><span class="comment">*</span><span class="comment">          array. Thus S(j), SEP(j), and the j-th columns of VL and VR
+</span><span class="comment">*</span><span class="comment">          all correspond to the same eigenpair (but not in general the
+</span><span class="comment">*</span><span class="comment">          j-th eigenpair, unless all eigenpairs are selected).
+</span><span class="comment">*</span><span class="comment">          If JOB = 'V', S is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SEP     (output) DOUBLE PRECISION array, dimension (MM)
+</span><span class="comment">*</span><span class="comment">          If JOB = 'V' or 'B', the estimated reciprocal condition
+</span><span class="comment">*</span><span class="comment">          numbers of the selected eigenvectors, stored in consecutive
+</span><span class="comment">*</span><span class="comment">          elements of the array.
+</span><span class="comment">*</span><span class="comment">          If JOB = 'E', SEP is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  MM      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of elements in the arrays S (if JOB = 'E' or 'B')
+</span><span class="comment">*</span><span class="comment">           and/or SEP (if JOB = 'V' or 'B'). MM &gt;= M.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of elements of the arrays S and/or SEP actually
+</span><span class="comment">*</span><span class="comment">          used to store the estimated condition numbers.
+</span><span class="comment">*</span><span class="comment">          If HOWMNY = 'A', M is set to N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) COMPLEX*16 array, dimension (LDWORK,N+6)
+</span><span class="comment">*</span><span class="comment">          If JOB = 'E', WORK is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDWORK  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array WORK.
+</span><span class="comment">*</span><span class="comment">          LDWORK &gt;= 1; and if JOB = 'V' or 'B', LDWORK &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RWORK   (workspace) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          If JOB = 'E', RWORK is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0: successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0: if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The reciprocal of the condition number of an eigenvalue lambda is
+</span><span class="comment">*</span><span class="comment">  defined as
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          S(lambda) = |v'*u| / (norm(u)*norm(v))
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where u and v are the right and left eigenvectors of T corresponding
+</span><span class="comment">*</span><span class="comment">  to lambda; v' denotes the conjugate transpose of v, and norm(u)
+</span><span class="comment">*</span><span class="comment">  denotes the Euclidean norm. These reciprocal condition numbers always
+</span><span class="comment">*</span><span class="comment">  lie between zero (very badly conditioned) and one (very well
+</span><span class="comment">*</span><span class="comment">  conditioned). If n = 1, S(lambda) is defined to be 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  An approximate error bound for a computed eigenvalue W(i) is given by
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                      EPS * norm(T) / S(i)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where EPS is the machine precision.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The reciprocal of the condition number of the right eigenvector u
+</span><span class="comment">*</span><span class="comment">  corresponding to lambda is defined as follows. Suppose
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              T = ( lambda  c  )
+</span><span class="comment">*</span><span class="comment">                  (   0    T22 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Then the reciprocal condition number is
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          SEP( lambda, T22 ) = sigma-min( T22 - lambda*I )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where sigma-min denotes the smallest singular value. We approximate
+</span><span class="comment">*</span><span class="comment">  the smallest singular value by the reciprocal of an estimate of the
+</span><span class="comment">*</span><span class="comment">  one-norm of the inverse of T22 - lambda*I. If n = 1, SEP(1) is
+</span><span class="comment">*</span><span class="comment">  defined to be abs(T(1,1)).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  An approximate error bound for a computed right eigenvector VR(i)
+</span><span class="comment">*</span><span class="comment">  is given by
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                      EPS * norm(T) / SEP(i)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D0+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            SOMCON, WANTBH, WANTS, WANTSP
+      CHARACTER          NORMIN
+      INTEGER            I, IERR, IX, J, K, KASE, KS
+      DOUBLE PRECISION   BIGNUM, EPS, EST, LNRM, RNRM, SCALE, SMLNUM,
+     $                   XNORM
+      COMPLEX*16         CDUM, PROD
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      INTEGER            ISAVE( 3 )
+      COMPLEX*16         DUMMY( 1 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.179"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      INTEGER            IZAMAX
+      DOUBLE PRECISION   <a name="DLAMCH.181"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, DZNRM2
+      COMPLEX*16         ZDOTC
+      EXTERNAL           <a name="LSAME.183"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, IZAMAX, <a name="DLAMCH.183"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, DZNRM2, ZDOTC
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.186"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, <a name="ZDRSCL.186"></a><a href="zdrscl.f.html#ZDRSCL.1">ZDRSCL</a>, <a name="ZLACN2.186"></a><a href="zlacn2.f.html#ZLACN2.1">ZLACN2</a>, <a name="ZLACPY.186"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>, <a name="ZLATRS.186"></a><a href="zlatrs.f.html#ZLATRS.1">ZLATRS</a>, <a name="ZTREXC.186"></a><a href="ztrexc.f.html#ZTREXC.1">ZTREXC</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, DBLE, DIMAG, MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Functions ..
+</span>      DOUBLE PRECISION   CABS1
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Function definitions ..
+</span>      CABS1( CDUM ) = ABS( DBLE( CDUM ) ) + ABS( DIMAG( CDUM ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Decode and test the input parameters
+</span><span class="comment">*</span><span class="comment">
+</span>      WANTBH = <a name="LSAME.201"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'B'</span> )
+      WANTS = <a name="LSAME.202"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'E'</span> ) .OR. WANTBH
+      WANTSP = <a name="LSAME.203"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'V'</span> ) .OR. WANTBH
+<span class="comment">*</span><span class="comment">
+</span>      SOMCON = <a name="LSAME.205"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( HOWMNY, <span class="string">'S'</span> )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set M to the number of eigenpairs for which condition numbers are
+</span><span class="comment">*</span><span class="comment">     to be computed.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( SOMCON ) THEN
+         M = 0
+         DO 10 J = 1, N
+            IF( SELECT( J ) )
+     $         M = M + 1
+   10    CONTINUE
+      ELSE
+         M = N
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( .NOT.WANTS .AND. .NOT.WANTSP ) THEN
+         INFO = -1
+      ELSE IF( .NOT.<a name="LSAME.223"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( HOWMNY, <span class="string">'A'</span> ) .AND. .NOT.SOMCON ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( LDT.LT.MAX( 1, N ) ) THEN
+         INFO = -6
+      ELSE IF( LDVL.LT.1 .OR. ( WANTS .AND. LDVL.LT.N ) ) THEN
+         INFO = -8
+      ELSE IF( LDVR.LT.1 .OR. ( WANTS .AND. LDVR.LT.N ) ) THEN
+         INFO = -10
+      ELSE IF( MM.LT.M ) THEN
+         INFO = -13
+      ELSE IF( LDWORK.LT.1 .OR. ( WANTSP .AND. LDWORK.LT.N ) ) THEN
+         INFO = -16
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.239"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZTRSNA.239"></a><a href="ztrsna.f.html#ZTRSNA.1">ZTRSNA</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.1 ) THEN
+         IF( SOMCON ) THEN
+            IF( .NOT.SELECT( 1 ) )
+     $         RETURN
+         END IF
+         IF( WANTS )
+     $      S( 1 ) = ONE
+         IF( WANTSP )
+     $      SEP( 1 ) = ABS( T( 1, 1 ) )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Get machine constants
+</span><span class="comment">*</span><span class="comment">
+</span>      EPS = <a name="DLAMCH.262"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'P'</span> )
+      SMLNUM = <a name="DLAMCH.263"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'S'</span> ) / EPS
+      BIGNUM = ONE / SMLNUM
+      CALL <a name="DLABAD.265"></a><a href="dlabad.f.html#DLABAD.1">DLABAD</a>( SMLNUM, BIGNUM )
+<span class="comment">*</span><span class="comment">
+</span>      KS = 1
+      DO 50 K = 1, N
+<span class="comment">*</span><span class="comment">
+</span>         IF( SOMCON ) THEN
+            IF( .NOT.SELECT( K ) )
+     $         GO TO 50
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( WANTS ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute the reciprocal condition number of the k-th
+</span><span class="comment">*</span><span class="comment">           eigenvalue.
+</span><span class="comment">*</span><span class="comment">
+</span>            PROD = ZDOTC( N, VR( 1, KS ), 1, VL( 1, KS ), 1 )
+            RNRM = DZNRM2( N, VR( 1, KS ), 1 )
+            LNRM = DZNRM2( N, VL( 1, KS ), 1 )
+            S( KS ) = ABS( PROD ) / ( RNRM*LNRM )
+<span class="comment">*</span><span class="comment">
+</span>         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( WANTSP ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Estimate the reciprocal condition number of the k-th
+</span><span class="comment">*</span><span class="comment">           eigenvector.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Copy the matrix T to the array WORK and swap the k-th
+</span><span class="comment">*</span><span class="comment">           diagonal element to the (1,1) position.
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="ZLACPY.295"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'Full'</span>, N, N, T, LDT, WORK, LDWORK )
+            CALL <a name="ZTREXC.296"></a><a href="ztrexc.f.html#ZTREXC.1">ZTREXC</a>( <span class="string">'No Q'</span>, N, WORK, LDWORK, DUMMY, 1, K, 1, IERR )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Form  C = T22 - lambda*I in WORK(2:N,2:N).
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 20 I = 2, N
+               WORK( I, I ) = WORK( I, I ) - WORK( 1, 1 )
+   20       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Estimate a lower bound for the 1-norm of inv(C'). The 1st
+</span><span class="comment">*</span><span class="comment">           and (N+1)th columns of WORK are used to store work vectors.
+</span><span class="comment">*</span><span class="comment">
+</span>            SEP( KS ) = ZERO
+            EST = ZERO
+            KASE = 0
+            NORMIN = <span class="string">'N'</span>
+   30       CONTINUE
+            CALL <a name="ZLACN2.312"></a><a href="zlacn2.f.html#ZLACN2.1">ZLACN2</a>( N-1, WORK( 1, N+1 ), WORK, EST, KASE, ISAVE )
+<span class="comment">*</span><span class="comment">
+</span>            IF( KASE.NE.0 ) THEN
+               IF( KASE.EQ.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 Solve C'*x = scale*b
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL <a name="ZLATRS.319"></a><a href="zlatrs.f.html#ZLATRS.1">ZLATRS</a>( <span class="string">'Upper'</span>, <span class="string">'Conjugate transpose'</span>,
+     $                         <span class="string">'Nonunit'</span>, NORMIN, N-1, WORK( 2, 2 ),
+     $                         LDWORK, WORK, SCALE, RWORK, IERR )
+               ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 Solve C*x = scale*b
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL <a name="ZLATRS.326"></a><a href="zlatrs.f.html#ZLATRS.1">ZLATRS</a>( <span class="string">'Upper'</span>, <span class="string">'No transpose'</span>, <span class="string">'Nonunit'</span>,
+     $                         NORMIN, N-1, WORK( 2, 2 ), LDWORK, WORK,
+     $                         SCALE, RWORK, IERR )
+               END IF
+               NORMIN = <span class="string">'Y'</span>
+               IF( SCALE.NE.ONE ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 Multiply by 1/SCALE if doing so will not cause
+</span><span class="comment">*</span><span class="comment">                 overflow.
+</span><span class="comment">*</span><span class="comment">
+</span>                  IX = IZAMAX( N-1, WORK, 1 )
+                  XNORM = CABS1( WORK( IX, 1 ) )
+                  IF( SCALE.LT.XNORM*SMLNUM .OR. SCALE.EQ.ZERO )
+     $               GO TO 40
+                  CALL <a name="ZDRSCL.340"></a><a href="zdrscl.f.html#ZDRSCL.1">ZDRSCL</a>( N, SCALE, WORK, 1 )
+               END IF
+               GO TO 30
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>            SEP( KS ) = ONE / MAX( EST, SMLNUM )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>   40    CONTINUE
+         KS = KS + 1
+   50 CONTINUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZTRSNA.353"></a><a href="ztrsna.f.html#ZTRSNA.1">ZTRSNA</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

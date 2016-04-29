@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlarrr.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLARRR.1"></a><a href="dlarrr.f.html#DLARRR.1">DLARRR</a>( N, D, E, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            N, INFO
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   D( * ), E( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Perform tests to decide whether the symmetric tridiagonal matrix T
+</span><span class="comment">*</span><span class="comment">  warrants expensive computations which guarantee high relative accuracy
+</span><span class="comment">*</span><span class="comment">  in the eigenvalues.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix. N &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The N diagonal elements of the tridiagonal matrix T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E       (input/output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On entry, the first (N-1) entries contain the subdiagonal
+</span><span class="comment">*</span><span class="comment">          elements of the tridiagonal matrix T; E(N) is set to ZERO.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          INFO = 0(default) : the matrix warrants computations preserving
+</span><span class="comment">*</span><span class="comment">                              relative accuracy.
+</span><span class="comment">*</span><span class="comment">          INFO = 1          : the matrix warrants computations guaranteeing
+</span><span class="comment">*</span><span class="comment">                              only absolute accuracy.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Beresford Parlett, University of California, Berkeley, USA
+</span><span class="comment">*</span><span class="comment">     Jim Demmel, University of California, Berkeley, USA
+</span><span class="comment">*</span><span class="comment">     Inderjit Dhillon, University of Texas, Austin, USA
+</span><span class="comment">*</span><span class="comment">     Osni Marques, LBNL/NERSC, USA
+</span><span class="comment">*</span><span class="comment">     Christof Voemel, University of California, Berkeley, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, RELCOND
+      PARAMETER          ( ZERO = 0.0D0,
+     $                     RELCOND = 0.999D0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I
+      LOGICAL            YESREL
+      DOUBLE PRECISION   EPS, SAFMIN, SMLNUM, RMIN, TMP, TMP2,
+     $          OFFDIG, OFFDIG2
+
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      DOUBLE PRECISION   <a name="DLAMCH.66"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+      EXTERNAL           <a name="DLAMCH.67"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     As a default, do NOT go for relative-accuracy preserving computations.
+</span>      INFO = 1
+
+      SAFMIN = <a name="DLAMCH.77"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Safe minimum'</span> )
+      EPS = <a name="DLAMCH.78"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Precision'</span> )
+      SMLNUM = SAFMIN / EPS
+      RMIN = SQRT( SMLNUM )
+
+<span class="comment">*</span><span class="comment">     Tests for relative accuracy
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test for scaled diagonal dominance
+</span><span class="comment">*</span><span class="comment">     Scale the diagonal entries to one and check whether the sum of the
+</span><span class="comment">*</span><span class="comment">     off-diagonals is less than one
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The sdd relative error bounds have a 1/(1- 2*x) factor in them,
+</span><span class="comment">*</span><span class="comment">     x = max(OFFDIG + OFFDIG2), so when x is close to 1/2, no relative
+</span><span class="comment">*</span><span class="comment">     accuracy is promised.  In the notation of the code fragment below,
+</span><span class="comment">*</span><span class="comment">     1/(1 - (OFFDIG + OFFDIG2)) is the condition number.
+</span><span class="comment">*</span><span class="comment">     We don't think it is worth going into &quot;sdd mode&quot; unless the relative
+</span><span class="comment">*</span><span class="comment">     condition number is reasonable, not 1/macheps.
+</span><span class="comment">*</span><span class="comment">     The threshold should be compatible with other thresholds used in the
+</span><span class="comment">*</span><span class="comment">     code. We set  OFFDIG + OFFDIG2 &lt;= .999 =: RELCOND, it corresponds
+</span><span class="comment">*</span><span class="comment">     to losing at most 3 decimal digits: 1 / (1 - (OFFDIG + OFFDIG2)) &lt;= 1000
+</span><span class="comment">*</span><span class="comment">     instead of the current OFFDIG + OFFDIG2 &lt; 1
+</span><span class="comment">*</span><span class="comment">
+</span>      YESREL = .TRUE.
+      OFFDIG = ZERO
+      TMP = SQRT(ABS(D(1)))
+      IF (TMP.LT.RMIN) YESREL = .FALSE.
+      IF(.NOT.YESREL) GOTO 11
+      DO 10 I = 2, N
+         TMP2 = SQRT(ABS(D(I)))
+         IF (TMP2.LT.RMIN) YESREL = .FALSE.
+         IF(.NOT.YESREL) GOTO 11
+         OFFDIG2 = ABS(E(I-1))/(TMP*TMP2)
+         IF(OFFDIG+OFFDIG2.GE.RELCOND) YESREL = .FALSE.
+         IF(.NOT.YESREL) GOTO 11
+         TMP = TMP2
+         OFFDIG = OFFDIG2
+ 10   CONTINUE
+ 11   CONTINUE
+
+      IF( YESREL ) THEN
+         INFO = 0
+         RETURN
+      ELSE
+      ENDIF
+<span class="comment">*</span><span class="comment">
+</span>
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     *** MORE TO BE IMPLEMENTED ***
+</span><span class="comment">*</span><span class="comment">
+</span>
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test if the lower bidiagonal matrix L from T = L D L^T
+</span><span class="comment">*</span><span class="comment">     (zero shift facto) is well conditioned
+</span><span class="comment">*</span><span class="comment">
+</span>
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test if the upper bidiagonal matrix U from T = U D U^T
+</span><span class="comment">*</span><span class="comment">     (zero shift facto) is well conditioned.
+</span><span class="comment">*</span><span class="comment">     In this case, the matrix needs to be flipped and, at the end
+</span><span class="comment">*</span><span class="comment">     of the eigenvector computation, the flip needs to be applied
+</span><span class="comment">*</span><span class="comment">     to the computed eigenvectors (and the support)
+</span><span class="comment">*</span><span class="comment">
+</span>
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     END OF <a name="DLARRR.143"></a><a href="dlarrr.f.html#DLARRR.1">DLARRR</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

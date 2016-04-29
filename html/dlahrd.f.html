@@ -1,0 +1,231 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlahrd.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLAHRD.1"></a><a href="dlahrd.f.html#DLAHRD.1">DLAHRD</a>( N, K, NB, A, LDA, TAU, T, LDT, Y, LDY )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            K, LDA, LDT, LDY, N, NB
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   A( LDA, * ), T( LDT, NB ), TAU( NB ),
+     $                   Y( LDY, NB )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLAHRD.18"></a><a href="dlahrd.f.html#DLAHRD.1">DLAHRD</a> reduces the first NB columns of a real general n-by-(n-k+1)
+</span><span class="comment">*</span><span class="comment">  matrix A so that elements below the k-th subdiagonal are zero. The
+</span><span class="comment">*</span><span class="comment">  reduction is performed by an orthogonal similarity transformation
+</span><span class="comment">*</span><span class="comment">  Q' * A * Q. The routine returns the matrices V and T which determine
+</span><span class="comment">*</span><span class="comment">  Q as a block reflector I - V*T*V', and also the matrix Y = A * V * T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This is an OBSOLETE auxiliary routine. 
+</span><span class="comment">*</span><span class="comment">  This routine will be 'deprecated' in a  future release.
+</span><span class="comment">*</span><span class="comment">  Please use the new routine <a name="DLAHR2.26"></a><a href="dlahr2.f.html#DLAHR2.1">DLAHR2</a> instead.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  K       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The offset for the reduction. Elements below the k-th
+</span><span class="comment">*</span><span class="comment">          subdiagonal in the first NB columns are reduced to zero.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NB      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns to be reduced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) DOUBLE PRECISION array, dimension (LDA,N-K+1)
+</span><span class="comment">*</span><span class="comment">          On entry, the n-by-(n-k+1) general matrix A.
+</span><span class="comment">*</span><span class="comment">          On exit, the elements on and above the k-th subdiagonal in
+</span><span class="comment">*</span><span class="comment">          the first NB columns are overwritten with the corresponding
+</span><span class="comment">*</span><span class="comment">          elements of the reduced matrix; the elements below the k-th
+</span><span class="comment">*</span><span class="comment">          subdiagonal, with the array TAU, represent the matrix Q as a
+</span><span class="comment">*</span><span class="comment">          product of elementary reflectors. The other columns of A are
+</span><span class="comment">*</span><span class="comment">          unchanged. See Further Details.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TAU     (output) DOUBLE PRECISION array, dimension (NB)
+</span><span class="comment">*</span><span class="comment">          The scalar factors of the elementary reflectors. See Further
+</span><span class="comment">*</span><span class="comment">          Details.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  T       (output) DOUBLE PRECISION array, dimension (LDT,NB)
+</span><span class="comment">*</span><span class="comment">          The upper triangular matrix T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDT     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array T.  LDT &gt;= NB.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Y       (output) DOUBLE PRECISION array, dimension (LDY,NB)
+</span><span class="comment">*</span><span class="comment">          The n-by-nb matrix Y.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDY     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Y. LDY &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The matrix Q is represented as a product of nb elementary reflectors
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Q = H(1) H(2) . . . H(nb).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Each H(i) has the form
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     H(i) = I - tau * v * v'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where tau is a real scalar, and v is a real vector with
+</span><span class="comment">*</span><span class="comment">  v(1:i+k-1) = 0, v(i+k) = 1; v(i+k+1:n) is stored on exit in
+</span><span class="comment">*</span><span class="comment">  A(i+k+1:n,i), and tau in TAU(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The elements of the vectors v together form the (n-k+1)-by-nb matrix
+</span><span class="comment">*</span><span class="comment">  V which is needed, with T and Y, to apply the transformation to the
+</span><span class="comment">*</span><span class="comment">  unreduced part of the matrix, using an update of the form:
+</span><span class="comment">*</span><span class="comment">  A := (I - V*T*V') * (A - Y*V').
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The contents of A on exit are illustrated by the following example
+</span><span class="comment">*</span><span class="comment">  with n = 7, k = 3 and nb = 2:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ( a   h   a   a   a )
+</span><span class="comment">*</span><span class="comment">     ( a   h   a   a   a )
+</span><span class="comment">*</span><span class="comment">     ( a   h   a   a   a )
+</span><span class="comment">*</span><span class="comment">     ( h   h   a   a   a )
+</span><span class="comment">*</span><span class="comment">     ( v1  h   a   a   a )
+</span><span class="comment">*</span><span class="comment">     ( v1  v2  a   a   a )
+</span><span class="comment">*</span><span class="comment">     ( v1  v2  a   a   a )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where a denotes an element of the original matrix A, h denotes a
+</span><span class="comment">*</span><span class="comment">  modified element of the upper Hessenberg matrix H, and vi denotes an
+</span><span class="comment">*</span><span class="comment">  element of the vector defining H(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I
+      DOUBLE PRECISION   EI
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DAXPY, DCOPY, DGEMV, <a name="DLARFG.115"></a><a href="dlarfg.f.html#DLARFG.1">DLARFG</a>, DSCAL, DTRMV
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.LE.1 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      DO 10 I = 1, NB
+         IF( I.GT.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Update A(1:n,i)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute i-th column of A - Y * V'
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL DGEMV( <span class="string">'No transpose'</span>, N, I-1, -ONE, Y, LDY,
+     $                  A( K+I-1, 1 ), LDA, ONE, A( 1, I ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Apply I - V * T' * V' to this column (call it b) from the
+</span><span class="comment">*</span><span class="comment">           left, using the last column of T as workspace
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Let  V = ( V1 )   and   b = ( b1 )   (first I-1 rows)
+</span><span class="comment">*</span><span class="comment">                    ( V2 )             ( b2 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           where V1 is unit lower triangular
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           w := V1' * b1
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL DCOPY( I-1, A( K+1, I ), 1, T( 1, NB ), 1 )
+            CALL DTRMV( <span class="string">'Lower'</span>, <span class="string">'Transpose'</span>, <span class="string">'Unit'</span>, I-1, A( K+1, 1 ),
+     $                  LDA, T( 1, NB ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           w := w + V2'*b2
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL DGEMV( <span class="string">'Transpose'</span>, N-K-I+1, I-1, ONE, A( K+I, 1 ),
+     $                  LDA, A( K+I, I ), 1, ONE, T( 1, NB ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           w := T'*w
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL DTRMV( <span class="string">'Upper'</span>, <span class="string">'Transpose'</span>, <span class="string">'Non-unit'</span>, I-1, T, LDT,
+     $                  T( 1, NB ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           b2 := b2 - V2*w
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL DGEMV( <span class="string">'No transpose'</span>, N-K-I+1, I-1, -ONE, A( K+I, 1 ),
+     $                  LDA, T( 1, NB ), 1, ONE, A( K+I, I ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           b1 := b1 - V1*w
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL DTRMV( <span class="string">'Lower'</span>, <span class="string">'No transpose'</span>, <span class="string">'Unit'</span>, I-1,
+     $                  A( K+1, 1 ), LDA, T( 1, NB ), 1 )
+            CALL DAXPY( I-1, -ONE, T( 1, NB ), 1, A( K+1, I ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>            A( K+I-1, I-1 ) = EI
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Generate the elementary reflector H(i) to annihilate
+</span><span class="comment">*</span><span class="comment">        A(k+i+1:n,i)
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DLARFG.178"></a><a href="dlarfg.f.html#DLARFG.1">DLARFG</a>( N-K-I+1, A( K+I, I ), A( MIN( K+I+1, N ), I ), 1,
+     $                TAU( I ) )
+         EI = A( K+I, I )
+         A( K+I, I ) = ONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute  Y(1:n,i)
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL DGEMV( <span class="string">'No transpose'</span>, N, N-K-I+1, ONE, A( 1, I+1 ), LDA,
+     $               A( K+I, I ), 1, ZERO, Y( 1, I ), 1 )
+         CALL DGEMV( <span class="string">'Transpose'</span>, N-K-I+1, I-1, ONE, A( K+I, 1 ), LDA,
+     $               A( K+I, I ), 1, ZERO, T( 1, I ), 1 )
+         CALL DGEMV( <span class="string">'No transpose'</span>, N, I-1, -ONE, Y, LDY, T( 1, I ), 1,
+     $               ONE, Y( 1, I ), 1 )
+         CALL DSCAL( N, TAU( I ), Y( 1, I ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute T(1:i,i)
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL DSCAL( I-1, -TAU( I ), T( 1, I ), 1 )
+         CALL DTRMV( <span class="string">'Upper'</span>, <span class="string">'No transpose'</span>, <span class="string">'Non-unit'</span>, I-1, T, LDT,
+     $               T( 1, I ), 1 )
+         T( I, I ) = TAU( I )
+<span class="comment">*</span><span class="comment">
+</span>   10 CONTINUE
+      A( K+NB, NB ) = EI
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLAHRD.205"></a><a href="dlahrd.f.html#DLAHRD.1">DLAHRD</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

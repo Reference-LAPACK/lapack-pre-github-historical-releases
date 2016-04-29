@@ -1,0 +1,688 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>cstemr.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CSTEMR.1"></a><a href="cstemr.f.html#CSTEMR.1">CSTEMR</a>( JOBZ, RANGE, N, D, E, VL, VU, IL, IU,
+     $                   M, W, Z, LDZ, NZC, ISUPPZ, TRYRAC, WORK, LWORK,
+     $                   IWORK, LIWORK, INFO )
+      IMPLICIT NONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK computational routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          JOBZ, RANGE
+      LOGICAL            TRYRAC
+      INTEGER            IL, INFO, IU, LDZ, NZC, LIWORK, LWORK, M, N
+      REAL             VL, VU
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            ISUPPZ( * ), IWORK( * )
+      REAL               D( * ), E( * ), W( * ), WORK( * )
+      COMPLEX            Z( LDZ, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CSTEMR.25"></a><a href="cstemr.f.html#CSTEMR.1">CSTEMR</a> computes selected eigenvalues and, optionally, eigenvectors
+</span><span class="comment">*</span><span class="comment">  of a real symmetric tridiagonal matrix T. Any such unreduced matrix has
+</span><span class="comment">*</span><span class="comment">  a well defined set of pairwise different real eigenvalues, the corresponding
+</span><span class="comment">*</span><span class="comment">  real eigenvectors are pairwise orthogonal.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The spectrum may be computed either completely or partially by specifying
+</span><span class="comment">*</span><span class="comment">  either an interval (VL,VU] or a range of indices IL:IU for the desired
+</span><span class="comment">*</span><span class="comment">  eigenvalues.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Depending on the number of desired eigenvalues, these are computed either
+</span><span class="comment">*</span><span class="comment">  by bisection or the dqds algorithm. Numerically orthogonal eigenvectors are
+</span><span class="comment">*</span><span class="comment">  computed by the use of various suitable L D L^T factorizations near clusters
+</span><span class="comment">*</span><span class="comment">  of close eigenvalues (referred to as RRRs, Relatively Robust
+</span><span class="comment">*</span><span class="comment">  Representations). An informal sketch of the algorithm follows.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  For each unreduced block (submatrix) of T,
+</span><span class="comment">*</span><span class="comment">     (a) Compute T - sigma I  = L D L^T, so that L and D
+</span><span class="comment">*</span><span class="comment">         define all the wanted eigenvalues to high relative accuracy.
+</span><span class="comment">*</span><span class="comment">         This means that small relative changes in the entries of D and L
+</span><span class="comment">*</span><span class="comment">         cause only small relative changes in the eigenvalues and
+</span><span class="comment">*</span><span class="comment">         eigenvectors. The standard (unfactored) representation of the
+</span><span class="comment">*</span><span class="comment">         tridiagonal matrix T does not have this property in general.
+</span><span class="comment">*</span><span class="comment">     (b) Compute the eigenvalues to suitable accuracy.
+</span><span class="comment">*</span><span class="comment">         If the eigenvectors are desired, the algorithm attains full
+</span><span class="comment">*</span><span class="comment">         accuracy of the computed eigenvalues only right before
+</span><span class="comment">*</span><span class="comment">         the corresponding vectors have to be computed, see steps c) and d).
+</span><span class="comment">*</span><span class="comment">     (c) For each cluster of close eigenvalues, select a new
+</span><span class="comment">*</span><span class="comment">         shift close to the cluster, find a new factorization, and refine
+</span><span class="comment">*</span><span class="comment">         the shifted eigenvalues to suitable accuracy.
+</span><span class="comment">*</span><span class="comment">     (d) For each eigenvalue with a large enough relative separation compute
+</span><span class="comment">*</span><span class="comment">         the corresponding eigenvector by forming a rank revealing twisted
+</span><span class="comment">*</span><span class="comment">         factorization. Go back to (c) for any clusters that remain.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  For more details, see:
+</span><span class="comment">*</span><span class="comment">  - Inderjit S. Dhillon and Beresford N. Parlett: &quot;Multiple representations
+</span><span class="comment">*</span><span class="comment">    to compute orthogonal eigenvectors of symmetric tridiagonal matrices,&quot;
+</span><span class="comment">*</span><span class="comment">    Linear Algebra and its Applications, 387(1), pp. 1-28, August 2004.
+</span><span class="comment">*</span><span class="comment">  - Inderjit Dhillon and Beresford Parlett: &quot;Orthogonal Eigenvectors and
+</span><span class="comment">*</span><span class="comment">    Relative Gaps,&quot; SIAM Journal on Matrix Analysis and Applications, Vol. 25,
+</span><span class="comment">*</span><span class="comment">    2004.  Also LAPACK Working Note 154.
+</span><span class="comment">*</span><span class="comment">  - Inderjit Dhillon: &quot;A new O(n^2) algorithm for the symmetric
+</span><span class="comment">*</span><span class="comment">    tridiagonal eigenvalue/eigenvector problem&quot;,
+</span><span class="comment">*</span><span class="comment">    Computer Science Division Technical Report No. UCB/CSD-97-971,
+</span><span class="comment">*</span><span class="comment">    UC Berkeley, May 1997.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Notes:
+</span><span class="comment">*</span><span class="comment">  1.<a name="CSTEMR.71"></a><a href="cstemr.f.html#CSTEMR.1">CSTEMR</a> works only on machines which follow IEEE-754
+</span><span class="comment">*</span><span class="comment">  floating-point standard in their handling of infinities and NaNs.
+</span><span class="comment">*</span><span class="comment">  This permits the use of efficient inner loops avoiding a check for
+</span><span class="comment">*</span><span class="comment">  zero divisors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  2. LAPACK routines can be used to reduce a complex Hermitean matrix to
+</span><span class="comment">*</span><span class="comment">  real symmetric tridiagonal form.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  (Any complex Hermitean tridiagonal matrix has real values on its diagonal
+</span><span class="comment">*</span><span class="comment">  and potentially complex numbers on its off-diagonals. By applying a
+</span><span class="comment">*</span><span class="comment">  similarity transform with an appropriate diagonal matrix
+</span><span class="comment">*</span><span class="comment">  diag(1,e^{i \phy_1}, ... , e^{i \phy_{n-1}}), the complex Hermitean
+</span><span class="comment">*</span><span class="comment">  matrix can be transformed into a real symmetric matrix and complex
+</span><span class="comment">*</span><span class="comment">  arithmetic can be entirely avoided.)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  While the eigenvectors of the real symmetric tridiagonal matrix are real,
+</span><span class="comment">*</span><span class="comment">  the eigenvectors of original complex Hermitean matrix have complex entries
+</span><span class="comment">*</span><span class="comment">  in general.
+</span><span class="comment">*</span><span class="comment">  Since LAPACK drivers overwrite the matrix data with the eigenvectors,
+</span><span class="comment">*</span><span class="comment">  <a name="CSTEMR.90"></a><a href="cstemr.f.html#CSTEMR.1">CSTEMR</a> accepts complex workspace to facilitate interoperability
+</span><span class="comment">*</span><span class="comment">  with <a name="CUNMTR.91"></a><a href="cunmtr.f.html#CUNMTR.1">CUNMTR</a> or <a name="CUPMTR.91"></a><a href="cupmtr.f.html#CUPMTR.1">CUPMTR</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOBZ    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'N':  Compute eigenvalues only;
+</span><span class="comment">*</span><span class="comment">          = 'V':  Compute eigenvalues and eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RANGE   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'A': all eigenvalues will be found.
+</span><span class="comment">*</span><span class="comment">          = 'V': all eigenvalues in the half-open interval (VL,VU]
+</span><span class="comment">*</span><span class="comment">                 will be found.
+</span><span class="comment">*</span><span class="comment">          = 'I': the IL-th through IU-th eigenvalues will be found.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input/output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On entry, the N diagonal elements of the tridiagonal matrix
+</span><span class="comment">*</span><span class="comment">          T. On exit, D is overwritten.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E       (input/output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On entry, the (N-1) subdiagonal elements of the tridiagonal
+</span><span class="comment">*</span><span class="comment">          matrix T in elements 1 to N-1 of E. E(N) need not be set on
+</span><span class="comment">*</span><span class="comment">          input, but is used internally as workspace.
+</span><span class="comment">*</span><span class="comment">          On exit, E is overwritten.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VL      (input) REAL
+</span><span class="comment">*</span><span class="comment">  VU      (input) REAL
+</span><span class="comment">*</span><span class="comment">          If RANGE='V', the lower and upper bounds of the interval to
+</span><span class="comment">*</span><span class="comment">          be searched for eigenvalues. VL &lt; VU.
+</span><span class="comment">*</span><span class="comment">          Not referenced if RANGE = 'A' or 'I'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IL      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">  IU      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          If RANGE='I', the indices (in ascending order) of the
+</span><span class="comment">*</span><span class="comment">          smallest and largest eigenvalues to be returned.
+</span><span class="comment">*</span><span class="comment">          1 &lt;= IL &lt;= IU &lt;= N, if N &gt; 0.
+</span><span class="comment">*</span><span class="comment">          Not referenced if RANGE = 'A' or 'V'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          The total number of eigenvalues found.  0 &lt;= M &lt;= N.
+</span><span class="comment">*</span><span class="comment">          If RANGE = 'A', M = N, and if RANGE = 'I', M = IU-IL+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  W       (output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The first M elements contain the selected eigenvalues in
+</span><span class="comment">*</span><span class="comment">          ascending order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z       (output) COMPLEX array, dimension (LDZ, max(1,M) )
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'V', and if INFO = 0, then the first M columns of Z
+</span><span class="comment">*</span><span class="comment">          contain the orthonormal eigenvectors of the matrix T
+</span><span class="comment">*</span><span class="comment">          corresponding to the selected eigenvalues, with the i-th
+</span><span class="comment">*</span><span class="comment">          column of Z holding the eigenvector associated with W(i).
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'N', then Z is not referenced.
+</span><span class="comment">*</span><span class="comment">          Note: the user must ensure that at least max(1,M) columns are
+</span><span class="comment">*</span><span class="comment">          supplied in the array Z; if RANGE = 'V', the exact value of M
+</span><span class="comment">*</span><span class="comment">          is not known in advance and can be computed with a workspace
+</span><span class="comment">*</span><span class="comment">          query by setting NZC = -1, see below.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDZ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Z.  LDZ &gt;= 1, and if
+</span><span class="comment">*</span><span class="comment">          JOBZ = 'V', then LDZ &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NZC     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of eigenvectors to be held in the array Z.
+</span><span class="comment">*</span><span class="comment">          If RANGE = 'A', then NZC &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">          If RANGE = 'V', then NZC &gt;= the number of eigenvalues in (VL,VU].
+</span><span class="comment">*</span><span class="comment">          If RANGE = 'I', then NZC &gt;= IU-IL+1.
+</span><span class="comment">*</span><span class="comment">          If NZC = -1, then a workspace query is assumed; the
+</span><span class="comment">*</span><span class="comment">          routine calculates the number of columns of the array Z that
+</span><span class="comment">*</span><span class="comment">          are needed to hold the eigenvectors.
+</span><span class="comment">*</span><span class="comment">          This value is returned as the first entry of the Z array, and
+</span><span class="comment">*</span><span class="comment">          no error message related to NZC is issued by <a name="XERBLA.164"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ISUPPZ  (output) INTEGER ARRAY, dimension ( 2*max(1,M) )
+</span><span class="comment">*</span><span class="comment">          The support of the eigenvectors in Z, i.e., the indices
+</span><span class="comment">*</span><span class="comment">          indicating the nonzero elements in Z. The i-th computed eigenvector
+</span><span class="comment">*</span><span class="comment">          is nonzero only in elements ISUPPZ( 2*i-1 ) through
+</span><span class="comment">*</span><span class="comment">          ISUPPZ( 2*i ). This is relevant in the case when the matrix
+</span><span class="comment">*</span><span class="comment">          is split. ISUPPZ is only accessed when JOBZ is 'V' and N &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TRYRAC  (input/output) LOGICAL
+</span><span class="comment">*</span><span class="comment">          If TRYRAC.EQ..TRUE., indicates that the code should check whether
+</span><span class="comment">*</span><span class="comment">          the tridiagonal matrix defines its eigenvalues to high relative
+</span><span class="comment">*</span><span class="comment">          accuracy.  If so, the code uses relative-accuracy preserving
+</span><span class="comment">*</span><span class="comment">          algorithms that might be (a bit) slower depending on the matrix.
+</span><span class="comment">*</span><span class="comment">          If the matrix does not define its eigenvalues to high relative
+</span><span class="comment">*</span><span class="comment">          accuracy, the code can uses possibly faster algorithms.
+</span><span class="comment">*</span><span class="comment">          If TRYRAC.EQ..FALSE., the code is not required to guarantee
+</span><span class="comment">*</span><span class="comment">          relatively accurate eigenvalues and can use the fastest possible
+</span><span class="comment">*</span><span class="comment">          techniques.
+</span><span class="comment">*</span><span class="comment">          On exit, a .TRUE. TRYRAC will be set to .FALSE. if the matrix
+</span><span class="comment">*</span><span class="comment">          does not define its eigenvalues to high relative accuracy.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace/output) REAL array, dimension (LWORK)
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, WORK(1) returns the optimal
+</span><span class="comment">*</span><span class="comment">          (and minimal) LWORK.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LWORK   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The dimension of the array WORK. LWORK &gt;= max(1,18*N)
+</span><span class="comment">*</span><span class="comment">          if JOBZ = 'V', and LWORK &gt;= max(1,12*N) if JOBZ = 'N'.
+</span><span class="comment">*</span><span class="comment">          If LWORK = -1, then a workspace query is assumed; the routine
+</span><span class="comment">*</span><span class="comment">          only calculates the optimal size of the WORK array, returns
+</span><span class="comment">*</span><span class="comment">          this value as the first entry of the WORK array, and no error
+</span><span class="comment">*</span><span class="comment">          message related to LWORK is issued by <a name="XERBLA.196"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK   (workspace/output) INTEGER array, dimension (LIWORK)
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, IWORK(1) returns the optimal LIWORK.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LIWORK  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The dimension of the array IWORK.  LIWORK &gt;= max(1,10*N)
+</span><span class="comment">*</span><span class="comment">          if the eigenvectors are desired, and LIWORK &gt;= max(1,8*N)
+</span><span class="comment">*</span><span class="comment">          if only the eigenvalues are to be computed.
+</span><span class="comment">*</span><span class="comment">          If LIWORK = -1, then a workspace query is assumed; the
+</span><span class="comment">*</span><span class="comment">          routine only calculates the optimal size of the IWORK array,
+</span><span class="comment">*</span><span class="comment">          returns this value as the first entry of the IWORK array, and
+</span><span class="comment">*</span><span class="comment">          no error message related to LIWORK is issued by <a name="XERBLA.208"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          On exit, INFO
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = 1X, internal error in <a name="SLARRE.214"></a><a href="slarre.f.html#SLARRE.1">SLARRE</a>,
+</span><span class="comment">*</span><span class="comment">                if INFO = 2X, internal error in <a name="CLARRV.215"></a><a href="clarrv.f.html#CLARRV.1">CLARRV</a>.
+</span><span class="comment">*</span><span class="comment">                Here, the digit X = ABS( IINFO ) &lt; 10, where IINFO is
+</span><span class="comment">*</span><span class="comment">                the nonzero error code returned by <a name="SLARRE.217"></a><a href="slarre.f.html#SLARRE.1">SLARRE</a> or
+</span><span class="comment">*</span><span class="comment">                <a name="CLARRV.218"></a><a href="clarrv.f.html#CLARRV.1">CLARRV</a>, respectively.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Beresford Parlett, University of California, Berkeley, USA
+</span><span class="comment">*</span><span class="comment">     Jim Demmel, University of California, Berkeley, USA
+</span><span class="comment">*</span><span class="comment">     Inderjit Dhillon, University of Texas, Austin, USA
+</span><span class="comment">*</span><span class="comment">     Osni Marques, LBNL/NERSC, USA
+</span><span class="comment">*</span><span class="comment">     Christof Voemel, University of California, Berkeley, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, ONE, FOUR, MINRGP
+      PARAMETER          ( ZERO = 0.0E0, ONE = 1.0E0,
+     $                     FOUR = 4.0E0,
+     $                     MINRGP = 3.0E-3 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            ALLEIG, INDEIG, LQUERY, VALEIG, WANTZ, ZQUERY
+      INTEGER            I, IBEGIN, IEND, IFIRST, IIL, IINDBL, IINDW,
+     $                   IINDWK, IINFO, IINSPL, IIU, ILAST, IN, INDD,
+     $                   INDE2, INDERR, INDGP, INDGRS, INDWRK, ITMP,
+     $                   ITMP2, J, JBLK, JJ, LIWMIN, LWMIN, NSPLIT,
+     $                   NZCMIN, OFFSET, WBEGIN, WEND
+      REAL               BIGNUM, CS, EPS, PIVMIN, R1, R2, RMAX, RMIN,
+     $                   RTOL1, RTOL2, SAFMIN, SCALE, SMLNUM, SN,
+     $                   THRESH, TMP, TNRM, WL, WU
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.252"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      REAL               <a name="SLAMCH.253"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANST.253"></a><a href="slanst.f.html#SLANST.1">SLANST</a>
+      EXTERNAL           <a name="LSAME.254"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="SLAMCH.254"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANST.254"></a><a href="slanst.f.html#SLANST.1">SLANST</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="CLARRV.257"></a><a href="clarrv.f.html#CLARRV.1">CLARRV</a>, CSWAP, SCOPY, <a name="SLAE2.257"></a><a href="slae2.f.html#SLAE2.1">SLAE2</a>, <a name="SLAEV2.257"></a><a href="slaev2.f.html#SLAEV2.1">SLAEV2</a>, <a name="SLARRC.257"></a><a href="slarrc.f.html#SLARRC.1">SLARRC</a>,
+     $                   <a name="SLARRE.258"></a><a href="slarre.f.html#SLARRE.1">SLARRE</a>, <a name="SLARRJ.258"></a><a href="slarrj.f.html#SLARRJ.1">SLARRJ</a>, <a name="SLARRR.258"></a><a href="slarrr.f.html#SLARRR.1">SLARRR</a>, <a name="SLASRT.258"></a><a href="slasrt.f.html#SLASRT.1">SLASRT</a>, SSCAL, <a name="XERBLA.258"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX, MIN, SQRT
+
+
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      WANTZ = <a name="LSAME.269"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBZ, <span class="string">'V'</span> )
+      ALLEIG = <a name="LSAME.270"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( RANGE, <span class="string">'A'</span> )
+      VALEIG = <a name="LSAME.271"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( RANGE, <span class="string">'V'</span> )
+      INDEIG = <a name="LSAME.272"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( RANGE, <span class="string">'I'</span> )
+<span class="comment">*</span><span class="comment">
+</span>      LQUERY = ( ( LWORK.EQ.-1 ).OR.( LIWORK.EQ.-1 ) )
+      ZQUERY = ( NZC.EQ.-1 )
+      TRYRAC = ( INFO.NE.0 )
+
+<span class="comment">*</span><span class="comment">     <a name="SSTEMR.278"></a><a href="sstemr.f.html#SSTEMR.1">SSTEMR</a> needs WORK of size 6*N, IWORK of size 3*N.
+</span><span class="comment">*</span><span class="comment">     In addition, <a name="SLARRE.279"></a><a href="slarre.f.html#SLARRE.1">SLARRE</a> needs WORK of size 6*N, IWORK of size 5*N.
+</span><span class="comment">*</span><span class="comment">     Furthermore, <a name="CLARRV.280"></a><a href="clarrv.f.html#CLARRV.1">CLARRV</a> needs WORK of size 12*N, IWORK of size 7*N.
+</span>      IF( WANTZ ) THEN
+         LWMIN = 18*N
+         LIWMIN = 10*N
+      ELSE
+<span class="comment">*</span><span class="comment">        need less workspace if only the eigenvalues are wanted
+</span>         LWMIN = 12*N
+         LIWMIN = 8*N
+      ENDIF
+
+      WL = ZERO
+      WU = ZERO
+      IIL = 0
+      IIU = 0
+
+      IF( VALEIG ) THEN
+<span class="comment">*</span><span class="comment">        We do not reference VL, VU in the cases RANGE = 'I','A'
+</span><span class="comment">*</span><span class="comment">        The interval (WL, WU] contains all the wanted eigenvalues.
+</span><span class="comment">*</span><span class="comment">        It is either given by the user or computed in <a name="SLARRE.298"></a><a href="slarre.f.html#SLARRE.1">SLARRE</a>.
+</span>         WL = VL
+         WU = VU
+      ELSEIF( INDEIG ) THEN
+<span class="comment">*</span><span class="comment">        We do not reference IL, IU in the cases RANGE = 'V','A'
+</span>         IIL = IL
+         IIU = IU
+      ENDIF
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( .NOT.( WANTZ .OR. <a name="LSAME.308"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBZ, <span class="string">'N'</span> ) ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.( ALLEIG .OR. VALEIG .OR. INDEIG ) ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( VALEIG .AND. N.GT.0 .AND. WU.LE.WL ) THEN
+         INFO = -7
+      ELSE IF( INDEIG .AND. ( IIL.LT.1 .OR. IIL.GT.N ) ) THEN
+         INFO = -8
+      ELSE IF( INDEIG .AND. ( IIU.LT.IIL .OR. IIU.GT.N ) ) THEN
+         INFO = -9
+      ELSE IF( LDZ.LT.1 .OR. ( WANTZ .AND. LDZ.LT.N ) ) THEN
+         INFO = -13
+      ELSE IF( LWORK.LT.LWMIN .AND. .NOT.LQUERY ) THEN
+         INFO = -17
+      ELSE IF( LIWORK.LT.LIWMIN .AND. .NOT.LQUERY ) THEN
+         INFO = -19
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Get machine constants.
+</span><span class="comment">*</span><span class="comment">
+</span>      SAFMIN = <a name="SLAMCH.330"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Safe minimum'</span> )
+      EPS = <a name="SLAMCH.331"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Precision'</span> )
+      SMLNUM = SAFMIN / EPS
+      BIGNUM = ONE / SMLNUM
+      RMIN = SQRT( SMLNUM )
+      RMAX = MIN( SQRT( BIGNUM ), ONE / SQRT( SQRT( SAFMIN ) ) )
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.EQ.0 ) THEN
+         WORK( 1 ) = LWMIN
+         IWORK( 1 ) = LIWMIN
+<span class="comment">*</span><span class="comment">
+</span>         IF( WANTZ .AND. ALLEIG ) THEN
+            NZCMIN = N
+         ELSE IF( WANTZ .AND. VALEIG ) THEN
+            CALL <a name="SLARRC.344"></a><a href="slarrc.f.html#SLARRC.1">SLARRC</a>( <span class="string">'T'</span>, N, VL, VU, D, E, SAFMIN,
+     $                            NZCMIN, ITMP, ITMP2, INFO )
+         ELSE IF( WANTZ .AND. INDEIG ) THEN
+            NZCMIN = IIU-IIL+1
+         ELSE
+<span class="comment">*</span><span class="comment">           WANTZ .EQ. FALSE.
+</span>            NZCMIN = 0
+         ENDIF
+         IF( ZQUERY .AND. INFO.EQ.0 ) THEN
+            Z( 1,1 ) = NZCMIN
+         ELSE IF( NZC.LT.NZCMIN .AND. .NOT.ZQUERY ) THEN
+            INFO = -14
+         END IF
+      END IF
+
+      IF( INFO.NE.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span>         CALL <a name="XERBLA.361"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CSTEMR.361"></a><a href="cstemr.f.html#CSTEMR.1">CSTEMR</a>'</span>, -INFO )
+<span class="comment">*</span><span class="comment">
+</span>         RETURN
+      ELSE IF( LQUERY .OR. ZQUERY ) THEN
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Handle N = 0, 1, and 2 cases immediately
+</span><span class="comment">*</span><span class="comment">
+</span>      M = 0
+      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.1 ) THEN
+         IF( ALLEIG .OR. INDEIG ) THEN
+            M = 1
+            W( 1 ) = D( 1 )
+         ELSE
+            IF( WL.LT.D( 1 ) .AND. WU.GE.D( 1 ) ) THEN
+               M = 1
+               W( 1 ) = D( 1 )
+            END IF
+         END IF
+         IF( WANTZ.AND.(.NOT.ZQUERY) ) THEN
+            Z( 1, 1 ) = ONE
+            ISUPPZ(1) = 1
+            ISUPPZ(2) = 1
+         END IF
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.2 ) THEN
+         IF( .NOT.WANTZ ) THEN
+            CALL <a name="SLAE2.394"></a><a href="slae2.f.html#SLAE2.1">SLAE2</a>( D(1), E(1), D(2), R1, R2 )
+         ELSE IF( WANTZ.AND.(.NOT.ZQUERY) ) THEN
+            CALL <a name="SLAEV2.396"></a><a href="slaev2.f.html#SLAEV2.1">SLAEV2</a>( D(1), E(1), D(2), R1, R2, CS, SN )
+         END IF
+         IF( ALLEIG.OR.
+     $      (VALEIG.AND.(R2.GT.WL).AND.
+     $                  (R2.LE.WU)).OR.
+     $      (INDEIG.AND.(IIL.EQ.1)) ) THEN
+            M = M+1
+            W( M ) = R2
+            IF( WANTZ.AND.(.NOT.ZQUERY) ) THEN
+               Z( 1, M ) = -SN
+               Z( 2, M ) = CS
+<span class="comment">*</span><span class="comment">              Note: At most one of SN and CS can be zero.
+</span>               IF (SN.NE.ZERO) THEN
+                  IF (CS.NE.ZERO) THEN
+                     ISUPPZ(2*M-1) = 1
+                     ISUPPZ(2*M-1) = 2
+                  ELSE
+                     ISUPPZ(2*M-1) = 1
+                     ISUPPZ(2*M-1) = 1
+                  END IF
+               ELSE
+                  ISUPPZ(2*M-1) = 2
+                  ISUPPZ(2*M) = 2
+               END IF
+            ENDIF
+         ENDIF
+         IF( ALLEIG.OR.
+     $      (VALEIG.AND.(R1.GT.WL).AND.
+     $                  (R1.LE.WU)).OR.
+     $      (INDEIG.AND.(IIU.EQ.2)) ) THEN
+            M = M+1
+            W( M ) = R1
+            IF( WANTZ.AND.(.NOT.ZQUERY) ) THEN
+               Z( 1, M ) = CS
+               Z( 2, M ) = SN
+<span class="comment">*</span><span class="comment">              Note: At most one of SN and CS can be zero.
+</span>               IF (SN.NE.ZERO) THEN
+                  IF (CS.NE.ZERO) THEN
+                     ISUPPZ(2*M-1) = 1
+                     ISUPPZ(2*M-1) = 2
+                  ELSE
+                     ISUPPZ(2*M-1) = 1
+                     ISUPPZ(2*M-1) = 1
+                  END IF
+               ELSE
+                  ISUPPZ(2*M-1) = 2
+                  ISUPPZ(2*M) = 2
+               END IF
+            ENDIF
+         ENDIF
+         RETURN
+      END IF
+
+<span class="comment">*</span><span class="comment">     Continue with general N
+</span>
+      INDGRS = 1
+      INDERR = 2*N + 1
+      INDGP = 3*N + 1
+      INDD = 4*N + 1
+      INDE2 = 5*N + 1
+      INDWRK = 6*N + 1
+<span class="comment">*</span><span class="comment">
+</span>      IINSPL = 1
+      IINDBL = N + 1
+      IINDW = 2*N + 1
+      IINDWK = 3*N + 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Scale matrix to allowable range, if necessary.
+</span><span class="comment">*</span><span class="comment">     The allowable range is related to the PIVMIN parameter; see the
+</span><span class="comment">*</span><span class="comment">     comments in <a name="SLARRD.465"></a><a href="slarrd.f.html#SLARRD.1">SLARRD</a>.  The preference for scaling small values
+</span><span class="comment">*</span><span class="comment">     up is heuristic; we expect users' matrices not to be close to the
+</span><span class="comment">*</span><span class="comment">     RMAX threshold.
+</span><span class="comment">*</span><span class="comment">
+</span>      SCALE = ONE
+      TNRM = <a name="SLANST.470"></a><a href="slanst.f.html#SLANST.1">SLANST</a>( <span class="string">'M'</span>, N, D, E )
+      IF( TNRM.GT.ZERO .AND. TNRM.LT.RMIN ) THEN
+         SCALE = RMIN / TNRM
+      ELSE IF( TNRM.GT.RMAX ) THEN
+         SCALE = RMAX / TNRM
+      END IF
+      IF( SCALE.NE.ONE ) THEN
+         CALL SSCAL( N, SCALE, D, 1 )
+         CALL SSCAL( N-1, SCALE, E, 1 )
+         TNRM = TNRM*SCALE
+         IF( VALEIG ) THEN
+<span class="comment">*</span><span class="comment">           If eigenvalues in interval have to be found,
+</span><span class="comment">*</span><span class="comment">           scale (WL, WU] accordingly
+</span>            WL = WL*SCALE
+            WU = WU*SCALE
+         ENDIF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the desired eigenvalues of the tridiagonal after splitting
+</span><span class="comment">*</span><span class="comment">     into smaller subblocks if the corresponding off-diagonal elements
+</span><span class="comment">*</span><span class="comment">     are small
+</span><span class="comment">*</span><span class="comment">     THRESH is the splitting parameter for <a name="SLARRE.491"></a><a href="slarre.f.html#SLARRE.1">SLARRE</a>
+</span><span class="comment">*</span><span class="comment">     A negative THRESH forces the old splitting criterion based on the
+</span><span class="comment">*</span><span class="comment">     size of the off-diagonal. A positive THRESH switches to splitting
+</span><span class="comment">*</span><span class="comment">     which preserves relative accuracy.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( TRYRAC ) THEN
+<span class="comment">*</span><span class="comment">        Test whether the matrix warrants the more expensive relative approach.
+</span>         CALL <a name="SLARRR.498"></a><a href="slarrr.f.html#SLARRR.1">SLARRR</a>( N, D, E, IINFO )
+      ELSE
+<span class="comment">*</span><span class="comment">        The user does not care about relative accurately eigenvalues
+</span>         IINFO = -1
+      ENDIF
+<span class="comment">*</span><span class="comment">     Set the splitting criterion
+</span>      IF (IINFO.EQ.0) THEN
+         THRESH = EPS
+      ELSE
+         THRESH = -EPS
+<span class="comment">*</span><span class="comment">        relative accuracy is desired but T does not guarantee it
+</span>         TRYRAC = .FALSE.
+      ENDIF
+<span class="comment">*</span><span class="comment">
+</span>      IF( TRYRAC ) THEN
+<span class="comment">*</span><span class="comment">        Copy original diagonal, needed to guarantee relative accuracy
+</span>         CALL SCOPY(N,D,1,WORK(INDD),1)
+      ENDIF
+<span class="comment">*</span><span class="comment">     Store the squares of the offdiagonal values of T
+</span>      DO 5 J = 1, N-1
+         WORK( INDE2+J-1 ) = E(J)**2
+ 5    CONTINUE
+
+<span class="comment">*</span><span class="comment">     Set the tolerance parameters for bisection
+</span>      IF( .NOT.WANTZ ) THEN
+<span class="comment">*</span><span class="comment">        <a name="SLARRE.523"></a><a href="slarre.f.html#SLARRE.1">SLARRE</a> computes the eigenvalues to full precision.
+</span>         RTOL1 = FOUR * EPS
+         RTOL2 = FOUR * EPS
+      ELSE
+<span class="comment">*</span><span class="comment">        <a name="SLARRE.527"></a><a href="slarre.f.html#SLARRE.1">SLARRE</a> computes the eigenvalues to less than full precision.
+</span><span class="comment">*</span><span class="comment">        <a name="CLARRV.528"></a><a href="clarrv.f.html#CLARRV.1">CLARRV</a> will refine the eigenvalue approximations, and we only
+</span><span class="comment">*</span><span class="comment">        need less accurate initial bisection in <a name="SLARRE.529"></a><a href="slarre.f.html#SLARRE.1">SLARRE</a>.
+</span><span class="comment">*</span><span class="comment">        Note: these settings do only affect the subset case and <a name="SLARRE.530"></a><a href="slarre.f.html#SLARRE.1">SLARRE</a>
+</span>         RTOL1 = MAX( SQRT(EPS)*5.0E-2, FOUR * EPS )
+         RTOL2 = MAX( SQRT(EPS)*5.0E-3, FOUR * EPS )
+      ENDIF
+      CALL <a name="SLARRE.534"></a><a href="slarre.f.html#SLARRE.1">SLARRE</a>( RANGE, N, WL, WU, IIL, IIU, D, E,
+     $             WORK(INDE2), RTOL1, RTOL2, THRESH, NSPLIT,
+     $             IWORK( IINSPL ), M, W, WORK( INDERR ),
+     $             WORK( INDGP ), IWORK( IINDBL ),
+     $             IWORK( IINDW ), WORK( INDGRS ), PIVMIN,
+     $             WORK( INDWRK ), IWORK( IINDWK ), IINFO )
+      IF( IINFO.NE.0 ) THEN
+         INFO = 10 + ABS( IINFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">     Note that if RANGE .NE. 'V', <a name="SLARRE.544"></a><a href="slarre.f.html#SLARRE.1">SLARRE</a> computes bounds on the desired
+</span><span class="comment">*</span><span class="comment">     part of the spectrum. All desired eigenvalues are contained in
+</span><span class="comment">*</span><span class="comment">     (WL,WU]
+</span>
+
+      IF( WANTZ ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute the desired eigenvectors corresponding to the computed
+</span><span class="comment">*</span><span class="comment">        eigenvalues
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="CLARRV.554"></a><a href="clarrv.f.html#CLARRV.1">CLARRV</a>( N, WL, WU, D, E,
+     $                PIVMIN, IWORK( IINSPL ), M,
+     $                1, M, MINRGP, RTOL1, RTOL2,
+     $                W, WORK( INDERR ), WORK( INDGP ), IWORK( IINDBL ),
+     $                IWORK( IINDW ), WORK( INDGRS ), Z, LDZ,
+     $                ISUPPZ, WORK( INDWRK ), IWORK( IINDWK ), IINFO )
+         IF( IINFO.NE.0 ) THEN
+            INFO = 20 + ABS( IINFO )
+            RETURN
+         END IF
+      ELSE
+<span class="comment">*</span><span class="comment">        <a name="SLARRE.565"></a><a href="slarre.f.html#SLARRE.1">SLARRE</a> computes eigenvalues of the (shifted) root representation
+</span><span class="comment">*</span><span class="comment">        <a name="CLARRV.566"></a><a href="clarrv.f.html#CLARRV.1">CLARRV</a> returns the eigenvalues of the unshifted matrix.
+</span><span class="comment">*</span><span class="comment">        However, if the eigenvectors are not desired by the user, we need
+</span><span class="comment">*</span><span class="comment">        to apply the corresponding shifts from <a name="SLARRE.568"></a><a href="slarre.f.html#SLARRE.1">SLARRE</a> to obtain the
+</span><span class="comment">*</span><span class="comment">        eigenvalues of the original matrix.
+</span>         DO 20 J = 1, M
+            ITMP = IWORK( IINDBL+J-1 )
+            W( J ) = W( J ) + E( IWORK( IINSPL+ITMP-1 ) )
+ 20      CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>
+      IF ( TRYRAC ) THEN
+<span class="comment">*</span><span class="comment">        Refine computed eigenvalues so that they are relatively accurate
+</span><span class="comment">*</span><span class="comment">        with respect to the original matrix T.
+</span>         IBEGIN = 1
+         WBEGIN = 1
+         DO 39  JBLK = 1, IWORK( IINDBL+M-1 )
+            IEND = IWORK( IINSPL+JBLK-1 )
+            IN = IEND - IBEGIN + 1
+            WEND = WBEGIN - 1
+<span class="comment">*</span><span class="comment">           check if any eigenvalues have to be refined in this block
+</span> 36         CONTINUE
+            IF( WEND.LT.M ) THEN
+               IF( IWORK( IINDBL+WEND ).EQ.JBLK ) THEN
+                  WEND = WEND + 1
+                  GO TO 36
+               END IF
+            END IF
+            IF( WEND.LT.WBEGIN ) THEN
+               IBEGIN = IEND + 1
+               GO TO 39
+            END IF
+
+            OFFSET = IWORK(IINDW+WBEGIN-1)-1
+            IFIRST = IWORK(IINDW+WBEGIN-1)
+            ILAST = IWORK(IINDW+WEND-1)
+            RTOL2 = FOUR * EPS
+            CALL <a name="SLARRJ.603"></a><a href="slarrj.f.html#SLARRJ.1">SLARRJ</a>( IN,
+     $                   WORK(INDD+IBEGIN-1), WORK(INDE2+IBEGIN-1),
+     $                   IFIRST, ILAST, RTOL2, OFFSET, W(WBEGIN),
+     $                   WORK( INDERR+WBEGIN-1 ),
+     $                   WORK( INDWRK ), IWORK( IINDWK ), PIVMIN,
+     $                   TNRM, IINFO )
+            IBEGIN = IEND + 1
+            WBEGIN = WEND + 1
+ 39      CONTINUE
+      ENDIF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If matrix was scaled, then rescale eigenvalues appropriately.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( SCALE.NE.ONE ) THEN
+         CALL SSCAL( M, ONE / SCALE, W, 1 )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If eigenvalues are not in increasing order, then sort them,
+</span><span class="comment">*</span><span class="comment">     possibly along with eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( NSPLIT.GT.1 ) THEN
+         IF( .NOT. WANTZ ) THEN
+            CALL <a name="SLASRT.625"></a><a href="slasrt.f.html#SLASRT.1">SLASRT</a>( <span class="string">'I'</span>, M, W, IINFO )
+            IF( IINFO.NE.0 ) THEN
+               INFO = 3
+               RETURN
+            END IF
+         ELSE
+            DO 60 J = 1, M - 1
+               I = 0
+               TMP = W( J )
+               DO 50 JJ = J + 1, M
+                  IF( W( JJ ).LT.TMP ) THEN
+                     I = JJ
+                     TMP = W( JJ )
+                  END IF
+ 50            CONTINUE
+               IF( I.NE.0 ) THEN
+                  W( I ) = W( J )
+                  W( J ) = TMP
+                  IF( WANTZ ) THEN
+                     CALL CSWAP( N, Z( 1, I ), 1, Z( 1, J ), 1 )
+                     ITMP = ISUPPZ( 2*I-1 )
+                     ISUPPZ( 2*I-1 ) = ISUPPZ( 2*J-1 )
+                     ISUPPZ( 2*J-1 ) = ITMP
+                     ITMP = ISUPPZ( 2*I )
+                     ISUPPZ( 2*I ) = ISUPPZ( 2*J )
+                     ISUPPZ( 2*J ) = ITMP
+                  END IF
+               END IF
+ 60         CONTINUE
+         END IF
+      ENDIF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span>      WORK( 1 ) = LWMIN
+      IWORK( 1 ) = LIWMIN
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CSTEMR.662"></a><a href="cstemr.f.html#CSTEMR.1">CSTEMR</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

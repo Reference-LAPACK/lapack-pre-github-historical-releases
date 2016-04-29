@@ -1,0 +1,369 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dtrexc.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DTREXC.1"></a><a href="dtrexc.f.html#DTREXC.1">DTREXC</a>( COMPQ, N, T, LDT, Q, LDQ, IFST, ILST, WORK,
+     $                   INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          COMPQ
+      INTEGER            IFST, ILST, INFO, LDQ, LDT, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   Q( LDQ, * ), T( LDT, * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DTREXC.19"></a><a href="dtrexc.f.html#DTREXC.1">DTREXC</a> reorders the real Schur factorization of a real matrix
+</span><span class="comment">*</span><span class="comment">  A = Q*T*Q**T, so that the diagonal block of T with row index IFST is
+</span><span class="comment">*</span><span class="comment">  moved to row ILST.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The real Schur form T is reordered by an orthogonal similarity
+</span><span class="comment">*</span><span class="comment">  transformation Z**T*T*Z, and optionally the matrix Q of Schur vectors
+</span><span class="comment">*</span><span class="comment">  is updated by postmultiplying it with Z.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  T must be in Schur canonical form (as returned by <a name="DHSEQR.27"></a><a href="dhseqr.f.html#DHSEQR.1">DHSEQR</a>), that is,
+</span><span class="comment">*</span><span class="comment">  block upper triangular with 1-by-1 and 2-by-2 diagonal blocks; each
+</span><span class="comment">*</span><span class="comment">  2-by-2 diagonal block has its diagonal elements equal and its
+</span><span class="comment">*</span><span class="comment">  off-diagonal elements of opposite sign.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  COMPQ   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'V':  update the matrix Q of Schur vectors;
+</span><span class="comment">*</span><span class="comment">          = 'N':  do not update Q.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix T. N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  T       (input/output) DOUBLE PRECISION array, dimension (LDT,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper quasi-triangular matrix T, in Schur
+</span><span class="comment">*</span><span class="comment">          Schur canonical form.
+</span><span class="comment">*</span><span class="comment">          On exit, the reordered upper quasi-triangular matrix, again
+</span><span class="comment">*</span><span class="comment">          in Schur canonical form.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDT     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array T. LDT &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Q       (input/output) DOUBLE PRECISION array, dimension (LDQ,N)
+</span><span class="comment">*</span><span class="comment">          On entry, if COMPQ = 'V', the matrix Q of Schur vectors.
+</span><span class="comment">*</span><span class="comment">          On exit, if COMPQ = 'V', Q has been postmultiplied by the
+</span><span class="comment">*</span><span class="comment">          orthogonal transformation matrix Z which reorders T.
+</span><span class="comment">*</span><span class="comment">          If COMPQ = 'N', Q is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDQ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Q.  LDQ &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IFST    (input/output) INTEGER
+</span><span class="comment">*</span><span class="comment">  ILST    (input/output) INTEGER
+</span><span class="comment">*</span><span class="comment">          Specify the reordering of the diagonal blocks of T.
+</span><span class="comment">*</span><span class="comment">          The block with row index IFST is moved to row ILST, by a
+</span><span class="comment">*</span><span class="comment">          sequence of transpositions between adjacent blocks.
+</span><span class="comment">*</span><span class="comment">          On exit, if IFST pointed on entry to the second row of a
+</span><span class="comment">*</span><span class="comment">          2-by-2 block, it is changed to point to the first row; ILST
+</span><span class="comment">*</span><span class="comment">          always points to the first row of the block in its final
+</span><span class="comment">*</span><span class="comment">          position (which may differ from its input value by +1 or -1).
+</span><span class="comment">*</span><span class="comment">          1 &lt;= IFST &lt;= N; 1 &lt;= ILST &lt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          = 1:  two adjacent blocks were too close to swap (the problem
+</span><span class="comment">*</span><span class="comment">                is very ill-conditioned); T may have been partially
+</span><span class="comment">*</span><span class="comment">                reordered, and ILST points to the first row of the
+</span><span class="comment">*</span><span class="comment">                current position of the block being moved.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO
+      PARAMETER          ( ZERO = 0.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            WANTQ
+      INTEGER            HERE, NBF, NBL, NBNEXT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.92"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.93"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DLAEXC.96"></a><a href="dlaexc.f.html#DLAEXC.1">DLAEXC</a>, <a name="XERBLA.96"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Decode and test the input arguments.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      WANTQ = <a name="LSAME.106"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( COMPQ, <span class="string">'V'</span> )
+      IF( .NOT.WANTQ .AND. .NOT.<a name="LSAME.107"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( COMPQ, <span class="string">'N'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDT.LT.MAX( 1, N ) ) THEN
+         INFO = -4
+      ELSE IF( LDQ.LT.1 .OR. ( WANTQ .AND. LDQ.LT.MAX( 1, N ) ) ) THEN
+         INFO = -6
+      ELSE IF( IFST.LT.1 .OR. IFST.GT.N ) THEN
+         INFO = -7
+      ELSE IF( ILST.LT.1 .OR. ILST.GT.N ) THEN
+         INFO = -8
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.121"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DTREXC.121"></a><a href="dtrexc.f.html#DTREXC.1">DTREXC</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.LE.1 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Determine the first row of specified block
+</span><span class="comment">*</span><span class="comment">     and find out it is 1 by 1 or 2 by 2.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( IFST.GT.1 ) THEN
+         IF( T( IFST, IFST-1 ).NE.ZERO )
+     $      IFST = IFST - 1
+      END IF
+      NBF = 1
+      IF( IFST.LT.N ) THEN
+         IF( T( IFST+1, IFST ).NE.ZERO )
+     $      NBF = 2
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Determine the first row of the final block
+</span><span class="comment">*</span><span class="comment">     and find out it is 1 by 1 or 2 by 2.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ILST.GT.1 ) THEN
+         IF( T( ILST, ILST-1 ).NE.ZERO )
+     $      ILST = ILST - 1
+      END IF
+      NBL = 1
+      IF( ILST.LT.N ) THEN
+         IF( T( ILST+1, ILST ).NE.ZERO )
+     $      NBL = 2
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( IFST.EQ.ILST )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      IF( IFST.LT.ILST ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Update ILST
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( NBF.EQ.2 .AND. NBL.EQ.1 )
+     $      ILST = ILST - 1
+         IF( NBF.EQ.1 .AND. NBL.EQ.2 )
+     $      ILST = ILST + 1
+<span class="comment">*</span><span class="comment">
+</span>         HERE = IFST
+<span class="comment">*</span><span class="comment">
+</span>   10    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Swap block with next one below
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( NBF.EQ.1 .OR. NBF.EQ.2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Current block either 1 by 1 or 2 by 2
+</span><span class="comment">*</span><span class="comment">
+</span>            NBNEXT = 1
+            IF( HERE+NBF+1.LE.N ) THEN
+               IF( T( HERE+NBF+1, HERE+NBF ).NE.ZERO )
+     $            NBNEXT = 2
+            END IF
+            CALL <a name="DLAEXC.183"></a><a href="dlaexc.f.html#DLAEXC.1">DLAEXC</a>( WANTQ, N, T, LDT, Q, LDQ, HERE, NBF, NBNEXT,
+     $                   WORK, INFO )
+            IF( INFO.NE.0 ) THEN
+               ILST = HERE
+               RETURN
+            END IF
+            HERE = HERE + NBNEXT
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Test if 2 by 2 block breaks into two 1 by 1 blocks
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( NBF.EQ.2 ) THEN
+               IF( T( HERE+1, HERE ).EQ.ZERO )
+     $            NBF = 3
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Current block consists of two 1 by 1 blocks each of which
+</span><span class="comment">*</span><span class="comment">           must be swapped individually
+</span><span class="comment">*</span><span class="comment">
+</span>            NBNEXT = 1
+            IF( HERE+3.LE.N ) THEN
+               IF( T( HERE+3, HERE+2 ).NE.ZERO )
+     $            NBNEXT = 2
+            END IF
+            CALL <a name="DLAEXC.208"></a><a href="dlaexc.f.html#DLAEXC.1">DLAEXC</a>( WANTQ, N, T, LDT, Q, LDQ, HERE+1, 1, NBNEXT,
+     $                   WORK, INFO )
+            IF( INFO.NE.0 ) THEN
+               ILST = HERE
+               RETURN
+            END IF
+            IF( NBNEXT.EQ.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Swap two 1 by 1 blocks, no problems possible
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="DLAEXC.218"></a><a href="dlaexc.f.html#DLAEXC.1">DLAEXC</a>( WANTQ, N, T, LDT, Q, LDQ, HERE, 1, NBNEXT,
+     $                      WORK, INFO )
+               HERE = HERE + 1
+            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Recompute NBNEXT in case 2 by 2 split
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( T( HERE+2, HERE+1 ).EQ.ZERO )
+     $            NBNEXT = 1
+               IF( NBNEXT.EQ.2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 2 by 2 Block did not split
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL <a name="DLAEXC.231"></a><a href="dlaexc.f.html#DLAEXC.1">DLAEXC</a>( WANTQ, N, T, LDT, Q, LDQ, HERE, 1,
+     $                         NBNEXT, WORK, INFO )
+                  IF( INFO.NE.0 ) THEN
+                     ILST = HERE
+                     RETURN
+                  END IF
+                  HERE = HERE + 2
+               ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 2 by 2 Block did split
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL <a name="DLAEXC.242"></a><a href="dlaexc.f.html#DLAEXC.1">DLAEXC</a>( WANTQ, N, T, LDT, Q, LDQ, HERE, 1, 1,
+     $                         WORK, INFO )
+                  CALL <a name="DLAEXC.244"></a><a href="dlaexc.f.html#DLAEXC.1">DLAEXC</a>( WANTQ, N, T, LDT, Q, LDQ, HERE+1, 1, 1,
+     $                         WORK, INFO )
+                  HERE = HERE + 2
+               END IF
+            END IF
+         END IF
+         IF( HERE.LT.ILST )
+     $      GO TO 10
+<span class="comment">*</span><span class="comment">
+</span>      ELSE
+<span class="comment">*</span><span class="comment">
+</span>         HERE = IFST
+   20    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Swap block with next one above
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( NBF.EQ.1 .OR. NBF.EQ.2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Current block either 1 by 1 or 2 by 2
+</span><span class="comment">*</span><span class="comment">
+</span>            NBNEXT = 1
+            IF( HERE.GE.3 ) THEN
+               IF( T( HERE-1, HERE-2 ).NE.ZERO )
+     $            NBNEXT = 2
+            END IF
+            CALL <a name="DLAEXC.269"></a><a href="dlaexc.f.html#DLAEXC.1">DLAEXC</a>( WANTQ, N, T, LDT, Q, LDQ, HERE-NBNEXT, NBNEXT,
+     $                   NBF, WORK, INFO )
+            IF( INFO.NE.0 ) THEN
+               ILST = HERE
+               RETURN
+            END IF
+            HERE = HERE - NBNEXT
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Test if 2 by 2 block breaks into two 1 by 1 blocks
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( NBF.EQ.2 ) THEN
+               IF( T( HERE+1, HERE ).EQ.ZERO )
+     $            NBF = 3
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Current block consists of two 1 by 1 blocks each of which
+</span><span class="comment">*</span><span class="comment">           must be swapped individually
+</span><span class="comment">*</span><span class="comment">
+</span>            NBNEXT = 1
+            IF( HERE.GE.3 ) THEN
+               IF( T( HERE-1, HERE-2 ).NE.ZERO )
+     $            NBNEXT = 2
+            END IF
+            CALL <a name="DLAEXC.294"></a><a href="dlaexc.f.html#DLAEXC.1">DLAEXC</a>( WANTQ, N, T, LDT, Q, LDQ, HERE-NBNEXT, NBNEXT,
+     $                   1, WORK, INFO )
+            IF( INFO.NE.0 ) THEN
+               ILST = HERE
+               RETURN
+            END IF
+            IF( NBNEXT.EQ.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Swap two 1 by 1 blocks, no problems possible
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="DLAEXC.304"></a><a href="dlaexc.f.html#DLAEXC.1">DLAEXC</a>( WANTQ, N, T, LDT, Q, LDQ, HERE, NBNEXT, 1,
+     $                      WORK, INFO )
+               HERE = HERE - 1
+            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Recompute NBNEXT in case 2 by 2 split
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( T( HERE, HERE-1 ).EQ.ZERO )
+     $            NBNEXT = 1
+               IF( NBNEXT.EQ.2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 2 by 2 Block did not split
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL <a name="DLAEXC.317"></a><a href="dlaexc.f.html#DLAEXC.1">DLAEXC</a>( WANTQ, N, T, LDT, Q, LDQ, HERE-1, 2, 1,
+     $                         WORK, INFO )
+                  IF( INFO.NE.0 ) THEN
+                     ILST = HERE
+                     RETURN
+                  END IF
+                  HERE = HERE - 2
+               ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 2 by 2 Block did split
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL <a name="DLAEXC.328"></a><a href="dlaexc.f.html#DLAEXC.1">DLAEXC</a>( WANTQ, N, T, LDT, Q, LDQ, HERE, 1, 1,
+     $                         WORK, INFO )
+                  CALL <a name="DLAEXC.330"></a><a href="dlaexc.f.html#DLAEXC.1">DLAEXC</a>( WANTQ, N, T, LDT, Q, LDQ, HERE-1, 1, 1,
+     $                         WORK, INFO )
+                  HERE = HERE - 2
+               END IF
+            END IF
+         END IF
+         IF( HERE.GT.ILST )
+     $      GO TO 20
+      END IF
+      ILST = HERE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DTREXC.343"></a><a href="dtrexc.f.html#DTREXC.1">DTREXC</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

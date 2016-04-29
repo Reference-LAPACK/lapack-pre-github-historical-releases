@@ -1,0 +1,249 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dgeequ.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DGEEQU.1"></a><a href="dgeequ.f.html#DGEEQU.1">DGEEQU</a>( M, N, A, LDA, R, C, ROWCND, COLCND, AMAX,
+     $                   INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, LDA, M, N
+      DOUBLE PRECISION   AMAX, COLCND, ROWCND
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   A( LDA, * ), C( * ), R( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DGEEQU.19"></a><a href="dgeequ.f.html#DGEEQU.1">DGEEQU</a> computes row and column scalings intended to equilibrate an
+</span><span class="comment">*</span><span class="comment">  M-by-N matrix A and reduce its condition number.  R returns the row
+</span><span class="comment">*</span><span class="comment">  scale factors and C the column scale factors, chosen to try to make
+</span><span class="comment">*</span><span class="comment">  the largest element in each row and column of the matrix B with
+</span><span class="comment">*</span><span class="comment">  elements B(i,j)=R(i)*A(i,j)*C(j) have absolute value 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  R(i) and C(j) are restricted to be between SMLNUM = smallest safe
+</span><span class="comment">*</span><span class="comment">  number and BIGNUM = largest safe number.  Use of these scaling
+</span><span class="comment">*</span><span class="comment">  factors is not guaranteed to reduce the condition number of A but
+</span><span class="comment">*</span><span class="comment">  works well in practice.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix A.  M &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input) DOUBLE PRECISION array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          The M-by-N matrix whose equilibration factors are
+</span><span class="comment">*</span><span class="comment">          to be computed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  R       (output) DOUBLE PRECISION array, dimension (M)
+</span><span class="comment">*</span><span class="comment">          If INFO = 0 or INFO &gt; M, R contains the row scale factors
+</span><span class="comment">*</span><span class="comment">          for A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C       (output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          If INFO = 0,  C contains the column scale factors for A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ROWCND  (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          If INFO = 0 or INFO &gt; M, ROWCND contains the ratio of the
+</span><span class="comment">*</span><span class="comment">          smallest R(i) to the largest R(i).  If ROWCND &gt;= 0.1 and
+</span><span class="comment">*</span><span class="comment">          AMAX is neither too large nor too small, it is not worth
+</span><span class="comment">*</span><span class="comment">          scaling by R.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  COLCND  (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          If INFO = 0, COLCND contains the ratio of the smallest
+</span><span class="comment">*</span><span class="comment">          C(i) to the largest C(i).  If COLCND &gt;= 0.1, it is not
+</span><span class="comment">*</span><span class="comment">          worth scaling by C.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AMAX    (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          Absolute value of largest matrix element.  If AMAX is very
+</span><span class="comment">*</span><span class="comment">          close to overflow or very close to underflow, the matrix
+</span><span class="comment">*</span><span class="comment">          should be scaled.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = i,  and i is
+</span><span class="comment">*</span><span class="comment">                &lt;= M:  the i-th row of A is exactly zero
+</span><span class="comment">*</span><span class="comment">                &gt;  M:  the (i-M)-th column of A is exactly zero
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ONE, ZERO
+      PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, J
+      DOUBLE PRECISION   BIGNUM, RCMAX, RCMIN, SMLNUM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      DOUBLE PRECISION   <a name="DLAMCH.87"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+      EXTERNAL           <a name="DLAMCH.88"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.91"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( M.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -4
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.109"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DGEEQU.109"></a><a href="dgeequ.f.html#DGEEQU.1">DGEEQU</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( M.EQ.0 .OR. N.EQ.0 ) THEN
+         ROWCND = ONE
+         COLCND = ONE
+         AMAX = ZERO
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Get machine constants.
+</span><span class="comment">*</span><span class="comment">
+</span>      SMLNUM = <a name="DLAMCH.124"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'S'</span> )
+      BIGNUM = ONE / SMLNUM
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute row scale factors.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 10 I = 1, M
+         R( I ) = ZERO
+   10 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Find the maximum element in each row.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 30 J = 1, N
+         DO 20 I = 1, M
+            R( I ) = MAX( R( I ), ABS( A( I, J ) ) )
+   20    CONTINUE
+   30 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Find the maximum and minimum scale factors.
+</span><span class="comment">*</span><span class="comment">
+</span>      RCMIN = BIGNUM
+      RCMAX = ZERO
+      DO 40 I = 1, M
+         RCMAX = MAX( RCMAX, R( I ) )
+         RCMIN = MIN( RCMIN, R( I ) )
+   40 CONTINUE
+      AMAX = RCMAX
+<span class="comment">*</span><span class="comment">
+</span>      IF( RCMIN.EQ.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find the first zero scale factor and return an error code.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 50 I = 1, M
+            IF( R( I ).EQ.ZERO ) THEN
+               INFO = I
+               RETURN
+            END IF
+   50    CONTINUE
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Invert the scale factors.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 60 I = 1, M
+            R( I ) = ONE / MIN( MAX( R( I ), SMLNUM ), BIGNUM )
+   60    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute ROWCND = min(R(I)) / max(R(I))
+</span><span class="comment">*</span><span class="comment">
+</span>         ROWCND = MAX( RCMIN, SMLNUM ) / MIN( RCMAX, BIGNUM )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute column scale factors
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 70 J = 1, N
+         C( J ) = ZERO
+   70 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Find the maximum element in each column,
+</span><span class="comment">*</span><span class="comment">     assuming the row scaling computed above.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 90 J = 1, N
+         DO 80 I = 1, M
+            C( J ) = MAX( C( J ), ABS( A( I, J ) )*R( I ) )
+   80    CONTINUE
+   90 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Find the maximum and minimum scale factors.
+</span><span class="comment">*</span><span class="comment">
+</span>      RCMIN = BIGNUM
+      RCMAX = ZERO
+      DO 100 J = 1, N
+         RCMIN = MIN( RCMIN, C( J ) )
+         RCMAX = MAX( RCMAX, C( J ) )
+  100 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      IF( RCMIN.EQ.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find the first zero scale factor and return an error code.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 110 J = 1, N
+            IF( C( J ).EQ.ZERO ) THEN
+               INFO = M + J
+               RETURN
+            END IF
+  110    CONTINUE
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Invert the scale factors.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 120 J = 1, N
+            C( J ) = ONE / MIN( MAX( C( J ), SMLNUM ), BIGNUM )
+  120    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute COLCND = min(C(J)) / max(C(J))
+</span><span class="comment">*</span><span class="comment">
+</span>         COLCND = MAX( RCMIN, SMLNUM ) / MIN( RCMAX, BIGNUM )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DGEEQU.223"></a><a href="dgeequ.f.html#DGEEQU.1">DGEEQU</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

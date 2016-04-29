@@ -1,0 +1,248 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zhegs2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZHEGS2.1"></a><a href="zhegs2.f.html#ZHEGS2.1">ZHEGS2</a>( ITYPE, UPLO, N, A, LDA, B, LDB, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          UPLO
+      INTEGER            INFO, ITYPE, LDA, LDB, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX*16         A( LDA, * ), B( LDB, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZHEGS2.18"></a><a href="zhegs2.f.html#ZHEGS2.1">ZHEGS2</a> reduces a complex Hermitian-definite generalized
+</span><span class="comment">*</span><span class="comment">  eigenproblem to standard form.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If ITYPE = 1, the problem is A*x = lambda*B*x,
+</span><span class="comment">*</span><span class="comment">  and A is overwritten by inv(U')*A*inv(U) or inv(L)*A*inv(L')
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If ITYPE = 2 or 3, the problem is A*B*x = lambda*x or
+</span><span class="comment">*</span><span class="comment">  B*A*x = lambda*x, and A is overwritten by U*A*U` or L'*A*L.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B must have been previously factorized as U'*U or L*L' by <a name="ZPOTRF.27"></a><a href="zpotrf.f.html#ZPOTRF.1">ZPOTRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ITYPE   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 1: compute inv(U')*A*inv(U) or inv(L)*A*inv(L');
+</span><span class="comment">*</span><span class="comment">          = 2 or 3: compute U*A*U' or L'*A*L.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether the upper or lower triangular part of the
+</span><span class="comment">*</span><span class="comment">          Hermitian matrix A is stored, and how B has been factorized.
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangular
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangular
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrices A and B.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) COMPLEX*16 array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the Hermitian matrix A.  If UPLO = 'U', the leading
+</span><span class="comment">*</span><span class="comment">          n by n upper triangular part of A contains the upper
+</span><span class="comment">*</span><span class="comment">          triangular part of the matrix A, and the strictly lower
+</span><span class="comment">*</span><span class="comment">          triangular part of A is not referenced.  If UPLO = 'L', the
+</span><span class="comment">*</span><span class="comment">          leading n by n lower triangular part of A contains the lower
+</span><span class="comment">*</span><span class="comment">          triangular part of the matrix A, and the strictly upper
+</span><span class="comment">*</span><span class="comment">          triangular part of A is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, the transformed matrix, stored in the
+</span><span class="comment">*</span><span class="comment">          same format as A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input) COMPLEX*16 array, dimension (LDB,N)
+</span><span class="comment">*</span><span class="comment">          The triangular factor from the Cholesky factorization of B,
+</span><span class="comment">*</span><span class="comment">          as returned by <a name="ZPOTRF.62"></a><a href="zpotrf.f.html#ZPOTRF.1">ZPOTRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B.  LDB &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit.
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ONE, HALF
+      PARAMETER          ( ONE = 1.0D+0, HALF = 0.5D+0 )
+      COMPLEX*16         CONE
+      PARAMETER          ( CONE = ( 1.0D+0, 0.0D+0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            UPPER
+      INTEGER            K
+      DOUBLE PRECISION   AKK, BKK
+      COMPLEX*16         CT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.86"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, ZAXPY, ZDSCAL, ZHER2, <a name="ZLACGV.86"></a><a href="zlacgv.f.html#ZLACGV.1">ZLACGV</a>, ZTRMV,
+     $                   ZTRSV
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.93"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.94"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      UPPER = <a name="LSAME.101"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> )
+      IF( ITYPE.LT.1 .OR. ITYPE.GT.3 ) THEN
+         INFO = -1
+      ELSE IF( .NOT.UPPER .AND. .NOT.<a name="LSAME.104"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+         INFO = -5
+      ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
+         INFO = -7
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.114"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZHEGS2.114"></a><a href="zhegs2.f.html#ZHEGS2.1">ZHEGS2</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( ITYPE.EQ.1 ) THEN
+         IF( UPPER ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute inv(U')*A*inv(U)
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 10 K = 1, N
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Update the upper triangle of A(k:n,k:n)
+</span><span class="comment">*</span><span class="comment">
+</span>               AKK = A( K, K )
+               BKK = B( K, K )
+               AKK = AKK / BKK**2
+               A( K, K ) = AKK
+               IF( K.LT.N ) THEN
+                  CALL ZDSCAL( N-K, ONE / BKK, A( K, K+1 ), LDA )
+                  CT = -HALF*AKK
+                  CALL <a name="ZLACGV.134"></a><a href="zlacgv.f.html#ZLACGV.1">ZLACGV</a>( N-K, A( K, K+1 ), LDA )
+                  CALL <a name="ZLACGV.135"></a><a href="zlacgv.f.html#ZLACGV.1">ZLACGV</a>( N-K, B( K, K+1 ), LDB )
+                  CALL ZAXPY( N-K, CT, B( K, K+1 ), LDB, A( K, K+1 ),
+     $                        LDA )
+                  CALL ZHER2( UPLO, N-K, -CONE, A( K, K+1 ), LDA,
+     $                        B( K, K+1 ), LDB, A( K+1, K+1 ), LDA )
+                  CALL ZAXPY( N-K, CT, B( K, K+1 ), LDB, A( K, K+1 ),
+     $                        LDA )
+                  CALL <a name="ZLACGV.142"></a><a href="zlacgv.f.html#ZLACGV.1">ZLACGV</a>( N-K, B( K, K+1 ), LDB )
+                  CALL ZTRSV( UPLO, <span class="string">'Conjugate transpose'</span>, <span class="string">'Non-unit'</span>,
+     $                        N-K, B( K+1, K+1 ), LDB, A( K, K+1 ),
+     $                        LDA )
+                  CALL <a name="ZLACGV.146"></a><a href="zlacgv.f.html#ZLACGV.1">ZLACGV</a>( N-K, A( K, K+1 ), LDA )
+               END IF
+   10       CONTINUE
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute inv(L)*A*inv(L')
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 20 K = 1, N
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Update the lower triangle of A(k:n,k:n)
+</span><span class="comment">*</span><span class="comment">
+</span>               AKK = A( K, K )
+               BKK = B( K, K )
+               AKK = AKK / BKK**2
+               A( K, K ) = AKK
+               IF( K.LT.N ) THEN
+                  CALL ZDSCAL( N-K, ONE / BKK, A( K+1, K ), 1 )
+                  CT = -HALF*AKK
+                  CALL ZAXPY( N-K, CT, B( K+1, K ), 1, A( K+1, K ), 1 )
+                  CALL ZHER2( UPLO, N-K, -CONE, A( K+1, K ), 1,
+     $                        B( K+1, K ), 1, A( K+1, K+1 ), LDA )
+                  CALL ZAXPY( N-K, CT, B( K+1, K ), 1, A( K+1, K ), 1 )
+                  CALL ZTRSV( UPLO, <span class="string">'No transpose'</span>, <span class="string">'Non-unit'</span>, N-K,
+     $                        B( K+1, K+1 ), LDB, A( K+1, K ), 1 )
+               END IF
+   20       CONTINUE
+         END IF
+      ELSE
+         IF( UPPER ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute U*A*U'
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 30 K = 1, N
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Update the upper triangle of A(1:k,1:k)
+</span><span class="comment">*</span><span class="comment">
+</span>               AKK = A( K, K )
+               BKK = B( K, K )
+               CALL ZTRMV( UPLO, <span class="string">'No transpose'</span>, <span class="string">'Non-unit'</span>, K-1, B,
+     $                     LDB, A( 1, K ), 1 )
+               CT = HALF*AKK
+               CALL ZAXPY( K-1, CT, B( 1, K ), 1, A( 1, K ), 1 )
+               CALL ZHER2( UPLO, K-1, CONE, A( 1, K ), 1, B( 1, K ), 1,
+     $                     A, LDA )
+               CALL ZAXPY( K-1, CT, B( 1, K ), 1, A( 1, K ), 1 )
+               CALL ZDSCAL( K-1, BKK, A( 1, K ), 1 )
+               A( K, K ) = AKK*BKK**2
+   30       CONTINUE
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute L'*A*L
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 40 K = 1, N
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Update the lower triangle of A(1:k,1:k)
+</span><span class="comment">*</span><span class="comment">
+</span>               AKK = A( K, K )
+               BKK = B( K, K )
+               CALL <a name="ZLACGV.204"></a><a href="zlacgv.f.html#ZLACGV.1">ZLACGV</a>( K-1, A( K, 1 ), LDA )
+               CALL ZTRMV( UPLO, <span class="string">'Conjugate transpose'</span>, <span class="string">'Non-unit'</span>, K-1,
+     $                     B, LDB, A( K, 1 ), LDA )
+               CT = HALF*AKK
+               CALL <a name="ZLACGV.208"></a><a href="zlacgv.f.html#ZLACGV.1">ZLACGV</a>( K-1, B( K, 1 ), LDB )
+               CALL ZAXPY( K-1, CT, B( K, 1 ), LDB, A( K, 1 ), LDA )
+               CALL ZHER2( UPLO, K-1, CONE, A( K, 1 ), LDA, B( K, 1 ),
+     $                     LDB, A, LDA )
+               CALL ZAXPY( K-1, CT, B( K, 1 ), LDB, A( K, 1 ), LDA )
+               CALL <a name="ZLACGV.213"></a><a href="zlacgv.f.html#ZLACGV.1">ZLACGV</a>( K-1, B( K, 1 ), LDB )
+               CALL ZDSCAL( K-1, BKK, A( K, 1 ), LDA )
+               CALL <a name="ZLACGV.215"></a><a href="zlacgv.f.html#ZLACGV.1">ZLACGV</a>( K-1, A( K, 1 ), LDA )
+               A( K, K ) = AKK*BKK**2
+   40       CONTINUE
+         END IF
+      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZHEGS2.222"></a><a href="zhegs2.f.html#ZHEGS2.1">ZHEGS2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

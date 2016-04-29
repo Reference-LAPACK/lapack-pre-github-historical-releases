@@ -1,0 +1,186 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slaneg.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      FUNCTION <a name="SLANEG.1"></a><a href="slaneg.f.html#SLANEG.1">SLANEG</a>( N, D, LLD, SIGMA, PIVMIN, R )
+      IMPLICIT NONE
+      INTEGER <a name="SLANEG.3"></a><a href="slaneg.f.html#SLANEG.1">SLANEG</a>
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            N, R
+      REAL               PIVMIN, SIGMA
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               D( * ), LLD( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLANEG.20"></a><a href="slaneg.f.html#SLANEG.1">SLANEG</a> computes the Sturm count, the number of negative pivots
+</span><span class="comment">*</span><span class="comment">  encountered while factoring tridiagonal T - sigma I = L D L^T.
+</span><span class="comment">*</span><span class="comment">  This implementation works directly on the factors without forming
+</span><span class="comment">*</span><span class="comment">  the tridiagonal matrix T.  The Sturm count is also the number of
+</span><span class="comment">*</span><span class="comment">  eigenvalues of T less than sigma.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This routine is called from <a name="SLARRB.26"></a><a href="slarrb.f.html#SLARRB.1">SLARRB</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The current routine does not use the PIVMIN parameter but rather
+</span><span class="comment">*</span><span class="comment">  requires IEEE-754 propagation of Infinities and NaNs.  This
+</span><span class="comment">*</span><span class="comment">  routine also has no input range restrictions but does require
+</span><span class="comment">*</span><span class="comment">  default exception handling such that x/0 produces Inf when x is
+</span><span class="comment">*</span><span class="comment">  non-zero, and Inf/Inf produces NaN.  For more information, see:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">    Marques, Riedy, and Voemel, &quot;Benefits of IEEE-754 Features in
+</span><span class="comment">*</span><span class="comment">    Modern Symmetric Tridiagonal Eigensolvers,&quot; SIAM Journal on
+</span><span class="comment">*</span><span class="comment">    Scientific Computing, v28, n5, 2006.  DOI 10.1137/050641624
+</span><span class="comment">*</span><span class="comment">    (Tech report version in LAWN 172 with the same title.)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input) REAL             array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The N diagonal elements of the diagonal matrix D.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LLD     (input) REAL             array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          The (N-1) elements L(i)*L(i)*D(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SIGMA   (input) REAL            
+</span><span class="comment">*</span><span class="comment">          Shift amount in T - sigma I = L D L^T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  PIVMIN  (input) REAL            
+</span><span class="comment">*</span><span class="comment">          The minimum pivot in the Sturm sequence.  May be used
+</span><span class="comment">*</span><span class="comment">          when zero pivots are encountered on non-IEEE-754
+</span><span class="comment">*</span><span class="comment">          architectures.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  R       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The twist index for the twisted factorization that is used
+</span><span class="comment">*</span><span class="comment">          for the negcount.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Osni Marques, LBNL/NERSC, USA
+</span><span class="comment">*</span><span class="comment">     Christof Voemel, University of California, Berkeley, USA
+</span><span class="comment">*</span><span class="comment">     Jason Riedy, University of California, Berkeley, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, ONE
+      PARAMETER        ( ZERO = 0.0E0, ONE = 1.0E0 )
+<span class="comment">*</span><span class="comment">     Some architectures propagate Infinities and NaNs very slowly, so
+</span><span class="comment">*</span><span class="comment">     the code computes counts in BLKLEN chunks.  Then a NaN can
+</span><span class="comment">*</span><span class="comment">     propagate at most BLKLEN columns before being detected.  This is
+</span><span class="comment">*</span><span class="comment">     not a general tuning parameter; it needs only to be just large
+</span><span class="comment">*</span><span class="comment">     enough that the overhead is tiny in common cases.
+</span>      INTEGER BLKLEN
+      PARAMETER ( BLKLEN = 128 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            BJ, J, NEG1, NEG2, NEGCNT
+      REAL               BSAV, DMINUS, DPLUS, GAMMA, P, T, TMP
+      LOGICAL SAWNAN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC MIN, MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL <a name="SISNAN.93"></a><a href="sisnan.f.html#SISNAN.1">SISNAN</a>
+      EXTERNAL <a name="SISNAN.94"></a><a href="sisnan.f.html#SISNAN.1">SISNAN</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span>
+      NEGCNT = 0
+
+<span class="comment">*</span><span class="comment">     I) upper part: L D L^T - SIGMA I = L+ D+ L+^T
+</span>      T = -SIGMA
+      DO 210 BJ = 1, R-1, BLKLEN
+         NEG1 = 0
+         BSAV = T
+         DO 21 J = BJ, MIN(BJ+BLKLEN-1, R-1)
+            DPLUS = D( J ) + T
+            IF( DPLUS.LT.ZERO ) NEG1 = NEG1 + 1
+            TMP = T / DPLUS
+            T = TMP * LLD( J ) - SIGMA
+ 21      CONTINUE
+         SAWNAN = <a name="SISNAN.111"></a><a href="sisnan.f.html#SISNAN.1">SISNAN</a>( T )
+<span class="comment">*</span><span class="comment">     Run a slower version of the above loop if a NaN is detected.
+</span><span class="comment">*</span><span class="comment">     A NaN should occur only with a zero pivot after an infinite
+</span><span class="comment">*</span><span class="comment">     pivot.  In that case, substituting 1 for T/DPLUS is the
+</span><span class="comment">*</span><span class="comment">     correct limit.
+</span>         IF( SAWNAN ) THEN
+            NEG1 = 0
+            T = BSAV
+            DO 22 J = BJ, MIN(BJ+BLKLEN-1, R-1)
+               DPLUS = D( J ) + T
+               IF( DPLUS.LT.ZERO ) NEG1 = NEG1 + 1
+               TMP = T / DPLUS
+               IF (<a name="SISNAN.123"></a><a href="sisnan.f.html#SISNAN.1">SISNAN</a>(TMP)) TMP = ONE
+               T = TMP * LLD(J) - SIGMA
+ 22         CONTINUE
+         END IF
+         NEGCNT = NEGCNT + NEG1
+ 210  CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     II) lower part: L D L^T - SIGMA I = U- D- U-^T
+</span>      P = D( N ) - SIGMA
+      DO 230 BJ = N-1, R, -BLKLEN
+         NEG2 = 0
+         BSAV = P
+         DO 23 J = BJ, MAX(BJ-BLKLEN+1, R), -1
+            DMINUS = LLD( J ) + P
+            IF( DMINUS.LT.ZERO ) NEG2 = NEG2 + 1
+            TMP = P / DMINUS
+            P = TMP * D( J ) - SIGMA
+ 23      CONTINUE
+         SAWNAN = <a name="SISNAN.141"></a><a href="sisnan.f.html#SISNAN.1">SISNAN</a>( P )
+<span class="comment">*</span><span class="comment">     As above, run a slower version that substitutes 1 for Inf/Inf.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( SAWNAN ) THEN
+            NEG2 = 0
+            P = BSAV
+            DO 24 J = BJ, MAX(BJ-BLKLEN+1, R), -1
+               DMINUS = LLD( J ) + P
+               IF( DMINUS.LT.ZERO ) NEG2 = NEG2 + 1
+               TMP = P / DMINUS
+               IF (<a name="SISNAN.151"></a><a href="sisnan.f.html#SISNAN.1">SISNAN</a>(TMP)) TMP = ONE
+               P = TMP * D(J) - SIGMA
+ 24         CONTINUE
+         END IF
+         NEGCNT = NEGCNT + NEG2
+ 230  CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     III) Twist index
+</span><span class="comment">*</span><span class="comment">       T was shifted by SIGMA initially.
+</span>      GAMMA = (T + SIGMA) + P
+      IF( GAMMA.LT.ZERO ) NEGCNT = NEGCNT+1
+
+      <a name="SLANEG.163"></a><a href="slaneg.f.html#SLANEG.1">SLANEG</a> = NEGCNT
+      END
+
+</pre>
+
+ </body>
+</html>

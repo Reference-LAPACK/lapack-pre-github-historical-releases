@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>crotg.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CROTG.1"></a><a href="crotg.f.html#CROTG.1">CROTG</a>(CA,CB,C,S)
+<span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      COMPLEX CA,CB,S
+      REAL C
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CROTG.10"></a><a href="crotg.f.html#CROTG.1">CROTG</a> determines a complex Givens rotation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      COMPLEX ALPHA
+      REAL NORM,SCALE
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC CABS,CONJG,SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span>      IF (CABS(CA).NE.0.) GO TO 10
+      C = 0.
+      S = (1.,0.)
+      CA = CB
+      GO TO 20
+   10 CONTINUE
+      SCALE = CABS(CA) + CABS(CB)
+      NORM = SCALE*SQRT((CABS(CA/SCALE))**2+ (CABS(CB/SCALE))**2)
+      ALPHA = CA/CABS(CA)
+      C = CABS(CA)/NORM
+      S = ALPHA*CONJG(CB)/NORM
+      CA = ALPHA*NORM
+   20 CONTINUE
+      RETURN
+      END
+
+</pre>
+
+ </body>
+</html>

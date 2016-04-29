@@ -1,0 +1,439 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dsbevx.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DSBEVX.1"></a><a href="dsbevx.f.html#DSBEVX.1">DSBEVX</a>( JOBZ, RANGE, UPLO, N, KD, AB, LDAB, Q, LDQ, VL,
+     $                   VU, IL, IU, ABSTOL, M, W, Z, LDZ, WORK, IWORK,
+     $                   IFAIL, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK driver routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          JOBZ, RANGE, UPLO
+      INTEGER            IL, INFO, IU, KD, LDAB, LDQ, LDZ, M, N
+      DOUBLE PRECISION   ABSTOL, VL, VU
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IFAIL( * ), IWORK( * )
+      DOUBLE PRECISION   AB( LDAB, * ), Q( LDQ, * ), W( * ), WORK( * ),
+     $                   Z( LDZ, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DSBEVX.23"></a><a href="dsbevx.f.html#DSBEVX.1">DSBEVX</a> computes selected eigenvalues and, optionally, eigenvectors
+</span><span class="comment">*</span><span class="comment">  of a real symmetric band matrix A.  Eigenvalues and eigenvectors can
+</span><span class="comment">*</span><span class="comment">  be selected by specifying either a range of values or a range of
+</span><span class="comment">*</span><span class="comment">  indices for the desired eigenvalues.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOBZ    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'N':  Compute eigenvalues only;
+</span><span class="comment">*</span><span class="comment">          = 'V':  Compute eigenvalues and eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RANGE   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'A': all eigenvalues will be found;
+</span><span class="comment">*</span><span class="comment">          = 'V': all eigenvalues in the half-open interval (VL,VU]
+</span><span class="comment">*</span><span class="comment">                 will be found;
+</span><span class="comment">*</span><span class="comment">          = 'I': the IL-th through IU-th eigenvalues will be found.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangle of A is stored;
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangle of A is stored.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KD      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of superdiagonals of the matrix A if UPLO = 'U',
+</span><span class="comment">*</span><span class="comment">          or the number of subdiagonals if UPLO = 'L'.  KD &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AB      (input/output) DOUBLE PRECISION array, dimension (LDAB, N)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper or lower triangle of the symmetric band
+</span><span class="comment">*</span><span class="comment">          matrix A, stored in the first KD+1 rows of the array.  The
+</span><span class="comment">*</span><span class="comment">          j-th column of A is stored in the j-th column of the array AB
+</span><span class="comment">*</span><span class="comment">          as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', AB(kd+1+i-j,j) = A(i,j) for max(1,j-kd)&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', AB(1+i-j,j)    = A(i,j) for j&lt;=i&lt;=min(n,j+kd).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, AB is overwritten by values generated during the
+</span><span class="comment">*</span><span class="comment">          reduction to tridiagonal form.  If UPLO = 'U', the first
+</span><span class="comment">*</span><span class="comment">          superdiagonal and the diagonal of the tridiagonal matrix T
+</span><span class="comment">*</span><span class="comment">          are returned in rows KD and KD+1 of AB, and if UPLO = 'L',
+</span><span class="comment">*</span><span class="comment">          the diagonal and first subdiagonal of T are returned in the
+</span><span class="comment">*</span><span class="comment">          first two rows of AB.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDAB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array AB.  LDAB &gt;= KD + 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Q       (output) DOUBLE PRECISION array, dimension (LDQ, N)
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'V', the N-by-N orthogonal matrix used in the
+</span><span class="comment">*</span><span class="comment">                         reduction to tridiagonal form.
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'N', the array Q is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDQ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Q.  If JOBZ = 'V', then
+</span><span class="comment">*</span><span class="comment">          LDQ &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VL      (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">  VU      (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          If RANGE='V', the lower and upper bounds of the interval to
+</span><span class="comment">*</span><span class="comment">          be searched for eigenvalues. VL &lt; VU.
+</span><span class="comment">*</span><span class="comment">          Not referenced if RANGE = 'A' or 'I'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IL      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">  IU      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          If RANGE='I', the indices (in ascending order) of the
+</span><span class="comment">*</span><span class="comment">          smallest and largest eigenvalues to be returned.
+</span><span class="comment">*</span><span class="comment">          1 &lt;= IL &lt;= IU &lt;= N, if N &gt; 0; IL = 1 and IU = 0 if N = 0.
+</span><span class="comment">*</span><span class="comment">          Not referenced if RANGE = 'A' or 'V'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ABSTOL  (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The absolute error tolerance for the eigenvalues.
+</span><span class="comment">*</span><span class="comment">          An approximate eigenvalue is accepted as converged
+</span><span class="comment">*</span><span class="comment">          when it is determined to lie in an interval [a,b]
+</span><span class="comment">*</span><span class="comment">          of width less than or equal to
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                  ABSTOL + EPS *   max( |a|,|b| ) ,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          where EPS is the machine precision.  If ABSTOL is less than
+</span><span class="comment">*</span><span class="comment">          or equal to zero, then  EPS*|T|  will be used in its place,
+</span><span class="comment">*</span><span class="comment">          where |T| is the 1-norm of the tridiagonal matrix obtained
+</span><span class="comment">*</span><span class="comment">          by reducing AB to tridiagonal form.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          Eigenvalues will be computed most accurately when ABSTOL is
+</span><span class="comment">*</span><span class="comment">          set to twice the underflow threshold 2*<a name="DLAMCH.106"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>('S'), not zero.
+</span><span class="comment">*</span><span class="comment">          If this routine returns with INFO&gt;0, indicating that some
+</span><span class="comment">*</span><span class="comment">          eigenvectors did not converge, try setting ABSTOL to
+</span><span class="comment">*</span><span class="comment">          2*<a name="DLAMCH.109"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>('S').
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          See &quot;Computing Small Singular Values of Bidiagonal Matrices
+</span><span class="comment">*</span><span class="comment">          with Guaranteed High Relative Accuracy,&quot; by Demmel and
+</span><span class="comment">*</span><span class="comment">          Kahan, LAPACK Working Note #3.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          The total number of eigenvalues found.  0 &lt;= M &lt;= N.
+</span><span class="comment">*</span><span class="comment">          If RANGE = 'A', M = N, and if RANGE = 'I', M = IU-IL+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  W       (output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The first M elements contain the selected eigenvalues in
+</span><span class="comment">*</span><span class="comment">          ascending order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z       (output) DOUBLE PRECISION array, dimension (LDZ, max(1,M))
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'V', then if INFO = 0, the first M columns of Z
+</span><span class="comment">*</span><span class="comment">          contain the orthonormal eigenvectors of the matrix A
+</span><span class="comment">*</span><span class="comment">          corresponding to the selected eigenvalues, with the i-th
+</span><span class="comment">*</span><span class="comment">          column of Z holding the eigenvector associated with W(i).
+</span><span class="comment">*</span><span class="comment">          If an eigenvector fails to converge, then that column of Z
+</span><span class="comment">*</span><span class="comment">          contains the latest approximation to the eigenvector, and the
+</span><span class="comment">*</span><span class="comment">          index of the eigenvector is returned in IFAIL.
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'N', then Z is not referenced.
+</span><span class="comment">*</span><span class="comment">          Note: the user must ensure that at least max(1,M) columns are
+</span><span class="comment">*</span><span class="comment">          supplied in the array Z; if RANGE = 'V', the exact value of M
+</span><span class="comment">*</span><span class="comment">          is not known in advance and an upper bound must be used.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDZ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Z.  LDZ &gt;= 1, and if
+</span><span class="comment">*</span><span class="comment">          JOBZ = 'V', LDZ &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) DOUBLE PRECISION array, dimension (7*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK   (workspace) INTEGER array, dimension (5*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IFAIL   (output) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'V', then if INFO = 0, the first M elements of
+</span><span class="comment">*</span><span class="comment">          IFAIL are zero.  If INFO &gt; 0, then IFAIL contains the
+</span><span class="comment">*</span><span class="comment">          indices of the eigenvectors that failed to converge.
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'N', then IFAIL is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit.
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = i, then i eigenvectors failed to converge.
+</span><span class="comment">*</span><span class="comment">                Their indices are stored in array IFAIL.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D0, ONE = 1.0D0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            ALLEIG, INDEIG, LOWER, TEST, VALEIG, WANTZ
+      CHARACTER          ORDER
+      INTEGER            I, IINFO, IMAX, INDD, INDE, INDEE, INDIBL,
+     $                   INDISP, INDIWO, INDWRK, ISCALE, ITMP1, J, JJ,
+     $                   NSPLIT
+      DOUBLE PRECISION   ABSTLL, ANRM, BIGNUM, EPS, RMAX, RMIN, SAFMIN,
+     $                   SIGMA, SMLNUM, TMP1, VLL, VUU
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.172"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      DOUBLE PRECISION   <a name="DLAMCH.173"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANSB.173"></a><a href="dlansb.f.html#DLANSB.1">DLANSB</a>
+      EXTERNAL           <a name="LSAME.174"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="DLAMCH.174"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANSB.174"></a><a href="dlansb.f.html#DLANSB.1">DLANSB</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DCOPY, DGEMV, <a name="DLACPY.177"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>, <a name="DLASCL.177"></a><a href="dlascl.f.html#DLASCL.1">DLASCL</a>, <a name="DSBTRD.177"></a><a href="dsbtrd.f.html#DSBTRD.1">DSBTRD</a>, DSCAL,
+     $                   <a name="DSTEBZ.178"></a><a href="dstebz.f.html#DSTEBZ.1">DSTEBZ</a>, <a name="DSTEIN.178"></a><a href="dstein.f.html#DSTEIN.1">DSTEIN</a>, <a name="DSTEQR.178"></a><a href="dsteqr.f.html#DSTEQR.1">DSTEQR</a>, <a name="DSTERF.178"></a><a href="dsterf.f.html#DSTERF.1">DSTERF</a>, DSWAP, <a name="XERBLA.178"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX, MIN, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      WANTZ = <a name="LSAME.187"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBZ, <span class="string">'V'</span> )
+      ALLEIG = <a name="LSAME.188"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( RANGE, <span class="string">'A'</span> )
+      VALEIG = <a name="LSAME.189"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( RANGE, <span class="string">'V'</span> )
+      INDEIG = <a name="LSAME.190"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( RANGE, <span class="string">'I'</span> )
+      LOWER = <a name="LSAME.191"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> )
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( .NOT.( WANTZ .OR. <a name="LSAME.194"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBZ, <span class="string">'N'</span> ) ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.( ALLEIG .OR. VALEIG .OR. INDEIG ) ) THEN
+         INFO = -2
+      ELSE IF( .NOT.( LOWER .OR. <a name="LSAME.198"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) ) ) THEN
+         INFO = -3
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( KD.LT.0 ) THEN
+         INFO = -5
+      ELSE IF( LDAB.LT.KD+1 ) THEN
+         INFO = -7
+      ELSE IF( WANTZ .AND. LDQ.LT.MAX( 1, N ) ) THEN
+         INFO = -9
+      ELSE
+         IF( VALEIG ) THEN
+            IF( N.GT.0 .AND. VU.LE.VL )
+     $         INFO = -11
+         ELSE IF( INDEIG ) THEN
+            IF( IL.LT.1 .OR. IL.GT.MAX( 1, N ) ) THEN
+               INFO = -12
+            ELSE IF( IU.LT.MIN( N, IL ) .OR. IU.GT.N ) THEN
+               INFO = -13
+            END IF
+         END IF
+      END IF
+      IF( INFO.EQ.0 ) THEN
+         IF( LDZ.LT.1 .OR. ( WANTZ .AND. LDZ.LT.N ) )
+     $      INFO = -18
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.226"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DSBEVX.226"></a><a href="dsbevx.f.html#DSBEVX.1">DSBEVX</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      M = 0
+      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.1 ) THEN
+         M = 1
+         IF( LOWER ) THEN
+            TMP1 = AB( 1, 1 )
+         ELSE
+            TMP1 = AB( KD+1, 1 )
+         END IF
+         IF( VALEIG ) THEN
+            IF( .NOT.( VL.LT.TMP1 .AND. VU.GE.TMP1 ) )
+     $         M = 0
+         END IF
+         IF( M.EQ.1 ) THEN
+            W( 1 ) = TMP1
+            IF( WANTZ )
+     $         Z( 1, 1 ) = ONE
+         END IF
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Get machine constants.
+</span><span class="comment">*</span><span class="comment">
+</span>      SAFMIN = <a name="DLAMCH.257"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Safe minimum'</span> )
+      EPS = <a name="DLAMCH.258"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Precision'</span> )
+      SMLNUM = SAFMIN / EPS
+      BIGNUM = ONE / SMLNUM
+      RMIN = SQRT( SMLNUM )
+      RMAX = MIN( SQRT( BIGNUM ), ONE / SQRT( SQRT( SAFMIN ) ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Scale matrix to allowable range, if necessary.
+</span><span class="comment">*</span><span class="comment">
+</span>      ISCALE = 0
+      ABSTLL = ABSTOL
+      IF( VALEIG ) THEN
+         VLL = VL
+         VUU = VU
+      ELSE
+         VLL = ZERO
+         VUU = ZERO
+      END IF
+      ANRM = <a name="DLANSB.275"></a><a href="dlansb.f.html#DLANSB.1">DLANSB</a>( <span class="string">'M'</span>, UPLO, N, KD, AB, LDAB, WORK )
+      IF( ANRM.GT.ZERO .AND. ANRM.LT.RMIN ) THEN
+         ISCALE = 1
+         SIGMA = RMIN / ANRM
+      ELSE IF( ANRM.GT.RMAX ) THEN
+         ISCALE = 1
+         SIGMA = RMAX / ANRM
+      END IF
+      IF( ISCALE.EQ.1 ) THEN
+         IF( LOWER ) THEN
+            CALL <a name="DLASCL.285"></a><a href="dlascl.f.html#DLASCL.1">DLASCL</a>( <span class="string">'B'</span>, KD, KD, ONE, SIGMA, N, N, AB, LDAB, INFO )
+         ELSE
+            CALL <a name="DLASCL.287"></a><a href="dlascl.f.html#DLASCL.1">DLASCL</a>( <span class="string">'Q'</span>, KD, KD, ONE, SIGMA, N, N, AB, LDAB, INFO )
+         END IF
+         IF( ABSTOL.GT.0 )
+     $      ABSTLL = ABSTOL*SIGMA
+         IF( VALEIG ) THEN
+            VLL = VL*SIGMA
+            VUU = VU*SIGMA
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Call <a name="DSBTRD.297"></a><a href="dsbtrd.f.html#DSBTRD.1">DSBTRD</a> to reduce symmetric band matrix to tridiagonal form.
+</span><span class="comment">*</span><span class="comment">
+</span>      INDD = 1
+      INDE = INDD + N
+      INDWRK = INDE + N
+      CALL <a name="DSBTRD.302"></a><a href="dsbtrd.f.html#DSBTRD.1">DSBTRD</a>( JOBZ, UPLO, N, KD, AB, LDAB, WORK( INDD ),
+     $             WORK( INDE ), Q, LDQ, WORK( INDWRK ), IINFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If all eigenvalues are desired and ABSTOL is less than or equal
+</span><span class="comment">*</span><span class="comment">     to zero, then call <a name="DSTERF.306"></a><a href="dsterf.f.html#DSTERF.1">DSTERF</a> or <a name="SSTEQR.306"></a><a href="ssteqr.f.html#SSTEQR.1">SSTEQR</a>.  If this fails for some
+</span><span class="comment">*</span><span class="comment">     eigenvalue, then try <a name="DSTEBZ.307"></a><a href="dstebz.f.html#DSTEBZ.1">DSTEBZ</a>.
+</span><span class="comment">*</span><span class="comment">
+</span>      TEST = .FALSE.
+      IF (INDEIG) THEN
+         IF (IL.EQ.1 .AND. IU.EQ.N) THEN
+            TEST = .TRUE.
+         END IF
+      END IF
+      IF ((ALLEIG .OR. TEST) .AND. (ABSTOL.LE.ZERO)) THEN
+         CALL DCOPY( N, WORK( INDD ), 1, W, 1 )
+         INDEE = INDWRK + 2*N
+         IF( .NOT.WANTZ ) THEN
+            CALL DCOPY( N-1, WORK( INDE ), 1, WORK( INDEE ), 1 )
+            CALL <a name="DSTERF.320"></a><a href="dsterf.f.html#DSTERF.1">DSTERF</a>( N, W, WORK( INDEE ), INFO )
+         ELSE
+            CALL <a name="DLACPY.322"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>( <span class="string">'A'</span>, N, N, Q, LDQ, Z, LDZ )
+            CALL DCOPY( N-1, WORK( INDE ), 1, WORK( INDEE ), 1 )
+            CALL <a name="DSTEQR.324"></a><a href="dsteqr.f.html#DSTEQR.1">DSTEQR</a>( JOBZ, N, W, WORK( INDEE ), Z, LDZ,
+     $                   WORK( INDWRK ), INFO )
+            IF( INFO.EQ.0 ) THEN
+               DO 10 I = 1, N
+                  IFAIL( I ) = 0
+   10          CONTINUE
+            END IF
+         END IF
+         IF( INFO.EQ.0 ) THEN
+            M = N
+            GO TO 30
+         END IF
+         INFO = 0
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Otherwise, call <a name="DSTEBZ.339"></a><a href="dstebz.f.html#DSTEBZ.1">DSTEBZ</a> and, if eigenvectors are desired, <a name="SSTEIN.339"></a><a href="sstein.f.html#SSTEIN.1">SSTEIN</a>.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( WANTZ ) THEN
+         ORDER = <span class="string">'B'</span>
+      ELSE
+         ORDER = <span class="string">'E'</span>
+      END IF
+      INDIBL = 1
+      INDISP = INDIBL + N
+      INDIWO = INDISP + N
+      CALL <a name="DSTEBZ.349"></a><a href="dstebz.f.html#DSTEBZ.1">DSTEBZ</a>( RANGE, ORDER, N, VLL, VUU, IL, IU, ABSTLL,
+     $             WORK( INDD ), WORK( INDE ), M, NSPLIT, W,
+     $             IWORK( INDIBL ), IWORK( INDISP ), WORK( INDWRK ),
+     $             IWORK( INDIWO ), INFO )
+<span class="comment">*</span><span class="comment">
+</span>      IF( WANTZ ) THEN
+         CALL <a name="DSTEIN.355"></a><a href="dstein.f.html#DSTEIN.1">DSTEIN</a>( N, WORK( INDD ), WORK( INDE ), M, W,
+     $                IWORK( INDIBL ), IWORK( INDISP ), Z, LDZ,
+     $                WORK( INDWRK ), IWORK( INDIWO ), IFAIL, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Apply orthogonal matrix used in reduction to tridiagonal
+</span><span class="comment">*</span><span class="comment">        form to eigenvectors returned by <a name="DSTEIN.360"></a><a href="dstein.f.html#DSTEIN.1">DSTEIN</a>.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 20 J = 1, M
+            CALL DCOPY( N, Z( 1, J ), 1, WORK( 1 ), 1 )
+            CALL DGEMV( <span class="string">'N'</span>, N, N, ONE, Q, LDQ, WORK, 1, ZERO,
+     $                  Z( 1, J ), 1 )
+   20    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If matrix was scaled, then rescale eigenvalues appropriately.
+</span><span class="comment">*</span><span class="comment">
+</span>   30 CONTINUE
+      IF( ISCALE.EQ.1 ) THEN
+         IF( INFO.EQ.0 ) THEN
+            IMAX = M
+         ELSE
+            IMAX = INFO - 1
+         END IF
+         CALL DSCAL( IMAX, ONE / SIGMA, W, 1 )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If eigenvalues are not in order, then sort them, along with
+</span><span class="comment">*</span><span class="comment">     eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( WANTZ ) THEN
+         DO 50 J = 1, M - 1
+            I = 0
+            TMP1 = W( J )
+            DO 40 JJ = J + 1, M
+               IF( W( JJ ).LT.TMP1 ) THEN
+                  I = JJ
+                  TMP1 = W( JJ )
+               END IF
+   40       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            IF( I.NE.0 ) THEN
+               ITMP1 = IWORK( INDIBL+I-1 )
+               W( I ) = W( J )
+               IWORK( INDIBL+I-1 ) = IWORK( INDIBL+J-1 )
+               W( J ) = TMP1
+               IWORK( INDIBL+J-1 ) = ITMP1
+               CALL DSWAP( N, Z( 1, I ), 1, Z( 1, J ), 1 )
+               IF( INFO.NE.0 ) THEN
+                  ITMP1 = IFAIL( I )
+                  IFAIL( I ) = IFAIL( J )
+                  IFAIL( J ) = ITMP1
+               END IF
+            END IF
+   50    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DSBEVX.413"></a><a href="dsbevx.f.html#DSBEVX.1">DSBEVX</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

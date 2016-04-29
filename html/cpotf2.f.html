@@ -1,0 +1,198 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>cpotf2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CPOTF2.1"></a><a href="cpotf2.f.html#CPOTF2.1">CPOTF2</a>( UPLO, N, A, LDA, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          UPLO
+      INTEGER            INFO, LDA, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX            A( LDA, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CPOTF2.18"></a><a href="cpotf2.f.html#CPOTF2.1">CPOTF2</a> computes the Cholesky factorization of a complex Hermitian
+</span><span class="comment">*</span><span class="comment">  positive definite matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The factorization has the form
+</span><span class="comment">*</span><span class="comment">     A = U' * U ,  if UPLO = 'U', or
+</span><span class="comment">*</span><span class="comment">     A = L  * L',  if UPLO = 'L',
+</span><span class="comment">*</span><span class="comment">  where U is an upper triangular matrix and L is lower triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This is the unblocked version of the algorithm, calling Level 2 BLAS.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether the upper or lower triangular part of the
+</span><span class="comment">*</span><span class="comment">          Hermitian matrix A is stored.
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangular
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangular
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) COMPLEX array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the Hermitian matrix A.  If UPLO = 'U', the leading
+</span><span class="comment">*</span><span class="comment">          n by n upper triangular part of A contains the upper
+</span><span class="comment">*</span><span class="comment">          triangular part of the matrix A, and the strictly lower
+</span><span class="comment">*</span><span class="comment">          triangular part of A is not referenced.  If UPLO = 'L', the
+</span><span class="comment">*</span><span class="comment">          leading n by n lower triangular part of A contains the lower
+</span><span class="comment">*</span><span class="comment">          triangular part of the matrix A, and the strictly upper
+</span><span class="comment">*</span><span class="comment">          triangular part of A is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, the factor U or L from the Cholesky
+</span><span class="comment">*</span><span class="comment">          factorization A = U'*U  or A = L*L'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0: successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0: if INFO = -k, the k-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0: if INFO = k, the leading minor of order k is not
+</span><span class="comment">*</span><span class="comment">               positive definite, and the factorization could not be
+</span><span class="comment">*</span><span class="comment">               completed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ONE, ZERO
+      PARAMETER          ( ONE = 1.0E+0, ZERO = 0.0E+0 )
+      COMPLEX            CONE
+      PARAMETER          ( CONE = ( 1.0E+0, 0.0E+0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            UPPER
+      INTEGER            J
+      REAL               AJJ
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.76"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      COMPLEX            CDOTC
+      EXTERNAL           <a name="LSAME.78"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, CDOTC
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           CGEMV, <a name="CLACGV.81"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>, CSSCAL, <a name="XERBLA.81"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX, REAL, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      UPPER = <a name="LSAME.91"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> )
+      IF( .NOT.UPPER .AND. .NOT.<a name="LSAME.92"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+         INFO = -4
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.100"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CPOTF2.100"></a><a href="cpotf2.f.html#CPOTF2.1">CPOTF2</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      IF( UPPER ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute the Cholesky factorization A = U'*U.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 10 J = 1, N
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute U(J,J) and test for non-positive-definiteness.
+</span><span class="comment">*</span><span class="comment">
+</span>            AJJ = REAL( A( J, J ) ) - CDOTC( J-1, A( 1, J ), 1,
+     $            A( 1, J ), 1 )
+            IF( AJJ.LE.ZERO ) THEN
+               A( J, J ) = AJJ
+               GO TO 30
+            END IF
+            AJJ = SQRT( AJJ )
+            A( J, J ) = AJJ
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute elements J+1:N of row J.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( J.LT.N ) THEN
+               CALL <a name="CLACGV.129"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( J-1, A( 1, J ), 1 )
+               CALL CGEMV( <span class="string">'Transpose'</span>, J-1, N-J, -CONE, A( 1, J+1 ),
+     $                     LDA, A( 1, J ), 1, CONE, A( J, J+1 ), LDA )
+               CALL <a name="CLACGV.132"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( J-1, A( 1, J ), 1 )
+               CALL CSSCAL( N-J, ONE / AJJ, A( J, J+1 ), LDA )
+            END IF
+   10    CONTINUE
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute the Cholesky factorization A = L*L'.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 20 J = 1, N
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute L(J,J) and test for non-positive-definiteness.
+</span><span class="comment">*</span><span class="comment">
+</span>            AJJ = REAL( A( J, J ) ) - CDOTC( J-1, A( J, 1 ), LDA,
+     $            A( J, 1 ), LDA )
+            IF( AJJ.LE.ZERO ) THEN
+               A( J, J ) = AJJ
+               GO TO 30
+            END IF
+            AJJ = SQRT( AJJ )
+            A( J, J ) = AJJ
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute elements J+1:N of column J.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( J.LT.N ) THEN
+               CALL <a name="CLACGV.156"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( J-1, A( J, 1 ), LDA )
+               CALL CGEMV( <span class="string">'No transpose'</span>, N-J, J-1, -CONE, A( J+1, 1 ),
+     $                     LDA, A( J, 1 ), LDA, CONE, A( J+1, J ), 1 )
+               CALL <a name="CLACGV.159"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( J-1, A( J, 1 ), LDA )
+               CALL CSSCAL( N-J, ONE / AJJ, A( J+1, J ), 1 )
+            END IF
+   20    CONTINUE
+      END IF
+      GO TO 40
+<span class="comment">*</span><span class="comment">
+</span>   30 CONTINUE
+      INFO = J
+<span class="comment">*</span><span class="comment">
+</span>   40 CONTINUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CPOTF2.172"></a><a href="cpotf2.f.html#CPOTF2.1">CPOTF2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

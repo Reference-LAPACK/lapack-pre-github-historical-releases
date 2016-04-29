@@ -1,0 +1,319 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zlaic1.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZLAIC1.1"></a><a href="zlaic1.f.html#ZLAIC1.1">ZLAIC1</a>( JOB, J, X, SEST, W, GAMMA, SESTPR, S, C )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            J, JOB
+      DOUBLE PRECISION   SEST, SESTPR
+      COMPLEX*16         C, GAMMA, S
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX*16         W( J ), X( J )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZLAIC1.19"></a><a href="zlaic1.f.html#ZLAIC1.1">ZLAIC1</a> applies one step of incremental condition estimation in
+</span><span class="comment">*</span><span class="comment">  its simplest version:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Let x, twonorm(x) = 1, be an approximate singular vector of an j-by-j
+</span><span class="comment">*</span><span class="comment">  lower triangular matrix L, such that
+</span><span class="comment">*</span><span class="comment">           twonorm(L*x) = sest
+</span><span class="comment">*</span><span class="comment">  Then <a name="ZLAIC1.25"></a><a href="zlaic1.f.html#ZLAIC1.1">ZLAIC1</a> computes sestpr, s, c such that
+</span><span class="comment">*</span><span class="comment">  the vector
+</span><span class="comment">*</span><span class="comment">                  [ s*x ]
+</span><span class="comment">*</span><span class="comment">           xhat = [  c  ]
+</span><span class="comment">*</span><span class="comment">  is an approximate singular vector of
+</span><span class="comment">*</span><span class="comment">                  [ L     0  ]
+</span><span class="comment">*</span><span class="comment">           Lhat = [ w' gamma ]
+</span><span class="comment">*</span><span class="comment">  in the sense that
+</span><span class="comment">*</span><span class="comment">           twonorm(Lhat*xhat) = sestpr.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Depending on JOB, an estimate for the largest or smallest singular
+</span><span class="comment">*</span><span class="comment">  value is computed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Note that [s c]' and sestpr**2 is an eigenpair of the system
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">      diag(sest*sest, 0) + [alpha  gamma] * [ conjg(alpha) ]
+</span><span class="comment">*</span><span class="comment">                                            [ conjg(gamma) ]
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where  alpha =  conjg(x)'*w.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 1: an estimate for the largest singular value is computed.
+</span><span class="comment">*</span><span class="comment">          = 2: an estimate for the smallest singular value is computed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  J       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          Length of X and W
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X       (input) COMPLEX*16 array, dimension (J)
+</span><span class="comment">*</span><span class="comment">          The j-vector x.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SEST    (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          Estimated singular value of j by j matrix L
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  W       (input) COMPLEX*16 array, dimension (J)
+</span><span class="comment">*</span><span class="comment">          The j-vector w.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GAMMA   (input) COMPLEX*16
+</span><span class="comment">*</span><span class="comment">          The diagonal element gamma.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SESTPR  (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          Estimated singular value of (j+1) by (j+1) matrix Lhat.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  S       (output) COMPLEX*16
+</span><span class="comment">*</span><span class="comment">          Sine needed in forming xhat.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C       (output) COMPLEX*16
+</span><span class="comment">*</span><span class="comment">          Cosine needed in forming xhat.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE, TWO
+      PARAMETER          ( ZERO = 0.0D0, ONE = 1.0D0, TWO = 2.0D0 )
+      DOUBLE PRECISION   HALF, FOUR
+      PARAMETER          ( HALF = 0.5D0, FOUR = 4.0D0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      DOUBLE PRECISION   ABSALP, ABSEST, ABSGAM, B, EPS, NORMA, S1, S2,
+     $                   SCL, T, TEST, TMP, ZETA1, ZETA2
+      COMPLEX*16         ALPHA, COSINE, SINE
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, DCONJG, MAX, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      DOUBLE PRECISION   <a name="DLAMCH.93"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+      COMPLEX*16         ZDOTC
+      EXTERNAL           <a name="DLAMCH.95"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, ZDOTC
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      EPS = <a name="DLAMCH.99"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Epsilon'</span> )
+      ALPHA = ZDOTC( J, X, 1, W, 1 )
+<span class="comment">*</span><span class="comment">
+</span>      ABSALP = ABS( ALPHA )
+      ABSGAM = ABS( GAMMA )
+      ABSEST = ABS( SEST )
+<span class="comment">*</span><span class="comment">
+</span>      IF( JOB.EQ.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Estimating largest singular value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        special cases
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( SEST.EQ.ZERO ) THEN
+            S1 = MAX( ABSGAM, ABSALP )
+            IF( S1.EQ.ZERO ) THEN
+               S = ZERO
+               C = ONE
+               SESTPR = ZERO
+            ELSE
+               S = ALPHA / S1
+               C = GAMMA / S1
+               TMP = SQRT( S*DCONJG( S )+C*DCONJG( C ) )
+               S = S / TMP
+               C = C / TMP
+               SESTPR = S1*TMP
+            END IF
+            RETURN
+         ELSE IF( ABSGAM.LE.EPS*ABSEST ) THEN
+            S = ONE
+            C = ZERO
+            TMP = MAX( ABSEST, ABSALP )
+            S1 = ABSEST / TMP
+            S2 = ABSALP / TMP
+            SESTPR = TMP*SQRT( S1*S1+S2*S2 )
+            RETURN
+         ELSE IF( ABSALP.LE.EPS*ABSEST ) THEN
+            S1 = ABSGAM
+            S2 = ABSEST
+            IF( S1.LE.S2 ) THEN
+               S = ONE
+               C = ZERO
+               SESTPR = S2
+            ELSE
+               S = ZERO
+               C = ONE
+               SESTPR = S1
+            END IF
+            RETURN
+         ELSE IF( ABSEST.LE.EPS*ABSALP .OR. ABSEST.LE.EPS*ABSGAM ) THEN
+            S1 = ABSGAM
+            S2 = ABSALP
+            IF( S1.LE.S2 ) THEN
+               TMP = S1 / S2
+               SCL = SQRT( ONE+TMP*TMP )
+               SESTPR = S2*SCL
+               S = ( ALPHA / S2 ) / SCL
+               C = ( GAMMA / S2 ) / SCL
+            ELSE
+               TMP = S2 / S1
+               SCL = SQRT( ONE+TMP*TMP )
+               SESTPR = S1*SCL
+               S = ( ALPHA / S1 ) / SCL
+               C = ( GAMMA / S1 ) / SCL
+            END IF
+            RETURN
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           normal case
+</span><span class="comment">*</span><span class="comment">
+</span>            ZETA1 = ABSALP / ABSEST
+            ZETA2 = ABSGAM / ABSEST
+<span class="comment">*</span><span class="comment">
+</span>            B = ( ONE-ZETA1*ZETA1-ZETA2*ZETA2 )*HALF
+            C = ZETA1*ZETA1
+            IF( B.GT.ZERO ) THEN
+               T = C / ( B+SQRT( B*B+C ) )
+            ELSE
+               T = SQRT( B*B+C ) - B
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>            SINE = -( ALPHA / ABSEST ) / T
+            COSINE = -( GAMMA / ABSEST ) / ( ONE+T )
+            TMP = SQRT( SINE*DCONJG( SINE )+COSINE*DCONJG( COSINE ) )
+            S = SINE / TMP
+            C = COSINE / TMP
+            SESTPR = SQRT( T+ONE )*ABSEST
+            RETURN
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>      ELSE IF( JOB.EQ.2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Estimating smallest singular value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        special cases
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( SEST.EQ.ZERO ) THEN
+            SESTPR = ZERO
+            IF( MAX( ABSGAM, ABSALP ).EQ.ZERO ) THEN
+               SINE = ONE
+               COSINE = ZERO
+            ELSE
+               SINE = -DCONJG( GAMMA )
+               COSINE = DCONJG( ALPHA )
+            END IF
+            S1 = MAX( ABS( SINE ), ABS( COSINE ) )
+            S = SINE / S1
+            C = COSINE / S1
+            TMP = SQRT( S*DCONJG( S )+C*DCONJG( C ) )
+            S = S / TMP
+            C = C / TMP
+            RETURN
+         ELSE IF( ABSGAM.LE.EPS*ABSEST ) THEN
+            S = ZERO
+            C = ONE
+            SESTPR = ABSGAM
+            RETURN
+         ELSE IF( ABSALP.LE.EPS*ABSEST ) THEN
+            S1 = ABSGAM
+            S2 = ABSEST
+            IF( S1.LE.S2 ) THEN
+               S = ZERO
+               C = ONE
+               SESTPR = S1
+            ELSE
+               S = ONE
+               C = ZERO
+               SESTPR = S2
+            END IF
+            RETURN
+         ELSE IF( ABSEST.LE.EPS*ABSALP .OR. ABSEST.LE.EPS*ABSGAM ) THEN
+            S1 = ABSGAM
+            S2 = ABSALP
+            IF( S1.LE.S2 ) THEN
+               TMP = S1 / S2
+               SCL = SQRT( ONE+TMP*TMP )
+               SESTPR = ABSEST*( TMP / SCL )
+               S = -( DCONJG( GAMMA ) / S2 ) / SCL
+               C = ( DCONJG( ALPHA ) / S2 ) / SCL
+            ELSE
+               TMP = S2 / S1
+               SCL = SQRT( ONE+TMP*TMP )
+               SESTPR = ABSEST / SCL
+               S = -( DCONJG( GAMMA ) / S1 ) / SCL
+               C = ( DCONJG( ALPHA ) / S1 ) / SCL
+            END IF
+            RETURN
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           normal case
+</span><span class="comment">*</span><span class="comment">
+</span>            ZETA1 = ABSALP / ABSEST
+            ZETA2 = ABSGAM / ABSEST
+<span class="comment">*</span><span class="comment">
+</span>            NORMA = MAX( ONE+ZETA1*ZETA1+ZETA1*ZETA2,
+     $              ZETA1*ZETA2+ZETA2*ZETA2 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           See if root is closer to zero or to ONE
+</span><span class="comment">*</span><span class="comment">
+</span>            TEST = ONE + TWO*( ZETA1-ZETA2 )*( ZETA1+ZETA2 )
+            IF( TEST.GE.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              root is close to zero, compute directly
+</span><span class="comment">*</span><span class="comment">
+</span>               B = ( ZETA1*ZETA1+ZETA2*ZETA2+ONE )*HALF
+               C = ZETA2*ZETA2
+               T = C / ( B+SQRT( ABS( B*B-C ) ) )
+               SINE = ( ALPHA / ABSEST ) / ( ONE-T )
+               COSINE = -( GAMMA / ABSEST ) / T
+               SESTPR = SQRT( T+FOUR*EPS*EPS*NORMA )*ABSEST
+            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              root is closer to ONE, shift by that amount
+</span><span class="comment">*</span><span class="comment">
+</span>               B = ( ZETA2*ZETA2+ZETA1*ZETA1-ONE )*HALF
+               C = ZETA1*ZETA1
+               IF( B.GE.ZERO ) THEN
+                  T = -C / ( B+SQRT( B*B+C ) )
+               ELSE
+                  T = B - SQRT( B*B+C )
+               END IF
+               SINE = -( ALPHA / ABSEST ) / T
+               COSINE = -( GAMMA / ABSEST ) / ( ONE+T )
+               SESTPR = SQRT( ONE+T+FOUR*EPS*EPS*NORMA )*ABSEST
+            END IF
+            TMP = SQRT( SINE*DCONJG( SINE )+COSINE*DCONJG( COSINE ) )
+            S = SINE / TMP
+            C = COSINE / TMP
+            RETURN
+<span class="comment">*</span><span class="comment">
+</span>         END IF
+      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZLAIC1.293"></a><a href="zlaic1.f.html#ZLAIC1.1">ZLAIC1</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>cgehd2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CGEHD2.1"></a><a href="cgehd2.f.html#CGEHD2.1">CGEHD2</a>( N, ILO, IHI, A, LDA, TAU, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            IHI, ILO, INFO, LDA, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX            A( LDA, * ), TAU( * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CGEHD2.17"></a><a href="cgehd2.f.html#CGEHD2.1">CGEHD2</a> reduces a complex general matrix A to upper Hessenberg form H
+</span><span class="comment">*</span><span class="comment">  by a unitary similarity transformation:  Q' * A * Q = H .
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ILO     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">  IHI     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          It is assumed that A is already upper triangular in rows
+</span><span class="comment">*</span><span class="comment">          and columns 1:ILO-1 and IHI+1:N. ILO and IHI are normally
+</span><span class="comment">*</span><span class="comment">          set by a previous call to <a name="CGEBAL.30"></a><a href="cgebal.f.html#CGEBAL.1">CGEBAL</a>; otherwise they should be
+</span><span class="comment">*</span><span class="comment">          set to 1 and N respectively. See Further Details.
+</span><span class="comment">*</span><span class="comment">          1 &lt;= ILO &lt;= IHI &lt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) COMPLEX array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the n by n general matrix to be reduced.
+</span><span class="comment">*</span><span class="comment">          On exit, the upper triangle and the first subdiagonal of A
+</span><span class="comment">*</span><span class="comment">          are overwritten with the upper Hessenberg matrix H, and the
+</span><span class="comment">*</span><span class="comment">          elements below the first subdiagonal, with the array TAU,
+</span><span class="comment">*</span><span class="comment">          represent the unitary matrix Q as a product of elementary
+</span><span class="comment">*</span><span class="comment">          reflectors. See Further Details.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TAU     (output) COMPLEX array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          The scalar factors of the elementary reflectors (see Further
+</span><span class="comment">*</span><span class="comment">          Details).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) COMPLEX array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The matrix Q is represented as a product of (ihi-ilo) elementary
+</span><span class="comment">*</span><span class="comment">  reflectors
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Q = H(ilo) H(ilo+1) . . . H(ihi-1).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Each H(i) has the form
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     H(i) = I - tau * v * v'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where tau is a complex scalar, and v is a complex vector with
+</span><span class="comment">*</span><span class="comment">  v(1:i) = 0, v(i+1) = 1 and v(ihi+1:n) = 0; v(i+2:ihi) is stored on
+</span><span class="comment">*</span><span class="comment">  exit in A(i+2:ihi,i), and tau in TAU(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The contents of A are illustrated by the following example, with
+</span><span class="comment">*</span><span class="comment">  n = 7, ilo = 2 and ihi = 6:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  on entry,                        on exit,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ( a   a   a   a   a   a   a )    (  a   a   h   h   h   h   a )
+</span><span class="comment">*</span><span class="comment">  (     a   a   a   a   a   a )    (      a   h   h   h   h   a )
+</span><span class="comment">*</span><span class="comment">  (     a   a   a   a   a   a )    (      h   h   h   h   h   h )
+</span><span class="comment">*</span><span class="comment">  (     a   a   a   a   a   a )    (      v2  h   h   h   h   h )
+</span><span class="comment">*</span><span class="comment">  (     a   a   a   a   a   a )    (      v2  v3  h   h   h   h )
+</span><span class="comment">*</span><span class="comment">  (     a   a   a   a   a   a )    (      v2  v3  v4  h   h   h )
+</span><span class="comment">*</span><span class="comment">  (                         a )    (                          a )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where a denotes an element of the original matrix A, h denotes a
+</span><span class="comment">*</span><span class="comment">  modified element of the upper Hessenberg matrix H, and vi denotes an
+</span><span class="comment">*</span><span class="comment">  element of the vector defining H(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      COMPLEX            ONE
+      PARAMETER          ( ONE = ( 1.0E+0, 0.0E+0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I
+      COMPLEX            ALPHA
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="CLARF.99"></a><a href="clarf.f.html#CLARF.1">CLARF</a>, <a name="CLARFG.99"></a><a href="clarfg.f.html#CLARFG.1">CLARFG</a>, <a name="XERBLA.99"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          CONJG, MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( N.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( ILO.LT.1 .OR. ILO.GT.MAX( 1, N ) ) THEN
+         INFO = -2
+      ELSE IF( IHI.LT.MIN( ILO, N ) .OR. IHI.GT.N ) THEN
+         INFO = -3
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+         INFO = -5
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.119"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CGEHD2.119"></a><a href="cgehd2.f.html#CGEHD2.1">CGEHD2</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      DO 10 I = ILO, IHI - 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute elementary reflector H(i) to annihilate A(i+2:ihi,i)
+</span><span class="comment">*</span><span class="comment">
+</span>         ALPHA = A( I+1, I )
+         CALL <a name="CLARFG.128"></a><a href="clarfg.f.html#CLARFG.1">CLARFG</a>( IHI-I, ALPHA, A( MIN( I+2, N ), I ), 1, TAU( I ) )
+         A( I+1, I ) = ONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Apply H(i) to A(1:ihi,i+1:ihi) from the right
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="CLARF.133"></a><a href="clarf.f.html#CLARF.1">CLARF</a>( <span class="string">'Right'</span>, IHI, IHI-I, A( I+1, I ), 1, TAU( I ),
+     $               A( 1, I+1 ), LDA, WORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Apply H(i)' to A(i+1:ihi,i+1:n) from the left
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="CLARF.138"></a><a href="clarf.f.html#CLARF.1">CLARF</a>( <span class="string">'Left'</span>, IHI-I, N-I, A( I+1, I ), 1,
+     $               CONJG( TAU( I ) ), A( I+1, I+1 ), LDA, WORK )
+<span class="comment">*</span><span class="comment">
+</span>         A( I+1, I ) = ALPHA
+   10 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CGEHD2.146"></a><a href="cgehd2.f.html#CGEHD2.1">CGEHD2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

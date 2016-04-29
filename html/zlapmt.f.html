@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zlapmt.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZLAPMT.1"></a><a href="zlapmt.f.html#ZLAPMT.1">ZLAPMT</a>( FORWRD, M, N, X, LDX, K )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      LOGICAL            FORWRD
+      INTEGER            LDX, M, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            K( * )
+      COMPLEX*16         X( LDX, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZLAPMT.19"></a><a href="zlapmt.f.html#ZLAPMT.1">ZLAPMT</a> rearranges the columns of the M by N matrix X as specified
+</span><span class="comment">*</span><span class="comment">  by the permutation K(1),K(2),...,K(N) of the integers 1,...,N.
+</span><span class="comment">*</span><span class="comment">  If FORWRD = .TRUE.,  forward permutation:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">       X(*,K(J)) is moved X(*,J) for J = 1,2,...,N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If FORWRD = .FALSE., backward permutation:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">       X(*,J) is moved to X(*,K(J)) for J = 1,2,...,N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  FORWRD  (input) LOGICAL
+</span><span class="comment">*</span><span class="comment">          = .TRUE., forward permutation
+</span><span class="comment">*</span><span class="comment">          = .FALSE., backward permutation
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix X. M &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix X. N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X       (input/output) COMPLEX*16 array, dimension (LDX,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the M by N matrix X.
+</span><span class="comment">*</span><span class="comment">          On exit, X contains the permuted matrix X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDX     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array X, LDX &gt;= MAX(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  K       (input/output) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On entry, K contains the permutation vector. K is used as
+</span><span class="comment">*</span><span class="comment">          internal workspace, but reset to its original value on
+</span><span class="comment">*</span><span class="comment">          output.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, II, IN, J
+      COMPLEX*16         TEMP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.LE.1 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      DO 10 I = 1, N
+         K( I ) = -K( I )
+   10 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      IF( FORWRD ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Forward permutation
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 50 I = 1, N
+<span class="comment">*</span><span class="comment">
+</span>            IF( K( I ).GT.0 )
+     $         GO TO 40
+<span class="comment">*</span><span class="comment">
+</span>            J = I
+            K( J ) = -K( J )
+            IN = K( J )
+<span class="comment">*</span><span class="comment">
+</span>   20       CONTINUE
+            IF( K( IN ).GT.0 )
+     $         GO TO 40
+<span class="comment">*</span><span class="comment">
+</span>            DO 30 II = 1, M
+               TEMP = X( II, J )
+               X( II, J ) = X( II, IN )
+               X( II, IN ) = TEMP
+   30       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            K( IN ) = -K( IN )
+            J = IN
+            IN = K( IN )
+            GO TO 20
+<span class="comment">*</span><span class="comment">
+</span>   40       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>   50    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Backward permutation
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 90 I = 1, N
+<span class="comment">*</span><span class="comment">
+</span>            IF( K( I ).GT.0 )
+     $         GO TO 80
+<span class="comment">*</span><span class="comment">
+</span>            K( I ) = -K( I )
+            J = K( I )
+   60       CONTINUE
+            IF( J.EQ.I )
+     $         GO TO 80
+<span class="comment">*</span><span class="comment">
+</span>            DO 70 II = 1, M
+               TEMP = X( II, I )
+               X( II, I ) = X( II, J )
+               X( II, J ) = TEMP
+   70       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            K( J ) = -K( J )
+            J = K( J )
+            GO TO 60
+<span class="comment">*</span><span class="comment">
+</span>   80       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>   90    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZLAPMT.134"></a><a href="zlapmt.f.html#ZLAPMT.1">ZLAPMT</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dspgvd.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DSPGVD.1"></a><a href="dspgvd.f.html#DSPGVD.1">DSPGVD</a>( ITYPE, JOBZ, UPLO, N, AP, BP, W, Z, LDZ, WORK,
+     $                   LWORK, IWORK, LIWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK driver routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          JOBZ, UPLO
+      INTEGER            INFO, ITYPE, LDZ, LIWORK, LWORK, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IWORK( * )
+      DOUBLE PRECISION   AP( * ), BP( * ), W( * ), WORK( * ),
+     $                   Z( LDZ, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DSPGVD.21"></a><a href="dspgvd.f.html#DSPGVD.1">DSPGVD</a> computes all the eigenvalues, and optionally, the eigenvectors
+</span><span class="comment">*</span><span class="comment">  of a real generalized symmetric-definite eigenproblem, of the form
+</span><span class="comment">*</span><span class="comment">  A*x=(lambda)*B*x,  A*Bx=(lambda)*x,  or B*A*x=(lambda)*x.  Here A and
+</span><span class="comment">*</span><span class="comment">  B are assumed to be symmetric, stored in packed format, and B is also
+</span><span class="comment">*</span><span class="comment">  positive definite.
+</span><span class="comment">*</span><span class="comment">  If eigenvectors are desired, it uses a divide and conquer algorithm.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The divide and conquer algorithm makes very mild assumptions about
+</span><span class="comment">*</span><span class="comment">  floating point arithmetic. It will work on machines with a guard
+</span><span class="comment">*</span><span class="comment">  digit in add/subtract, or on those binary machines without guard
+</span><span class="comment">*</span><span class="comment">  digits which subtract like the Cray X-MP, Cray Y-MP, Cray C-90, or
+</span><span class="comment">*</span><span class="comment">  Cray-2. It could conceivably fail on hexadecimal or decimal machines
+</span><span class="comment">*</span><span class="comment">  without guard digits, but we know of none.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ITYPE   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          Specifies the problem type to be solved:
+</span><span class="comment">*</span><span class="comment">          = 1:  A*x = (lambda)*B*x
+</span><span class="comment">*</span><span class="comment">          = 2:  A*B*x = (lambda)*x
+</span><span class="comment">*</span><span class="comment">          = 3:  B*A*x = (lambda)*x
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOBZ    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'N':  Compute eigenvalues only;
+</span><span class="comment">*</span><span class="comment">          = 'V':  Compute eigenvalues and eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangles of A and B are stored;
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangles of A and B are stored.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrices A and B.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AP      (input/output) DOUBLE PRECISION array, dimension (N*(N+1)/2)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper or lower triangle of the symmetric matrix
+</span><span class="comment">*</span><span class="comment">          A, packed columnwise in a linear array.  The j-th column of A
+</span><span class="comment">*</span><span class="comment">          is stored in the array AP as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', AP(i + (j-1)*j/2) = A(i,j) for 1&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', AP(i + (j-1)*(2*n-j)/2) = A(i,j) for j&lt;=i&lt;=n.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, the contents of AP are destroyed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BP      (input/output) DOUBLE PRECISION array, dimension (N*(N+1)/2)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper or lower triangle of the symmetric matrix
+</span><span class="comment">*</span><span class="comment">          B, packed columnwise in a linear array.  The j-th column of B
+</span><span class="comment">*</span><span class="comment">          is stored in the array BP as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', BP(i + (j-1)*j/2) = B(i,j) for 1&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', BP(i + (j-1)*(2*n-j)/2) = B(i,j) for j&lt;=i&lt;=n.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, the triangular factor U or L from the Cholesky
+</span><span class="comment">*</span><span class="comment">          factorization B = U**T*U or B = L*L**T, in the same storage
+</span><span class="comment">*</span><span class="comment">          format as B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  W       (output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          If INFO = 0, the eigenvalues in ascending order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z       (output) DOUBLE PRECISION array, dimension (LDZ, N)
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'V', then if INFO = 0, Z contains the matrix Z of
+</span><span class="comment">*</span><span class="comment">          eigenvectors.  The eigenvectors are normalized as follows:
+</span><span class="comment">*</span><span class="comment">          if ITYPE = 1 or 2, Z**T*B*Z = I;
+</span><span class="comment">*</span><span class="comment">          if ITYPE = 3, Z**T*inv(B)*Z = I.
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'N', then Z is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDZ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Z.  LDZ &gt;= 1, and if
+</span><span class="comment">*</span><span class="comment">          JOBZ = 'V', LDZ &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace/output) DOUBLE PRECISION array, dimension (MAX(1,LWORK))
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, WORK(1) returns the required LWORK.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LWORK   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The dimension of the array WORK.
+</span><span class="comment">*</span><span class="comment">          If N &lt;= 1,               LWORK &gt;= 1.
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'N' and N &gt; 1, LWORK &gt;= 2*N.
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'V' and N &gt; 1, LWORK &gt;= 1 + 6*N + 2*N**2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If LWORK = -1, then a workspace query is assumed; the routine
+</span><span class="comment">*</span><span class="comment">          only calculates the required sizes of the WORK and IWORK
+</span><span class="comment">*</span><span class="comment">          arrays, returns these values as the first entries of the WORK
+</span><span class="comment">*</span><span class="comment">          and IWORK arrays, and no error message related to LWORK or
+</span><span class="comment">*</span><span class="comment">          LIWORK is issued by <a name="XERBLA.102"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK   (workspace/output) INTEGER array, dimension (MAX(1,LIWORK))
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, IWORK(1) returns the required LIWORK.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LIWORK  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The dimension of the array IWORK.
+</span><span class="comment">*</span><span class="comment">          If JOBZ  = 'N' or N &lt;= 1, LIWORK &gt;= 1.
+</span><span class="comment">*</span><span class="comment">          If JOBZ  = 'V' and N &gt; 1, LIWORK &gt;= 3 + 5*N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If LIWORK = -1, then a workspace query is assumed; the
+</span><span class="comment">*</span><span class="comment">          routine only calculates the required sizes of the WORK and
+</span><span class="comment">*</span><span class="comment">          IWORK arrays, returns these values as the first entries of
+</span><span class="comment">*</span><span class="comment">          the WORK and IWORK arrays, and no error message related to
+</span><span class="comment">*</span><span class="comment">          LWORK or LIWORK is issued by <a name="XERBLA.116"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  <a name="DPPTRF.121"></a><a href="dpptrf.f.html#DPPTRF.1">DPPTRF</a> or <a name="DSPEVD.121"></a><a href="dspevd.f.html#DSPEVD.1">DSPEVD</a> returned an error code:
+</span><span class="comment">*</span><span class="comment">             &lt;= N:  if INFO = i, <a name="DSPEVD.122"></a><a href="dspevd.f.html#DSPEVD.1">DSPEVD</a> failed to converge;
+</span><span class="comment">*</span><span class="comment">                    i off-diagonal elements of an intermediate
+</span><span class="comment">*</span><span class="comment">                    tridiagonal form did not converge to zero;
+</span><span class="comment">*</span><span class="comment">             &gt; N:   if INFO = N + i, for 1 &lt;= i &lt;= N, then the leading
+</span><span class="comment">*</span><span class="comment">                    minor of order i of B is not positive definite.
+</span><span class="comment">*</span><span class="comment">                    The factorization of B could not be completed and
+</span><span class="comment">*</span><span class="comment">                    no eigenvalues or eigenvectors were computed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Mark Fahey, Department of Mathematics, Univ. of Kentucky, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   TWO
+      PARAMETER          ( TWO = 2.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            LQUERY, UPPER, WANTZ
+      CHARACTER          TRANS
+      INTEGER            J, LIWMIN, LWMIN, NEIG
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.148"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.149"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DPPTRF.152"></a><a href="dpptrf.f.html#DPPTRF.1">DPPTRF</a>, <a name="DSPEVD.152"></a><a href="dspevd.f.html#DSPEVD.1">DSPEVD</a>, <a name="DSPGST.152"></a><a href="dspgst.f.html#DSPGST.1">DSPGST</a>, DTPMV, DTPSV, <a name="XERBLA.152"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          DBLE, MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      WANTZ = <a name="LSAME.161"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBZ, <span class="string">'V'</span> )
+      UPPER = <a name="LSAME.162"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> )
+      LQUERY = ( LWORK.EQ.-1 .OR. LIWORK.EQ.-1 )
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( ITYPE.LT.1 .OR. ITYPE.GT.3 ) THEN
+         INFO = -1
+      ELSE IF( .NOT.( WANTZ .OR. <a name="LSAME.168"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBZ, <span class="string">'N'</span> ) ) ) THEN
+         INFO = -2
+      ELSE IF( .NOT.( UPPER .OR. <a name="LSAME.170"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) ) THEN
+         INFO = -3
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( LDZ.LT.1 .OR. ( WANTZ .AND. LDZ.LT.N ) ) THEN
+         INFO = -9
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.EQ.0 ) THEN
+         IF( N.LE.1 ) THEN
+            LIWMIN = 1
+            LWMIN = 1
+         ELSE
+            IF( WANTZ ) THEN
+               LIWMIN = 3 + 5*N
+               LWMIN = 1 + 6*N + 2*N**2
+            ELSE
+               LIWMIN = 1
+               LWMIN = 2*N
+            END IF
+         END IF
+         WORK( 1 ) = LWMIN
+         IWORK( 1 ) = LIWMIN
+<span class="comment">*</span><span class="comment">
+</span>         IF( LWORK.LT.LWMIN .AND. .NOT.LQUERY ) THEN
+            INFO = -11
+         ELSE IF( LIWORK.LT.LIWMIN .AND. .NOT.LQUERY ) THEN
+            INFO = -13
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.202"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DSPGVD.202"></a><a href="dspgvd.f.html#DSPGVD.1">DSPGVD</a>'</span>, -INFO )
+         RETURN
+      ELSE IF( LQUERY ) THEN
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Form a Cholesky factorization of BP.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="DPPTRF.215"></a><a href="dpptrf.f.html#DPPTRF.1">DPPTRF</a>( UPLO, N, BP, INFO )
+      IF( INFO.NE.0 ) THEN
+         INFO = N + INFO
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Transform problem to standard eigenvalue problem and solve.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="DSPGST.223"></a><a href="dspgst.f.html#DSPGST.1">DSPGST</a>( ITYPE, UPLO, N, AP, BP, INFO )
+      CALL <a name="DSPEVD.224"></a><a href="dspevd.f.html#DSPEVD.1">DSPEVD</a>( JOBZ, UPLO, N, AP, W, Z, LDZ, WORK, LWORK, IWORK,
+     $             LIWORK, INFO )
+      LWMIN = MAX( DBLE( LWMIN ), DBLE( WORK( 1 ) ) )
+      LIWMIN = MAX( DBLE( LIWMIN ), DBLE( IWORK( 1 ) ) )
+<span class="comment">*</span><span class="comment">
+</span>      IF( WANTZ ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Backtransform eigenvectors to the original problem.
+</span><span class="comment">*</span><span class="comment">
+</span>         NEIG = N
+         IF( INFO.GT.0 )
+     $      NEIG = INFO - 1
+         IF( ITYPE.EQ.1 .OR. ITYPE.EQ.2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           For A*x=(lambda)*B*x and A*B*x=(lambda)*x;
+</span><span class="comment">*</span><span class="comment">           backtransform eigenvectors: x = inv(L)'*y or inv(U)*y
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( UPPER ) THEN
+               TRANS = <span class="string">'N'</span>
+            ELSE
+               TRANS = <span class="string">'T'</span>
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>            DO 10 J = 1, NEIG
+               CALL DTPSV( UPLO, TRANS, <span class="string">'Non-unit'</span>, N, BP, Z( 1, J ),
+     $                     1 )
+   10       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         ELSE IF( ITYPE.EQ.3 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           For B*A*x=(lambda)*x;
+</span><span class="comment">*</span><span class="comment">           backtransform eigenvectors: x = L*y or U'*y
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( UPPER ) THEN
+               TRANS = <span class="string">'T'</span>
+            ELSE
+               TRANS = <span class="string">'N'</span>
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>            DO 20 J = 1, NEIG
+               CALL DTPMV( UPLO, TRANS, <span class="string">'Non-unit'</span>, N, BP, Z( 1, J ),
+     $                     1 )
+   20       CONTINUE
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      WORK( 1 ) = LWMIN
+      IWORK( 1 ) = LIWMIN
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DSPGVD.275"></a><a href="dspgvd.f.html#DSPGVD.1">DSPGVD</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>clarfg.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CLARFG.1"></a><a href="clarfg.f.html#CLARFG.1">CLARFG</a>( N, ALPHA, X, INCX, TAU )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INCX, N
+      COMPLEX            ALPHA, TAU
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX            X( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CLARFG.18"></a><a href="clarfg.f.html#CLARFG.1">CLARFG</a> generates a complex elementary reflector H of order n, such
+</span><span class="comment">*</span><span class="comment">  that
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        H' * ( alpha ) = ( beta ),   H' * H = I.
+</span><span class="comment">*</span><span class="comment">             (   x   )   (   0  )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where alpha and beta are scalars, with beta real, and x is an
+</span><span class="comment">*</span><span class="comment">  (n-1)-element complex vector. H is represented in the form
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        H = I - tau * ( 1 ) * ( 1 v' ) ,
+</span><span class="comment">*</span><span class="comment">                      ( v )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where tau is a complex scalar and v is a complex (n-1)-element
+</span><span class="comment">*</span><span class="comment">  vector. Note that H is not hermitian.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If the elements of x are all zero and alpha is real, then tau = 0
+</span><span class="comment">*</span><span class="comment">  and H is taken to be the unit matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Otherwise  1 &lt;= real(tau) &lt;= 2  and  abs(tau-1) &lt;= 1 .
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the elementary reflector.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ALPHA   (input/output) COMPLEX
+</span><span class="comment">*</span><span class="comment">          On entry, the value alpha.
+</span><span class="comment">*</span><span class="comment">          On exit, it is overwritten with the value beta.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X       (input/output) COMPLEX array, dimension
+</span><span class="comment">*</span><span class="comment">                         (1+(N-2)*abs(INCX))
+</span><span class="comment">*</span><span class="comment">          On entry, the vector x.
+</span><span class="comment">*</span><span class="comment">          On exit, it is overwritten with the vector v.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INCX    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The increment between elements of X. INCX &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TAU     (output) COMPLEX
+</span><span class="comment">*</span><span class="comment">          The value tau.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ONE, ZERO
+      PARAMETER          ( ONE = 1.0E+0, ZERO = 0.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            J, KNT
+      REAL               ALPHI, ALPHR, BETA, RSAFMN, SAFMIN, XNORM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      REAL               SCNRM2, <a name="SLAMCH.70"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLAPY3.70"></a><a href="slapy3.f.html#SLAPY3.1">SLAPY3</a>
+      COMPLEX            <a name="CLADIV.71"></a><a href="cladiv.f.html#CLADIV.1">CLADIV</a>
+      EXTERNAL           SCNRM2, <a name="SLAMCH.72"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLAPY3.72"></a><a href="slapy3.f.html#SLAPY3.1">SLAPY3</a>, <a name="CLADIV.72"></a><a href="cladiv.f.html#CLADIV.1">CLADIV</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, AIMAG, CMPLX, REAL, SIGN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           CSCAL, CSSCAL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.LE.0 ) THEN
+         TAU = ZERO
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      XNORM = SCNRM2( N-1, X, INCX )
+      ALPHR = REAL( ALPHA )
+      ALPHI = AIMAG( ALPHA )
+<span class="comment">*</span><span class="comment">
+</span>      IF( XNORM.EQ.ZERO .AND. ALPHI.EQ.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        H  =  I
+</span><span class="comment">*</span><span class="comment">
+</span>         TAU = ZERO
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        general case
+</span><span class="comment">*</span><span class="comment">
+</span>         BETA = -SIGN( <a name="SLAPY3.100"></a><a href="slapy3.f.html#SLAPY3.1">SLAPY3</a>( ALPHR, ALPHI, XNORM ), ALPHR )
+         SAFMIN = <a name="SLAMCH.101"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'S'</span> ) / <a name="SLAMCH.101"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'E'</span> )
+         RSAFMN = ONE / SAFMIN
+<span class="comment">*</span><span class="comment">
+</span>         IF( ABS( BETA ).LT.SAFMIN ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           XNORM, BETA may be inaccurate; scale X and recompute them
+</span><span class="comment">*</span><span class="comment">
+</span>            KNT = 0
+   10       CONTINUE
+            KNT = KNT + 1
+            CALL CSSCAL( N-1, RSAFMN, X, INCX )
+            BETA = BETA*RSAFMN
+            ALPHI = ALPHI*RSAFMN
+            ALPHR = ALPHR*RSAFMN
+            IF( ABS( BETA ).LT.SAFMIN )
+     $         GO TO 10
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           New BETA is at most 1, at least SAFMIN
+</span><span class="comment">*</span><span class="comment">
+</span>            XNORM = SCNRM2( N-1, X, INCX )
+            ALPHA = CMPLX( ALPHR, ALPHI )
+            BETA = -SIGN( <a name="SLAPY3.122"></a><a href="slapy3.f.html#SLAPY3.1">SLAPY3</a>( ALPHR, ALPHI, XNORM ), ALPHR )
+            TAU = CMPLX( ( BETA-ALPHR ) / BETA, -ALPHI / BETA )
+            ALPHA = <a name="CLADIV.124"></a><a href="cladiv.f.html#CLADIV.1">CLADIV</a>( CMPLX( ONE ), ALPHA-BETA )
+            CALL CSCAL( N-1, ALPHA, X, INCX )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           If ALPHA is subnormal, it may lose relative accuracy
+</span><span class="comment">*</span><span class="comment">
+</span>            ALPHA = BETA
+            DO 20 J = 1, KNT
+               ALPHA = ALPHA*SAFMIN
+   20       CONTINUE
+         ELSE
+            TAU = CMPLX( ( BETA-ALPHR ) / BETA, -ALPHI / BETA )
+            ALPHA = <a name="CLADIV.135"></a><a href="cladiv.f.html#CLADIV.1">CLADIV</a>( CMPLX( ONE ), ALPHA-BETA )
+            CALL CSCAL( N-1, ALPHA, X, INCX )
+            ALPHA = BETA
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CLARFG.143"></a><a href="clarfg.f.html#CLARFG.1">CLARFG</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

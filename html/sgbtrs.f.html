@@ -1,0 +1,210 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>sgbtrs.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SGBTRS.1"></a><a href="sgbtrs.f.html#SGBTRS.1">SGBTRS</a>( TRANS, N, KL, KU, NRHS, AB, LDAB, IPIV, B, LDB,
+     $                   INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          TRANS
+      INTEGER            INFO, KL, KU, LDAB, LDB, N, NRHS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IPIV( * )
+      REAL               AB( LDAB, * ), B( LDB, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SGBTRS.20"></a><a href="sgbtrs.f.html#SGBTRS.1">SGBTRS</a> solves a system of linear equations
+</span><span class="comment">*</span><span class="comment">     A * X = B  or  A' * X = B
+</span><span class="comment">*</span><span class="comment">  with a general band matrix A using the LU factorization computed
+</span><span class="comment">*</span><span class="comment">  by <a name="SGBTRF.23"></a><a href="sgbtrf.f.html#SGBTRF.1">SGBTRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TRANS   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies the form of the system of equations.
+</span><span class="comment">*</span><span class="comment">          = 'N':  A * X = B  (No transpose)
+</span><span class="comment">*</span><span class="comment">          = 'T':  A'* X = B  (Transpose)
+</span><span class="comment">*</span><span class="comment">          = 'C':  A'* X = B  (Conjugate transpose = Transpose)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KL      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of subdiagonals within the band of A.  KL &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KU      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of superdiagonals within the band of A.  KU &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NRHS    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of right hand sides, i.e., the number of columns
+</span><span class="comment">*</span><span class="comment">          of the matrix B.  NRHS &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AB      (input) REAL array, dimension (LDAB,N)
+</span><span class="comment">*</span><span class="comment">          Details of the LU factorization of the band matrix A, as
+</span><span class="comment">*</span><span class="comment">          computed by <a name="SGBTRF.49"></a><a href="sgbtrf.f.html#SGBTRF.1">SGBTRF</a>.  U is stored as an upper triangular band
+</span><span class="comment">*</span><span class="comment">          matrix with KL+KU superdiagonals in rows 1 to KL+KU+1, and
+</span><span class="comment">*</span><span class="comment">          the multipliers used during the factorization are stored in
+</span><span class="comment">*</span><span class="comment">          rows KL+KU+2 to 2*KL+KU+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDAB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array AB.  LDAB &gt;= 2*KL+KU+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IPIV    (input) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The pivot indices; for 1 &lt;= i &lt;= N, row i of the matrix was
+</span><span class="comment">*</span><span class="comment">          interchanged with row IPIV(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input/output) REAL array, dimension (LDB,NRHS)
+</span><span class="comment">*</span><span class="comment">          On entry, the right hand side matrix B.
+</span><span class="comment">*</span><span class="comment">          On exit, the solution matrix X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B.  LDB &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0: if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ONE
+      PARAMETER          ( ONE = 1.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            LNOTI, NOTRAN
+      INTEGER            I, J, KD, L, LM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.83"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.84"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           SGEMV, SGER, SSWAP, STBSV, <a name="XERBLA.87"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      NOTRAN = <a name="LSAME.97"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'N'</span> )
+      IF( .NOT.NOTRAN .AND. .NOT.<a name="LSAME.98"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'T'</span> ) .AND. .NOT.
+     $    <a name="LSAME.99"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'C'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( KL.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( KU.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( NRHS.LT.0 ) THEN
+         INFO = -5
+      ELSE IF( LDAB.LT.( 2*KL+KU+1 ) ) THEN
+         INFO = -7
+      ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
+         INFO = -10
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.115"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="SGBTRS.115"></a><a href="sgbtrs.f.html#SGBTRS.1">SGBTRS</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 .OR. NRHS.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      KD = KU + KL + 1
+      LNOTI = KL.GT.0
+<span class="comment">*</span><span class="comment">
+</span>      IF( NOTRAN ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve  A*X = B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve L*X = B, overwriting B with X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        L is represented as a product of permutations and unit lower
+</span><span class="comment">*</span><span class="comment">        triangular matrices L = P(1) * L(1) * ... * P(n-1) * L(n-1),
+</span><span class="comment">*</span><span class="comment">        where each transformation L(i) is a rank-one modification of
+</span><span class="comment">*</span><span class="comment">        the identity matrix.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( LNOTI ) THEN
+            DO 10 J = 1, N - 1
+               LM = MIN( KL, N-J )
+               L = IPIV( J )
+               IF( L.NE.J )
+     $            CALL SSWAP( NRHS, B( L, 1 ), LDB, B( J, 1 ), LDB )
+               CALL SGER( LM, NRHS, -ONE, AB( KD+1, J ), 1, B( J, 1 ),
+     $                    LDB, B( J+1, 1 ), LDB )
+   10       CONTINUE
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         DO 20 I = 1, NRHS
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Solve U*X = B, overwriting B with X.
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL STBSV( <span class="string">'Upper'</span>, <span class="string">'No transpose'</span>, <span class="string">'Non-unit'</span>, N, KL+KU,
+     $                  AB, LDAB, B( 1, I ), 1 )
+   20    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve A'*X = B.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 30 I = 1, NRHS
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Solve U'*X = B, overwriting B with X.
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL STBSV( <span class="string">'Upper'</span>, <span class="string">'Transpose'</span>, <span class="string">'Non-unit'</span>, N, KL+KU, AB,
+     $                  LDAB, B( 1, I ), 1 )
+   30    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve L'*X = B, overwriting B with X.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( LNOTI ) THEN
+            DO 40 J = N - 1, 1, -1
+               LM = MIN( KL, N-J )
+               CALL SGEMV( <span class="string">'Transpose'</span>, LM, NRHS, -ONE, B( J+1, 1 ),
+     $                     LDB, AB( KD+1, J ), 1, ONE, B( J, 1 ), LDB )
+               L = IPIV( J )
+               IF( L.NE.J )
+     $            CALL SSWAP( NRHS, B( L, 1 ), LDB, B( J, 1 ), LDB )
+   40       CONTINUE
+         END IF
+      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SGBTRS.184"></a><a href="sgbtrs.f.html#SGBTRS.1">SGBTRS</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

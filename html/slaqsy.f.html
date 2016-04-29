@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slaqsy.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLAQSY.1"></a><a href="slaqsy.f.html#SLAQSY.1">SLAQSY</a>( UPLO, N, A, LDA, S, SCOND, AMAX, EQUED )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          EQUED, UPLO
+      INTEGER            LDA, N
+      REAL               AMAX, SCOND
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               A( LDA, * ), S( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLAQSY.19"></a><a href="slaqsy.f.html#SLAQSY.1">SLAQSY</a> equilibrates a symmetric matrix A using the scaling factors
+</span><span class="comment">*</span><span class="comment">  in the vector S.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether the upper or lower triangular part of the
+</span><span class="comment">*</span><span class="comment">          symmetric matrix A is stored.
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangular
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangular
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) REAL array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the symmetric matrix A.  If UPLO = 'U', the leading
+</span><span class="comment">*</span><span class="comment">          n by n upper triangular part of A contains the upper
+</span><span class="comment">*</span><span class="comment">          triangular part of the matrix A, and the strictly lower
+</span><span class="comment">*</span><span class="comment">          triangular part of A is not referenced.  If UPLO = 'L', the
+</span><span class="comment">*</span><span class="comment">          leading n by n lower triangular part of A contains the lower
+</span><span class="comment">*</span><span class="comment">          triangular part of the matrix A, and the strictly upper
+</span><span class="comment">*</span><span class="comment">          triangular part of A is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, if EQUED = 'Y', the equilibrated matrix:
+</span><span class="comment">*</span><span class="comment">          diag(S) * A * diag(S).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(N,1).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  S       (input) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The scale factors for A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SCOND   (input) REAL
+</span><span class="comment">*</span><span class="comment">          Ratio of the smallest S(i) to the largest S(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AMAX    (input) REAL
+</span><span class="comment">*</span><span class="comment">          Absolute value of largest matrix entry.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  EQUED   (output) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether or not equilibration was done.
+</span><span class="comment">*</span><span class="comment">          = 'N':  No equilibration.
+</span><span class="comment">*</span><span class="comment">          = 'Y':  Equilibration was done, i.e., A has been replaced by
+</span><span class="comment">*</span><span class="comment">                  diag(S) * A * diag(S).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Internal Parameters
+</span><span class="comment">*</span><span class="comment">  ===================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  THRESH is a threshold value used to decide if scaling should be done
+</span><span class="comment">*</span><span class="comment">  based on the ratio of the scaling factors.  If SCOND &lt; THRESH,
+</span><span class="comment">*</span><span class="comment">  scaling is done.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LARGE and SMALL are threshold values used to decide if scaling should
+</span><span class="comment">*</span><span class="comment">  be done based on the absolute size of the largest matrix element.
+</span><span class="comment">*</span><span class="comment">  If AMAX &gt; LARGE or AMAX &lt; SMALL, scaling is done.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ONE, THRESH
+      PARAMETER          ( ONE = 1.0E+0, THRESH = 0.1E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, J
+      REAL               CJ, LARGE, SMALL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.86"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      REAL               <a name="SLAMCH.87"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      EXTERNAL           <a name="LSAME.88"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="SLAMCH.88"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.LE.0 ) THEN
+         EQUED = <span class="string">'N'</span>
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Initialize LARGE and SMALL.
+</span><span class="comment">*</span><span class="comment">
+</span>      SMALL = <a name="SLAMCH.101"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Safe minimum'</span> ) / <a name="SLAMCH.101"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Precision'</span> )
+      LARGE = ONE / SMALL
+<span class="comment">*</span><span class="comment">
+</span>      IF( SCOND.GE.THRESH .AND. AMAX.GE.SMALL .AND. AMAX.LE.LARGE ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        No equilibration
+</span><span class="comment">*</span><span class="comment">
+</span>         EQUED = <span class="string">'N'</span>
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Replace A by diag(S) * A * diag(S).
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( <a name="LSAME.113"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Upper triangle of A is stored.
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 20 J = 1, N
+               CJ = S( J )
+               DO 10 I = 1, J
+                  A( I, J ) = CJ*S( I )*A( I, J )
+   10          CONTINUE
+   20       CONTINUE
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Lower triangle of A is stored.
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 40 J = 1, N
+               CJ = S( J )
+               DO 30 I = J, N
+                  A( I, J ) = CJ*S( I )*A( I, J )
+   30          CONTINUE
+   40       CONTINUE
+         END IF
+         EQUED = <span class="string">'Y'</span>
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLAQSY.139"></a><a href="slaqsy.f.html#SLAQSY.1">SLAQSY</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

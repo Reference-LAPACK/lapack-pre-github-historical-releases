@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zgtsv.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZGTSV.1"></a><a href="zgtsv.f.html#ZGTSV.1">ZGTSV</a>( N, NRHS, DL, D, DU, B, LDB, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, LDB, N, NRHS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX*16         B( LDB, * ), D( * ), DL( * ), DU( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZGTSV.17"></a><a href="zgtsv.f.html#ZGTSV.1">ZGTSV</a>  solves the equation
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     A*X = B,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where A is an N-by-N tridiagonal matrix, by Gaussian elimination with
+</span><span class="comment">*</span><span class="comment">  partial pivoting.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Note that the equation  A'*X = B  may be solved by interchanging the
+</span><span class="comment">*</span><span class="comment">  order of the arguments DU and DL.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NRHS    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of right hand sides, i.e., the number of columns
+</span><span class="comment">*</span><span class="comment">          of the matrix B.  NRHS &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DL      (input/output) COMPLEX*16 array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          On entry, DL must contain the (n-1) subdiagonal elements of
+</span><span class="comment">*</span><span class="comment">          A.
+</span><span class="comment">*</span><span class="comment">          On exit, DL is overwritten by the (n-2) elements of the
+</span><span class="comment">*</span><span class="comment">          second superdiagonal of the upper triangular matrix U from
+</span><span class="comment">*</span><span class="comment">          the LU factorization of A, in DL(1), ..., DL(n-2).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input/output) COMPLEX*16 array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On entry, D must contain the diagonal elements of A.
+</span><span class="comment">*</span><span class="comment">          On exit, D is overwritten by the n diagonal elements of U.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DU      (input/output) COMPLEX*16 array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          On entry, DU must contain the (n-1) superdiagonal elements
+</span><span class="comment">*</span><span class="comment">          of A.
+</span><span class="comment">*</span><span class="comment">          On exit, DU is overwritten by the (n-1) elements of the first
+</span><span class="comment">*</span><span class="comment">          superdiagonal of U.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input/output) COMPLEX*16 array, dimension (LDB,NRHS)
+</span><span class="comment">*</span><span class="comment">          On entry, the N-by-NRHS right hand side matrix B.
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, the N-by-NRHS solution matrix X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B.  LDB &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = i, U(i,i) is exactly zero, and the solution
+</span><span class="comment">*</span><span class="comment">                has not been computed.  The factorization has not been
+</span><span class="comment">*</span><span class="comment">                completed unless i = N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      COMPLEX*16         ZERO
+      PARAMETER          ( ZERO = ( 0.0D+0, 0.0D+0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            J, K
+      COMPLEX*16         MULT, TEMP, ZDUM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, DBLE, DIMAG, MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.82"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Functions ..
+</span>      DOUBLE PRECISION   CABS1
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Function definitions ..
+</span>      CABS1( ZDUM ) = ABS( DBLE( ZDUM ) ) + ABS( DIMAG( ZDUM ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( N.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( NRHS.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
+         INFO = -7
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.101"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZGTSV.101"></a><a href="zgtsv.f.html#ZGTSV.1">ZGTSV</a> '</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      DO 30 K = 1, N - 1
+         IF( DL( K ).EQ.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Subdiagonal is zero, no elimination is required.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( D( K ).EQ.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Diagonal is zero: set INFO = K and return; a unique
+</span><span class="comment">*</span><span class="comment">              solution can not be found.
+</span><span class="comment">*</span><span class="comment">
+</span>               INFO = K
+               RETURN
+            END IF
+         ELSE IF( CABS1( D( K ) ).GE.CABS1( DL( K ) ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           No row interchange required
+</span><span class="comment">*</span><span class="comment">
+</span>            MULT = DL( K ) / D( K )
+            D( K+1 ) = D( K+1 ) - MULT*DU( K )
+            DO 10 J = 1, NRHS
+               B( K+1, J ) = B( K+1, J ) - MULT*B( K, J )
+   10       CONTINUE
+            IF( K.LT.( N-1 ) )
+     $         DL( K ) = ZERO
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Interchange rows K and K+1
+</span><span class="comment">*</span><span class="comment">
+</span>            MULT = D( K ) / DL( K )
+            D( K ) = DL( K )
+            TEMP = D( K+1 )
+            D( K+1 ) = DU( K ) - MULT*TEMP
+            IF( K.LT.( N-1 ) ) THEN
+               DL( K ) = DU( K+1 )
+               DU( K+1 ) = -MULT*DL( K )
+            END IF
+            DU( K ) = TEMP
+            DO 20 J = 1, NRHS
+               TEMP = B( K, J )
+               B( K, J ) = B( K+1, J )
+               B( K+1, J ) = TEMP - MULT*B( K+1, J )
+   20       CONTINUE
+         END IF
+   30 CONTINUE
+      IF( D( N ).EQ.ZERO ) THEN
+         INFO = N
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Back solve with the matrix U from the factorization.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 50 J = 1, NRHS
+         B( N, J ) = B( N, J ) / D( N )
+         IF( N.GT.1 )
+     $      B( N-1, J ) = ( B( N-1, J )-DU( N-1 )*B( N, J ) ) / D( N-1 )
+         DO 40 K = N - 2, 1, -1
+            B( K, J ) = ( B( K, J )-DU( K )*B( K+1, J )-DL( K )*
+     $                  B( K+2, J ) ) / D( K )
+   40    CONTINUE
+   50 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZGTSV.171"></a><a href="zgtsv.f.html#ZGTSV.1">ZGTSV</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

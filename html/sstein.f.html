@@ -1,0 +1,385 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>sstein.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SSTEIN.1"></a><a href="sstein.f.html#SSTEIN.1">SSTEIN</a>( N, D, E, M, W, IBLOCK, ISPLIT, Z, LDZ, WORK,
+     $                   IWORK, IFAIL, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, LDZ, M, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IBLOCK( * ), IFAIL( * ), ISPLIT( * ),
+     $                   IWORK( * )
+      REAL               D( * ), E( * ), W( * ), WORK( * ), Z( LDZ, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SSTEIN.20"></a><a href="sstein.f.html#SSTEIN.1">SSTEIN</a> computes the eigenvectors of a real symmetric tridiagonal
+</span><span class="comment">*</span><span class="comment">  matrix T corresponding to specified eigenvalues, using inverse
+</span><span class="comment">*</span><span class="comment">  iteration.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The maximum number of iterations allowed for each eigenvector is
+</span><span class="comment">*</span><span class="comment">  specified by an internal parameter MAXITS (currently set to 5).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The n diagonal elements of the tridiagonal matrix T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E       (input) REAL array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          The (n-1) subdiagonal elements of the tridiagonal matrix
+</span><span class="comment">*</span><span class="comment">          T, in elements 1 to N-1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of eigenvectors to be found.  0 &lt;= M &lt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  W       (input) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The first M elements of W contain the eigenvalues for
+</span><span class="comment">*</span><span class="comment">          which eigenvectors are to be computed.  The eigenvalues
+</span><span class="comment">*</span><span class="comment">          should be grouped by split-off block and ordered from
+</span><span class="comment">*</span><span class="comment">          smallest to largest within the block.  ( The output array
+</span><span class="comment">*</span><span class="comment">          W from <a name="SSTEBZ.48"></a><a href="sstebz.f.html#SSTEBZ.1">SSTEBZ</a> with ORDER = 'B' is expected here. )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IBLOCK  (input) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The submatrix indices associated with the corresponding
+</span><span class="comment">*</span><span class="comment">          eigenvalues in W; IBLOCK(i)=1 if eigenvalue W(i) belongs to
+</span><span class="comment">*</span><span class="comment">          the first submatrix from the top, =2 if W(i) belongs to
+</span><span class="comment">*</span><span class="comment">          the second submatrix, etc.  ( The output array IBLOCK
+</span><span class="comment">*</span><span class="comment">          from <a name="SSTEBZ.55"></a><a href="sstebz.f.html#SSTEBZ.1">SSTEBZ</a> is expected here. )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ISPLIT  (input) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The splitting points, at which T breaks up into submatrices.
+</span><span class="comment">*</span><span class="comment">          The first submatrix consists of rows/columns 1 to
+</span><span class="comment">*</span><span class="comment">          ISPLIT( 1 ), the second of rows/columns ISPLIT( 1 )+1
+</span><span class="comment">*</span><span class="comment">          through ISPLIT( 2 ), etc.
+</span><span class="comment">*</span><span class="comment">          ( The output array ISPLIT from <a name="SSTEBZ.62"></a><a href="sstebz.f.html#SSTEBZ.1">SSTEBZ</a> is expected here. )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z       (output) REAL array, dimension (LDZ, M)
+</span><span class="comment">*</span><span class="comment">          The computed eigenvectors.  The eigenvector associated
+</span><span class="comment">*</span><span class="comment">          with the eigenvalue W(i) is stored in the i-th column of
+</span><span class="comment">*</span><span class="comment">          Z.  Any vector which fails to converge is set to its current
+</span><span class="comment">*</span><span class="comment">          iterate after MAXITS iterations.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDZ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Z.  LDZ &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) REAL array, dimension (5*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK   (workspace) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IFAIL   (output) INTEGER array, dimension (M)
+</span><span class="comment">*</span><span class="comment">          On normal exit, all elements of IFAIL are zero.
+</span><span class="comment">*</span><span class="comment">          If one or more eigenvectors fail to converge after
+</span><span class="comment">*</span><span class="comment">          MAXITS iterations, then their indices are stored in
+</span><span class="comment">*</span><span class="comment">          array IFAIL.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0: successful exit.
+</span><span class="comment">*</span><span class="comment">          &lt; 0: if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0: if INFO = i, then i eigenvectors failed to converge
+</span><span class="comment">*</span><span class="comment">               in MAXITS iterations.  Their indices are stored in
+</span><span class="comment">*</span><span class="comment">               array IFAIL.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Internal Parameters
+</span><span class="comment">*</span><span class="comment">  ===================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  MAXITS  INTEGER, default = 5
+</span><span class="comment">*</span><span class="comment">          The maximum number of iterations performed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  EXTRA   INTEGER, default = 2
+</span><span class="comment">*</span><span class="comment">          The number of iterations performed after norm growth
+</span><span class="comment">*</span><span class="comment">          criterion is satisfied, should be at least 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, ONE, TEN, ODM3, ODM1
+      PARAMETER          ( ZERO = 0.0E+0, ONE = 1.0E+0, TEN = 1.0E+1,
+     $                   ODM3 = 1.0E-3, ODM1 = 1.0E-1 )
+      INTEGER            MAXITS, EXTRA
+      PARAMETER          ( MAXITS = 5, EXTRA = 2 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            B1, BLKSIZ, BN, GPIND, I, IINFO, INDRV1,
+     $                   INDRV2, INDRV3, INDRV4, INDRV5, ITS, J, J1,
+     $                   JBLK, JMAX, NBLK, NRMCHK
+      REAL               CTR, EPS, EPS1, NRM, ONENRM, ORTOL, PERTOL,
+     $                   SCL, SEP, STPCRT, TOL, XJ, XJM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      INTEGER            ISEED( 4 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      INTEGER            ISAMAX
+      REAL               SASUM, SDOT, <a name="SLAMCH.121"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, SNRM2
+      EXTERNAL           ISAMAX, SASUM, SDOT, <a name="SLAMCH.122"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, SNRM2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           SAXPY, SCOPY, <a name="SLAGTF.125"></a><a href="slagtf.f.html#SLAGTF.1">SLAGTF</a>, <a name="SLAGTS.125"></a><a href="slagts.f.html#SLAGTS.1">SLAGTS</a>, <a name="SLARNV.125"></a><a href="slarnv.f.html#SLARNV.1">SLARNV</a>, SSCAL,
+     $                   <a name="XERBLA.126"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      DO 10 I = 1, M
+         IFAIL( I ) = 0
+   10 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      IF( N.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( M.LT.0 .OR. M.GT.N ) THEN
+         INFO = -4
+      ELSE IF( LDZ.LT.MAX( 1, N ) ) THEN
+         INFO = -9
+      ELSE
+         DO 20 J = 2, M
+            IF( IBLOCK( J ).LT.IBLOCK( J-1 ) ) THEN
+               INFO = -6
+               GO TO 30
+            END IF
+            IF( IBLOCK( J ).EQ.IBLOCK( J-1 ) .AND. W( J ).LT.W( J-1 ) )
+     $           THEN
+               INFO = -5
+               GO TO 30
+            END IF
+   20    CONTINUE
+   30    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.162"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="SSTEIN.162"></a><a href="sstein.f.html#SSTEIN.1">SSTEIN</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 .OR. M.EQ.0 ) THEN
+         RETURN
+      ELSE IF( N.EQ.1 ) THEN
+         Z( 1, 1 ) = ONE
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Get machine constants.
+</span><span class="comment">*</span><span class="comment">
+</span>      EPS = <a name="SLAMCH.177"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Precision'</span> )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Initialize seed for random number generator <a name="SLARNV.179"></a><a href="slarnv.f.html#SLARNV.1">SLARNV</a>.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 40 I = 1, 4
+         ISEED( I ) = 1
+   40 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Initialize pointers.
+</span><span class="comment">*</span><span class="comment">
+</span>      INDRV1 = 0
+      INDRV2 = INDRV1 + N
+      INDRV3 = INDRV2 + N
+      INDRV4 = INDRV3 + N
+      INDRV5 = INDRV4 + N
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute eigenvectors of matrix blocks.
+</span><span class="comment">*</span><span class="comment">
+</span>      J1 = 1
+      DO 160 NBLK = 1, IBLOCK( M )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find starting and ending indices of block nblk.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( NBLK.EQ.1 ) THEN
+            B1 = 1
+         ELSE
+            B1 = ISPLIT( NBLK-1 ) + 1
+         END IF
+         BN = ISPLIT( NBLK )
+         BLKSIZ = BN - B1 + 1
+         IF( BLKSIZ.EQ.1 )
+     $      GO TO 60
+         GPIND = B1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute reorthogonalization criterion and stopping criterion.
+</span><span class="comment">*</span><span class="comment">
+</span>         ONENRM = ABS( D( B1 ) ) + ABS( E( B1 ) )
+         ONENRM = MAX( ONENRM, ABS( D( BN ) )+ABS( E( BN-1 ) ) )
+         DO 50 I = B1 + 1, BN - 1
+            ONENRM = MAX( ONENRM, ABS( D( I ) )+ABS( E( I-1 ) )+
+     $               ABS( E( I ) ) )
+   50    CONTINUE
+         ORTOL = ODM3*ONENRM
+<span class="comment">*</span><span class="comment">
+</span>         STPCRT = SQRT( ODM1 / BLKSIZ )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Loop through eigenvalues of block nblk.
+</span><span class="comment">*</span><span class="comment">
+</span>   60    CONTINUE
+         JBLK = 0
+         DO 150 J = J1, M
+            IF( IBLOCK( J ).NE.NBLK ) THEN
+               J1 = J
+               GO TO 160
+            END IF
+            JBLK = JBLK + 1
+            XJ = W( J )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Skip all the work if the block size is one.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( BLKSIZ.EQ.1 ) THEN
+               WORK( INDRV1+1 ) = ONE
+               GO TO 120
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           If eigenvalues j and j-1 are too close, add a relatively
+</span><span class="comment">*</span><span class="comment">           small perturbation.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( JBLK.GT.1 ) THEN
+               EPS1 = ABS( EPS*XJ )
+               PERTOL = TEN*EPS1
+               SEP = XJ - XJM
+               IF( SEP.LT.PERTOL )
+     $            XJ = XJM + PERTOL
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>            ITS = 0
+            NRMCHK = 0
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Get random starting vector.
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="SLARNV.258"></a><a href="slarnv.f.html#SLARNV.1">SLARNV</a>( 2, ISEED, BLKSIZ, WORK( INDRV1+1 ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Copy the matrix T so it won't be destroyed in factorization.
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL SCOPY( BLKSIZ, D( B1 ), 1, WORK( INDRV4+1 ), 1 )
+            CALL SCOPY( BLKSIZ-1, E( B1 ), 1, WORK( INDRV2+2 ), 1 )
+            CALL SCOPY( BLKSIZ-1, E( B1 ), 1, WORK( INDRV3+1 ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute LU factors with partial pivoting  ( PT = LU )
+</span><span class="comment">*</span><span class="comment">
+</span>            TOL = ZERO
+            CALL <a name="SLAGTF.269"></a><a href="slagtf.f.html#SLAGTF.1">SLAGTF</a>( BLKSIZ, WORK( INDRV4+1 ), XJ, WORK( INDRV2+2 ),
+     $                   WORK( INDRV3+1 ), TOL, WORK( INDRV5+1 ), IWORK,
+     $                   IINFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Update iteration count.
+</span><span class="comment">*</span><span class="comment">
+</span>   70       CONTINUE
+            ITS = ITS + 1
+            IF( ITS.GT.MAXITS )
+     $         GO TO 100
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Normalize and scale the righthand side vector Pb.
+</span><span class="comment">*</span><span class="comment">
+</span>            SCL = BLKSIZ*ONENRM*MAX( EPS,
+     $            ABS( WORK( INDRV4+BLKSIZ ) ) ) /
+     $            SASUM( BLKSIZ, WORK( INDRV1+1 ), 1 )
+            CALL SSCAL( BLKSIZ, SCL, WORK( INDRV1+1 ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Solve the system LU = Pb.
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="SLAGTS.289"></a><a href="slagts.f.html#SLAGTS.1">SLAGTS</a>( -1, BLKSIZ, WORK( INDRV4+1 ), WORK( INDRV2+2 ),
+     $                   WORK( INDRV3+1 ), WORK( INDRV5+1 ), IWORK,
+     $                   WORK( INDRV1+1 ), TOL, IINFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Reorthogonalize by modified Gram-Schmidt if eigenvalues are
+</span><span class="comment">*</span><span class="comment">           close enough.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( JBLK.EQ.1 )
+     $         GO TO 90
+            IF( ABS( XJ-XJM ).GT.ORTOL )
+     $         GPIND = J
+            IF( GPIND.NE.J ) THEN
+               DO 80 I = GPIND, J - 1
+                  CTR = -SDOT( BLKSIZ, WORK( INDRV1+1 ), 1, Z( B1, I ),
+     $                  1 )
+                  CALL SAXPY( BLKSIZ, CTR, Z( B1, I ), 1,
+     $                        WORK( INDRV1+1 ), 1 )
+   80          CONTINUE
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Check the infinity norm of the iterate.
+</span><span class="comment">*</span><span class="comment">
+</span>   90       CONTINUE
+            JMAX = ISAMAX( BLKSIZ, WORK( INDRV1+1 ), 1 )
+            NRM = ABS( WORK( INDRV1+JMAX ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Continue for additional iterations after norm reaches
+</span><span class="comment">*</span><span class="comment">           stopping criterion.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( NRM.LT.STPCRT )
+     $         GO TO 70
+            NRMCHK = NRMCHK + 1
+            IF( NRMCHK.LT.EXTRA+1 )
+     $         GO TO 70
+<span class="comment">*</span><span class="comment">
+</span>            GO TO 110
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           If stopping criterion was not satisfied, update info and
+</span><span class="comment">*</span><span class="comment">           store eigenvector number in array ifail.
+</span><span class="comment">*</span><span class="comment">
+</span>  100       CONTINUE
+            INFO = INFO + 1
+            IFAIL( INFO ) = J
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Accept iterate as jth eigenvector.
+</span><span class="comment">*</span><span class="comment">
+</span>  110       CONTINUE
+            SCL = ONE / SNRM2( BLKSIZ, WORK( INDRV1+1 ), 1 )
+            JMAX = ISAMAX( BLKSIZ, WORK( INDRV1+1 ), 1 )
+            IF( WORK( INDRV1+JMAX ).LT.ZERO )
+     $         SCL = -SCL
+            CALL SSCAL( BLKSIZ, SCL, WORK( INDRV1+1 ), 1 )
+  120       CONTINUE
+            DO 130 I = 1, N
+               Z( I, J ) = ZERO
+  130       CONTINUE
+            DO 140 I = 1, BLKSIZ
+               Z( B1+I-1, J ) = WORK( INDRV1+I )
+  140       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Save the shift to check eigenvalue spacing at next
+</span><span class="comment">*</span><span class="comment">           iteration.
+</span><span class="comment">*</span><span class="comment">
+</span>            XJM = XJ
+<span class="comment">*</span><span class="comment">
+</span>  150    CONTINUE
+  160 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SSTEIN.359"></a><a href="sstein.f.html#SSTEIN.1">SSTEIN</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

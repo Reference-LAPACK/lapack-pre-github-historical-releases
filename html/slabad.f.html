@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slabad.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLABAD.1"></a><a href="slabad.f.html#SLABAD.1">SLABAD</a>( SMALL, LARGE )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      REAL               LARGE, SMALL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLABAD.14"></a><a href="slabad.f.html#SLABAD.1">SLABAD</a> takes as input the values computed by <a name="SLAMCH.14"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a> for underflow and
+</span><span class="comment">*</span><span class="comment">  overflow, and returns the square root of each of these values if the
+</span><span class="comment">*</span><span class="comment">  log of LARGE is sufficiently large.  This subroutine is intended to
+</span><span class="comment">*</span><span class="comment">  identify machines with a large exponent range, such as the Crays, and
+</span><span class="comment">*</span><span class="comment">  redefine the underflow and overflow limits to be the square roots of
+</span><span class="comment">*</span><span class="comment">  the values computed by <a name="SLAMCH.19"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>.  This subroutine is needed because
+</span><span class="comment">*</span><span class="comment">  <a name="SLAMCH.20"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a> does not compensate for poor arithmetic in the upper half of
+</span><span class="comment">*</span><span class="comment">  the exponent range, as is found on a Cray.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SMALL   (input/output) REAL
+</span><span class="comment">*</span><span class="comment">          On entry, the underflow threshold as computed by <a name="SLAMCH.27"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>.
+</span><span class="comment">*</span><span class="comment">          On exit, if LOG10(LARGE) is sufficiently large, the square
+</span><span class="comment">*</span><span class="comment">          root of SMALL, otherwise unchanged.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LARGE   (input/output) REAL
+</span><span class="comment">*</span><span class="comment">          On entry, the overflow threshold as computed by <a name="SLAMCH.32"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>.
+</span><span class="comment">*</span><span class="comment">          On exit, if LOG10(LARGE) is sufficiently large, the square
+</span><span class="comment">*</span><span class="comment">          root of LARGE, otherwise unchanged.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          LOG10, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If it looks like we're on a Cray, take the square root of
+</span><span class="comment">*</span><span class="comment">     SMALL and LARGE to avoid overflow and underflow problems.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( LOG10( LARGE ).GT.2000. ) THEN
+         SMALL = SQRT( SMALL )
+         LARGE = SQRT( LARGE )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLABAD.53"></a><a href="slabad.f.html#SLABAD.1">SLABAD</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

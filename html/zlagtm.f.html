@@ -1,0 +1,257 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zlagtm.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZLAGTM.1"></a><a href="zlagtm.f.html#ZLAGTM.1">ZLAGTM</a>( TRANS, N, NRHS, ALPHA, DL, D, DU, X, LDX, BETA,
+     $                   B, LDB )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          TRANS
+      INTEGER            LDB, LDX, N, NRHS
+      DOUBLE PRECISION   ALPHA, BETA
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX*16         B( LDB, * ), D( * ), DL( * ), DU( * ),
+     $                   X( LDX, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZLAGTM.21"></a><a href="zlagtm.f.html#ZLAGTM.1">ZLAGTM</a> performs a matrix-vector product of the form
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     B := alpha * A * X + beta * B
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where A is a tridiagonal matrix of order N, B and X are N by NRHS
+</span><span class="comment">*</span><span class="comment">  matrices, and alpha and beta are real scalars, each of which may be
+</span><span class="comment">*</span><span class="comment">  0., 1., or -1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TRANS   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies the operation applied to A.
+</span><span class="comment">*</span><span class="comment">          = 'N':  No transpose, B := alpha * A * X + beta * B
+</span><span class="comment">*</span><span class="comment">          = 'T':  Transpose,    B := alpha * A**T * X + beta * B
+</span><span class="comment">*</span><span class="comment">          = 'C':  Conjugate transpose, B := alpha * A**H * X + beta * B
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NRHS    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of right hand sides, i.e., the number of columns
+</span><span class="comment">*</span><span class="comment">          of the matrices X and B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ALPHA   (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The scalar alpha.  ALPHA must be 0., 1., or -1.; otherwise,
+</span><span class="comment">*</span><span class="comment">          it is assumed to be 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DL      (input) COMPLEX*16 array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          The (n-1) sub-diagonal elements of T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input) COMPLEX*16 array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The diagonal elements of T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DU      (input) COMPLEX*16 array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          The (n-1) super-diagonal elements of T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X       (input) COMPLEX*16 array, dimension (LDX,NRHS)
+</span><span class="comment">*</span><span class="comment">          The N by NRHS matrix X.
+</span><span class="comment">*</span><span class="comment">  LDX     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array X.  LDX &gt;= max(N,1).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BETA    (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The scalar beta.  BETA must be 0., 1., or -1.; otherwise,
+</span><span class="comment">*</span><span class="comment">          it is assumed to be 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input/output) COMPLEX*16 array, dimension (LDB,NRHS)
+</span><span class="comment">*</span><span class="comment">          On entry, the N by NRHS matrix B.
+</span><span class="comment">*</span><span class="comment">          On exit, B is overwritten by the matrix expression
+</span><span class="comment">*</span><span class="comment">          B := alpha * A * X + beta * B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B.  LDB &gt;= max(N,1).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ONE, ZERO
+      PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, J
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.85"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.86"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          DCONJG
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Multiply B by BETA if BETA.NE.1.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( BETA.EQ.ZERO ) THEN
+         DO 20 J = 1, NRHS
+            DO 10 I = 1, N
+               B( I, J ) = ZERO
+   10       CONTINUE
+   20    CONTINUE
+      ELSE IF( BETA.EQ.-ONE ) THEN
+         DO 40 J = 1, NRHS
+            DO 30 I = 1, N
+               B( I, J ) = -B( I, J )
+   30       CONTINUE
+   40    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( ALPHA.EQ.ONE ) THEN
+         IF( <a name="LSAME.113"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'N'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute B := B + A*X
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 60 J = 1, NRHS
+               IF( N.EQ.1 ) THEN
+                  B( 1, J ) = B( 1, J ) + D( 1 )*X( 1, J )
+               ELSE
+                  B( 1, J ) = B( 1, J ) + D( 1 )*X( 1, J ) +
+     $                        DU( 1 )*X( 2, J )
+                  B( N, J ) = B( N, J ) + DL( N-1 )*X( N-1, J ) +
+     $                        D( N )*X( N, J )
+                  DO 50 I = 2, N - 1
+                     B( I, J ) = B( I, J ) + DL( I-1 )*X( I-1, J ) +
+     $                           D( I )*X( I, J ) + DU( I )*X( I+1, J )
+   50             CONTINUE
+               END IF
+   60       CONTINUE
+         ELSE IF( <a name="LSAME.131"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'T'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute B := B + A**T * X
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 80 J = 1, NRHS
+               IF( N.EQ.1 ) THEN
+                  B( 1, J ) = B( 1, J ) + D( 1 )*X( 1, J )
+               ELSE
+                  B( 1, J ) = B( 1, J ) + D( 1 )*X( 1, J ) +
+     $                        DL( 1 )*X( 2, J )
+                  B( N, J ) = B( N, J ) + DU( N-1 )*X( N-1, J ) +
+     $                        D( N )*X( N, J )
+                  DO 70 I = 2, N - 1
+                     B( I, J ) = B( I, J ) + DU( I-1 )*X( I-1, J ) +
+     $                           D( I )*X( I, J ) + DL( I )*X( I+1, J )
+   70             CONTINUE
+               END IF
+   80       CONTINUE
+         ELSE IF( <a name="LSAME.149"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'C'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute B := B + A**H * X
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 100 J = 1, NRHS
+               IF( N.EQ.1 ) THEN
+                  B( 1, J ) = B( 1, J ) + DCONJG( D( 1 ) )*X( 1, J )
+               ELSE
+                  B( 1, J ) = B( 1, J ) + DCONJG( D( 1 ) )*X( 1, J ) +
+     $                        DCONJG( DL( 1 ) )*X( 2, J )
+                  B( N, J ) = B( N, J ) + DCONJG( DU( N-1 ) )*
+     $                        X( N-1, J ) + DCONJG( D( N ) )*X( N, J )
+                  DO 90 I = 2, N - 1
+                     B( I, J ) = B( I, J ) + DCONJG( DU( I-1 ) )*
+     $                           X( I-1, J ) + DCONJG( D( I ) )*
+     $                           X( I, J ) + DCONJG( DL( I ) )*
+     $                           X( I+1, J )
+   90             CONTINUE
+               END IF
+  100       CONTINUE
+         END IF
+      ELSE IF( ALPHA.EQ.-ONE ) THEN
+         IF( <a name="LSAME.171"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'N'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute B := B - A*X
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 120 J = 1, NRHS
+               IF( N.EQ.1 ) THEN
+                  B( 1, J ) = B( 1, J ) - D( 1 )*X( 1, J )
+               ELSE
+                  B( 1, J ) = B( 1, J ) - D( 1 )*X( 1, J ) -
+     $                        DU( 1 )*X( 2, J )
+                  B( N, J ) = B( N, J ) - DL( N-1 )*X( N-1, J ) -
+     $                        D( N )*X( N, J )
+                  DO 110 I = 2, N - 1
+                     B( I, J ) = B( I, J ) - DL( I-1 )*X( I-1, J ) -
+     $                           D( I )*X( I, J ) - DU( I )*X( I+1, J )
+  110             CONTINUE
+               END IF
+  120       CONTINUE
+         ELSE IF( <a name="LSAME.189"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'T'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute B := B - A'*X
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 140 J = 1, NRHS
+               IF( N.EQ.1 ) THEN
+                  B( 1, J ) = B( 1, J ) - D( 1 )*X( 1, J )
+               ELSE
+                  B( 1, J ) = B( 1, J ) - D( 1 )*X( 1, J ) -
+     $                        DL( 1 )*X( 2, J )
+                  B( N, J ) = B( N, J ) - DU( N-1 )*X( N-1, J ) -
+     $                        D( N )*X( N, J )
+                  DO 130 I = 2, N - 1
+                     B( I, J ) = B( I, J ) - DU( I-1 )*X( I-1, J ) -
+     $                           D( I )*X( I, J ) - DL( I )*X( I+1, J )
+  130             CONTINUE
+               END IF
+  140       CONTINUE
+         ELSE IF( <a name="LSAME.207"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'C'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute B := B - A'*X
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 160 J = 1, NRHS
+               IF( N.EQ.1 ) THEN
+                  B( 1, J ) = B( 1, J ) - DCONJG( D( 1 ) )*X( 1, J )
+               ELSE
+                  B( 1, J ) = B( 1, J ) - DCONJG( D( 1 ) )*X( 1, J ) -
+     $                        DCONJG( DL( 1 ) )*X( 2, J )
+                  B( N, J ) = B( N, J ) - DCONJG( DU( N-1 ) )*
+     $                        X( N-1, J ) - DCONJG( D( N ) )*X( N, J )
+                  DO 150 I = 2, N - 1
+                     B( I, J ) = B( I, J ) - DCONJG( DU( I-1 ) )*
+     $                           X( I-1, J ) - DCONJG( D( I ) )*
+     $                           X( I, J ) - DCONJG( DL( I ) )*
+     $                           X( I+1, J )
+  150             CONTINUE
+               END IF
+  160       CONTINUE
+         END IF
+      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZLAGTM.231"></a><a href="zlagtm.f.html#ZLAGTM.1">ZLAGTM</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

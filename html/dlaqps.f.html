@@ -1,0 +1,283 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlaqps.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLAQPS.1"></a><a href="dlaqps.f.html#DLAQPS.1">DLAQPS</a>( M, N, OFFSET, NB, KB, A, LDA, JPVT, TAU, VN1,
+     $                   VN2, AUXV, F, LDF )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            KB, LDA, LDF, M, N, NB, OFFSET
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            JPVT( * )
+      DOUBLE PRECISION   A( LDA, * ), AUXV( * ), F( LDF, * ), TAU( * ),
+     $                   VN1( * ), VN2( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLAQPS.20"></a><a href="dlaqps.f.html#DLAQPS.1">DLAQPS</a> computes a step of QR factorization with column pivoting
+</span><span class="comment">*</span><span class="comment">  of a real M-by-N matrix A by using Blas-3.  It tries to factorize
+</span><span class="comment">*</span><span class="comment">  NB columns from A starting from the row OFFSET+1, and updates all
+</span><span class="comment">*</span><span class="comment">  of the matrix with Blas-3 xGEMM.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  In some cases, due to catastrophic cancellations, it cannot
+</span><span class="comment">*</span><span class="comment">  factorize NB columns.  Hence, the actual number of factorized
+</span><span class="comment">*</span><span class="comment">  columns is returned in KB.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Block A(1:OFFSET,1:N) is accordingly pivoted, but not factorized.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix A. M &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix A. N &gt;= 0
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  OFFSET  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of A that have been factorized in
+</span><span class="comment">*</span><span class="comment">          previous steps.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NB      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns to factorize.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KB      (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns actually factorized.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) DOUBLE PRECISION array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the M-by-N matrix A.
+</span><span class="comment">*</span><span class="comment">          On exit, block A(OFFSET+1:M,1:KB) is the triangular
+</span><span class="comment">*</span><span class="comment">          factor obtained and block A(1:OFFSET,1:N) has been
+</span><span class="comment">*</span><span class="comment">          accordingly pivoted, but no factorized.
+</span><span class="comment">*</span><span class="comment">          The rest of the matrix, block A(OFFSET+1:M,KB+1:N) has
+</span><span class="comment">*</span><span class="comment">          been updated.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A. LDA &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JPVT    (input/output) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          JPVT(I) = K &lt;==&gt; Column K of the full matrix A has been
+</span><span class="comment">*</span><span class="comment">          permuted into position I in AP.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TAU     (output) DOUBLE PRECISION array, dimension (KB)
+</span><span class="comment">*</span><span class="comment">          The scalar factors of the elementary reflectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VN1     (input/output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The vector with the partial column norms.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VN2     (input/output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The vector with the exact column norms.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AUXV    (input/output) DOUBLE PRECISION array, dimension (NB)
+</span><span class="comment">*</span><span class="comment">          Auxiliar vector.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  F       (input/output) DOUBLE PRECISION array, dimension (LDF,NB)
+</span><span class="comment">*</span><span class="comment">          Matrix F' = L*Y'*A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDF     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array F. LDF &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">    G. Quintana-Orti, Depto. de Informatica, Universidad Jaime I, Spain
+</span><span class="comment">*</span><span class="comment">    X. Sun, Computer Science Dept., Duke University, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Partial column norm updating strategy modified by
+</span><span class="comment">*</span><span class="comment">    Z. Drmac and Z. Bujanovic, Dept. of Mathematics,
+</span><span class="comment">*</span><span class="comment">    University of Zagreb, Croatia.
+</span><span class="comment">*</span><span class="comment">    June 2006.
+</span><span class="comment">*</span><span class="comment">  For more details see LAPACK Working Note 176.
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            ITEMP, J, K, LASTRK, LSTICC, PVT, RK
+      DOUBLE PRECISION   AKK, TEMP, TEMP2, TOL3Z
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DGEMM, DGEMV, <a name="DLARFG.106"></a><a href="dlarfg.f.html#DLARFG.1">DLARFG</a>, DSWAP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, DBLE, MAX, MIN, NINT, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      INTEGER            IDAMAX
+      DOUBLE PRECISION   <a name="DLAMCH.113"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, DNRM2
+      EXTERNAL           IDAMAX, <a name="DLAMCH.114"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, DNRM2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      LASTRK = MIN( M, N+OFFSET )
+      LSTICC = 0
+      K = 0
+      TOL3Z = SQRT(<a name="DLAMCH.121"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>(<span class="string">'Epsilon'</span>))
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Beginning of while loop.
+</span><span class="comment">*</span><span class="comment">
+</span>   10 CONTINUE
+      IF( ( K.LT.NB ) .AND. ( LSTICC.EQ.0 ) ) THEN
+         K = K + 1
+         RK = OFFSET + K
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Determine ith pivot column and swap if necessary
+</span><span class="comment">*</span><span class="comment">
+</span>         PVT = ( K-1 ) + IDAMAX( N-K+1, VN1( K ), 1 )
+         IF( PVT.NE.K ) THEN
+            CALL DSWAP( M, A( 1, PVT ), 1, A( 1, K ), 1 )
+            CALL DSWAP( K-1, F( PVT, 1 ), LDF, F( K, 1 ), LDF )
+            ITEMP = JPVT( PVT )
+            JPVT( PVT ) = JPVT( K )
+            JPVT( K ) = ITEMP
+            VN1( PVT ) = VN1( K )
+            VN2( PVT ) = VN2( K )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Apply previous Householder reflectors to column K:
+</span><span class="comment">*</span><span class="comment">        A(RK:M,K) := A(RK:M,K) - A(RK:M,1:K-1)*F(K,1:K-1)'.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( K.GT.1 ) THEN
+            CALL DGEMV( <span class="string">'No transpose'</span>, M-RK+1, K-1, -ONE, A( RK, 1 ),
+     $                  LDA, F( K, 1 ), LDF, ONE, A( RK, K ), 1 )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Generate elementary reflector H(k).
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( RK.LT.M ) THEN
+            CALL <a name="DLARFG.154"></a><a href="dlarfg.f.html#DLARFG.1">DLARFG</a>( M-RK+1, A( RK, K ), A( RK+1, K ), 1, TAU( K ) )
+         ELSE
+            CALL <a name="DLARFG.156"></a><a href="dlarfg.f.html#DLARFG.1">DLARFG</a>( 1, A( RK, K ), A( RK, K ), 1, TAU( K ) )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         AKK = A( RK, K )
+         A( RK, K ) = ONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute Kth column of F:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute  F(K+1:N,K) := tau(K)*A(RK:M,K+1:N)'*A(RK:M,K).
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( K.LT.N ) THEN
+            CALL DGEMV( <span class="string">'Transpose'</span>, M-RK+1, N-K, TAU( K ),
+     $                  A( RK, K+1 ), LDA, A( RK, K ), 1, ZERO,
+     $                  F( K+1, K ), 1 )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Padding F(1:K,K) with zeros.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 20 J = 1, K
+            F( J, K ) = ZERO
+   20    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Incremental updating of F:
+</span><span class="comment">*</span><span class="comment">        F(1:N,K) := F(1:N,K) - tau(K)*F(1:N,1:K-1)*A(RK:M,1:K-1)'
+</span><span class="comment">*</span><span class="comment">                    *A(RK:M,K).
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( K.GT.1 ) THEN
+            CALL DGEMV( <span class="string">'Transpose'</span>, M-RK+1, K-1, -TAU( K ), A( RK, 1 ),
+     $                  LDA, A( RK, K ), 1, ZERO, AUXV( 1 ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>            CALL DGEMV( <span class="string">'No transpose'</span>, N, K-1, ONE, F( 1, 1 ), LDF,
+     $                  AUXV( 1 ), 1, ONE, F( 1, K ), 1 )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Update the current row of A:
+</span><span class="comment">*</span><span class="comment">        A(RK,K+1:N) := A(RK,K+1:N) - A(RK,1:K)*F(K+1:N,1:K)'.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( K.LT.N ) THEN
+            CALL DGEMV( <span class="string">'No transpose'</span>, N-K, K, -ONE, F( K+1, 1 ), LDF,
+     $                  A( RK, 1 ), LDA, ONE, A( RK, K+1 ), LDA )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Update partial column norms.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( RK.LT.LASTRK ) THEN
+            DO 30 J = K + 1, N
+               IF( VN1( J ).NE.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 NOTE: The following 4 lines follow from the analysis in
+</span><span class="comment">*</span><span class="comment">                 Lapack Working Note 176.
+</span><span class="comment">*</span><span class="comment">
+</span>                  TEMP = ABS( A( RK, J ) ) / VN1( J )
+                  TEMP = MAX( ZERO, ( ONE+TEMP )*( ONE-TEMP ) )
+                  TEMP2 = TEMP*( VN1( J ) / VN2( J ) )**2
+                  IF( TEMP2 .LE. TOL3Z ) THEN
+                     VN2( J ) = DBLE( LSTICC )
+                     LSTICC = J
+                  ELSE
+                     VN1( J ) = VN1( J )*SQRT( TEMP )
+                  END IF
+               END IF
+   30       CONTINUE
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         A( RK, K ) = AKK
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        End of while loop.
+</span><span class="comment">*</span><span class="comment">
+</span>         GO TO 10
+      END IF
+      KB = K
+      RK = OFFSET + KB
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Apply the block reflector to the rest of the matrix:
+</span><span class="comment">*</span><span class="comment">     A(OFFSET+KB+1:M,KB+1:N) := A(OFFSET+KB+1:M,KB+1:N) -
+</span><span class="comment">*</span><span class="comment">                         A(OFFSET+KB+1:M,1:KB)*F(KB+1:N,1:KB)'.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( KB.LT.MIN( N, M-OFFSET ) ) THEN
+         CALL DGEMM( <span class="string">'No transpose'</span>, <span class="string">'Transpose'</span>, M-RK, N-KB, KB, -ONE,
+     $               A( RK+1, 1 ), LDA, F( KB+1, 1 ), LDF, ONE,
+     $               A( RK+1, KB+1 ), LDA )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Recomputation of difficult columns.
+</span><span class="comment">*</span><span class="comment">
+</span>   40 CONTINUE
+      IF( LSTICC.GT.0 ) THEN
+         ITEMP = NINT( VN2( LSTICC ) )
+         VN1( LSTICC ) = DNRM2( M-RK, A( RK+1, LSTICC ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        NOTE: The computation of VN1( LSTICC ) relies on the fact that 
+</span><span class="comment">*</span><span class="comment">        SNRM2 does not fail on vectors with norm below the value of
+</span><span class="comment">*</span><span class="comment">        SQRT(<a name="DLAMCH.248"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>('S')) 
+</span><span class="comment">*</span><span class="comment">
+</span>         VN2( LSTICC ) = VN1( LSTICC )
+         LSTICC = ITEMP
+         GO TO 40
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLAQPS.257"></a><a href="dlaqps.f.html#DLAQPS.1">DLAQPS</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

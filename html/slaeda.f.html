@@ -1,0 +1,241 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slaeda.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLAEDA.1"></a><a href="slaeda.f.html#SLAEDA.1">SLAEDA</a>( N, TLVLS, CURLVL, CURPBM, PRMPTR, PERM, GIVPTR,
+     $                   GIVCOL, GIVNUM, Q, QPTR, Z, ZTEMP, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            CURLVL, CURPBM, INFO, N, TLVLS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            GIVCOL( 2, * ), GIVPTR( * ), PERM( * ),
+     $                   PRMPTR( * ), QPTR( * )
+      REAL               GIVNUM( 2, * ), Q( * ), Z( * ), ZTEMP( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLAEDA.20"></a><a href="slaeda.f.html#SLAEDA.1">SLAEDA</a> computes the Z vector corresponding to the merge step in the
+</span><span class="comment">*</span><span class="comment">  CURLVLth step of the merge process with TLVLS steps for the CURPBMth
+</span><span class="comment">*</span><span class="comment">  problem.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The dimension of the symmetric tridiagonal matrix.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TLVLS  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The total number of merging levels in the overall divide and
+</span><span class="comment">*</span><span class="comment">         conquer tree.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CURLVL (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The current level in the overall merge routine,
+</span><span class="comment">*</span><span class="comment">         0 &lt;= curlvl &lt;= tlvls.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CURPBM (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The current problem in the current level in the overall
+</span><span class="comment">*</span><span class="comment">         merge routine (counting from upper left to lower right).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  PRMPTR (input) INTEGER array, dimension (N lg N)
+</span><span class="comment">*</span><span class="comment">         Contains a list of pointers which indicate where in PERM a
+</span><span class="comment">*</span><span class="comment">         level's permutation is stored.  PRMPTR(i+1) - PRMPTR(i)
+</span><span class="comment">*</span><span class="comment">         indicates the size of the permutation and incidentally the
+</span><span class="comment">*</span><span class="comment">         size of the full, non-deflated problem.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  PERM   (input) INTEGER array, dimension (N lg N)
+</span><span class="comment">*</span><span class="comment">         Contains the permutations (from deflation and sorting) to be
+</span><span class="comment">*</span><span class="comment">         applied to each eigenblock.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GIVPTR (input) INTEGER array, dimension (N lg N)
+</span><span class="comment">*</span><span class="comment">         Contains a list of pointers which indicate where in GIVCOL a
+</span><span class="comment">*</span><span class="comment">         level's Givens rotations are stored.  GIVPTR(i+1) - GIVPTR(i)
+</span><span class="comment">*</span><span class="comment">         indicates the number of Givens rotations.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GIVCOL (input) INTEGER array, dimension (2, N lg N)
+</span><span class="comment">*</span><span class="comment">         Each pair of numbers indicates a pair of columns to take place
+</span><span class="comment">*</span><span class="comment">         in a Givens rotation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GIVNUM (input) REAL array, dimension (2, N lg N)
+</span><span class="comment">*</span><span class="comment">         Each number indicates the S value to be used in the
+</span><span class="comment">*</span><span class="comment">         corresponding Givens rotation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Q      (input) REAL array, dimension (N**2)
+</span><span class="comment">*</span><span class="comment">         Contains the square eigenblocks from previous levels, the
+</span><span class="comment">*</span><span class="comment">         starting positions for blocks are given by QPTR.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  QPTR   (input) INTEGER array, dimension (N+2)
+</span><span class="comment">*</span><span class="comment">         Contains a list of pointers which indicate where in Q an
+</span><span class="comment">*</span><span class="comment">         eigenblock is stored.  SQRT( QPTR(i+1) - QPTR(i) ) indicates
+</span><span class="comment">*</span><span class="comment">         the size of the block.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z      (output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         On output this vector contains the updating vector (the last
+</span><span class="comment">*</span><span class="comment">         row of the first sub-eigenvector matrix and the first row of
+</span><span class="comment">*</span><span class="comment">         the second sub-eigenvector matrix).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ZTEMP  (workspace) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO   (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit.
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Jeff Rutter, Computer Science Division, University of California
+</span><span class="comment">*</span><span class="comment">     at Berkeley, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, HALF, ONE
+      PARAMETER          ( ZERO = 0.0E0, HALF = 0.5E0, ONE = 1.0E0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            BSIZ1, BSIZ2, CURR, I, K, MID, PSIZ1, PSIZ2,
+     $                   PTR, ZPTR1
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           SCOPY, SGEMV, SROT, <a name="XERBLA.103"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          INT, REAL, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+<span class="comment">*</span><span class="comment">
+</span>      IF( N.LT.0 ) THEN
+         INFO = -1
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.118"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="SLAEDA.118"></a><a href="slaeda.f.html#SLAEDA.1">SLAEDA</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Determine location of first number in second half.
+</span><span class="comment">*</span><span class="comment">
+</span>      MID = N / 2 + 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Gather last/first rows of appropriate eigenblocks into center of Z
+</span><span class="comment">*</span><span class="comment">
+</span>      PTR = 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Determine location of lowest level subproblem in the full storage
+</span><span class="comment">*</span><span class="comment">     scheme
+</span><span class="comment">*</span><span class="comment">
+</span>      CURR = PTR + CURPBM*2**CURLVL + 2**( CURLVL-1 ) - 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Determine size of these matrices.  We add HALF to the value of
+</span><span class="comment">*</span><span class="comment">     the SQRT in case the machine underestimates one of these square
+</span><span class="comment">*</span><span class="comment">     roots.
+</span><span class="comment">*</span><span class="comment">
+</span>      BSIZ1 = INT( HALF+SQRT( REAL( QPTR( CURR+1 )-QPTR( CURR ) ) ) )
+      BSIZ2 = INT( HALF+SQRT( REAL( QPTR( CURR+2 )-QPTR( CURR+1 ) ) ) )
+      DO 10 K = 1, MID - BSIZ1 - 1
+         Z( K ) = ZERO
+   10 CONTINUE
+      CALL SCOPY( BSIZ1, Q( QPTR( CURR )+BSIZ1-1 ), BSIZ1,
+     $            Z( MID-BSIZ1 ), 1 )
+      CALL SCOPY( BSIZ2, Q( QPTR( CURR+1 ) ), BSIZ2, Z( MID ), 1 )
+      DO 20 K = MID + BSIZ2, N
+         Z( K ) = ZERO
+   20 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Loop thru remaining levels 1 -&gt; CURLVL applying the Givens
+</span><span class="comment">*</span><span class="comment">     rotations and permutation and then multiplying the center matrices
+</span><span class="comment">*</span><span class="comment">     against the current Z.
+</span><span class="comment">*</span><span class="comment">
+</span>      PTR = 2**TLVLS + 1
+      DO 70 K = 1, CURLVL - 1
+         CURR = PTR + CURPBM*2**( CURLVL-K ) + 2**( CURLVL-K-1 ) - 1
+         PSIZ1 = PRMPTR( CURR+1 ) - PRMPTR( CURR )
+         PSIZ2 = PRMPTR( CURR+2 ) - PRMPTR( CURR+1 )
+         ZPTR1 = MID - PSIZ1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">       Apply Givens at CURR and CURR+1
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 30 I = GIVPTR( CURR ), GIVPTR( CURR+1 ) - 1
+            CALL SROT( 1, Z( ZPTR1+GIVCOL( 1, I )-1 ), 1,
+     $                 Z( ZPTR1+GIVCOL( 2, I )-1 ), 1, GIVNUM( 1, I ),
+     $                 GIVNUM( 2, I ) )
+   30    CONTINUE
+         DO 40 I = GIVPTR( CURR+1 ), GIVPTR( CURR+2 ) - 1
+            CALL SROT( 1, Z( MID-1+GIVCOL( 1, I ) ), 1,
+     $                 Z( MID-1+GIVCOL( 2, I ) ), 1, GIVNUM( 1, I ),
+     $                 GIVNUM( 2, I ) )
+   40    CONTINUE
+         PSIZ1 = PRMPTR( CURR+1 ) - PRMPTR( CURR )
+         PSIZ2 = PRMPTR( CURR+2 ) - PRMPTR( CURR+1 )
+         DO 50 I = 0, PSIZ1 - 1
+            ZTEMP( I+1 ) = Z( ZPTR1+PERM( PRMPTR( CURR )+I )-1 )
+   50    CONTINUE
+         DO 60 I = 0, PSIZ2 - 1
+            ZTEMP( PSIZ1+I+1 ) = Z( MID+PERM( PRMPTR( CURR+1 )+I )-1 )
+   60    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Multiply Blocks at CURR and CURR+1
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Determine size of these matrices.  We add HALF to the value of
+</span><span class="comment">*</span><span class="comment">        the SQRT in case the machine underestimates one of these
+</span><span class="comment">*</span><span class="comment">        square roots.
+</span><span class="comment">*</span><span class="comment">
+</span>         BSIZ1 = INT( HALF+SQRT( REAL( QPTR( CURR+1 )-QPTR( CURR ) ) ) )
+         BSIZ2 = INT( HALF+SQRT( REAL( QPTR( CURR+2 )-QPTR( CURR+
+     $           1 ) ) ) )
+         IF( BSIZ1.GT.0 ) THEN
+            CALL SGEMV( <span class="string">'T'</span>, BSIZ1, BSIZ1, ONE, Q( QPTR( CURR ) ),
+     $                  BSIZ1, ZTEMP( 1 ), 1, ZERO, Z( ZPTR1 ), 1 )
+         END IF
+         CALL SCOPY( PSIZ1-BSIZ1, ZTEMP( BSIZ1+1 ), 1, Z( ZPTR1+BSIZ1 ),
+     $               1 )
+         IF( BSIZ2.GT.0 ) THEN
+            CALL SGEMV( <span class="string">'T'</span>, BSIZ2, BSIZ2, ONE, Q( QPTR( CURR+1 ) ),
+     $                  BSIZ2, ZTEMP( PSIZ1+1 ), 1, ZERO, Z( MID ), 1 )
+         END IF
+         CALL SCOPY( PSIZ2-BSIZ2, ZTEMP( PSIZ1+BSIZ2+1 ), 1,
+     $               Z( MID+BSIZ2 ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>         PTR = PTR + 2**( TLVLS-K )
+   70 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLAEDA.215"></a><a href="slaeda.f.html#SLAEDA.1">SLAEDA</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

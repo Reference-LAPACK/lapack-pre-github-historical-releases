@@ -1,0 +1,340 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlasdq.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLASDQ.1"></a><a href="dlasdq.f.html#DLASDQ.1">DLASDQ</a>( UPLO, SQRE, N, NCVT, NRU, NCC, D, E, VT, LDVT,
+     $                   U, LDU, C, LDC, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          UPLO
+      INTEGER            INFO, LDC, LDU, LDVT, N, NCC, NCVT, NRU, SQRE
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   C( LDC, * ), D( * ), E( * ), U( LDU, * ),
+     $                   VT( LDVT, * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLASDQ.20"></a><a href="dlasdq.f.html#DLASDQ.1">DLASDQ</a> computes the singular value decomposition (SVD) of a real
+</span><span class="comment">*</span><span class="comment">  (upper or lower) bidiagonal matrix with diagonal D and offdiagonal
+</span><span class="comment">*</span><span class="comment">  E, accumulating the transformations if desired. Letting B denote
+</span><span class="comment">*</span><span class="comment">  the input bidiagonal matrix, the algorithm computes orthogonal
+</span><span class="comment">*</span><span class="comment">  matrices Q and P such that B = Q * S * P' (P' denotes the transpose
+</span><span class="comment">*</span><span class="comment">  of P). The singular values S are overwritten on D.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The input matrix U  is changed to U  * Q  if desired.
+</span><span class="comment">*</span><span class="comment">  The input matrix VT is changed to P' * VT if desired.
+</span><span class="comment">*</span><span class="comment">  The input matrix C  is changed to Q' * C  if desired.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  See &quot;Computing  Small Singular Values of Bidiagonal Matrices With
+</span><span class="comment">*</span><span class="comment">  Guaranteed High Relative Accuracy,&quot; by J. Demmel and W. Kahan,
+</span><span class="comment">*</span><span class="comment">  LAPACK Working Note #3, for a detailed description of the algorithm.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO  (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">        On entry, UPLO specifies whether the input bidiagonal matrix
+</span><span class="comment">*</span><span class="comment">        is upper or lower bidiagonal, and wether it is square are
+</span><span class="comment">*</span><span class="comment">        not.
+</span><span class="comment">*</span><span class="comment">           UPLO = 'U' or 'u'   B is upper bidiagonal.
+</span><span class="comment">*</span><span class="comment">           UPLO = 'L' or 'l'   B is lower bidiagonal.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SQRE  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">        = 0: then the input matrix is N-by-N.
+</span><span class="comment">*</span><span class="comment">        = 1: then the input matrix is N-by-(N+1) if UPLU = 'U' and
+</span><span class="comment">*</span><span class="comment">             (N+1)-by-N if UPLU = 'L'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        The bidiagonal matrix has
+</span><span class="comment">*</span><span class="comment">        N = NL + NR + 1 rows and
+</span><span class="comment">*</span><span class="comment">        M = N + SQRE &gt;= N columns.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">        On entry, N specifies the number of rows and columns
+</span><span class="comment">*</span><span class="comment">        in the matrix. N must be at least 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NCVT  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">        On entry, NCVT specifies the number of columns of
+</span><span class="comment">*</span><span class="comment">        the matrix VT. NCVT must be at least 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NRU   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">        On entry, NRU specifies the number of rows of
+</span><span class="comment">*</span><span class="comment">        the matrix U. NRU must be at least 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NCC   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">        On entry, NCC specifies the number of columns of
+</span><span class="comment">*</span><span class="comment">        the matrix C. NCC must be at least 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D     (input/output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">        On entry, D contains the diagonal entries of the
+</span><span class="comment">*</span><span class="comment">        bidiagonal matrix whose SVD is desired. On normal exit,
+</span><span class="comment">*</span><span class="comment">        D contains the singular values in ascending order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E     (input/output) DOUBLE PRECISION array.
+</span><span class="comment">*</span><span class="comment">        dimension is (N-1) if SQRE = 0 and N if SQRE = 1.
+</span><span class="comment">*</span><span class="comment">        On entry, the entries of E contain the offdiagonal entries
+</span><span class="comment">*</span><span class="comment">        of the bidiagonal matrix whose SVD is desired. On normal
+</span><span class="comment">*</span><span class="comment">        exit, E will contain 0. If the algorithm does not converge,
+</span><span class="comment">*</span><span class="comment">        D and E will contain the diagonal and superdiagonal entries
+</span><span class="comment">*</span><span class="comment">        of a bidiagonal matrix orthogonally equivalent to the one
+</span><span class="comment">*</span><span class="comment">        given as input.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VT    (input/output) DOUBLE PRECISION array, dimension (LDVT, NCVT)
+</span><span class="comment">*</span><span class="comment">        On entry, contains a matrix which on exit has been
+</span><span class="comment">*</span><span class="comment">        premultiplied by P', dimension N-by-NCVT if SQRE = 0
+</span><span class="comment">*</span><span class="comment">        and (N+1)-by-NCVT if SQRE = 1 (not referenced if NCVT=0).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDVT  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">        On entry, LDVT specifies the leading dimension of VT as
+</span><span class="comment">*</span><span class="comment">        declared in the calling (sub) program. LDVT must be at
+</span><span class="comment">*</span><span class="comment">        least 1. If NCVT is nonzero LDVT must also be at least N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  U     (input/output) DOUBLE PRECISION array, dimension (LDU, N)
+</span><span class="comment">*</span><span class="comment">        On entry, contains a  matrix which on exit has been
+</span><span class="comment">*</span><span class="comment">        postmultiplied by Q, dimension NRU-by-N if SQRE = 0
+</span><span class="comment">*</span><span class="comment">        and NRU-by-(N+1) if SQRE = 1 (not referenced if NRU=0).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDU   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">        On entry, LDU  specifies the leading dimension of U as
+</span><span class="comment">*</span><span class="comment">        declared in the calling (sub) program. LDU must be at
+</span><span class="comment">*</span><span class="comment">        least max( 1, NRU ) .
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C     (input/output) DOUBLE PRECISION array, dimension (LDC, NCC)
+</span><span class="comment">*</span><span class="comment">        On entry, contains an N-by-NCC matrix which on exit
+</span><span class="comment">*</span><span class="comment">        has been premultiplied by Q'  dimension N-by-NCC if SQRE = 0
+</span><span class="comment">*</span><span class="comment">        and (N+1)-by-NCC if SQRE = 1 (not referenced if NCC=0).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDC   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">        On entry, LDC  specifies the leading dimension of C as
+</span><span class="comment">*</span><span class="comment">        declared in the calling (sub) program. LDC must be at
+</span><span class="comment">*</span><span class="comment">        least 1. If NCC is nonzero, LDC must also be at least N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK  (workspace) DOUBLE PRECISION array, dimension (4*N)
+</span><span class="comment">*</span><span class="comment">        Workspace. Only referenced if one of NCVT, NRU, or NCC is
+</span><span class="comment">*</span><span class="comment">        nonzero, and if N is at least 2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO  (output) INTEGER
+</span><span class="comment">*</span><span class="comment">        On exit, a value of 0 indicates a successful exit.
+</span><span class="comment">*</span><span class="comment">        If INFO &lt; 0, argument number -INFO is illegal.
+</span><span class="comment">*</span><span class="comment">        If INFO &gt; 0, the algorithm did not converge, and INFO
+</span><span class="comment">*</span><span class="comment">        specifies how many superdiagonals did not converge.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Ming Gu and Huan Ren, Computer Science Division, University of
+</span><span class="comment">*</span><span class="comment">     California at Berkeley, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO
+      PARAMETER          ( ZERO = 0.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            ROTATE
+      INTEGER            I, ISUB, IUPLO, J, NP1, SQRE1
+      DOUBLE PRECISION   CS, R, SMIN, SN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DBDSQR.143"></a><a href="dbdsqr.f.html#DBDSQR.1">DBDSQR</a>, <a name="DLARTG.143"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>, <a name="DLASR.143"></a><a href="dlasr.f.html#DLASR.1">DLASR</a>, DSWAP, <a name="XERBLA.143"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.146"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.147"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IUPLO = 0
+      IF( <a name="LSAME.158"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) )
+     $   IUPLO = 1
+      IF( <a name="LSAME.160"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) )
+     $   IUPLO = 2
+      IF( IUPLO.EQ.0 ) THEN
+         INFO = -1
+      ELSE IF( ( SQRE.LT.0 ) .OR. ( SQRE.GT.1 ) ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( NCVT.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( NRU.LT.0 ) THEN
+         INFO = -5
+      ELSE IF( NCC.LT.0 ) THEN
+         INFO = -6
+      ELSE IF( ( NCVT.EQ.0 .AND. LDVT.LT.1 ) .OR.
+     $         ( NCVT.GT.0 .AND. LDVT.LT.MAX( 1, N ) ) ) THEN
+         INFO = -10
+      ELSE IF( LDU.LT.MAX( 1, NRU ) ) THEN
+         INFO = -12
+      ELSE IF( ( NCC.EQ.0 .AND. LDC.LT.1 ) .OR.
+     $         ( NCC.GT.0 .AND. LDC.LT.MAX( 1, N ) ) ) THEN
+         INFO = -14
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.184"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DLASDQ.184"></a><a href="dlasdq.f.html#DLASDQ.1">DLASDQ</a>'</span>, -INFO )
+         RETURN
+      END IF
+      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ROTATE is true if any singular vectors desired, false otherwise
+</span><span class="comment">*</span><span class="comment">
+</span>      ROTATE = ( NCVT.GT.0 ) .OR. ( NRU.GT.0 ) .OR. ( NCC.GT.0 )
+      NP1 = N + 1
+      SQRE1 = SQRE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If matrix non-square upper bidiagonal, rotate to be lower
+</span><span class="comment">*</span><span class="comment">     bidiagonal.  The rotations are on the right.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ( IUPLO.EQ.1 ) .AND. ( SQRE1.EQ.1 ) ) THEN
+         DO 10 I = 1, N - 1
+            CALL <a name="DLARTG.201"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( D( I ), E( I ), CS, SN, R )
+            D( I ) = R
+            E( I ) = SN*D( I+1 )
+            D( I+1 ) = CS*D( I+1 )
+            IF( ROTATE ) THEN
+               WORK( I ) = CS
+               WORK( N+I ) = SN
+            END IF
+   10    CONTINUE
+         CALL <a name="DLARTG.210"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( D( N ), E( N ), CS, SN, R )
+         D( N ) = R
+         E( N ) = ZERO
+         IF( ROTATE ) THEN
+            WORK( N ) = CS
+            WORK( N+N ) = SN
+         END IF
+         IUPLO = 2
+         SQRE1 = 0
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Update singular vectors if desired.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( NCVT.GT.0 )
+     $      CALL <a name="DLASR.223"></a><a href="dlasr.f.html#DLASR.1">DLASR</a>( <span class="string">'L'</span>, <span class="string">'V'</span>, <span class="string">'F'</span>, NP1, NCVT, WORK( 1 ),
+     $                  WORK( NP1 ), VT, LDVT )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If matrix lower bidiagonal, rotate to be upper bidiagonal
+</span><span class="comment">*</span><span class="comment">     by applying Givens rotations on the left.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( IUPLO.EQ.2 ) THEN
+         DO 20 I = 1, N - 1
+            CALL <a name="DLARTG.232"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( D( I ), E( I ), CS, SN, R )
+            D( I ) = R
+            E( I ) = SN*D( I+1 )
+            D( I+1 ) = CS*D( I+1 )
+            IF( ROTATE ) THEN
+               WORK( I ) = CS
+               WORK( N+I ) = SN
+            END IF
+   20    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        If matrix (N+1)-by-N lower bidiagonal, one additional
+</span><span class="comment">*</span><span class="comment">        rotation is needed.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( SQRE1.EQ.1 ) THEN
+            CALL <a name="DLARTG.246"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( D( N ), E( N ), CS, SN, R )
+            D( N ) = R
+            IF( ROTATE ) THEN
+               WORK( N ) = CS
+               WORK( N+N ) = SN
+            END IF
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Update singular vectors if desired.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( NRU.GT.0 ) THEN
+            IF( SQRE1.EQ.0 ) THEN
+               CALL <a name="DLASR.258"></a><a href="dlasr.f.html#DLASR.1">DLASR</a>( <span class="string">'R'</span>, <span class="string">'V'</span>, <span class="string">'F'</span>, NRU, N, WORK( 1 ),
+     $                     WORK( NP1 ), U, LDU )
+            ELSE
+               CALL <a name="DLASR.261"></a><a href="dlasr.f.html#DLASR.1">DLASR</a>( <span class="string">'R'</span>, <span class="string">'V'</span>, <span class="string">'F'</span>, NRU, NP1, WORK( 1 ),
+     $                     WORK( NP1 ), U, LDU )
+            END IF
+         END IF
+         IF( NCC.GT.0 ) THEN
+            IF( SQRE1.EQ.0 ) THEN
+               CALL <a name="DLASR.267"></a><a href="dlasr.f.html#DLASR.1">DLASR</a>( <span class="string">'L'</span>, <span class="string">'V'</span>, <span class="string">'F'</span>, N, NCC, WORK( 1 ),
+     $                     WORK( NP1 ), C, LDC )
+            ELSE
+               CALL <a name="DLASR.270"></a><a href="dlasr.f.html#DLASR.1">DLASR</a>( <span class="string">'L'</span>, <span class="string">'V'</span>, <span class="string">'F'</span>, NP1, NCC, WORK( 1 ),
+     $                     WORK( NP1 ), C, LDC )
+            END IF
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Call <a name="DBDSQR.276"></a><a href="dbdsqr.f.html#DBDSQR.1">DBDSQR</a> to compute the SVD of the reduced real
+</span><span class="comment">*</span><span class="comment">     N-by-N upper bidiagonal matrix.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="DBDSQR.279"></a><a href="dbdsqr.f.html#DBDSQR.1">DBDSQR</a>( <span class="string">'U'</span>, N, NCVT, NRU, NCC, D, E, VT, LDVT, U, LDU, C,
+     $             LDC, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Sort the singular values into ascending order (insertion sort on
+</span><span class="comment">*</span><span class="comment">     singular values, but only one transposition per singular vector)
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 40 I = 1, N
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Scan for smallest D(I).
+</span><span class="comment">*</span><span class="comment">
+</span>         ISUB = I
+         SMIN = D( I )
+         DO 30 J = I + 1, N
+            IF( D( J ).LT.SMIN ) THEN
+               ISUB = J
+               SMIN = D( J )
+            END IF
+   30    CONTINUE
+         IF( ISUB.NE.I ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Swap singular values and vectors.
+</span><span class="comment">*</span><span class="comment">
+</span>            D( ISUB ) = D( I )
+            D( I ) = SMIN
+            IF( NCVT.GT.0 )
+     $         CALL DSWAP( NCVT, VT( ISUB, 1 ), LDVT, VT( I, 1 ), LDVT )
+            IF( NRU.GT.0 )
+     $         CALL DSWAP( NRU, U( 1, ISUB ), 1, U( 1, I ), 1 )
+            IF( NCC.GT.0 )
+     $         CALL DSWAP( NCC, C( ISUB, 1 ), LDC, C( I, 1 ), LDC )
+         END IF
+   40 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLASDQ.314"></a><a href="dlasdq.f.html#DLASDQ.1">DLASDQ</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

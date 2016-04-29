@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slaisnan.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      LOGICAL FUNCTION <a name="SLAISNAN.1"></a><a href="slaisnan.f.html#SLAISNAN.1">SLAISNAN</a>(SIN1,SIN2)
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      REAL SIN1,SIN2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This routine is not for general use.  It exists solely to avoid
+</span><span class="comment">*</span><span class="comment">  over-optimization in <a name="SISNAN.15"></a><a href="sisnan.f.html#SISNAN.1">SISNAN</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLAISNAN.17"></a><a href="slaisnan.f.html#SLAISNAN.1">SLAISNAN</a> checks for NaNs by comparing its two arguments for
+</span><span class="comment">*</span><span class="comment">  inequality.  NaN is the only floating-point value where NaN != NaN
+</span><span class="comment">*</span><span class="comment">  returns .TRUE.  To check for NaNs, pass the same variable as both
+</span><span class="comment">*</span><span class="comment">  arguments.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Strictly speaking, Fortran does not allow aliasing of function
+</span><span class="comment">*</span><span class="comment">  arguments. So a compiler must assume that the two arguments are
+</span><span class="comment">*</span><span class="comment">  not the same variable, and the test will not be optimized away.
+</span><span class="comment">*</span><span class="comment">  Interprocedural or whole-program optimization may delete this
+</span><span class="comment">*</span><span class="comment">  test.  The ISNAN functions will be replaced by the correct
+</span><span class="comment">*</span><span class="comment">  Fortran 03 intrinsic once the intrinsic is widely available.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SIN1     (input) REAL
+</span><span class="comment">*</span><span class="comment">  SIN2     (input) REAL
+</span><span class="comment">*</span><span class="comment">          Two numbers to compare for inequality.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  .. Executable Statements ..
+</span>      <a name="SLAISNAN.39"></a><a href="slaisnan.f.html#SLAISNAN.1">SLAISNAN</a> = (SIN1.NE.SIN2)
+      RETURN
+      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlatdf.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLATDF.1"></a><a href="dlatdf.f.html#DLATDF.1">DLATDF</a>( IJOB, N, Z, LDZ, RHS, RDSUM, RDSCAL, IPIV,
+     $                   JPIV )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            IJOB, LDZ, N
+      DOUBLE PRECISION   RDSCAL, RDSUM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IPIV( * ), JPIV( * )
+      DOUBLE PRECISION   RHS( * ), Z( LDZ, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLATDF.20"></a><a href="dlatdf.f.html#DLATDF.1">DLATDF</a> uses the LU factorization of the n-by-n matrix Z computed by
+</span><span class="comment">*</span><span class="comment">  <a name="DGETC2.21"></a><a href="dgetc2.f.html#DGETC2.1">DGETC2</a> and computes a contribution to the reciprocal Dif-estimate
+</span><span class="comment">*</span><span class="comment">  by solving Z * x = b for x, and choosing the r.h.s. b such that
+</span><span class="comment">*</span><span class="comment">  the norm of x is as large as possible. On entry RHS = b holds the
+</span><span class="comment">*</span><span class="comment">  contribution from earlier solved sub-systems, and on return RHS = x.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The factorization of Z returned by <a name="DGETC2.26"></a><a href="dgetc2.f.html#DGETC2.1">DGETC2</a> has the form Z = P*L*U*Q,
+</span><span class="comment">*</span><span class="comment">  where P and Q are permutation matrices. L is lower triangular with
+</span><span class="comment">*</span><span class="comment">  unit diagonal elements and U is upper triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IJOB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          IJOB = 2: First compute an approximative null-vector e
+</span><span class="comment">*</span><span class="comment">              of Z using <a name="DGECON.35"></a><a href="dgecon.f.html#DGECON.1">DGECON</a>, e is normalized and solve for
+</span><span class="comment">*</span><span class="comment">              Zx = +-e - f with the sign giving the greater value
+</span><span class="comment">*</span><span class="comment">              of 2-norm(x). About 5 times as expensive as Default.
+</span><span class="comment">*</span><span class="comment">          IJOB .ne. 2: Local look ahead strategy where all entries of
+</span><span class="comment">*</span><span class="comment">              the r.h.s. b is choosen as either +1 or -1 (Default).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix Z.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z       (input) DOUBLE PRECISION array, dimension (LDZ, N)
+</span><span class="comment">*</span><span class="comment">          On entry, the LU part of the factorization of the n-by-n
+</span><span class="comment">*</span><span class="comment">          matrix Z computed by <a name="DGETC2.46"></a><a href="dgetc2.f.html#DGETC2.1">DGETC2</a>:  Z = P * L * U * Q
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDZ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Z.  LDA &gt;= max(1, N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RHS     (input/output) DOUBLE PRECISION array, dimension N.
+</span><span class="comment">*</span><span class="comment">          On entry, RHS contains contributions from other subsystems.
+</span><span class="comment">*</span><span class="comment">          On exit, RHS contains the solution of the subsystem with
+</span><span class="comment">*</span><span class="comment">          entries acoording to the value of IJOB (see above).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RDSUM   (input/output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          On entry, the sum of squares of computed contributions to
+</span><span class="comment">*</span><span class="comment">          the Dif-estimate under computation by <a name="DTGSYL.58"></a><a href="dtgsyl.f.html#DTGSYL.1">DTGSYL</a>, where the
+</span><span class="comment">*</span><span class="comment">          scaling factor RDSCAL (see below) has been factored out.
+</span><span class="comment">*</span><span class="comment">          On exit, the corresponding sum of squares updated with the
+</span><span class="comment">*</span><span class="comment">          contributions from the current sub-system.
+</span><span class="comment">*</span><span class="comment">          If TRANS = 'T' RDSUM is not touched.
+</span><span class="comment">*</span><span class="comment">          NOTE: RDSUM only makes sense when <a name="DTGSY2.63"></a><a href="dtgsy2.f.html#DTGSY2.1">DTGSY2</a> is called by <a name="STGSYL.63"></a><a href="stgsyl.f.html#STGSYL.1">STGSYL</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RDSCAL  (input/output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          On entry, scaling factor used to prevent overflow in RDSUM.
+</span><span class="comment">*</span><span class="comment">          On exit, RDSCAL is updated w.r.t. the current contributions
+</span><span class="comment">*</span><span class="comment">          in RDSUM.
+</span><span class="comment">*</span><span class="comment">          If TRANS = 'T', RDSCAL is not touched.
+</span><span class="comment">*</span><span class="comment">          NOTE: RDSCAL only makes sense when <a name="DTGSY2.70"></a><a href="dtgsy2.f.html#DTGSY2.1">DTGSY2</a> is called by
+</span><span class="comment">*</span><span class="comment">                <a name="DTGSYL.71"></a><a href="dtgsyl.f.html#DTGSYL.1">DTGSYL</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IPIV    (input) INTEGER array, dimension (N).
+</span><span class="comment">*</span><span class="comment">          The pivot indices; for 1 &lt;= i &lt;= N, row i of the
+</span><span class="comment">*</span><span class="comment">          matrix has been interchanged with row IPIV(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JPIV    (input) INTEGER array, dimension (N).
+</span><span class="comment">*</span><span class="comment">          The pivot indices; for 1 &lt;= j &lt;= N, column j of the
+</span><span class="comment">*</span><span class="comment">          matrix has been interchanged with column JPIV(j).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Bo Kagstrom and Peter Poromaa, Department of Computing Science,
+</span><span class="comment">*</span><span class="comment">     Umea University, S-901 87 Umea, Sweden.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This routine is a further developed implementation of algorithm
+</span><span class="comment">*</span><span class="comment">  BSOLVE in [1] using complete pivoting in the LU factorization.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  [1] Bo Kagstrom and Lars Westin,
+</span><span class="comment">*</span><span class="comment">      Generalized Schur Methods with Condition Estimators for
+</span><span class="comment">*</span><span class="comment">      Solving the Generalized Sylvester Equation, IEEE Transactions
+</span><span class="comment">*</span><span class="comment">      on Automatic Control, Vol. 34, No. 7, July 1989, pp 745-751.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  [2] Peter Poromaa,
+</span><span class="comment">*</span><span class="comment">      On Efficient and Robust Estimators for the Separation
+</span><span class="comment">*</span><span class="comment">      between two Regular Matrix Pairs with Applications in
+</span><span class="comment">*</span><span class="comment">      Condition Estimation. Report IMINF-95.05, Departement of
+</span><span class="comment">*</span><span class="comment">      Computing Science, Umea University, S-901 87 Umea, Sweden, 1995.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      INTEGER            MAXDIM
+      PARAMETER          ( MAXDIM = 8 )
+      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, INFO, J, K
+      DOUBLE PRECISION   BM, BP, PMONE, SMINU, SPLUS, TEMP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      INTEGER            IWORK( MAXDIM )
+      DOUBLE PRECISION   WORK( 4*MAXDIM ), XM( MAXDIM ), XP( MAXDIM )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DAXPY, DCOPY, <a name="DGECON.119"></a><a href="dgecon.f.html#DGECON.1">DGECON</a>, <a name="DGESC2.119"></a><a href="dgesc2.f.html#DGESC2.1">DGESC2</a>, <a name="DLASSQ.119"></a><a href="dlassq.f.html#DLASSQ.1">DLASSQ</a>, <a name="DLASWP.119"></a><a href="dlaswp.f.html#DLASWP.1">DLASWP</a>,
+     $                   DSCAL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      DOUBLE PRECISION   DASUM, DDOT
+      EXTERNAL           DASUM, DDOT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( IJOB.NE.2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Apply permutations IPIV to RHS
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DLASWP.135"></a><a href="dlaswp.f.html#DLASWP.1">DLASWP</a>( 1, RHS, LDZ, 1, N-1, IPIV, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve for L-part choosing RHS either to +1 or -1.
+</span><span class="comment">*</span><span class="comment">
+</span>         PMONE = -ONE
+<span class="comment">*</span><span class="comment">
+</span>         DO 10 J = 1, N - 1
+            BP = RHS( J ) + ONE
+            BM = RHS( J ) - ONE
+            SPLUS = ONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Look-ahead for L-part RHS(1:N-1) = + or -1, SPLUS and
+</span><span class="comment">*</span><span class="comment">           SMIN computed more efficiently than in BSOLVE [1].
+</span><span class="comment">*</span><span class="comment">
+</span>            SPLUS = SPLUS + DDOT( N-J, Z( J+1, J ), 1, Z( J+1, J ), 1 )
+            SMINU = DDOT( N-J, Z( J+1, J ), 1, RHS( J+1 ), 1 )
+            SPLUS = SPLUS*RHS( J )
+            IF( SPLUS.GT.SMINU ) THEN
+               RHS( J ) = BP
+            ELSE IF( SMINU.GT.SPLUS ) THEN
+               RHS( J ) = BM
+            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              In this case the updating sums are equal and we can
+</span><span class="comment">*</span><span class="comment">              choose RHS(J) +1 or -1. The first time this happens
+</span><span class="comment">*</span><span class="comment">              we choose -1, thereafter +1. This is a simple way to
+</span><span class="comment">*</span><span class="comment">              get good estimates of matrices like Byers well-known
+</span><span class="comment">*</span><span class="comment">              example (see [1]). (Not done in BSOLVE.)
+</span><span class="comment">*</span><span class="comment">
+</span>               RHS( J ) = RHS( J ) + PMONE
+               PMONE = ONE
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute the remaining r.h.s.
+</span><span class="comment">*</span><span class="comment">
+</span>            TEMP = -RHS( J )
+            CALL DAXPY( N-J, TEMP, Z( J+1, J ), 1, RHS( J+1 ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>   10    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve for U-part, look-ahead for RHS(N) = +-1. This is not done
+</span><span class="comment">*</span><span class="comment">        in BSOLVE and will hopefully give us a better estimate because
+</span><span class="comment">*</span><span class="comment">        any ill-conditioning of the original matrix is transfered to U
+</span><span class="comment">*</span><span class="comment">        and not to L. U(N, N) is an approximation to sigma_min(LU).
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL DCOPY( N-1, RHS, 1, XP, 1 )
+         XP( N ) = RHS( N ) + ONE
+         RHS( N ) = RHS( N ) - ONE
+         SPLUS = ZERO
+         SMINU = ZERO
+         DO 30 I = N, 1, -1
+            TEMP = ONE / Z( I, I )
+            XP( I ) = XP( I )*TEMP
+            RHS( I ) = RHS( I )*TEMP
+            DO 20 K = I + 1, N
+               XP( I ) = XP( I ) - XP( K )*( Z( I, K )*TEMP )
+               RHS( I ) = RHS( I ) - RHS( K )*( Z( I, K )*TEMP )
+   20       CONTINUE
+            SPLUS = SPLUS + ABS( XP( I ) )
+            SMINU = SMINU + ABS( RHS( I ) )
+   30    CONTINUE
+         IF( SPLUS.GT.SMINU )
+     $      CALL DCOPY( N, XP, 1, RHS, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Apply the permutations JPIV to the computed solution (RHS)
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DLASWP.201"></a><a href="dlaswp.f.html#DLASWP.1">DLASWP</a>( 1, RHS, LDZ, 1, N-1, JPIV, -1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute the sum of squares
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DLASSQ.205"></a><a href="dlassq.f.html#DLASSQ.1">DLASSQ</a>( N, RHS, 1, RDSCAL, RDSUM )
+<span class="comment">*</span><span class="comment">
+</span>      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        IJOB = 2, Compute approximate nullvector XM of Z
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DGECON.211"></a><a href="dgecon.f.html#DGECON.1">DGECON</a>( <span class="string">'I'</span>, N, Z, LDZ, ONE, TEMP, WORK, IWORK, INFO )
+         CALL DCOPY( N, WORK( N+1 ), 1, XM, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute RHS
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DLASWP.216"></a><a href="dlaswp.f.html#DLASWP.1">DLASWP</a>( 1, XM, LDZ, 1, N-1, IPIV, -1 )
+         TEMP = ONE / SQRT( DDOT( N, XM, 1, XM, 1 ) )
+         CALL DSCAL( N, TEMP, XM, 1 )
+         CALL DCOPY( N, XM, 1, XP, 1 )
+         CALL DAXPY( N, ONE, RHS, 1, XP, 1 )
+         CALL DAXPY( N, -ONE, XM, 1, RHS, 1 )
+         CALL <a name="DGESC2.222"></a><a href="dgesc2.f.html#DGESC2.1">DGESC2</a>( N, Z, LDZ, RHS, IPIV, JPIV, TEMP )
+         CALL <a name="DGESC2.223"></a><a href="dgesc2.f.html#DGESC2.1">DGESC2</a>( N, Z, LDZ, XP, IPIV, JPIV, TEMP )
+         IF( DASUM( N, XP, 1 ).GT.DASUM( N, RHS, 1 ) )
+     $      CALL DCOPY( N, XP, 1, RHS, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute the sum of squares
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DLASSQ.229"></a><a href="dlassq.f.html#DLASSQ.1">DLASSQ</a>( N, RHS, 1, RDSCAL, RDSUM )
+<span class="comment">*</span><span class="comment">
+</span>      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLATDF.235"></a><a href="dlatdf.f.html#DLATDF.1">DLATDF</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

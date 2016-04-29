@@ -1,0 +1,288 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zlaed7.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZLAED7.1"></a><a href="zlaed7.f.html#ZLAED7.1">ZLAED7</a>( N, CUTPNT, QSIZ, TLVLS, CURLVL, CURPBM, D, Q,
+     $                   LDQ, RHO, INDXQ, QSTORE, QPTR, PRMPTR, PERM,
+     $                   GIVPTR, GIVCOL, GIVNUM, WORK, RWORK, IWORK,
+     $                   INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            CURLVL, CURPBM, CUTPNT, INFO, LDQ, N, QSIZ,
+     $                   TLVLS
+      DOUBLE PRECISION   RHO
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            GIVCOL( 2, * ), GIVPTR( * ), INDXQ( * ),
+     $                   IWORK( * ), PERM( * ), PRMPTR( * ), QPTR( * )
+      DOUBLE PRECISION   D( * ), GIVNUM( 2, * ), QSTORE( * ), RWORK( * )
+      COMPLEX*16         Q( LDQ, * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZLAED7.25"></a><a href="zlaed7.f.html#ZLAED7.1">ZLAED7</a> computes the updated eigensystem of a diagonal
+</span><span class="comment">*</span><span class="comment">  matrix after modification by a rank-one symmetric matrix. This
+</span><span class="comment">*</span><span class="comment">  routine is used only for the eigenproblem which requires all
+</span><span class="comment">*</span><span class="comment">  eigenvalues and optionally eigenvectors of a dense or banded
+</span><span class="comment">*</span><span class="comment">  Hermitian matrix that has been reduced to tridiagonal form.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">    T = Q(in) ( D(in) + RHO * Z*Z' ) Q'(in) = Q(out) * D(out) * Q'(out)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">    where Z = Q'u, u is a vector of length N with ones in the
+</span><span class="comment">*</span><span class="comment">    CUTPNT and CUTPNT + 1 th elements and zeros elsewhere.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The eigenvectors of the original matrix are stored in Q, and the
+</span><span class="comment">*</span><span class="comment">     eigenvalues are in D.  The algorithm consists of three stages:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        The first stage consists of deflating the size of the problem
+</span><span class="comment">*</span><span class="comment">        when there are multiple eigenvalues or if there is a zero in
+</span><span class="comment">*</span><span class="comment">        the Z vector.  For each such occurence the dimension of the
+</span><span class="comment">*</span><span class="comment">        secular equation problem is reduced by one.  This stage is
+</span><span class="comment">*</span><span class="comment">        performed by the routine <a name="DLAED2.43"></a><a href="dlaed2.f.html#DLAED2.1">DLAED2</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        The second stage consists of calculating the updated
+</span><span class="comment">*</span><span class="comment">        eigenvalues. This is done by finding the roots of the secular
+</span><span class="comment">*</span><span class="comment">        equation via the routine <a name="DLAED4.47"></a><a href="dlaed4.f.html#DLAED4.1">DLAED4</a> (as called by <a name="SLAED3.47"></a><a href="slaed3.f.html#SLAED3.1">SLAED3</a>).
+</span><span class="comment">*</span><span class="comment">        This routine also calculates the eigenvectors of the current
+</span><span class="comment">*</span><span class="comment">        problem.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        The final stage consists of computing the updated eigenvectors
+</span><span class="comment">*</span><span class="comment">        directly using the updated eigenvalues.  The eigenvectors for
+</span><span class="comment">*</span><span class="comment">        the current problem are multiplied with the eigenvectors from
+</span><span class="comment">*</span><span class="comment">        the overall problem.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The dimension of the symmetric tridiagonal matrix.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CUTPNT (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         Contains the location of the last eigenvalue in the leading
+</span><span class="comment">*</span><span class="comment">         sub-matrix.  min(1,N) &lt;= CUTPNT &lt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  QSIZ   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The dimension of the unitary matrix used to reduce
+</span><span class="comment">*</span><span class="comment">         the full matrix to tridiagonal form.  QSIZ &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TLVLS  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The total number of merging levels in the overall divide and
+</span><span class="comment">*</span><span class="comment">         conquer tree.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CURLVL (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The current level in the overall merge routine,
+</span><span class="comment">*</span><span class="comment">         0 &lt;= curlvl &lt;= tlvls.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CURPBM (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The current problem in the current level in the overall
+</span><span class="comment">*</span><span class="comment">         merge routine (counting from upper left to lower right).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D      (input/output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         On entry, the eigenvalues of the rank-1-perturbed matrix.
+</span><span class="comment">*</span><span class="comment">         On exit, the eigenvalues of the repaired matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Q      (input/output) COMPLEX*16 array, dimension (LDQ,N)
+</span><span class="comment">*</span><span class="comment">         On entry, the eigenvectors of the rank-1-perturbed matrix.
+</span><span class="comment">*</span><span class="comment">         On exit, the eigenvectors of the repaired tridiagonal matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDQ    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of the array Q.  LDQ &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RHO    (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">         Contains the subdiagonal element used to create the rank-1
+</span><span class="comment">*</span><span class="comment">         modification.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INDXQ  (output) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         This contains the permutation which will reintegrate the
+</span><span class="comment">*</span><span class="comment">         subproblem just solved back into sorted order,
+</span><span class="comment">*</span><span class="comment">         ie. D( INDXQ( I = 1, N ) ) will be in ascending order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK  (workspace) INTEGER array, dimension (4*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RWORK  (workspace) DOUBLE PRECISION array,
+</span><span class="comment">*</span><span class="comment">                                 dimension (3*N+2*QSIZ*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK   (workspace) COMPLEX*16 array, dimension (QSIZ*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  QSTORE (input/output) DOUBLE PRECISION array, dimension (N**2+1)
+</span><span class="comment">*</span><span class="comment">         Stores eigenvectors of submatrices encountered during
+</span><span class="comment">*</span><span class="comment">         divide and conquer, packed together. QPTR points to
+</span><span class="comment">*</span><span class="comment">         beginning of the submatrices.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  QPTR   (input/output) INTEGER array, dimension (N+2)
+</span><span class="comment">*</span><span class="comment">         List of indices pointing to beginning of submatrices stored
+</span><span class="comment">*</span><span class="comment">         in QSTORE. The submatrices are numbered starting at the
+</span><span class="comment">*</span><span class="comment">         bottom left of the divide and conquer tree, from left to
+</span><span class="comment">*</span><span class="comment">         right and bottom to top.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  PRMPTR (input) INTEGER array, dimension (N lg N)
+</span><span class="comment">*</span><span class="comment">         Contains a list of pointers which indicate where in PERM a
+</span><span class="comment">*</span><span class="comment">         level's permutation is stored.  PRMPTR(i+1) - PRMPTR(i)
+</span><span class="comment">*</span><span class="comment">         indicates the size of the permutation and also the size of
+</span><span class="comment">*</span><span class="comment">         the full, non-deflated problem.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  PERM   (input) INTEGER array, dimension (N lg N)
+</span><span class="comment">*</span><span class="comment">         Contains the permutations (from deflation and sorting) to be
+</span><span class="comment">*</span><span class="comment">         applied to each eigenblock.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GIVPTR (input) INTEGER array, dimension (N lg N)
+</span><span class="comment">*</span><span class="comment">         Contains a list of pointers which indicate where in GIVCOL a
+</span><span class="comment">*</span><span class="comment">         level's Givens rotations are stored.  GIVPTR(i+1) - GIVPTR(i)
+</span><span class="comment">*</span><span class="comment">         indicates the number of Givens rotations.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GIVCOL (input) INTEGER array, dimension (2, N lg N)
+</span><span class="comment">*</span><span class="comment">         Each pair of numbers indicates a pair of columns to take place
+</span><span class="comment">*</span><span class="comment">         in a Givens rotation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GIVNUM (input) DOUBLE PRECISION array, dimension (2, N lg N)
+</span><span class="comment">*</span><span class="comment">         Each number indicates the S value to be used in the
+</span><span class="comment">*</span><span class="comment">         corresponding Givens rotation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO   (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit.
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = 1, an eigenvalue did not converge
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            COLTYP, CURR, I, IDLMDA, INDX,
+     $                   INDXC, INDXP, IQ, IW, IZ, K, N1, N2, PTR
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DLAED9.155"></a><a href="dlaed9.f.html#DLAED9.1">DLAED9</a>, <a name="DLAEDA.155"></a><a href="dlaeda.f.html#DLAEDA.1">DLAEDA</a>, <a name="DLAMRG.155"></a><a href="dlamrg.f.html#DLAMRG.1">DLAMRG</a>, <a name="XERBLA.155"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, <a name="ZLACRM.155"></a><a href="zlacrm.f.html#ZLACRM.1">ZLACRM</a>, <a name="ZLAED8.155"></a><a href="zlaed8.f.html#ZLAED8.1">ZLAED8</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     IF( ICOMPQ.LT.0 .OR. ICOMPQ.GT.1 ) THEN
+</span><span class="comment">*</span><span class="comment">        INFO = -1
+</span><span class="comment">*</span><span class="comment">     ELSE IF( N.LT.0 ) THEN
+</span>      IF( N.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( MIN( 1, N ).GT.CUTPNT .OR. N.LT.CUTPNT ) THEN
+         INFO = -2
+      ELSE IF( QSIZ.LT.N ) THEN
+         INFO = -3
+      ELSE IF( LDQ.LT.MAX( 1, N ) ) THEN
+         INFO = -9
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.179"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZLAED7.179"></a><a href="zlaed7.f.html#ZLAED7.1">ZLAED7</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The following values are for bookkeeping purposes only.  They are
+</span><span class="comment">*</span><span class="comment">     integer pointers which indicate the portion of the workspace
+</span><span class="comment">*</span><span class="comment">     used by a particular array in <a name="DLAED2.190"></a><a href="dlaed2.f.html#DLAED2.1">DLAED2</a> and <a name="SLAED3.190"></a><a href="slaed3.f.html#SLAED3.1">SLAED3</a>.
+</span><span class="comment">*</span><span class="comment">
+</span>      IZ = 1
+      IDLMDA = IZ + N
+      IW = IDLMDA + N
+      IQ = IW + N
+<span class="comment">*</span><span class="comment">
+</span>      INDX = 1
+      INDXC = INDX + N
+      COLTYP = INDXC + N
+      INDXP = COLTYP + N
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Form the z-vector which consists of the last row of Q_1 and the
+</span><span class="comment">*</span><span class="comment">     first row of Q_2.
+</span><span class="comment">*</span><span class="comment">
+</span>      PTR = 1 + 2**TLVLS
+      DO 10 I = 1, CURLVL - 1
+         PTR = PTR + 2**( TLVLS-I )
+   10 CONTINUE
+      CURR = PTR + CURPBM
+      CALL <a name="DLAEDA.210"></a><a href="dlaeda.f.html#DLAEDA.1">DLAEDA</a>( N, TLVLS, CURLVL, CURPBM, PRMPTR, PERM, GIVPTR,
+     $             GIVCOL, GIVNUM, QSTORE, QPTR, RWORK( IZ ),
+     $             RWORK( IZ+N ), INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     When solving the final problem, we no longer need the stored data,
+</span><span class="comment">*</span><span class="comment">     so we will overwrite the data from this level onto the previously
+</span><span class="comment">*</span><span class="comment">     used storage space.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( CURLVL.EQ.TLVLS ) THEN
+         QPTR( CURR ) = 1
+         PRMPTR( CURR ) = 1
+         GIVPTR( CURR ) = 1
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Sort and Deflate eigenvalues.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="ZLAED8.226"></a><a href="zlaed8.f.html#ZLAED8.1">ZLAED8</a>( K, N, QSIZ, Q, LDQ, D, RHO, CUTPNT, RWORK( IZ ),
+     $             RWORK( IDLMDA ), WORK, QSIZ, RWORK( IW ),
+     $             IWORK( INDXP ), IWORK( INDX ), INDXQ,
+     $             PERM( PRMPTR( CURR ) ), GIVPTR( CURR+1 ),
+     $             GIVCOL( 1, GIVPTR( CURR ) ),
+     $             GIVNUM( 1, GIVPTR( CURR ) ), INFO )
+      PRMPTR( CURR+1 ) = PRMPTR( CURR ) + N
+      GIVPTR( CURR+1 ) = GIVPTR( CURR+1 ) + GIVPTR( CURR )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Solve Secular Equation.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( K.NE.0 ) THEN
+         CALL <a name="DLAED9.238"></a><a href="dlaed9.f.html#DLAED9.1">DLAED9</a>( K, 1, K, N, D, RWORK( IQ ), K, RHO,
+     $                RWORK( IDLMDA ), RWORK( IW ),
+     $                QSTORE( QPTR( CURR ) ), K, INFO )
+         CALL <a name="ZLACRM.241"></a><a href="zlacrm.f.html#ZLACRM.1">ZLACRM</a>( QSIZ, K, WORK, QSIZ, QSTORE( QPTR( CURR ) ), K, Q,
+     $                LDQ, RWORK( IQ ) )
+         QPTR( CURR+1 ) = QPTR( CURR ) + K**2
+         IF( INFO.NE.0 ) THEN
+            RETURN
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Prepare the INDXQ sorting premutation.
+</span><span class="comment">*</span><span class="comment">
+</span>         N1 = K
+         N2 = N - K
+         CALL <a name="DLAMRG.252"></a><a href="dlamrg.f.html#DLAMRG.1">DLAMRG</a>( N1, N2, D, 1, -1, INDXQ )
+      ELSE
+         QPTR( CURR+1 ) = QPTR( CURR )
+         DO 20 I = 1, N
+            INDXQ( I ) = I
+   20    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZLAED7.262"></a><a href="zlaed7.f.html#ZLAED7.1">ZLAED7</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

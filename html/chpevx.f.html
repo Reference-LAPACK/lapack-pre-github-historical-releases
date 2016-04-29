@@ -1,0 +1,412 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>chpevx.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CHPEVX.1"></a><a href="chpevx.f.html#CHPEVX.1">CHPEVX</a>( JOBZ, RANGE, UPLO, N, AP, VL, VU, IL, IU,
+     $                   ABSTOL, M, W, Z, LDZ, WORK, RWORK, IWORK,
+     $                   IFAIL, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK driver routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          JOBZ, RANGE, UPLO
+      INTEGER            IL, INFO, IU, LDZ, M, N
+      REAL               ABSTOL, VL, VU
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IFAIL( * ), IWORK( * )
+      REAL               RWORK( * ), W( * )
+      COMPLEX            AP( * ), WORK( * ), Z( LDZ, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CHPEVX.23"></a><a href="chpevx.f.html#CHPEVX.1">CHPEVX</a> computes selected eigenvalues and, optionally, eigenvectors
+</span><span class="comment">*</span><span class="comment">  of a complex Hermitian matrix A in packed storage.
+</span><span class="comment">*</span><span class="comment">  Eigenvalues/vectors can be selected by specifying either a range of
+</span><span class="comment">*</span><span class="comment">  values or a range of indices for the desired eigenvalues.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOBZ    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'N':  Compute eigenvalues only;
+</span><span class="comment">*</span><span class="comment">          = 'V':  Compute eigenvalues and eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RANGE   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'A': all eigenvalues will be found;
+</span><span class="comment">*</span><span class="comment">          = 'V': all eigenvalues in the half-open interval (VL,VU]
+</span><span class="comment">*</span><span class="comment">                 will be found;
+</span><span class="comment">*</span><span class="comment">          = 'I': the IL-th through IU-th eigenvalues will be found.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangle of A is stored;
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangle of A is stored.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AP      (input/output) COMPLEX array, dimension (N*(N+1)/2)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper or lower triangle of the Hermitian matrix
+</span><span class="comment">*</span><span class="comment">          A, packed columnwise in a linear array.  The j-th column of A
+</span><span class="comment">*</span><span class="comment">          is stored in the array AP as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', AP(i + (j-1)*j/2) = A(i,j) for 1&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', AP(i + (j-1)*(2*n-j)/2) = A(i,j) for j&lt;=i&lt;=n.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, AP is overwritten by values generated during the
+</span><span class="comment">*</span><span class="comment">          reduction to tridiagonal form.  If UPLO = 'U', the diagonal
+</span><span class="comment">*</span><span class="comment">          and first superdiagonal of the tridiagonal matrix T overwrite
+</span><span class="comment">*</span><span class="comment">          the corresponding elements of A, and if UPLO = 'L', the
+</span><span class="comment">*</span><span class="comment">          diagonal and first subdiagonal of T overwrite the
+</span><span class="comment">*</span><span class="comment">          corresponding elements of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VL      (input) REAL
+</span><span class="comment">*</span><span class="comment">  VU      (input) REAL
+</span><span class="comment">*</span><span class="comment">          If RANGE='V', the lower and upper bounds of the interval to
+</span><span class="comment">*</span><span class="comment">          be searched for eigenvalues. VL &lt; VU.
+</span><span class="comment">*</span><span class="comment">          Not referenced if RANGE = 'A' or 'I'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IL      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">  IU      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          If RANGE='I', the indices (in ascending order) of the
+</span><span class="comment">*</span><span class="comment">          smallest and largest eigenvalues to be returned.
+</span><span class="comment">*</span><span class="comment">          1 &lt;= IL &lt;= IU &lt;= N, if N &gt; 0; IL = 1 and IU = 0 if N = 0.
+</span><span class="comment">*</span><span class="comment">          Not referenced if RANGE = 'A' or 'V'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ABSTOL  (input) REAL
+</span><span class="comment">*</span><span class="comment">          The absolute error tolerance for the eigenvalues.
+</span><span class="comment">*</span><span class="comment">          An approximate eigenvalue is accepted as converged
+</span><span class="comment">*</span><span class="comment">          when it is determined to lie in an interval [a,b]
+</span><span class="comment">*</span><span class="comment">          of width less than or equal to
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                  ABSTOL + EPS *   max( |a|,|b| ) ,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          where EPS is the machine precision.  If ABSTOL is less than
+</span><span class="comment">*</span><span class="comment">          or equal to zero, then  EPS*|T|  will be used in its place,
+</span><span class="comment">*</span><span class="comment">          where |T| is the 1-norm of the tridiagonal matrix obtained
+</span><span class="comment">*</span><span class="comment">          by reducing AP to tridiagonal form.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          Eigenvalues will be computed most accurately when ABSTOL is
+</span><span class="comment">*</span><span class="comment">          set to twice the underflow threshold 2*<a name="SLAMCH.89"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>('S'), not zero.
+</span><span class="comment">*</span><span class="comment">          If this routine returns with INFO&gt;0, indicating that some
+</span><span class="comment">*</span><span class="comment">          eigenvectors did not converge, try setting ABSTOL to
+</span><span class="comment">*</span><span class="comment">          2*<a name="SLAMCH.92"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>('S').
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          See &quot;Computing Small Singular Values of Bidiagonal Matrices
+</span><span class="comment">*</span><span class="comment">          with Guaranteed High Relative Accuracy,&quot; by Demmel and
+</span><span class="comment">*</span><span class="comment">          Kahan, LAPACK Working Note #3.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          The total number of eigenvalues found.  0 &lt;= M &lt;= N.
+</span><span class="comment">*</span><span class="comment">          If RANGE = 'A', M = N, and if RANGE = 'I', M = IU-IL+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  W       (output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          If INFO = 0, the selected eigenvalues in ascending order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z       (output) COMPLEX array, dimension (LDZ, max(1,M))
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'V', then if INFO = 0, the first M columns of Z
+</span><span class="comment">*</span><span class="comment">          contain the orthonormal eigenvectors of the matrix A
+</span><span class="comment">*</span><span class="comment">          corresponding to the selected eigenvalues, with the i-th
+</span><span class="comment">*</span><span class="comment">          column of Z holding the eigenvector associated with W(i).
+</span><span class="comment">*</span><span class="comment">          If an eigenvector fails to converge, then that column of Z
+</span><span class="comment">*</span><span class="comment">          contains the latest approximation to the eigenvector, and
+</span><span class="comment">*</span><span class="comment">          the index of the eigenvector is returned in IFAIL.
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'N', then Z is not referenced.
+</span><span class="comment">*</span><span class="comment">          Note: the user must ensure that at least max(1,M) columns are
+</span><span class="comment">*</span><span class="comment">          supplied in the array Z; if RANGE = 'V', the exact value of M
+</span><span class="comment">*</span><span class="comment">          is not known in advance and an upper bound must be used.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDZ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Z.  LDZ &gt;= 1, and if
+</span><span class="comment">*</span><span class="comment">          JOBZ = 'V', LDZ &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) COMPLEX array, dimension (2*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RWORK   (workspace) REAL array, dimension (7*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK   (workspace) INTEGER array, dimension (5*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IFAIL   (output) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'V', then if INFO = 0, the first M elements of
+</span><span class="comment">*</span><span class="comment">          IFAIL are zero.  If INFO &gt; 0, then IFAIL contains the
+</span><span class="comment">*</span><span class="comment">          indices of the eigenvectors that failed to converge.
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'N', then IFAIL is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = i, then i eigenvectors failed to converge.
+</span><span class="comment">*</span><span class="comment">                Their indices are stored in array IFAIL.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, ONE
+      PARAMETER          ( ZERO = 0.0E0, ONE = 1.0E0 )
+      COMPLEX            CONE
+      PARAMETER          ( CONE = ( 1.0E0, 0.0E0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            ALLEIG, INDEIG, TEST, VALEIG, WANTZ
+      CHARACTER          ORDER
+      INTEGER            I, IINFO, IMAX, INDD, INDE, INDEE, INDIBL,
+     $                   INDISP, INDIWK, INDRWK, INDTAU, INDWRK, ISCALE,
+     $                   ITMP1, J, JJ, NSPLIT
+      REAL               ABSTLL, ANRM, BIGNUM, EPS, RMAX, RMIN, SAFMIN,
+     $                   SIGMA, SMLNUM, TMP1, VLL, VUU
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.158"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      REAL               <a name="CLANHP.159"></a><a href="clanhp.f.html#CLANHP.1">CLANHP</a>, <a name="SLAMCH.159"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      EXTERNAL           <a name="LSAME.160"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="CLANHP.160"></a><a href="clanhp.f.html#CLANHP.1">CLANHP</a>, <a name="SLAMCH.160"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="CHPTRD.163"></a><a href="chptrd.f.html#CHPTRD.1">CHPTRD</a>, CSSCAL, <a name="CSTEIN.163"></a><a href="cstein.f.html#CSTEIN.1">CSTEIN</a>, <a name="CSTEQR.163"></a><a href="csteqr.f.html#CSTEQR.1">CSTEQR</a>, CSWAP, <a name="CUPGTR.163"></a><a href="cupgtr.f.html#CUPGTR.1">CUPGTR</a>,
+     $                   <a name="CUPMTR.164"></a><a href="cupmtr.f.html#CUPMTR.1">CUPMTR</a>, SCOPY, SSCAL, <a name="SSTEBZ.164"></a><a href="sstebz.f.html#SSTEBZ.1">SSTEBZ</a>, <a name="SSTERF.164"></a><a href="ssterf.f.html#SSTERF.1">SSTERF</a>, <a name="XERBLA.164"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX, MIN, REAL, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      WANTZ = <a name="LSAME.173"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBZ, <span class="string">'V'</span> )
+      ALLEIG = <a name="LSAME.174"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( RANGE, <span class="string">'A'</span> )
+      VALEIG = <a name="LSAME.175"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( RANGE, <span class="string">'V'</span> )
+      INDEIG = <a name="LSAME.176"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( RANGE, <span class="string">'I'</span> )
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( .NOT.( WANTZ .OR. <a name="LSAME.179"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBZ, <span class="string">'N'</span> ) ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.( ALLEIG .OR. VALEIG .OR. INDEIG ) ) THEN
+         INFO = -2
+      ELSE IF( .NOT.( <a name="LSAME.183"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) .OR. <a name="LSAME.183"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) ) )
+     $          THEN
+         INFO = -3
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -4
+      ELSE
+         IF( VALEIG ) THEN
+            IF( N.GT.0 .AND. VU.LE.VL )
+     $         INFO = -7
+         ELSE IF( INDEIG ) THEN
+            IF( IL.LT.1 .OR. IL.GT.MAX( 1, N ) ) THEN
+               INFO = -8
+            ELSE IF( IU.LT.MIN( N, IL ) .OR. IU.GT.N ) THEN
+               INFO = -9
+            END IF
+         END IF
+      END IF
+      IF( INFO.EQ.0 ) THEN
+         IF( LDZ.LT.1 .OR. ( WANTZ .AND. LDZ.LT.N ) )
+     $      INFO = -14
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.206"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CHPEVX.206"></a><a href="chpevx.f.html#CHPEVX.1">CHPEVX</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      M = 0
+      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.1 ) THEN
+         IF( ALLEIG .OR. INDEIG ) THEN
+            M = 1
+            W( 1 ) = AP( 1 )
+         ELSE
+            IF( VL.LT.REAL( AP( 1 ) ) .AND. VU.GE.REAL( AP( 1 ) ) ) THEN
+               M = 1
+               W( 1 ) = AP( 1 )
+            END IF
+         END IF
+         IF( WANTZ )
+     $      Z( 1, 1 ) = CONE
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Get machine constants.
+</span><span class="comment">*</span><span class="comment">
+</span>      SAFMIN = <a name="SLAMCH.233"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Safe minimum'</span> )
+      EPS = <a name="SLAMCH.234"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Precision'</span> )
+      SMLNUM = SAFMIN / EPS
+      BIGNUM = ONE / SMLNUM
+      RMIN = SQRT( SMLNUM )
+      RMAX = MIN( SQRT( BIGNUM ), ONE / SQRT( SQRT( SAFMIN ) ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Scale matrix to allowable range, if necessary.
+</span><span class="comment">*</span><span class="comment">
+</span>      ISCALE = 0
+      ABSTLL = ABSTOL
+      IF ( VALEIG ) THEN
+         VLL = VL
+         VUU = VU
+      ELSE
+         VLL = ZERO
+         VUU = ZERO
+      ENDIF
+      ANRM = <a name="CLANHP.251"></a><a href="clanhp.f.html#CLANHP.1">CLANHP</a>( <span class="string">'M'</span>, UPLO, N, AP, RWORK )
+      IF( ANRM.GT.ZERO .AND. ANRM.LT.RMIN ) THEN
+         ISCALE = 1
+         SIGMA = RMIN / ANRM
+      ELSE IF( ANRM.GT.RMAX ) THEN
+         ISCALE = 1
+         SIGMA = RMAX / ANRM
+      END IF
+      IF( ISCALE.EQ.1 ) THEN
+         CALL CSSCAL( ( N*( N+1 ) ) / 2, SIGMA, AP, 1 )
+         IF( ABSTOL.GT.0 )
+     $      ABSTLL = ABSTOL*SIGMA
+         IF( VALEIG ) THEN
+            VLL = VL*SIGMA
+            VUU = VU*SIGMA
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Call <a name="CHPTRD.269"></a><a href="chptrd.f.html#CHPTRD.1">CHPTRD</a> to reduce Hermitian packed matrix to tridiagonal form.
+</span><span class="comment">*</span><span class="comment">
+</span>      INDD = 1
+      INDE = INDD + N
+      INDRWK = INDE + N
+      INDTAU = 1
+      INDWRK = INDTAU + N
+      CALL <a name="CHPTRD.276"></a><a href="chptrd.f.html#CHPTRD.1">CHPTRD</a>( UPLO, N, AP, RWORK( INDD ), RWORK( INDE ),
+     $             WORK( INDTAU ), IINFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If all eigenvalues are desired and ABSTOL is less than or equal
+</span><span class="comment">*</span><span class="comment">     to zero, then call <a name="SSTERF.280"></a><a href="ssterf.f.html#SSTERF.1">SSTERF</a> or <a name="CUPGTR.280"></a><a href="cupgtr.f.html#CUPGTR.1">CUPGTR</a> and <a name="CSTEQR.280"></a><a href="csteqr.f.html#CSTEQR.1">CSTEQR</a>.  If this fails
+</span><span class="comment">*</span><span class="comment">     for some eigenvalue, then try <a name="SSTEBZ.281"></a><a href="sstebz.f.html#SSTEBZ.1">SSTEBZ</a>.
+</span><span class="comment">*</span><span class="comment">
+</span>      TEST = .FALSE.
+      IF (INDEIG) THEN
+         IF (IL.EQ.1 .AND. IU.EQ.N) THEN
+            TEST = .TRUE.
+         END IF
+      END IF
+      IF ((ALLEIG .OR. TEST) .AND. (ABSTOL.LE.ZERO)) THEN
+         CALL SCOPY( N, RWORK( INDD ), 1, W, 1 )
+         INDEE = INDRWK + 2*N
+         IF( .NOT.WANTZ ) THEN
+            CALL SCOPY( N-1, RWORK( INDE ), 1, RWORK( INDEE ), 1 )
+            CALL <a name="SSTERF.294"></a><a href="ssterf.f.html#SSTERF.1">SSTERF</a>( N, W, RWORK( INDEE ), INFO )
+         ELSE
+            CALL <a name="CUPGTR.296"></a><a href="cupgtr.f.html#CUPGTR.1">CUPGTR</a>( UPLO, N, AP, WORK( INDTAU ), Z, LDZ,
+     $                   WORK( INDWRK ), IINFO )
+            CALL SCOPY( N-1, RWORK( INDE ), 1, RWORK( INDEE ), 1 )
+            CALL <a name="CSTEQR.299"></a><a href="csteqr.f.html#CSTEQR.1">CSTEQR</a>( JOBZ, N, W, RWORK( INDEE ), Z, LDZ,
+     $                   RWORK( INDRWK ), INFO )
+            IF( INFO.EQ.0 ) THEN
+               DO 10 I = 1, N
+                  IFAIL( I ) = 0
+   10          CONTINUE
+            END IF
+         END IF
+         IF( INFO.EQ.0 ) THEN
+            M = N
+            GO TO 20
+         END IF
+         INFO = 0
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Otherwise, call <a name="SSTEBZ.314"></a><a href="sstebz.f.html#SSTEBZ.1">SSTEBZ</a> and, if eigenvectors are desired, <a name="CSTEIN.314"></a><a href="cstein.f.html#CSTEIN.1">CSTEIN</a>.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( WANTZ ) THEN
+         ORDER = <span class="string">'B'</span>
+      ELSE
+         ORDER = <span class="string">'E'</span>
+      END IF
+      INDIBL = 1
+      INDISP = INDIBL + N
+      INDIWK = INDISP + N
+      CALL <a name="SSTEBZ.324"></a><a href="sstebz.f.html#SSTEBZ.1">SSTEBZ</a>( RANGE, ORDER, N, VLL, VUU, IL, IU, ABSTLL,
+     $             RWORK( INDD ), RWORK( INDE ), M, NSPLIT, W,
+     $             IWORK( INDIBL ), IWORK( INDISP ), RWORK( INDRWK ),
+     $             IWORK( INDIWK ), INFO )
+<span class="comment">*</span><span class="comment">
+</span>      IF( WANTZ ) THEN
+         CALL <a name="CSTEIN.330"></a><a href="cstein.f.html#CSTEIN.1">CSTEIN</a>( N, RWORK( INDD ), RWORK( INDE ), M, W,
+     $                IWORK( INDIBL ), IWORK( INDISP ), Z, LDZ,
+     $                RWORK( INDRWK ), IWORK( INDIWK ), IFAIL, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Apply unitary matrix used in reduction to tridiagonal
+</span><span class="comment">*</span><span class="comment">        form to eigenvectors returned by <a name="CSTEIN.335"></a><a href="cstein.f.html#CSTEIN.1">CSTEIN</a>.
+</span><span class="comment">*</span><span class="comment">
+</span>         INDWRK = INDTAU + N
+         CALL <a name="CUPMTR.338"></a><a href="cupmtr.f.html#CUPMTR.1">CUPMTR</a>( <span class="string">'L'</span>, UPLO, <span class="string">'N'</span>, N, M, AP, WORK( INDTAU ), Z, LDZ,
+     $                WORK( INDWRK ), INFO )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If matrix was scaled, then rescale eigenvalues appropriately.
+</span><span class="comment">*</span><span class="comment">
+</span>   20 CONTINUE
+      IF( ISCALE.EQ.1 ) THEN
+         IF( INFO.EQ.0 ) THEN
+            IMAX = M
+         ELSE
+            IMAX = INFO - 1
+         END IF
+         CALL SSCAL( IMAX, ONE / SIGMA, W, 1 )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If eigenvalues are not in order, then sort them, along with
+</span><span class="comment">*</span><span class="comment">     eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( WANTZ ) THEN
+         DO 40 J = 1, M - 1
+            I = 0
+            TMP1 = W( J )
+            DO 30 JJ = J + 1, M
+               IF( W( JJ ).LT.TMP1 ) THEN
+                  I = JJ
+                  TMP1 = W( JJ )
+               END IF
+   30       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            IF( I.NE.0 ) THEN
+               ITMP1 = IWORK( INDIBL+I-1 )
+               W( I ) = W( J )
+               IWORK( INDIBL+I-1 ) = IWORK( INDIBL+J-1 )
+               W( J ) = TMP1
+               IWORK( INDIBL+J-1 ) = ITMP1
+               CALL CSWAP( N, Z( 1, I ), 1, Z( 1, J ), 1 )
+               IF( INFO.NE.0 ) THEN
+                  ITMP1 = IFAIL( I )
+                  IFAIL( I ) = IFAIL( J )
+                  IFAIL( J ) = ITMP1
+               END IF
+            END IF
+   40    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CHPEVX.386"></a><a href="chpevx.f.html#CHPEVX.1">CHPEVX</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slantr.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      REAL             FUNCTION <a name="SLANTR.1"></a><a href="slantr.f.html#SLANTR.1">SLANTR</a>( NORM, UPLO, DIAG, M, N, A, LDA,
+     $                 WORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          DIAG, NORM, UPLO
+      INTEGER            LDA, M, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               A( LDA, * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLANTR.19"></a><a href="slantr.f.html#SLANTR.1">SLANTR</a>  returns the value of the one norm,  or the Frobenius norm, or
+</span><span class="comment">*</span><span class="comment">  the  infinity norm,  or the  element of  largest absolute value  of a
+</span><span class="comment">*</span><span class="comment">  trapezoidal or triangular matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Description
+</span><span class="comment">*</span><span class="comment">  ===========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLANTR.26"></a><a href="slantr.f.html#SLANTR.1">SLANTR</a> returns the value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     <a name="SLANTR.28"></a><a href="slantr.f.html#SLANTR.1">SLANTR</a> = ( max(abs(A(i,j))), NORM = 'M' or 'm'
+</span><span class="comment">*</span><span class="comment">              (
+</span><span class="comment">*</span><span class="comment">              ( norm1(A),         NORM = '1', 'O' or 'o'
+</span><span class="comment">*</span><span class="comment">              (
+</span><span class="comment">*</span><span class="comment">              ( normI(A),         NORM = 'I' or 'i'
+</span><span class="comment">*</span><span class="comment">              (
+</span><span class="comment">*</span><span class="comment">              ( normF(A),         NORM = 'F', 'f', 'E' or 'e'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where  norm1  denotes the  one norm of a matrix (maximum column sum),
+</span><span class="comment">*</span><span class="comment">  normI  denotes the  infinity norm  of a matrix  (maximum row sum) and
+</span><span class="comment">*</span><span class="comment">  normF  denotes the  Frobenius norm of a matrix (square root of sum of
+</span><span class="comment">*</span><span class="comment">  squares).  Note that  max(abs(A(i,j)))  is not a consistent matrix norm.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NORM    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies the value to be returned in <a name="SLANTR.45"></a><a href="slantr.f.html#SLANTR.1">SLANTR</a> as described
+</span><span class="comment">*</span><span class="comment">          above.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether the matrix A is upper or lower trapezoidal.
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper trapezoidal
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower trapezoidal
+</span><span class="comment">*</span><span class="comment">          Note that A is triangular instead of trapezoidal if M = N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIAG    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether or not the matrix A has unit diagonal.
+</span><span class="comment">*</span><span class="comment">          = 'N':  Non-unit diagonal
+</span><span class="comment">*</span><span class="comment">          = 'U':  Unit diagonal
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix A.  M &gt;= 0, and if
+</span><span class="comment">*</span><span class="comment">          UPLO = 'U', M &lt;= N.  When M = 0, <a name="SLANTR.61"></a><a href="slantr.f.html#SLANTR.1">SLANTR</a> is set to zero.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix A.  N &gt;= 0, and if
+</span><span class="comment">*</span><span class="comment">          UPLO = 'L', N &lt;= M.  When N = 0, <a name="SLANTR.65"></a><a href="slantr.f.html#SLANTR.1">SLANTR</a> is set to zero.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input) REAL array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          The trapezoidal matrix A (A is triangular if M = N).
+</span><span class="comment">*</span><span class="comment">          If UPLO = 'U', the leading m by n upper trapezoidal part of
+</span><span class="comment">*</span><span class="comment">          the array A contains the upper trapezoidal matrix, and the
+</span><span class="comment">*</span><span class="comment">          strictly lower triangular part of A is not referenced.
+</span><span class="comment">*</span><span class="comment">          If UPLO = 'L', the leading m by n lower trapezoidal part of
+</span><span class="comment">*</span><span class="comment">          the array A contains the lower trapezoidal matrix, and the
+</span><span class="comment">*</span><span class="comment">          strictly upper triangular part of A is not referenced.  Note
+</span><span class="comment">*</span><span class="comment">          that when DIAG = 'U', the diagonal elements of A are not
+</span><span class="comment">*</span><span class="comment">          referenced and are assumed to be one.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(M,1).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) REAL array, dimension (MAX(1,LWORK)),
+</span><span class="comment">*</span><span class="comment">          where LWORK &gt;= M when NORM = 'I'; otherwise, WORK is not
+</span><span class="comment">*</span><span class="comment">          referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment"> =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ONE, ZERO
+      PARAMETER          ( ONE = 1.0E+0, ZERO = 0.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            UDIAG
+      INTEGER            I, J
+      REAL               SCALE, SUM, VALUE
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="SLASSQ.97"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.100"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.101"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX, MIN, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( MIN( M, N ).EQ.0 ) THEN
+         VALUE = ZERO
+      ELSE IF( <a name="LSAME.110"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'M'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find max(abs(A(i,j))).
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( <a name="LSAME.114"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIAG, <span class="string">'U'</span> ) ) THEN
+            VALUE = ONE
+            IF( <a name="LSAME.116"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) ) THEN
+               DO 20 J = 1, N
+                  DO 10 I = 1, MIN( M, J-1 )
+                     VALUE = MAX( VALUE, ABS( A( I, J ) ) )
+   10             CONTINUE
+   20          CONTINUE
+            ELSE
+               DO 40 J = 1, N
+                  DO 30 I = J + 1, M
+                     VALUE = MAX( VALUE, ABS( A( I, J ) ) )
+   30             CONTINUE
+   40          CONTINUE
+            END IF
+         ELSE
+            VALUE = ZERO
+            IF( <a name="LSAME.131"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) ) THEN
+               DO 60 J = 1, N
+                  DO 50 I = 1, MIN( M, J )
+                     VALUE = MAX( VALUE, ABS( A( I, J ) ) )
+   50             CONTINUE
+   60          CONTINUE
+            ELSE
+               DO 80 J = 1, N
+                  DO 70 I = J, M
+                     VALUE = MAX( VALUE, ABS( A( I, J ) ) )
+   70             CONTINUE
+   80          CONTINUE
+            END IF
+         END IF
+      ELSE IF( ( <a name="LSAME.145"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'O'</span> ) ) .OR. ( NORM.EQ.<span class="string">'1'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find norm1(A).
+</span><span class="comment">*</span><span class="comment">
+</span>         VALUE = ZERO
+         UDIAG = <a name="LSAME.150"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIAG, <span class="string">'U'</span> )
+         IF( <a name="LSAME.151"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) ) THEN
+            DO 110 J = 1, N
+               IF( ( UDIAG ) .AND. ( J.LE.M ) ) THEN
+                  SUM = ONE
+                  DO 90 I = 1, J - 1
+                     SUM = SUM + ABS( A( I, J ) )
+   90             CONTINUE
+               ELSE
+                  SUM = ZERO
+                  DO 100 I = 1, MIN( M, J )
+                     SUM = SUM + ABS( A( I, J ) )
+  100             CONTINUE
+               END IF
+               VALUE = MAX( VALUE, SUM )
+  110       CONTINUE
+         ELSE
+            DO 140 J = 1, N
+               IF( UDIAG ) THEN
+                  SUM = ONE
+                  DO 120 I = J + 1, M
+                     SUM = SUM + ABS( A( I, J ) )
+  120             CONTINUE
+               ELSE
+                  SUM = ZERO
+                  DO 130 I = J, M
+                     SUM = SUM + ABS( A( I, J ) )
+  130             CONTINUE
+               END IF
+               VALUE = MAX( VALUE, SUM )
+  140       CONTINUE
+         END IF
+      ELSE IF( <a name="LSAME.182"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'I'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find normI(A).
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( <a name="LSAME.186"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) ) THEN
+            IF( <a name="LSAME.187"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIAG, <span class="string">'U'</span> ) ) THEN
+               DO 150 I = 1, M
+                  WORK( I ) = ONE
+  150          CONTINUE
+               DO 170 J = 1, N
+                  DO 160 I = 1, MIN( M, J-1 )
+                     WORK( I ) = WORK( I ) + ABS( A( I, J ) )
+  160             CONTINUE
+  170          CONTINUE
+            ELSE
+               DO 180 I = 1, M
+                  WORK( I ) = ZERO
+  180          CONTINUE
+               DO 200 J = 1, N
+                  DO 190 I = 1, MIN( M, J )
+                     WORK( I ) = WORK( I ) + ABS( A( I, J ) )
+  190             CONTINUE
+  200          CONTINUE
+            END IF
+         ELSE
+            IF( <a name="LSAME.207"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIAG, <span class="string">'U'</span> ) ) THEN
+               DO 210 I = 1, N
+                  WORK( I ) = ONE
+  210          CONTINUE
+               DO 220 I = N + 1, M
+                  WORK( I ) = ZERO
+  220          CONTINUE
+               DO 240 J = 1, N
+                  DO 230 I = J + 1, M
+                     WORK( I ) = WORK( I ) + ABS( A( I, J ) )
+  230             CONTINUE
+  240          CONTINUE
+            ELSE
+               DO 250 I = 1, M
+                  WORK( I ) = ZERO
+  250          CONTINUE
+               DO 270 J = 1, N
+                  DO 260 I = J, M
+                     WORK( I ) = WORK( I ) + ABS( A( I, J ) )
+  260             CONTINUE
+  270          CONTINUE
+            END IF
+         END IF
+         VALUE = ZERO
+         DO 280 I = 1, M
+            VALUE = MAX( VALUE, WORK( I ) )
+  280    CONTINUE
+      ELSE IF( ( <a name="LSAME.234"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'F'</span> ) ) .OR. ( <a name="LSAME.234"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'E'</span> ) ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find normF(A).
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( <a name="LSAME.238"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) ) THEN
+            IF( <a name="LSAME.239"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIAG, <span class="string">'U'</span> ) ) THEN
+               SCALE = ONE
+               SUM = MIN( M, N )
+               DO 290 J = 2, N
+                  CALL <a name="SLASSQ.243"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>( MIN( M, J-1 ), A( 1, J ), 1, SCALE, SUM )
+  290          CONTINUE
+            ELSE
+               SCALE = ZERO
+               SUM = ONE
+               DO 300 J = 1, N
+                  CALL <a name="SLASSQ.249"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>( MIN( M, J ), A( 1, J ), 1, SCALE, SUM )
+  300          CONTINUE
+            END IF
+         ELSE
+            IF( <a name="LSAME.253"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIAG, <span class="string">'U'</span> ) ) THEN
+               SCALE = ONE
+               SUM = MIN( M, N )
+               DO 310 J = 1, N
+                  CALL <a name="SLASSQ.257"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>( M-J, A( MIN( M, J+1 ), J ), 1, SCALE,
+     $                         SUM )
+  310          CONTINUE
+            ELSE
+               SCALE = ZERO
+               SUM = ONE
+               DO 320 J = 1, N
+                  CALL <a name="SLASSQ.264"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>( M-J+1, A( J, J ), 1, SCALE, SUM )
+  320          CONTINUE
+            END IF
+         END IF
+         VALUE = SCALE*SQRT( SUM )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      <a name="SLANTR.271"></a><a href="slantr.f.html#SLANTR.1">SLANTR</a> = VALUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLANTR.274"></a><a href="slantr.f.html#SLANTR.1">SLANTR</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dspev.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DSPEV.1"></a><a href="dspev.f.html#DSPEV.1">DSPEV</a>( JOBZ, UPLO, N, AP, W, Z, LDZ, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK driver routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          JOBZ, UPLO
+      INTEGER            INFO, LDZ, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   AP( * ), W( * ), WORK( * ), Z( LDZ, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DSPEV.18"></a><a href="dspev.f.html#DSPEV.1">DSPEV</a> computes all the eigenvalues and, optionally, eigenvectors of a
+</span><span class="comment">*</span><span class="comment">  real symmetric matrix A in packed storage.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOBZ    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'N':  Compute eigenvalues only;
+</span><span class="comment">*</span><span class="comment">          = 'V':  Compute eigenvalues and eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangle of A is stored;
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangle of A is stored.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AP      (input/output) DOUBLE PRECISION array, dimension (N*(N+1)/2)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper or lower triangle of the symmetric matrix
+</span><span class="comment">*</span><span class="comment">          A, packed columnwise in a linear array.  The j-th column of A
+</span><span class="comment">*</span><span class="comment">          is stored in the array AP as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', AP(i + (j-1)*j/2) = A(i,j) for 1&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', AP(i + (j-1)*(2*n-j)/2) = A(i,j) for j&lt;=i&lt;=n.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, AP is overwritten by values generated during the
+</span><span class="comment">*</span><span class="comment">          reduction to tridiagonal form.  If UPLO = 'U', the diagonal
+</span><span class="comment">*</span><span class="comment">          and first superdiagonal of the tridiagonal matrix T overwrite
+</span><span class="comment">*</span><span class="comment">          the corresponding elements of A, and if UPLO = 'L', the
+</span><span class="comment">*</span><span class="comment">          diagonal and first subdiagonal of T overwrite the
+</span><span class="comment">*</span><span class="comment">          corresponding elements of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  W       (output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          If INFO = 0, the eigenvalues in ascending order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z       (output) DOUBLE PRECISION array, dimension (LDZ, N)
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'V', then if INFO = 0, Z contains the orthonormal
+</span><span class="comment">*</span><span class="comment">          eigenvectors of the matrix A, with the i-th column of Z
+</span><span class="comment">*</span><span class="comment">          holding the eigenvector associated with W(i).
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'N', then Z is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDZ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Z.  LDZ &gt;= 1, and if
+</span><span class="comment">*</span><span class="comment">          JOBZ = 'V', LDZ &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) DOUBLE PRECISION array, dimension (3*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit.
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = i, the algorithm failed to converge; i
+</span><span class="comment">*</span><span class="comment">                off-diagonal elements of an intermediate tridiagonal
+</span><span class="comment">*</span><span class="comment">                form did not converge to zero.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D0, ONE = 1.0D0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            WANTZ
+      INTEGER            IINFO, IMAX, INDE, INDTAU, INDWRK, ISCALE
+      DOUBLE PRECISION   ANRM, BIGNUM, EPS, RMAX, RMIN, SAFMIN, SIGMA,
+     $                   SMLNUM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.84"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      DOUBLE PRECISION   <a name="DLAMCH.85"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANSP.85"></a><a href="dlansp.f.html#DLANSP.1">DLANSP</a>
+      EXTERNAL           <a name="LSAME.86"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="DLAMCH.86"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANSP.86"></a><a href="dlansp.f.html#DLANSP.1">DLANSP</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DOPGTR.89"></a><a href="dopgtr.f.html#DOPGTR.1">DOPGTR</a>, DSCAL, <a name="DSPTRD.89"></a><a href="dsptrd.f.html#DSPTRD.1">DSPTRD</a>, <a name="DSTEQR.89"></a><a href="dsteqr.f.html#DSTEQR.1">DSTEQR</a>, <a name="DSTERF.89"></a><a href="dsterf.f.html#DSTERF.1">DSTERF</a>, <a name="XERBLA.89"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      WANTZ = <a name="LSAME.98"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBZ, <span class="string">'V'</span> )
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( .NOT.( WANTZ .OR. <a name="LSAME.101"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBZ, <span class="string">'N'</span> ) ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.( <a name="LSAME.103"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) .OR. <a name="LSAME.103"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) )
+     $          THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( LDZ.LT.1 .OR. ( WANTZ .AND. LDZ.LT.N ) ) THEN
+         INFO = -7
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.113"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DSPEV.113"></a><a href="dspev.f.html#DSPEV.1">DSPEV</a> '</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.1 ) THEN
+         W( 1 ) = AP( 1 )
+         IF( WANTZ )
+     $      Z( 1, 1 ) = ONE
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Get machine constants.
+</span><span class="comment">*</span><span class="comment">
+</span>      SAFMIN = <a name="DLAMCH.131"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Safe minimum'</span> )
+      EPS = <a name="DLAMCH.132"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Precision'</span> )
+      SMLNUM = SAFMIN / EPS
+      BIGNUM = ONE / SMLNUM
+      RMIN = SQRT( SMLNUM )
+      RMAX = SQRT( BIGNUM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Scale matrix to allowable range, if necessary.
+</span><span class="comment">*</span><span class="comment">
+</span>      ANRM = <a name="DLANSP.140"></a><a href="dlansp.f.html#DLANSP.1">DLANSP</a>( <span class="string">'M'</span>, UPLO, N, AP, WORK )
+      ISCALE = 0
+      IF( ANRM.GT.ZERO .AND. ANRM.LT.RMIN ) THEN
+         ISCALE = 1
+         SIGMA = RMIN / ANRM
+      ELSE IF( ANRM.GT.RMAX ) THEN
+         ISCALE = 1
+         SIGMA = RMAX / ANRM
+      END IF
+      IF( ISCALE.EQ.1 ) THEN
+         CALL DSCAL( ( N*( N+1 ) ) / 2, SIGMA, AP, 1 )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Call <a name="DSPTRD.153"></a><a href="dsptrd.f.html#DSPTRD.1">DSPTRD</a> to reduce symmetric packed matrix to tridiagonal form.
+</span><span class="comment">*</span><span class="comment">
+</span>      INDE = 1
+      INDTAU = INDE + N
+      CALL <a name="DSPTRD.157"></a><a href="dsptrd.f.html#DSPTRD.1">DSPTRD</a>( UPLO, N, AP, W, WORK( INDE ), WORK( INDTAU ), IINFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     For eigenvalues only, call <a name="DSTERF.159"></a><a href="dsterf.f.html#DSTERF.1">DSTERF</a>.  For eigenvectors, first call
+</span><span class="comment">*</span><span class="comment">     <a name="DOPGTR.160"></a><a href="dopgtr.f.html#DOPGTR.1">DOPGTR</a> to generate the orthogonal matrix, then call <a name="DSTEQR.160"></a><a href="dsteqr.f.html#DSTEQR.1">DSTEQR</a>.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( .NOT.WANTZ ) THEN
+         CALL <a name="DSTERF.163"></a><a href="dsterf.f.html#DSTERF.1">DSTERF</a>( N, W, WORK( INDE ), INFO )
+      ELSE
+         INDWRK = INDTAU + N
+         CALL <a name="DOPGTR.166"></a><a href="dopgtr.f.html#DOPGTR.1">DOPGTR</a>( UPLO, N, AP, WORK( INDTAU ), Z, LDZ,
+     $                WORK( INDWRK ), IINFO )
+         CALL <a name="DSTEQR.168"></a><a href="dsteqr.f.html#DSTEQR.1">DSTEQR</a>( JOBZ, N, W, WORK( INDE ), Z, LDZ, WORK( INDTAU ),
+     $                INFO )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If matrix was scaled, then rescale eigenvalues appropriately.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ISCALE.EQ.1 ) THEN
+         IF( INFO.EQ.0 ) THEN
+            IMAX = N
+         ELSE
+            IMAX = INFO - 1
+         END IF
+         CALL DSCAL( IMAX, ONE / SIGMA, W, 1 )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DSPEV.185"></a><a href="dspev.f.html#DSPEV.1">DSPEV</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

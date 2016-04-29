@@ -1,0 +1,461 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zlaqr2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZLAQR2.1"></a><a href="zlaqr2.f.html#ZLAQR2.1">ZLAQR2</a>( WANTT, WANTZ, N, KTOP, KBOT, NW, H, LDH, ILOZ,
+     $                   IHIZ, Z, LDZ, NS, ND, SH, V, LDV, NH, T, LDT,
+     $                   NV, WV, LDWV, WORK, LWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            IHIZ, ILOZ, KBOT, KTOP, LDH, LDT, LDV, LDWV,
+     $                   LDZ, LWORK, N, ND, NH, NS, NV, NW
+      LOGICAL            WANTT, WANTZ
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX*16         H( LDH, * ), SH( * ), T( LDT, * ), V( LDV, * ),
+     $                   WORK( * ), WV( LDWV, * ), Z( LDZ, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     This subroutine is identical to <a name="ZLAQR3.19"></a><a href="zlaqr3.f.html#ZLAQR3.1">ZLAQR3</a> except that it avoids
+</span><span class="comment">*</span><span class="comment">     recursion by calling <a name="ZLAHQR.20"></a><a href="zlahqr.f.html#ZLAHQR.1">ZLAHQR</a> instead of <a name="ZLAQR4.20"></a><a href="zlaqr4.f.html#ZLAQR4.1">ZLAQR4</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ******************************************************************
+</span><span class="comment">*</span><span class="comment">     Aggressive early deflation:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     This subroutine accepts as input an upper Hessenberg matrix
+</span><span class="comment">*</span><span class="comment">     H and performs an unitary similarity transformation
+</span><span class="comment">*</span><span class="comment">     designed to detect and deflate fully converged eigenvalues from
+</span><span class="comment">*</span><span class="comment">     a trailing principal submatrix.  On output H has been over-
+</span><span class="comment">*</span><span class="comment">     written by a new Hessenberg matrix that is a perturbation of
+</span><span class="comment">*</span><span class="comment">     an unitary similarity transformation of H.  It is to be
+</span><span class="comment">*</span><span class="comment">     hoped that the final version of H has many zero subdiagonal
+</span><span class="comment">*</span><span class="comment">     entries.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ******************************************************************
+</span><span class="comment">*</span><span class="comment">     WANTT   (input) LOGICAL
+</span><span class="comment">*</span><span class="comment">          If .TRUE., then the Hessenberg matrix H is fully updated
+</span><span class="comment">*</span><span class="comment">          so that the triangular Schur factor may be
+</span><span class="comment">*</span><span class="comment">          computed (in cooperation with the calling subroutine).
+</span><span class="comment">*</span><span class="comment">          If .FALSE., then only enough of H is updated to preserve
+</span><span class="comment">*</span><span class="comment">          the eigenvalues.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     WANTZ   (input) LOGICAL
+</span><span class="comment">*</span><span class="comment">          If .TRUE., then the unitary matrix Z is updated so
+</span><span class="comment">*</span><span class="comment">          so that the unitary Schur factor may be computed
+</span><span class="comment">*</span><span class="comment">          (in cooperation with the calling subroutine).
+</span><span class="comment">*</span><span class="comment">          If .FALSE., then Z is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix H and (if WANTZ is .TRUE.) the
+</span><span class="comment">*</span><span class="comment">          order of the unitary matrix Z.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     KTOP    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          It is assumed that either KTOP = 1 or H(KTOP,KTOP-1)=0.
+</span><span class="comment">*</span><span class="comment">          KBOT and KTOP together determine an isolated block
+</span><span class="comment">*</span><span class="comment">          along the diagonal of the Hessenberg matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     KBOT    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          It is assumed without a check that either
+</span><span class="comment">*</span><span class="comment">          KBOT = N or H(KBOT+1,KBOT)=0.  KBOT and KTOP together
+</span><span class="comment">*</span><span class="comment">          determine an isolated block along the diagonal of the
+</span><span class="comment">*</span><span class="comment">          Hessenberg matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     NW      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          Deflation window size.  1 .LE. NW .LE. (KBOT-KTOP+1).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     H       (input/output) COMPLEX*16 array, dimension (LDH,N)
+</span><span class="comment">*</span><span class="comment">          On input the initial N-by-N section of H stores the
+</span><span class="comment">*</span><span class="comment">          Hessenberg matrix undergoing aggressive early deflation.
+</span><span class="comment">*</span><span class="comment">          On output H has been transformed by a unitary
+</span><span class="comment">*</span><span class="comment">          similarity transformation, perturbed, and the returned
+</span><span class="comment">*</span><span class="comment">          to Hessenberg form that (it is to be hoped) has some
+</span><span class="comment">*</span><span class="comment">          zero subdiagonal entries.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     LDH     (input) integer
+</span><span class="comment">*</span><span class="comment">          Leading dimension of H just as declared in the calling
+</span><span class="comment">*</span><span class="comment">          subroutine.  N .LE. LDH
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ILOZ    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">     IHIZ    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          Specify the rows of Z to which transformations must be
+</span><span class="comment">*</span><span class="comment">          applied if WANTZ is .TRUE.. 1 .LE. ILOZ .LE. IHIZ .LE. N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Z       (input/output) COMPLEX*16 array, dimension (LDZ,IHI)
+</span><span class="comment">*</span><span class="comment">          IF WANTZ is .TRUE., then on output, the unitary
+</span><span class="comment">*</span><span class="comment">          similarity transformation mentioned above has been
+</span><span class="comment">*</span><span class="comment">          accumulated into Z(ILOZ:IHIZ,ILO:IHI) from the right.
+</span><span class="comment">*</span><span class="comment">          If WANTZ is .FALSE., then Z is unreferenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     LDZ     (input) integer
+</span><span class="comment">*</span><span class="comment">          The leading dimension of Z just as declared in the
+</span><span class="comment">*</span><span class="comment">          calling subroutine.  1 .LE. LDZ.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     NS      (output) integer
+</span><span class="comment">*</span><span class="comment">          The number of unconverged (ie approximate) eigenvalues
+</span><span class="comment">*</span><span class="comment">          returned in SR and SI that may be used as shifts by the
+</span><span class="comment">*</span><span class="comment">          calling subroutine.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ND      (output) integer
+</span><span class="comment">*</span><span class="comment">          The number of converged eigenvalues uncovered by this
+</span><span class="comment">*</span><span class="comment">          subroutine.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     SH      (output) COMPLEX*16 array, dimension KBOT
+</span><span class="comment">*</span><span class="comment">          On output, approximate eigenvalues that may
+</span><span class="comment">*</span><span class="comment">          be used for shifts are stored in SH(KBOT-ND-NS+1)
+</span><span class="comment">*</span><span class="comment">          through SR(KBOT-ND).  Converged eigenvalues are
+</span><span class="comment">*</span><span class="comment">          stored in SH(KBOT-ND+1) through SH(KBOT).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     V       (workspace) COMPLEX*16 array, dimension (LDV,NW)
+</span><span class="comment">*</span><span class="comment">          An NW-by-NW work array.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     LDV     (input) integer scalar
+</span><span class="comment">*</span><span class="comment">          The leading dimension of V just as declared in the
+</span><span class="comment">*</span><span class="comment">          calling subroutine.  NW .LE. LDV
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     NH      (input) integer scalar
+</span><span class="comment">*</span><span class="comment">          The number of columns of T.  NH.GE.NW.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     T       (workspace) COMPLEX*16 array, dimension (LDT,NW)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     LDT     (input) integer
+</span><span class="comment">*</span><span class="comment">          The leading dimension of T just as declared in the
+</span><span class="comment">*</span><span class="comment">          calling subroutine.  NW .LE. LDT
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     NV      (input) integer
+</span><span class="comment">*</span><span class="comment">          The number of rows of work array WV available for
+</span><span class="comment">*</span><span class="comment">          workspace.  NV.GE.NW.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     WV      (workspace) COMPLEX*16 array, dimension (LDWV,NW)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     LDWV    (input) integer
+</span><span class="comment">*</span><span class="comment">          The leading dimension of W just as declared in the
+</span><span class="comment">*</span><span class="comment">          calling subroutine.  NW .LE. LDV
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     WORK    (workspace) COMPLEX*16 array, dimension LWORK.
+</span><span class="comment">*</span><span class="comment">          On exit, WORK(1) is set to an estimate of the optimal value
+</span><span class="comment">*</span><span class="comment">          of LWORK for the given values of N, NW, KTOP and KBOT.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     LWORK   (input) integer
+</span><span class="comment">*</span><span class="comment">          The dimension of the work array WORK.  LWORK = 2*NW
+</span><span class="comment">*</span><span class="comment">          suffices, but greater efficiency may result from larger
+</span><span class="comment">*</span><span class="comment">          values of LWORK.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If LWORK = -1, then a workspace query is assumed; <a name="ZLAQR2.144"></a><a href="zlaqr2.f.html#ZLAQR2.1">ZLAQR2</a>
+</span><span class="comment">*</span><span class="comment">          only estimates the optimal workspace size for the given
+</span><span class="comment">*</span><span class="comment">          values of N, NW, KTOP and KBOT.  The estimate is returned
+</span><span class="comment">*</span><span class="comment">          in WORK(1).  No error message related to LWORK is issued
+</span><span class="comment">*</span><span class="comment">          by <a name="XERBLA.148"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.  Neither H nor Z are accessed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ================================================================
+</span><span class="comment">*</span><span class="comment">     Based on contributions by
+</span><span class="comment">*</span><span class="comment">        Karen Braman and Ralph Byers, Department of Mathematics,
+</span><span class="comment">*</span><span class="comment">        University of Kansas, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==================================================================
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      COMPLEX*16         ZERO, ONE
+      PARAMETER          ( ZERO = ( 0.0d0, 0.0d0 ),
+     $                   ONE = ( 1.0d0, 0.0d0 ) )
+      DOUBLE PRECISION   RZERO, RONE
+      PARAMETER          ( RZERO = 0.0d0, RONE = 1.0d0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      COMPLEX*16         BETA, CDUM, S, TAU
+      DOUBLE PRECISION   FOO, SAFMAX, SAFMIN, SMLNUM, ULP
+      INTEGER            I, IFST, ILST, INFO, INFQR, J, JW, KCOL, KLN,
+     $                   KNT, KROW, KWTOP, LTOP, LWK1, LWK2, LWKOPT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      DOUBLE PRECISION   <a name="DLAMCH.170"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+      EXTERNAL           <a name="DLAMCH.171"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DLABAD.174"></a><a href="dlabad.f.html#DLABAD.1">DLABAD</a>, ZCOPY, <a name="ZGEHRD.174"></a><a href="zgehrd.f.html#ZGEHRD.1">ZGEHRD</a>, ZGEMM, <a name="ZLACPY.174"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>, <a name="ZLAHQR.174"></a><a href="zlahqr.f.html#ZLAHQR.1">ZLAHQR</a>,
+     $                   <a name="ZLARF.175"></a><a href="zlarf.f.html#ZLARF.1">ZLARF</a>, <a name="ZLARFG.175"></a><a href="zlarfg.f.html#ZLARFG.1">ZLARFG</a>, <a name="ZLASET.175"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>, <a name="ZTREXC.175"></a><a href="ztrexc.f.html#ZTREXC.1">ZTREXC</a>, <a name="ZUNGHR.175"></a><a href="zunghr.f.html#ZUNGHR.1">ZUNGHR</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, DBLE, DCMPLX, DCONJG, DIMAG, INT, MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Functions ..
+</span>      DOUBLE PRECISION   CABS1
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Function definitions ..
+</span>      CABS1( CDUM ) = ABS( DBLE( CDUM ) ) + ABS( DIMAG( CDUM ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== Estimate optimal workspace. ====
+</span><span class="comment">*</span><span class="comment">
+</span>      JW = MIN( NW, KBOT-KTOP+1 )
+      IF( JW.LE.2 ) THEN
+         LWKOPT = 1
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== Workspace query call to <a name="ZGEHRD.195"></a><a href="zgehrd.f.html#ZGEHRD.1">ZGEHRD</a> ====
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="ZGEHRD.197"></a><a href="zgehrd.f.html#ZGEHRD.1">ZGEHRD</a>( JW, 1, JW-1, T, LDT, WORK, WORK, -1, INFO )
+         LWK1 = INT( WORK( 1 ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== Workspace query call to <a name="ZUNGHR.200"></a><a href="zunghr.f.html#ZUNGHR.1">ZUNGHR</a> ====
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="ZUNGHR.202"></a><a href="zunghr.f.html#ZUNGHR.1">ZUNGHR</a>( JW, 1, JW-1, T, LDT, WORK, WORK, -1, INFO )
+         LWK2 = INT( WORK( 1 ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== Optimal workspace ====
+</span><span class="comment">*</span><span class="comment">
+</span>         LWKOPT = JW + MAX( LWK1, LWK2 )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== Quick return in case of workspace query. ====
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( LWORK.EQ.-1 ) THEN
+         WORK( 1 ) = DCMPLX( LWKOPT, 0 )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== Nothing to do ...
+</span><span class="comment">*</span><span class="comment">     ... for an empty active block ... ====
+</span>      NS = 0
+      ND = 0
+      IF( KTOP.GT.KBOT )
+     $   RETURN
+<span class="comment">*</span><span class="comment">     ... nor for an empty deflation window. ====
+</span>      IF( NW.LT.1 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== Machine constants ====
+</span><span class="comment">*</span><span class="comment">
+</span>      SAFMIN = <a name="DLAMCH.229"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'SAFE MINIMUM'</span> )
+      SAFMAX = RONE / SAFMIN
+      CALL <a name="DLABAD.231"></a><a href="dlabad.f.html#DLABAD.1">DLABAD</a>( SAFMIN, SAFMAX )
+      ULP = <a name="DLAMCH.232"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'PRECISION'</span> )
+      SMLNUM = SAFMIN*( DBLE( N ) / ULP )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== Setup deflation window ====
+</span><span class="comment">*</span><span class="comment">
+</span>      JW = MIN( NW, KBOT-KTOP+1 )
+      KWTOP = KBOT - JW + 1
+      IF( KWTOP.EQ.KTOP ) THEN
+         S = ZERO
+      ELSE
+         S = H( KWTOP, KWTOP-1 )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( KBOT.EQ.KWTOP ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== 1-by-1 deflation window: not much to do ====
+</span><span class="comment">*</span><span class="comment">
+</span>         SH( KWTOP ) = H( KWTOP, KWTOP )
+         NS = 1
+         ND = 0
+         IF( CABS1( S ).LE.MAX( SMLNUM, ULP*CABS1( H( KWTOP,
+     $       KWTOP ) ) ) ) THEN
+            NS = 0
+            ND = 1
+            IF( KWTOP.GT.KTOP )
+     $         H( KWTOP, KWTOP-1 ) = ZERO
+         END IF
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== Convert to spike-triangular form.  (In case of a
+</span><span class="comment">*</span><span class="comment">     .    rare QR failure, this routine continues to do
+</span><span class="comment">*</span><span class="comment">     .    aggressive early deflation using that part of
+</span><span class="comment">*</span><span class="comment">     .    the deflation window that converged using INFQR
+</span><span class="comment">*</span><span class="comment">     .    here and there to keep track.) ====
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="ZLACPY.268"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'U'</span>, JW, JW, H( KWTOP, KWTOP ), LDH, T, LDT )
+      CALL ZCOPY( JW-1, H( KWTOP+1, KWTOP ), LDH+1, T( 2, 1 ), LDT+1 )
+<span class="comment">*</span><span class="comment">
+</span>      CALL <a name="ZLASET.271"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'A'</span>, JW, JW, ZERO, ONE, V, LDV )
+      CALL <a name="ZLAHQR.272"></a><a href="zlahqr.f.html#ZLAHQR.1">ZLAHQR</a>( .true., .true., JW, 1, JW, T, LDT, SH( KWTOP ), 1,
+     $             JW, V, LDV, INFQR )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== Deflation detection loop ====
+</span><span class="comment">*</span><span class="comment">
+</span>      NS = JW
+      ILST = INFQR + 1
+      DO 10 KNT = INFQR + 1, JW
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== Small spike tip deflation test ====
+</span><span class="comment">*</span><span class="comment">
+</span>         FOO = CABS1( T( NS, NS ) )
+         IF( FOO.EQ.RZERO )
+     $      FOO = CABS1( S )
+         IF( CABS1( S )*CABS1( V( 1, NS ) ).LE.MAX( SMLNUM, ULP*FOO ) )
+     $        THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           ==== One more converged eigenvalue ====
+</span><span class="comment">*</span><span class="comment">
+</span>            NS = NS - 1
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           ==== One undflatable eigenvalue.  Move it up out of the
+</span><span class="comment">*</span><span class="comment">           .    way.   (<a name="ZTREXC.295"></a><a href="ztrexc.f.html#ZTREXC.1">ZTREXC</a> can not fail in this case.) ====
+</span><span class="comment">*</span><span class="comment">
+</span>            IFST = NS
+            CALL <a name="ZTREXC.298"></a><a href="ztrexc.f.html#ZTREXC.1">ZTREXC</a>( <span class="string">'V'</span>, JW, T, LDT, V, LDV, IFST, ILST, INFO )
+            ILST = ILST + 1
+         END IF
+   10 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== Return to Hessenberg form ====
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( NS.EQ.0 )
+     $   S = ZERO
+<span class="comment">*</span><span class="comment">
+</span>      IF( NS.LT.JW ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== sorting the diagonal of T improves accuracy for
+</span><span class="comment">*</span><span class="comment">        .    graded matrices.  ====
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 30 I = INFQR + 1, NS
+            IFST = I
+            DO 20 J = I + 1, NS
+               IF( CABS1( T( J, J ) ).GT.CABS1( T( IFST, IFST ) ) )
+     $            IFST = J
+   20       CONTINUE
+            ILST = I
+            IF( IFST.NE.ILST )
+     $         CALL <a name="ZTREXC.321"></a><a href="ztrexc.f.html#ZTREXC.1">ZTREXC</a>( <span class="string">'V'</span>, JW, T, LDT, V, LDV, IFST, ILST, INFO )
+   30    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== Restore shift/eigenvalue array from T ====
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 40 I = INFQR + 1, JW
+         SH( KWTOP+I-1 ) = T( I, I )
+   40 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( NS.LT.JW .OR. S.EQ.ZERO ) THEN
+         IF( NS.GT.1 .AND. S.NE.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           ==== Reflect spike back into lower triangle ====
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL ZCOPY( NS, V, LDV, WORK, 1 )
+            DO 50 I = 1, NS
+               WORK( I ) = DCONJG( WORK( I ) )
+   50       CONTINUE
+            BETA = WORK( 1 )
+            CALL <a name="ZLARFG.342"></a><a href="zlarfg.f.html#ZLARFG.1">ZLARFG</a>( NS, BETA, WORK( 2 ), 1, TAU )
+            WORK( 1 ) = ONE
+<span class="comment">*</span><span class="comment">
+</span>            CALL <a name="ZLASET.345"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'L'</span>, JW-2, JW-2, ZERO, ZERO, T( 3, 1 ), LDT )
+<span class="comment">*</span><span class="comment">
+</span>            CALL <a name="ZLARF.347"></a><a href="zlarf.f.html#ZLARF.1">ZLARF</a>( <span class="string">'L'</span>, NS, JW, WORK, 1, DCONJG( TAU ), T, LDT,
+     $                  WORK( JW+1 ) )
+            CALL <a name="ZLARF.349"></a><a href="zlarf.f.html#ZLARF.1">ZLARF</a>( <span class="string">'R'</span>, NS, NS, WORK, 1, TAU, T, LDT,
+     $                  WORK( JW+1 ) )
+            CALL <a name="ZLARF.351"></a><a href="zlarf.f.html#ZLARF.1">ZLARF</a>( <span class="string">'R'</span>, JW, NS, WORK, 1, TAU, V, LDV,
+     $                  WORK( JW+1 ) )
+<span class="comment">*</span><span class="comment">
+</span>            CALL <a name="ZGEHRD.354"></a><a href="zgehrd.f.html#ZGEHRD.1">ZGEHRD</a>( JW, 1, NS, T, LDT, WORK, WORK( JW+1 ),
+     $                   LWORK-JW, INFO )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== Copy updated reduced window into place ====
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( KWTOP.GT.1 )
+     $      H( KWTOP, KWTOP-1 ) = S*DCONJG( V( 1, 1 ) )
+         CALL <a name="ZLACPY.362"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'U'</span>, JW, JW, T, LDT, H( KWTOP, KWTOP ), LDH )
+         CALL ZCOPY( JW-1, T( 2, 1 ), LDT+1, H( KWTOP+1, KWTOP ),
+     $               LDH+1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== Accumulate orthogonal matrix in order update
+</span><span class="comment">*</span><span class="comment">        .    H and Z, if requested.  (A modified version
+</span><span class="comment">*</span><span class="comment">        .    of  <a name="ZUNGHR.368"></a><a href="zunghr.f.html#ZUNGHR.1">ZUNGHR</a> that accumulates block Householder
+</span><span class="comment">*</span><span class="comment">        .    transformations into V directly might be
+</span><span class="comment">*</span><span class="comment">        .    marginally more efficient than the following.) ====
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( NS.GT.1 .AND. S.NE.ZERO ) THEN
+            CALL <a name="ZUNGHR.373"></a><a href="zunghr.f.html#ZUNGHR.1">ZUNGHR</a>( JW, 1, NS, T, LDT, WORK, WORK( JW+1 ),
+     $                   LWORK-JW, INFO )
+            CALL ZGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, JW, NS, NS, ONE, V, LDV, T, LDT, ZERO,
+     $                  WV, LDWV )
+            CALL <a name="ZLACPY.377"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'A'</span>, JW, NS, WV, LDWV, V, LDV )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== Update vertical slab in H ====
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( WANTT ) THEN
+            LTOP = 1
+         ELSE
+            LTOP = KTOP
+         END IF
+         DO 60 KROW = LTOP, KWTOP - 1, NV
+            KLN = MIN( NV, KWTOP-KROW )
+            CALL ZGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, KLN, JW, JW, ONE, H( KROW, KWTOP ),
+     $                  LDH, V, LDV, ZERO, WV, LDWV )
+            CALL <a name="ZLACPY.391"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'A'</span>, KLN, JW, WV, LDWV, H( KROW, KWTOP ), LDH )
+   60    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== Update horizontal slab in H ====
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( WANTT ) THEN
+            DO 70 KCOL = KBOT + 1, N, NH
+               KLN = MIN( NH, N-KCOL+1 )
+               CALL ZGEMM( <span class="string">'C'</span>, <span class="string">'N'</span>, JW, KLN, JW, ONE, V, LDV,
+     $                     H( KWTOP, KCOL ), LDH, ZERO, T, LDT )
+               CALL <a name="ZLACPY.401"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'A'</span>, JW, KLN, T, LDT, H( KWTOP, KCOL ),
+     $                      LDH )
+   70       CONTINUE
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== Update vertical slab in Z ====
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( WANTZ ) THEN
+            DO 80 KROW = ILOZ, IHIZ, NV
+               KLN = MIN( NV, IHIZ-KROW+1 )
+               CALL ZGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, KLN, JW, JW, ONE, Z( KROW, KWTOP ),
+     $                     LDZ, V, LDV, ZERO, WV, LDWV )
+               CALL <a name="ZLACPY.413"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'A'</span>, KLN, JW, WV, LDWV, Z( KROW, KWTOP ),
+     $                      LDZ )
+   80       CONTINUE
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== Return the number of deflations ... ====
+</span><span class="comment">*</span><span class="comment">
+</span>      ND = JW - NS
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== ... and the number of shifts. (Subtracting
+</span><span class="comment">*</span><span class="comment">     .    INFQR from the spike length takes care
+</span><span class="comment">*</span><span class="comment">     .    of the case of a rare QR failure while
+</span><span class="comment">*</span><span class="comment">     .    calculating eigenvalues of the deflation
+</span><span class="comment">*</span><span class="comment">     .    window.)  ====
+</span><span class="comment">*</span><span class="comment">
+</span>      NS = NS - INFQR
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">      ==== Return optimal workspace. ====
+</span><span class="comment">*</span><span class="comment">
+</span>      WORK( 1 ) = DCMPLX( LWKOPT, 0 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== End of <a name="ZLAQR2.435"></a><a href="zlaqr2.f.html#ZLAQR2.1">ZLAQR2</a> ====
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slasq1.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLASQ1.1"></a><a href="slasq1.f.html#SLASQ1.1">SLASQ1</a>( N, D, E, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               D( * ), E( * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLASQ1.17"></a><a href="slasq1.f.html#SLASQ1.1">SLASQ1</a> computes the singular values of a real N-by-N bidiagonal
+</span><span class="comment">*</span><span class="comment">  matrix with diagonal D and off-diagonal E. The singular values
+</span><span class="comment">*</span><span class="comment">  are computed to high relative accuracy, in the absence of
+</span><span class="comment">*</span><span class="comment">  denormalization, underflow and overflow. The algorithm was first
+</span><span class="comment">*</span><span class="comment">  presented in
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  &quot;Accurate singular values and differential qd algorithms&quot; by K. V.
+</span><span class="comment">*</span><span class="comment">  Fernando and B. N. Parlett, Numer. Math., Vol-67, No. 2, pp. 191-230,
+</span><span class="comment">*</span><span class="comment">  1994,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  and the present implementation is described in &quot;An implementation of
+</span><span class="comment">*</span><span class="comment">  the dqds Algorithm (Positive Case)&quot;, LAPACK Working Note.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">        The number of rows and columns in the matrix. N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D     (input/output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">        On entry, D contains the diagonal elements of the
+</span><span class="comment">*</span><span class="comment">        bidiagonal matrix whose SVD is desired. On normal exit,
+</span><span class="comment">*</span><span class="comment">        D contains the singular values in decreasing order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E     (input/output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">        On entry, elements E(1:N-1) contain the off-diagonal elements
+</span><span class="comment">*</span><span class="comment">        of the bidiagonal matrix whose SVD is desired.
+</span><span class="comment">*</span><span class="comment">        On exit, E is overwritten.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK  (workspace) REAL array, dimension (4*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO  (output) INTEGER
+</span><span class="comment">*</span><span class="comment">        = 0: successful exit
+</span><span class="comment">*</span><span class="comment">        &lt; 0: if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">        &gt; 0: the algorithm failed
+</span><span class="comment">*</span><span class="comment">             = 1, a split was marked by a positive value in E
+</span><span class="comment">*</span><span class="comment">             = 2, current block of Z not diagonalized after 30*N
+</span><span class="comment">*</span><span class="comment">                  iterations (in inner while loop)
+</span><span class="comment">*</span><span class="comment">             = 3, termination criterion of outer while loop not met 
+</span><span class="comment">*</span><span class="comment">                  (program created more than N unreduced blocks)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO
+      PARAMETER          ( ZERO = 0.0E0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, IINFO
+      REAL               EPS, SCALE, SAFMIN, SIGMN, SIGMX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           SCOPY, <a name="SLAS2.69"></a><a href="slas2.f.html#SLAS2.1">SLAS2</a>, <a name="SLASCL.69"></a><a href="slascl.f.html#SLASCL.1">SLASCL</a>, <a name="SLASQ2.69"></a><a href="slasq2.f.html#SLASQ2.1">SLASQ2</a>, <a name="SLASRT.69"></a><a href="slasrt.f.html#SLASRT.1">SLASRT</a>, <a name="XERBLA.69"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      REAL               <a name="SLAMCH.72"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      EXTERNAL           <a name="SLAMCH.73"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( N.LT.0 ) THEN
+         INFO = -2
+         CALL <a name="XERBLA.83"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="SLASQ1.83"></a><a href="slasq1.f.html#SLASQ1.1">SLASQ1</a>'</span>, -INFO )
+         RETURN
+      ELSE IF( N.EQ.0 ) THEN
+         RETURN
+      ELSE IF( N.EQ.1 ) THEN
+         D( 1 ) = ABS( D( 1 ) )
+         RETURN
+      ELSE IF( N.EQ.2 ) THEN
+         CALL <a name="SLAS2.91"></a><a href="slas2.f.html#SLAS2.1">SLAS2</a>( D( 1 ), E( 1 ), D( 2 ), SIGMN, SIGMX )
+         D( 1 ) = SIGMX
+         D( 2 ) = SIGMN
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Estimate the largest singular value.
+</span><span class="comment">*</span><span class="comment">
+</span>      SIGMX = ZERO
+      DO 10 I = 1, N - 1
+         D( I ) = ABS( D( I ) )
+         SIGMX = MAX( SIGMX, ABS( E( I ) ) )
+   10 CONTINUE
+      D( N ) = ABS( D( N ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Early return if SIGMX is zero (matrix is already diagonal).
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( SIGMX.EQ.ZERO ) THEN
+         CALL <a name="SLASRT.109"></a><a href="slasrt.f.html#SLASRT.1">SLASRT</a>( <span class="string">'D'</span>, N, D, IINFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      DO 20 I = 1, N
+         SIGMX = MAX( SIGMX, D( I ) )
+   20 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Copy D and E into WORK (in the Z format) and scale (squaring the
+</span><span class="comment">*</span><span class="comment">     input data makes scaling by a power of the radix pointless).
+</span><span class="comment">*</span><span class="comment">
+</span>      EPS = <a name="SLAMCH.120"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Precision'</span> )
+      SAFMIN = <a name="SLAMCH.121"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Safe minimum'</span> )
+      SCALE = SQRT( EPS / SAFMIN )
+      CALL SCOPY( N, D, 1, WORK( 1 ), 2 )
+      CALL SCOPY( N-1, E, 1, WORK( 2 ), 2 )
+      CALL <a name="SLASCL.125"></a><a href="slascl.f.html#SLASCL.1">SLASCL</a>( <span class="string">'G'</span>, 0, 0, SIGMX, SCALE, 2*N-1, 1, WORK, 2*N-1,
+     $             IINFO )
+<span class="comment">*</span><span class="comment">         
+</span><span class="comment">*</span><span class="comment">     Compute the q's and e's.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 30 I = 1, 2*N - 1
+         WORK( I ) = WORK( I )**2
+   30 CONTINUE
+      WORK( 2*N ) = ZERO
+<span class="comment">*</span><span class="comment">
+</span>      CALL <a name="SLASQ2.135"></a><a href="slasq2.f.html#SLASQ2.1">SLASQ2</a>( N, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.EQ.0 ) THEN
+         DO 40 I = 1, N
+            D( I ) = SQRT( WORK( I ) )
+   40    CONTINUE
+         CALL <a name="SLASCL.141"></a><a href="slascl.f.html#SLASCL.1">SLASCL</a>( <span class="string">'G'</span>, 0, 0, SCALE, SIGMX, N, 1, D, N, IINFO )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLASQ1.146"></a><a href="slasq1.f.html#SLASQ1.1">SLASQ1</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

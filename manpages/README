@@ -1,0 +1,57 @@
+DATE: October 2006
+
+To install the LAPACK documentation, do the following:
+
+NOTE:  You can follow the same directions to install the BLAS manpages.
+       Just copy from blas/man/manl/ instead of man/manl/.
+
+1) Copy the LAPACK manual pages to the desired location.  This
+   will probably be /usr/local/man/manl or other.dir/man/manl.
+
+   % cp man/manl/* /usr/local/man/manl
+
+   Be aware that if the manpages are installed in some directory
+   other than /usr/local/man/manl you will need to add that directory
+   to your MANPATH environment variable.  First type:
+
+   % echo $MANPATH
+   
+   If it says that MANPATH is undefined, type:
+
+   % setenv MANPATH /usr/man:/usr/local/man:/user_path/man_dir
+
+   Otherwise, if MANPATH is defined, type:
+
+   % setenv MANPATH ${MANPATH}:/user_path/man_dir
+
+   where man_dir is the directory of manual pages containing /man/manl.
+
+   ('%' is assumed to be your shell prompt.)
+
+2) Add the LAPACK manual pages to the whatis database for keyword
+   searching via 'man -k':
+
+   % catman -w -M /usr/local/man 
+
+   or
+
+   % catman -w -M other.dir/man
+
+3) Test out the installation.  First make sure your current shell
+   knows about the installation:
+
+   % rehash
+
+   Now test out the manual pages:
+
+   % man dgetrf
+
+   You should get the man page for dgetrf.  BE AWARE that your request
+   should be in lower case.
+
+ 
+If you have any comments/suggestions, please direct them to lapack@cs.utk.edu.
+
+Regards,
+Jack Dongarra
+

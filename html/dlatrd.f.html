@@ -1,0 +1,282 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlatrd.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLATRD.1"></a><a href="dlatrd.f.html#DLATRD.1">DLATRD</a>( UPLO, N, NB, A, LDA, E, TAU, W, LDW )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          UPLO
+      INTEGER            LDA, LDW, N, NB
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   A( LDA, * ), E( * ), TAU( * ), W( LDW, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLATRD.18"></a><a href="dlatrd.f.html#DLATRD.1">DLATRD</a> reduces NB rows and columns of a real symmetric matrix A to
+</span><span class="comment">*</span><span class="comment">  symmetric tridiagonal form by an orthogonal similarity
+</span><span class="comment">*</span><span class="comment">  transformation Q' * A * Q, and returns the matrices V and W which are
+</span><span class="comment">*</span><span class="comment">  needed to apply the transformation to the unreduced part of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If UPLO = 'U', <a name="DLATRD.23"></a><a href="dlatrd.f.html#DLATRD.1">DLATRD</a> reduces the last NB rows and columns of a
+</span><span class="comment">*</span><span class="comment">  matrix, of which the upper triangle is supplied;
+</span><span class="comment">*</span><span class="comment">  if UPLO = 'L', <a name="DLATRD.25"></a><a href="dlatrd.f.html#DLATRD.1">DLATRD</a> reduces the first NB rows and columns of a
+</span><span class="comment">*</span><span class="comment">  matrix, of which the lower triangle is supplied.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This is an auxiliary routine called by <a name="DSYTRD.28"></a><a href="dsytrd.f.html#DSYTRD.1">DSYTRD</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether the upper or lower triangular part of the
+</span><span class="comment">*</span><span class="comment">          symmetric matrix A is stored:
+</span><span class="comment">*</span><span class="comment">          = 'U': Upper triangular
+</span><span class="comment">*</span><span class="comment">          = 'L': Lower triangular
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NB      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows and columns to be reduced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) DOUBLE PRECISION array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the symmetric matrix A.  If UPLO = 'U', the leading
+</span><span class="comment">*</span><span class="comment">          n-by-n upper triangular part of A contains the upper
+</span><span class="comment">*</span><span class="comment">          triangular part of the matrix A, and the strictly lower
+</span><span class="comment">*</span><span class="comment">          triangular part of A is not referenced.  If UPLO = 'L', the
+</span><span class="comment">*</span><span class="comment">          leading n-by-n lower triangular part of A contains the lower
+</span><span class="comment">*</span><span class="comment">          triangular part of the matrix A, and the strictly upper
+</span><span class="comment">*</span><span class="comment">          triangular part of A is not referenced.
+</span><span class="comment">*</span><span class="comment">          On exit:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', the last NB columns have been reduced to
+</span><span class="comment">*</span><span class="comment">            tridiagonal form, with the diagonal elements overwriting
+</span><span class="comment">*</span><span class="comment">            the diagonal elements of A; the elements above the diagonal
+</span><span class="comment">*</span><span class="comment">            with the array TAU, represent the orthogonal matrix Q as a
+</span><span class="comment">*</span><span class="comment">            product of elementary reflectors;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', the first NB columns have been reduced to
+</span><span class="comment">*</span><span class="comment">            tridiagonal form, with the diagonal elements overwriting
+</span><span class="comment">*</span><span class="comment">            the diagonal elements of A; the elements below the diagonal
+</span><span class="comment">*</span><span class="comment">            with the array TAU, represent the  orthogonal matrix Q as a
+</span><span class="comment">*</span><span class="comment">            product of elementary reflectors.
+</span><span class="comment">*</span><span class="comment">          See Further Details.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= (1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E       (output) DOUBLE PRECISION array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          If UPLO = 'U', E(n-nb:n-1) contains the superdiagonal
+</span><span class="comment">*</span><span class="comment">          elements of the last NB columns of the reduced matrix;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', E(1:nb) contains the subdiagonal elements of
+</span><span class="comment">*</span><span class="comment">          the first NB columns of the reduced matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TAU     (output) DOUBLE PRECISION array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          The scalar factors of the elementary reflectors, stored in
+</span><span class="comment">*</span><span class="comment">          TAU(n-nb:n-1) if UPLO = 'U', and in TAU(1:nb) if UPLO = 'L'.
+</span><span class="comment">*</span><span class="comment">          See Further Details.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  W       (output) DOUBLE PRECISION array, dimension (LDW,NB)
+</span><span class="comment">*</span><span class="comment">          The n-by-nb matrix W required to update the unreduced part
+</span><span class="comment">*</span><span class="comment">          of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDW     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array W. LDW &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If UPLO = 'U', the matrix Q is represented as a product of elementary
+</span><span class="comment">*</span><span class="comment">  reflectors
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Q = H(n) H(n-1) . . . H(n-nb+1).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Each H(i) has the form
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     H(i) = I - tau * v * v'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where tau is a real scalar, and v is a real vector with
+</span><span class="comment">*</span><span class="comment">  v(i:n) = 0 and v(i-1) = 1; v(1:i-1) is stored on exit in A(1:i-1,i),
+</span><span class="comment">*</span><span class="comment">  and tau in TAU(i-1).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If UPLO = 'L', the matrix Q is represented as a product of elementary
+</span><span class="comment">*</span><span class="comment">  reflectors
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Q = H(1) H(2) . . . H(nb).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Each H(i) has the form
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     H(i) = I - tau * v * v'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where tau is a real scalar, and v is a real vector with
+</span><span class="comment">*</span><span class="comment">  v(1:i) = 0 and v(i+1) = 1; v(i+1:n) is stored on exit in A(i+1:n,i),
+</span><span class="comment">*</span><span class="comment">  and tau in TAU(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The elements of the vectors v together form the n-by-nb matrix V
+</span><span class="comment">*</span><span class="comment">  which is needed, with W, to apply the transformation to the unreduced
+</span><span class="comment">*</span><span class="comment">  part of the matrix, using a symmetric rank-2k update of the form:
+</span><span class="comment">*</span><span class="comment">  A := A - V*W' - W*V'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The contents of A on exit are illustrated by the following examples
+</span><span class="comment">*</span><span class="comment">  with n = 5 and nb = 2:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  if UPLO = 'U':                       if UPLO = 'L':
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">    (  a   a   a   v4  v5 )              (  d                  )
+</span><span class="comment">*</span><span class="comment">    (      a   a   v4  v5 )              (  1   d              )
+</span><span class="comment">*</span><span class="comment">    (          a   1   v5 )              (  v1  1   a          )
+</span><span class="comment">*</span><span class="comment">    (              d   1  )              (  v1  v2  a   a      )
+</span><span class="comment">*</span><span class="comment">    (                  d  )              (  v1  v2  a   a   a  )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where d denotes a diagonal element of the reduced matrix, a denotes
+</span><span class="comment">*</span><span class="comment">  an element of the original matrix that is unchanged, and vi denotes
+</span><span class="comment">*</span><span class="comment">  an element of the vector defining H(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE, HALF
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0, HALF = 0.5D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, IW
+      DOUBLE PRECISION   ALPHA
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DAXPY, DGEMV, <a name="DLARFG.147"></a><a href="dlarfg.f.html#DLARFG.1">DLARFG</a>, DSCAL, DSYMV
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.150"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      DOUBLE PRECISION   DDOT
+      EXTERNAL           <a name="LSAME.152"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, DDOT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.LE.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      IF( <a name="LSAME.164"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Reduce last NB columns of upper triangle
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 10 I = N, N - NB + 1, -1
+            IW = I - N + NB
+            IF( I.LT.N ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Update A(1:i,i)
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL DGEMV( <span class="string">'No transpose'</span>, I, N-I, -ONE, A( 1, I+1 ),
+     $                     LDA, W( I, IW+1 ), LDW, ONE, A( 1, I ), 1 )
+               CALL DGEMV( <span class="string">'No transpose'</span>, I, N-I, -ONE, W( 1, IW+1 ),
+     $                     LDW, A( I, I+1 ), LDA, ONE, A( 1, I ), 1 )
+            END IF
+            IF( I.GT.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Generate elementary reflector H(i) to annihilate
+</span><span class="comment">*</span><span class="comment">              A(1:i-2,i)
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="DLARFG.184"></a><a href="dlarfg.f.html#DLARFG.1">DLARFG</a>( I-1, A( I-1, I ), A( 1, I ), 1, TAU( I-1 ) )
+               E( I-1 ) = A( I-1, I )
+               A( I-1, I ) = ONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Compute W(1:i-1,i)
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL DSYMV( <span class="string">'Upper'</span>, I-1, ONE, A, LDA, A( 1, I ), 1,
+     $                     ZERO, W( 1, IW ), 1 )
+               IF( I.LT.N ) THEN
+                  CALL DGEMV( <span class="string">'Transpose'</span>, I-1, N-I, ONE, W( 1, IW+1 ),
+     $                        LDW, A( 1, I ), 1, ZERO, W( I+1, IW ), 1 )
+                  CALL DGEMV( <span class="string">'No transpose'</span>, I-1, N-I, -ONE,
+     $                        A( 1, I+1 ), LDA, W( I+1, IW ), 1, ONE,
+     $                        W( 1, IW ), 1 )
+                  CALL DGEMV( <span class="string">'Transpose'</span>, I-1, N-I, ONE, A( 1, I+1 ),
+     $                        LDA, A( 1, I ), 1, ZERO, W( I+1, IW ), 1 )
+                  CALL DGEMV( <span class="string">'No transpose'</span>, I-1, N-I, -ONE,
+     $                        W( 1, IW+1 ), LDW, W( I+1, IW ), 1, ONE,
+     $                        W( 1, IW ), 1 )
+               END IF
+               CALL DSCAL( I-1, TAU( I-1 ), W( 1, IW ), 1 )
+               ALPHA = -HALF*TAU( I-1 )*DDOT( I-1, W( 1, IW ), 1,
+     $                 A( 1, I ), 1 )
+               CALL DAXPY( I-1, ALPHA, A( 1, I ), 1, W( 1, IW ), 1 )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>   10    CONTINUE
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Reduce first NB columns of lower triangle
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 20 I = 1, NB
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Update A(i:n,i)
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL DGEMV( <span class="string">'No transpose'</span>, N-I+1, I-1, -ONE, A( I, 1 ),
+     $                  LDA, W( I, 1 ), LDW, ONE, A( I, I ), 1 )
+            CALL DGEMV( <span class="string">'No transpose'</span>, N-I+1, I-1, -ONE, W( I, 1 ),
+     $                  LDW, A( I, 1 ), LDA, ONE, A( I, I ), 1 )
+            IF( I.LT.N ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Generate elementary reflector H(i) to annihilate
+</span><span class="comment">*</span><span class="comment">              A(i+2:n,i)
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="DLARFG.228"></a><a href="dlarfg.f.html#DLARFG.1">DLARFG</a>( N-I, A( I+1, I ), A( MIN( I+2, N ), I ), 1,
+     $                      TAU( I ) )
+               E( I ) = A( I+1, I )
+               A( I+1, I ) = ONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Compute W(i+1:n,i)
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL DSYMV( <span class="string">'Lower'</span>, N-I, ONE, A( I+1, I+1 ), LDA,
+     $                     A( I+1, I ), 1, ZERO, W( I+1, I ), 1 )
+               CALL DGEMV( <span class="string">'Transpose'</span>, N-I, I-1, ONE, W( I+1, 1 ), LDW,
+     $                     A( I+1, I ), 1, ZERO, W( 1, I ), 1 )
+               CALL DGEMV( <span class="string">'No transpose'</span>, N-I, I-1, -ONE, A( I+1, 1 ),
+     $                     LDA, W( 1, I ), 1, ONE, W( I+1, I ), 1 )
+               CALL DGEMV( <span class="string">'Transpose'</span>, N-I, I-1, ONE, A( I+1, 1 ), LDA,
+     $                     A( I+1, I ), 1, ZERO, W( 1, I ), 1 )
+               CALL DGEMV( <span class="string">'No transpose'</span>, N-I, I-1, -ONE, W( I+1, 1 ),
+     $                     LDW, W( 1, I ), 1, ONE, W( I+1, I ), 1 )
+               CALL DSCAL( N-I, TAU( I ), W( I+1, I ), 1 )
+               ALPHA = -HALF*TAU( I )*DDOT( N-I, W( I+1, I ), 1,
+     $                 A( I+1, I ), 1 )
+               CALL DAXPY( N-I, ALPHA, A( I+1, I ), 1, W( I+1, I ), 1 )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>   20    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLATRD.256"></a><a href="dlatrd.f.html#DLATRD.1">DLATRD</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

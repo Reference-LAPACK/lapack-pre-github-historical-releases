@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slassq.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLASSQ.1"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>( N, X, INCX, SCALE, SUMSQ )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INCX, N
+      REAL               SCALE, SUMSQ
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               X( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLASSQ.18"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>  returns the values  scl  and  smsq  such that
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ( scl**2 )*smsq = x( 1 )**2 +...+ x( n )**2 + ( scale**2 )*sumsq,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where  x( i ) = X( 1 + ( i - 1 )*INCX ). The value of  sumsq  is
+</span><span class="comment">*</span><span class="comment">  assumed to be non-negative and  scl  returns the value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     scl = max( scale, abs( x( i ) ) ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  scale and sumsq must be supplied in SCALE and SUMSQ and
+</span><span class="comment">*</span><span class="comment">  scl and smsq are overwritten on SCALE and SUMSQ respectively.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The routine makes only one pass through the vector x.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of elements to be used from the vector X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X       (input) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The vector for which a scaled sum of squares is computed.
+</span><span class="comment">*</span><span class="comment">             x( i )  = X( 1 + ( i - 1 )*INCX ), 1 &lt;= i &lt;= n.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INCX    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The increment between successive values of the vector X.
+</span><span class="comment">*</span><span class="comment">          INCX &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SCALE   (input/output) REAL
+</span><span class="comment">*</span><span class="comment">          On entry, the value  scale  in the equation above.
+</span><span class="comment">*</span><span class="comment">          On exit, SCALE is overwritten with  scl , the scaling factor
+</span><span class="comment">*</span><span class="comment">          for the sum of squares.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SUMSQ   (input/output) REAL
+</span><span class="comment">*</span><span class="comment">          On entry, the value  sumsq  in the equation above.
+</span><span class="comment">*</span><span class="comment">          On exit, SUMSQ is overwritten with  smsq , the basic sum of
+</span><span class="comment">*</span><span class="comment">          squares from which  scl  has been factored out.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment"> =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO
+      PARAMETER          ( ZERO = 0.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            IX
+      REAL               ABSXI
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.GT.0 ) THEN
+         DO 10 IX = 1, 1 + ( N-1 )*INCX, INCX
+            IF( X( IX ).NE.ZERO ) THEN
+               ABSXI = ABS( X( IX ) )
+               IF( SCALE.LT.ABSXI ) THEN
+                  SUMSQ = 1 + SUMSQ*( SCALE / ABSXI )**2
+                  SCALE = ABSXI
+               ELSE
+                  SUMSQ = SUMSQ + ( ABSXI / SCALE )**2
+               END IF
+            END IF
+   10    CONTINUE
+      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLASSQ.86"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>cgerq2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CGERQ2.1"></a><a href="cgerq2.f.html#CGERQ2.1">CGERQ2</a>( M, N, A, LDA, TAU, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, LDA, M, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX            A( LDA, * ), TAU( * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CGERQ2.17"></a><a href="cgerq2.f.html#CGERQ2.1">CGERQ2</a> computes an RQ factorization of a complex m by n matrix A:
+</span><span class="comment">*</span><span class="comment">  A = R * Q.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix A.  M &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) COMPLEX array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the m by n matrix A.
+</span><span class="comment">*</span><span class="comment">          On exit, if m &lt;= n, the upper triangle of the subarray
+</span><span class="comment">*</span><span class="comment">          A(1:m,n-m+1:n) contains the m by m upper triangular matrix R;
+</span><span class="comment">*</span><span class="comment">          if m &gt;= n, the elements on and above the (m-n)-th subdiagonal
+</span><span class="comment">*</span><span class="comment">          contain the m by n upper trapezoidal matrix R; the remaining
+</span><span class="comment">*</span><span class="comment">          elements, with the array TAU, represent the unitary matrix
+</span><span class="comment">*</span><span class="comment">          Q as a product of elementary reflectors (see Further
+</span><span class="comment">*</span><span class="comment">          Details).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TAU     (output) COMPLEX array, dimension (min(M,N))
+</span><span class="comment">*</span><span class="comment">          The scalar factors of the elementary reflectors (see Further
+</span><span class="comment">*</span><span class="comment">          Details).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) COMPLEX array, dimension (M)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0: successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0: if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The matrix Q is represented as a product of elementary reflectors
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Q = H(1)' H(2)' . . . H(k)', where k = min(m,n).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Each H(i) has the form
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     H(i) = I - tau * v * v'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where tau is a complex scalar, and v is a complex vector with
+</span><span class="comment">*</span><span class="comment">  v(n-k+i+1:n) = 0 and v(n-k+i) = 1; conjg(v(1:n-k+i-1)) is stored on
+</span><span class="comment">*</span><span class="comment">  exit in A(m-k+i,1:n-k+i-1), and tau in TAU(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      COMPLEX            ONE
+      PARAMETER          ( ONE = ( 1.0E+0, 0.0E+0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, K
+      COMPLEX            ALPHA
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="CLACGV.78"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>, <a name="CLARF.78"></a><a href="clarf.f.html#CLARF.1">CLARF</a>, <a name="CLARFG.78"></a><a href="clarfg.f.html#CLARFG.1">CLARFG</a>, <a name="XERBLA.78"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input arguments
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( M.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -4
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.96"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CGERQ2.96"></a><a href="cgerq2.f.html#CGERQ2.1">CGERQ2</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      K = MIN( M, N )
+<span class="comment">*</span><span class="comment">
+</span>      DO 10 I = K, 1, -1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Generate elementary reflector H(i) to annihilate
+</span><span class="comment">*</span><span class="comment">        A(m-k+i,1:n-k+i-1)
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="CLACGV.107"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( N-K+I, A( M-K+I, 1 ), LDA )
+         ALPHA = A( M-K+I, N-K+I )
+         CALL <a name="CLARFG.109"></a><a href="clarfg.f.html#CLARFG.1">CLARFG</a>( N-K+I, ALPHA, A( M-K+I, 1 ), LDA,
+     $                TAU( I ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Apply H(i) to A(1:m-k+i-1,1:n-k+i) from the right
+</span><span class="comment">*</span><span class="comment">
+</span>         A( M-K+I, N-K+I ) = ONE
+         CALL <a name="CLARF.115"></a><a href="clarf.f.html#CLARF.1">CLARF</a>( <span class="string">'Right'</span>, M-K+I-1, N-K+I, A( M-K+I, 1 ), LDA,
+     $               TAU( I ), A, LDA, WORK )
+         A( M-K+I, N-K+I ) = ALPHA
+         CALL <a name="CLACGV.118"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( N-K+I-1, A( M-K+I, 1 ), LDA )
+   10 CONTINUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CGERQ2.122"></a><a href="cgerq2.f.html#CGERQ2.1">CGERQ2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

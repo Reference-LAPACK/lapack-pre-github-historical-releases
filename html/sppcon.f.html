@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>sppcon.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SPPCON.1"></a><a href="sppcon.f.html#SPPCON.1">SPPCON</a>( UPLO, N, AP, ANORM, RCOND, WORK, IWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Modified to call <a name="SLACN2.7"></a><a href="slacn2.f.html#SLACN2.1">SLACN2</a> in place of <a name="SLACON.7"></a><a href="slacon.f.html#SLACON.1">SLACON</a>, 7 Feb 03, SJH.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          UPLO
+      INTEGER            INFO, N
+      REAL               ANORM, RCOND
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IWORK( * )
+      REAL               AP( * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SPPCON.22"></a><a href="sppcon.f.html#SPPCON.1">SPPCON</a> estimates the reciprocal of the condition number (in the
+</span><span class="comment">*</span><span class="comment">  1-norm) of a real symmetric positive definite packed matrix using
+</span><span class="comment">*</span><span class="comment">  the Cholesky factorization A = U**T*U or A = L*L**T computed by
+</span><span class="comment">*</span><span class="comment">  <a name="SPPTRF.25"></a><a href="spptrf.f.html#SPPTRF.1">SPPTRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  An estimate is obtained for norm(inv(A)), and the reciprocal of the
+</span><span class="comment">*</span><span class="comment">  condition number is computed as RCOND = 1 / (ANORM * norm(inv(A))).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangle of A is stored;
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangle of A is stored.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AP      (input) REAL array, dimension (N*(N+1)/2)
+</span><span class="comment">*</span><span class="comment">          The triangular factor U or L from the Cholesky factorization
+</span><span class="comment">*</span><span class="comment">          A = U**T*U or A = L*L**T, packed columnwise in a linear
+</span><span class="comment">*</span><span class="comment">          array.  The j-th column of U or L is stored in the array AP
+</span><span class="comment">*</span><span class="comment">          as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', AP(i + (j-1)*j/2) = U(i,j) for 1&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', AP(i + (j-1)*(2n-j)/2) = L(i,j) for j&lt;=i&lt;=n.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ANORM   (input) REAL
+</span><span class="comment">*</span><span class="comment">          The 1-norm (or infinity-norm) of the symmetric matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RCOND   (output) REAL
+</span><span class="comment">*</span><span class="comment">          The reciprocal of the condition number of the matrix A,
+</span><span class="comment">*</span><span class="comment">          computed as RCOND = 1/(ANORM * AINVNM), where AINVNM is an
+</span><span class="comment">*</span><span class="comment">          estimate of the 1-norm of inv(A) computed in this routine.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) REAL array, dimension (3*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK   (workspace) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ONE, ZERO
+      PARAMETER          ( ONE = 1.0E+0, ZERO = 0.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            UPPER
+      CHARACTER          NORMIN
+      INTEGER            IX, KASE
+      REAL               AINVNM, SCALE, SCALEL, SCALEU, SMLNUM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      INTEGER            ISAVE( 3 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.80"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      INTEGER            ISAMAX
+      REAL               <a name="SLAMCH.82"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      EXTERNAL           <a name="LSAME.83"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, ISAMAX, <a name="SLAMCH.83"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="SLACN2.86"></a><a href="slacn2.f.html#SLACN2.1">SLACN2</a>, <a name="SLATPS.86"></a><a href="slatps.f.html#SLATPS.1">SLATPS</a>, <a name="SRSCL.86"></a><a href="srscl.f.html#SRSCL.1">SRSCL</a>, <a name="XERBLA.86"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      UPPER = <a name="LSAME.96"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> )
+      IF( .NOT.UPPER .AND. .NOT.<a name="LSAME.97"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( ANORM.LT.ZERO ) THEN
+         INFO = -4
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.105"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="SPPCON.105"></a><a href="sppcon.f.html#SPPCON.1">SPPCON</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      RCOND = ZERO
+      IF( N.EQ.0 ) THEN
+         RCOND = ONE
+         RETURN
+      ELSE IF( ANORM.EQ.ZERO ) THEN
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      SMLNUM = <a name="SLAMCH.119"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Safe minimum'</span> )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Estimate the 1-norm of the inverse.
+</span><span class="comment">*</span><span class="comment">
+</span>      KASE = 0
+      NORMIN = <span class="string">'N'</span>
+   10 CONTINUE
+      CALL <a name="SLACN2.126"></a><a href="slacn2.f.html#SLACN2.1">SLACN2</a>( N, WORK( N+1 ), WORK, IWORK, AINVNM, KASE, ISAVE )
+      IF( KASE.NE.0 ) THEN
+         IF( UPPER ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Multiply by inv(U').
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="SLATPS.132"></a><a href="slatps.f.html#SLATPS.1">SLATPS</a>( <span class="string">'Upper'</span>, <span class="string">'Transpose'</span>, <span class="string">'Non-unit'</span>, NORMIN, N,
+     $                   AP, WORK, SCALEL, WORK( 2*N+1 ), INFO )
+            NORMIN = <span class="string">'Y'</span>
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Multiply by inv(U).
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="SLATPS.138"></a><a href="slatps.f.html#SLATPS.1">SLATPS</a>( <span class="string">'Upper'</span>, <span class="string">'No transpose'</span>, <span class="string">'Non-unit'</span>, NORMIN, N,
+     $                   AP, WORK, SCALEU, WORK( 2*N+1 ), INFO )
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Multiply by inv(L).
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="SLATPS.144"></a><a href="slatps.f.html#SLATPS.1">SLATPS</a>( <span class="string">'Lower'</span>, <span class="string">'No transpose'</span>, <span class="string">'Non-unit'</span>, NORMIN, N,
+     $                   AP, WORK, SCALEL, WORK( 2*N+1 ), INFO )
+            NORMIN = <span class="string">'Y'</span>
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Multiply by inv(L').
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="SLATPS.150"></a><a href="slatps.f.html#SLATPS.1">SLATPS</a>( <span class="string">'Lower'</span>, <span class="string">'Transpose'</span>, <span class="string">'Non-unit'</span>, NORMIN, N,
+     $                   AP, WORK, SCALEU, WORK( 2*N+1 ), INFO )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Multiply by 1/SCALE if doing so will not cause overflow.
+</span><span class="comment">*</span><span class="comment">
+</span>         SCALE = SCALEL*SCALEU
+         IF( SCALE.NE.ONE ) THEN
+            IX = ISAMAX( N, WORK, 1 )
+            IF( SCALE.LT.ABS( WORK( IX ) )*SMLNUM .OR. SCALE.EQ.ZERO )
+     $         GO TO 20
+            CALL <a name="SRSCL.161"></a><a href="srscl.f.html#SRSCL.1">SRSCL</a>( N, SCALE, WORK, 1 )
+         END IF
+         GO TO 10
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the estimate of the reciprocal condition number.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( AINVNM.NE.ZERO )
+     $   RCOND = ( ONE / AINVNM ) / ANORM
+<span class="comment">*</span><span class="comment">
+</span>   20 CONTINUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SPPCON.174"></a><a href="sppcon.f.html#SPPCON.1">SPPCON</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

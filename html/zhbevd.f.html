@@ -1,0 +1,326 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zhbevd.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZHBEVD.1"></a><a href="zhbevd.f.html#ZHBEVD.1">ZHBEVD</a>( JOBZ, UPLO, N, KD, AB, LDAB, W, Z, LDZ, WORK,
+     $                   LWORK, RWORK, LRWORK, IWORK, LIWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK driver routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          JOBZ, UPLO
+      INTEGER            INFO, KD, LDAB, LDZ, LIWORK, LRWORK, LWORK, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IWORK( * )
+      DOUBLE PRECISION   RWORK( * ), W( * )
+      COMPLEX*16         AB( LDAB, * ), WORK( * ), Z( LDZ, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZHBEVD.21"></a><a href="zhbevd.f.html#ZHBEVD.1">ZHBEVD</a> computes all the eigenvalues and, optionally, eigenvectors of
+</span><span class="comment">*</span><span class="comment">  a complex Hermitian band matrix A.  If eigenvectors are desired, it
+</span><span class="comment">*</span><span class="comment">  uses a divide and conquer algorithm.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The divide and conquer algorithm makes very mild assumptions about
+</span><span class="comment">*</span><span class="comment">  floating point arithmetic. It will work on machines with a guard
+</span><span class="comment">*</span><span class="comment">  digit in add/subtract, or on those binary machines without guard
+</span><span class="comment">*</span><span class="comment">  digits which subtract like the Cray X-MP, Cray Y-MP, Cray C-90, or
+</span><span class="comment">*</span><span class="comment">  Cray-2. It could conceivably fail on hexadecimal or decimal machines
+</span><span class="comment">*</span><span class="comment">  without guard digits, but we know of none.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOBZ    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'N':  Compute eigenvalues only;
+</span><span class="comment">*</span><span class="comment">          = 'V':  Compute eigenvalues and eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangle of A is stored;
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangle of A is stored.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KD      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of superdiagonals of the matrix A if UPLO = 'U',
+</span><span class="comment">*</span><span class="comment">          or the number of subdiagonals if UPLO = 'L'.  KD &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AB      (input/output) COMPLEX*16 array, dimension (LDAB, N)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper or lower triangle of the Hermitian band
+</span><span class="comment">*</span><span class="comment">          matrix A, stored in the first KD+1 rows of the array.  The
+</span><span class="comment">*</span><span class="comment">          j-th column of A is stored in the j-th column of the array AB
+</span><span class="comment">*</span><span class="comment">          as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', AB(kd+1+i-j,j) = A(i,j) for max(1,j-kd)&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', AB(1+i-j,j)    = A(i,j) for j&lt;=i&lt;=min(n,j+kd).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, AB is overwritten by values generated during the
+</span><span class="comment">*</span><span class="comment">          reduction to tridiagonal form.  If UPLO = 'U', the first
+</span><span class="comment">*</span><span class="comment">          superdiagonal and the diagonal of the tridiagonal matrix T
+</span><span class="comment">*</span><span class="comment">          are returned in rows KD and KD+1 of AB, and if UPLO = 'L',
+</span><span class="comment">*</span><span class="comment">          the diagonal and first subdiagonal of T are returned in the
+</span><span class="comment">*</span><span class="comment">          first two rows of AB.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDAB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array AB.  LDAB &gt;= KD + 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  W       (output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          If INFO = 0, the eigenvalues in ascending order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z       (output) COMPLEX*16 array, dimension (LDZ, N)
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'V', then if INFO = 0, Z contains the orthonormal
+</span><span class="comment">*</span><span class="comment">          eigenvectors of the matrix A, with the i-th column of Z
+</span><span class="comment">*</span><span class="comment">          holding the eigenvector associated with W(i).
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'N', then Z is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDZ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Z.  LDZ &gt;= 1, and if
+</span><span class="comment">*</span><span class="comment">          JOBZ = 'V', LDZ &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace/output) COMPLEX*16 array, dimension (MAX(1,LWORK))
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LWORK   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The dimension of the array WORK.
+</span><span class="comment">*</span><span class="comment">          If N &lt;= 1,               LWORK must be at least 1.
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'N' and N &gt; 1, LWORK must be at least N.
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'V' and N &gt; 1, LWORK must be at least 2*N**2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If LWORK = -1, then a workspace query is assumed; the routine
+</span><span class="comment">*</span><span class="comment">          only calculates the optimal sizes of the WORK, RWORK and
+</span><span class="comment">*</span><span class="comment">          IWORK arrays, returns these values as the first entries of
+</span><span class="comment">*</span><span class="comment">          the WORK, RWORK and IWORK arrays, and no error message
+</span><span class="comment">*</span><span class="comment">          related to LWORK or LRWORK or LIWORK is issued by <a name="XERBLA.94"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RWORK   (workspace/output) DOUBLE PRECISION array,
+</span><span class="comment">*</span><span class="comment">                                         dimension (LRWORK)
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, RWORK(1) returns the optimal LRWORK.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LRWORK  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The dimension of array RWORK.
+</span><span class="comment">*</span><span class="comment">          If N &lt;= 1,               LRWORK must be at least 1.
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'N' and N &gt; 1, LRWORK must be at least N.
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'V' and N &gt; 1, LRWORK must be at least
+</span><span class="comment">*</span><span class="comment">                        1 + 5*N + 2*N**2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If LRWORK = -1, then a workspace query is assumed; the
+</span><span class="comment">*</span><span class="comment">          routine only calculates the optimal sizes of the WORK, RWORK
+</span><span class="comment">*</span><span class="comment">          and IWORK arrays, returns these values as the first entries
+</span><span class="comment">*</span><span class="comment">          of the WORK, RWORK and IWORK arrays, and no error message
+</span><span class="comment">*</span><span class="comment">          related to LWORK or LRWORK or LIWORK is issued by <a name="XERBLA.111"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK   (workspace/output) INTEGER array, dimension (MAX(1,LIWORK))
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, IWORK(1) returns the optimal LIWORK.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LIWORK  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The dimension of array IWORK.
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'N' or N &lt;= 1, LIWORK must be at least 1.
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'V' and N &gt; 1, LIWORK must be at least 3 + 5*N .
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If LIWORK = -1, then a workspace query is assumed; the
+</span><span class="comment">*</span><span class="comment">          routine only calculates the optimal sizes of the WORK, RWORK
+</span><span class="comment">*</span><span class="comment">          and IWORK arrays, returns these values as the first entries
+</span><span class="comment">*</span><span class="comment">          of the WORK, RWORK and IWORK arrays, and no error message
+</span><span class="comment">*</span><span class="comment">          related to LWORK or LRWORK or LIWORK is issued by <a name="XERBLA.125"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit.
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = i, the algorithm failed to converge; i
+</span><span class="comment">*</span><span class="comment">                off-diagonal elements of an intermediate tridiagonal
+</span><span class="comment">*</span><span class="comment">                form did not converge to zero.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D0, ONE = 1.0D0 )
+      COMPLEX*16         CZERO, CONE
+      PARAMETER          ( CZERO = ( 0.0D0, 0.0D0 ),
+     $                   CONE = ( 1.0D0, 0.0D0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            LOWER, LQUERY, WANTZ
+      INTEGER            IINFO, IMAX, INDE, INDWK2, INDWRK, ISCALE,
+     $                   LIWMIN, LLRWK, LLWK2, LRWMIN, LWMIN
+      DOUBLE PRECISION   ANRM, BIGNUM, EPS, RMAX, RMIN, SAFMIN, SIGMA,
+     $                   SMLNUM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.151"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      DOUBLE PRECISION   <a name="DLAMCH.152"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="ZLANHB.152"></a><a href="zlanhb.f.html#ZLANHB.1">ZLANHB</a>
+      EXTERNAL           <a name="LSAME.153"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="DLAMCH.153"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="ZLANHB.153"></a><a href="zlanhb.f.html#ZLANHB.1">ZLANHB</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DSCAL, <a name="DSTERF.156"></a><a href="dsterf.f.html#DSTERF.1">DSTERF</a>, <a name="XERBLA.156"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, ZGEMM, <a name="ZHBTRD.156"></a><a href="zhbtrd.f.html#ZHBTRD.1">ZHBTRD</a>, <a name="ZLACPY.156"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>,
+     $                   <a name="ZLASCL.157"></a><a href="zlascl.f.html#ZLASCL.1">ZLASCL</a>, <a name="ZSTEDC.157"></a><a href="zstedc.f.html#ZSTEDC.1">ZSTEDC</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      WANTZ = <a name="LSAME.166"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBZ, <span class="string">'V'</span> )
+      LOWER = <a name="LSAME.167"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> )
+      LQUERY = ( LWORK.EQ.-1 .OR. LIWORK.EQ.-1 .OR. LRWORK.EQ.-1 )
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( N.LE.1 ) THEN
+         LWMIN = 1
+         LRWMIN = 1
+         LIWMIN = 1
+      ELSE
+         IF( WANTZ ) THEN
+            LWMIN = 2*N**2
+            LRWMIN = 1 + 5*N + 2*N**2
+            LIWMIN = 3 + 5*N
+         ELSE
+            LWMIN = N
+            LRWMIN = N
+            LIWMIN = 1
+         END IF
+      END IF
+      IF( .NOT.( WANTZ .OR. <a name="LSAME.186"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBZ, <span class="string">'N'</span> ) ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.( LOWER .OR. <a name="LSAME.188"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) ) ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( KD.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( LDAB.LT.KD+1 ) THEN
+         INFO = -6
+      ELSE IF( LDZ.LT.1 .OR. ( WANTZ .AND. LDZ.LT.N ) ) THEN
+         INFO = -9
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.EQ.0 ) THEN
+         WORK( 1 ) = LWMIN
+         RWORK( 1 ) = LRWMIN
+         IWORK( 1 ) = LIWMIN
+<span class="comment">*</span><span class="comment">
+</span>         IF( LWORK.LT.LWMIN .AND. .NOT.LQUERY ) THEN
+            INFO = -11
+         ELSE IF( LRWORK.LT.LRWMIN .AND. .NOT.LQUERY ) THEN
+            INFO = -13
+         ELSE IF( LIWORK.LT.LIWMIN .AND. .NOT.LQUERY ) THEN
+            INFO = -15
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.215"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZHBEVD.215"></a><a href="zhbevd.f.html#ZHBEVD.1">ZHBEVD</a>'</span>, -INFO )
+         RETURN
+      ELSE IF( LQUERY ) THEN
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.1 ) THEN
+         W( 1 ) = AB( 1, 1 )
+         IF( WANTZ )
+     $      Z( 1, 1 ) = CONE
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Get machine constants.
+</span><span class="comment">*</span><span class="comment">
+</span>      SAFMIN = <a name="DLAMCH.235"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Safe minimum'</span> )
+      EPS = <a name="DLAMCH.236"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Precision'</span> )
+      SMLNUM = SAFMIN / EPS
+      BIGNUM = ONE / SMLNUM
+      RMIN = SQRT( SMLNUM )
+      RMAX = SQRT( BIGNUM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Scale matrix to allowable range, if necessary.
+</span><span class="comment">*</span><span class="comment">
+</span>      ANRM = <a name="ZLANHB.244"></a><a href="zlanhb.f.html#ZLANHB.1">ZLANHB</a>( <span class="string">'M'</span>, UPLO, N, KD, AB, LDAB, RWORK )
+      ISCALE = 0
+      IF( ANRM.GT.ZERO .AND. ANRM.LT.RMIN ) THEN
+         ISCALE = 1
+         SIGMA = RMIN / ANRM
+      ELSE IF( ANRM.GT.RMAX ) THEN
+         ISCALE = 1
+         SIGMA = RMAX / ANRM
+      END IF
+      IF( ISCALE.EQ.1 ) THEN
+         IF( LOWER ) THEN
+            CALL <a name="ZLASCL.255"></a><a href="zlascl.f.html#ZLASCL.1">ZLASCL</a>( <span class="string">'B'</span>, KD, KD, ONE, SIGMA, N, N, AB, LDAB, INFO )
+         ELSE
+            CALL <a name="ZLASCL.257"></a><a href="zlascl.f.html#ZLASCL.1">ZLASCL</a>( <span class="string">'Q'</span>, KD, KD, ONE, SIGMA, N, N, AB, LDAB, INFO )
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Call <a name="ZHBTRD.261"></a><a href="zhbtrd.f.html#ZHBTRD.1">ZHBTRD</a> to reduce Hermitian band matrix to tridiagonal form.
+</span><span class="comment">*</span><span class="comment">
+</span>      INDE = 1
+      INDWRK = INDE + N
+      INDWK2 = 1 + N*N
+      LLWK2 = LWORK - INDWK2 + 1
+      LLRWK = LRWORK - INDWRK + 1
+      CALL <a name="ZHBTRD.268"></a><a href="zhbtrd.f.html#ZHBTRD.1">ZHBTRD</a>( JOBZ, UPLO, N, KD, AB, LDAB, W, RWORK( INDE ), Z,
+     $             LDZ, WORK, IINFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     For eigenvalues only, call <a name="DSTERF.271"></a><a href="dsterf.f.html#DSTERF.1">DSTERF</a>.  For eigenvectors, call <a name="ZSTEDC.271"></a><a href="zstedc.f.html#ZSTEDC.1">ZSTEDC</a>.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( .NOT.WANTZ ) THEN
+         CALL <a name="DSTERF.274"></a><a href="dsterf.f.html#DSTERF.1">DSTERF</a>( N, W, RWORK( INDE ), INFO )
+      ELSE
+         CALL <a name="ZSTEDC.276"></a><a href="zstedc.f.html#ZSTEDC.1">ZSTEDC</a>( <span class="string">'I'</span>, N, W, RWORK( INDE ), WORK, N, WORK( INDWK2 ),
+     $                LLWK2, RWORK( INDWRK ), LLRWK, IWORK, LIWORK,
+     $                INFO )
+         CALL ZGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, N, N, N, CONE, Z, LDZ, WORK, N, CZERO,
+     $               WORK( INDWK2 ), N )
+         CALL <a name="ZLACPY.281"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'A'</span>, N, N, WORK( INDWK2 ), N, Z, LDZ )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If matrix was scaled, then rescale eigenvalues appropriately.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ISCALE.EQ.1 ) THEN
+         IF( INFO.EQ.0 ) THEN
+            IMAX = N
+         ELSE
+            IMAX = INFO - 1
+         END IF
+         CALL DSCAL( IMAX, ONE / SIGMA, W, 1 )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      WORK( 1 ) = LWMIN
+      RWORK( 1 ) = LRWMIN
+      IWORK( 1 ) = LIWMIN
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZHBEVD.300"></a><a href="zhbevd.f.html#ZHBEVD.1">ZHBEVD</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

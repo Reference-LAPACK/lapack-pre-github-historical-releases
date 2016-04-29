@@ -1,0 +1,458 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlalsd.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLALSD.1"></a><a href="dlalsd.f.html#DLALSD.1">DLALSD</a>( UPLO, SMLSIZ, N, NRHS, D, E, B, LDB, RCOND,
+     $                   RANK, WORK, IWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          UPLO
+      INTEGER            INFO, LDB, N, NRHS, RANK, SMLSIZ
+      DOUBLE PRECISION   RCOND
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IWORK( * )
+      DOUBLE PRECISION   B( LDB, * ), D( * ), E( * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLALSD.21"></a><a href="dlalsd.f.html#DLALSD.1">DLALSD</a> uses the singular value decomposition of A to solve the least
+</span><span class="comment">*</span><span class="comment">  squares problem of finding X to minimize the Euclidean norm of each
+</span><span class="comment">*</span><span class="comment">  column of A*X-B, where A is N-by-N upper bidiagonal, and X and B
+</span><span class="comment">*</span><span class="comment">  are N-by-NRHS. The solution X overwrites B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The singular values of A smaller than RCOND times the largest
+</span><span class="comment">*</span><span class="comment">  singular value are treated as zero in solving the least squares
+</span><span class="comment">*</span><span class="comment">  problem; in this case a minimum norm solution is returned.
+</span><span class="comment">*</span><span class="comment">  The actual singular values are returned in D in ascending order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This code makes very mild assumptions about floating point
+</span><span class="comment">*</span><span class="comment">  arithmetic. It will work on machines with a guard digit in
+</span><span class="comment">*</span><span class="comment">  add/subtract, or on those binary machines without guard digits
+</span><span class="comment">*</span><span class="comment">  which subtract like the Cray XMP, Cray YMP, Cray C 90, or Cray 2.
+</span><span class="comment">*</span><span class="comment">  It could conceivably fail on hexadecimal or decimal machines
+</span><span class="comment">*</span><span class="comment">  without guard digits, but we know of none.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">         = 'U': D and E define an upper bidiagonal matrix.
+</span><span class="comment">*</span><span class="comment">         = 'L': D and E define a  lower bidiagonal matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SMLSIZ (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The maximum size of the subproblems at the bottom of the
+</span><span class="comment">*</span><span class="comment">         computation tree.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The dimension of the  bidiagonal matrix.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NRHS   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The number of columns of B. NRHS must be at least 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D      (input/output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         On entry D contains the main diagonal of the bidiagonal
+</span><span class="comment">*</span><span class="comment">         matrix. On exit, if INFO = 0, D contains its singular values.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E      (input/output) DOUBLE PRECISION array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">         Contains the super-diagonal entries of the bidiagonal matrix.
+</span><span class="comment">*</span><span class="comment">         On exit, E has been destroyed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B      (input/output) DOUBLE PRECISION array, dimension (LDB,NRHS)
+</span><span class="comment">*</span><span class="comment">         On input, B contains the right hand sides of the least
+</span><span class="comment">*</span><span class="comment">         squares problem. On output, B contains the solution X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of B in the calling subprogram.
+</span><span class="comment">*</span><span class="comment">         LDB must be at least max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RCOND  (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">         The singular values of A less than or equal to RCOND times
+</span><span class="comment">*</span><span class="comment">         the largest singular value are treated as zero in solving
+</span><span class="comment">*</span><span class="comment">         the least squares problem. If RCOND is negative,
+</span><span class="comment">*</span><span class="comment">         machine precision is used instead.
+</span><span class="comment">*</span><span class="comment">         For example, if diag(S)*X=B were the least squares problem,
+</span><span class="comment">*</span><span class="comment">         where diag(S) is a diagonal matrix of singular values, the
+</span><span class="comment">*</span><span class="comment">         solution would be X(i) = B(i) / S(i) if S(i) is greater than
+</span><span class="comment">*</span><span class="comment">         RCOND*max(S), and X(i) = 0 if S(i) is less than or equal to
+</span><span class="comment">*</span><span class="comment">         RCOND*max(S).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RANK   (output) INTEGER
+</span><span class="comment">*</span><span class="comment">         The number of singular values of A greater than RCOND times
+</span><span class="comment">*</span><span class="comment">         the largest singular value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK   (workspace) DOUBLE PRECISION array, dimension at least
+</span><span class="comment">*</span><span class="comment">         (9*N + 2*N*SMLSIZ + 8*N*NLVL + N*NRHS + (SMLSIZ+1)**2),
+</span><span class="comment">*</span><span class="comment">         where NLVL = max(0, INT(log_2 (N/(SMLSIZ+1))) + 1).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK  (workspace) INTEGER array, dimension at least
+</span><span class="comment">*</span><span class="comment">         (3*N*NLVL + 11*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO   (output) INTEGER
+</span><span class="comment">*</span><span class="comment">         = 0:  successful exit.
+</span><span class="comment">*</span><span class="comment">         &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">         &gt; 0:  The algorithm failed to compute an singular value while
+</span><span class="comment">*</span><span class="comment">               working on the submatrix lying in rows and columns
+</span><span class="comment">*</span><span class="comment">               INFO/(N+1) through MOD(INFO,N+1).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Ming Gu and Ren-Cang Li, Computer Science Division, University of
+</span><span class="comment">*</span><span class="comment">       California at Berkeley, USA
+</span><span class="comment">*</span><span class="comment">     Osni Marques, LBNL/NERSC, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE, TWO
+      PARAMETER          ( ZERO = 0.0D0, ONE = 1.0D0, TWO = 2.0D0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            BX, BXST, C, DIFL, DIFR, GIVCOL, GIVNUM,
+     $                   GIVPTR, I, ICMPQ1, ICMPQ2, IWK, J, K, NLVL,
+     $                   NM1, NSIZE, NSUB, NWORK, PERM, POLES, S, SIZEI,
+     $                   SMLSZP, SQRE, ST, ST1, U, VT, Z
+      DOUBLE PRECISION   CS, EPS, ORGNRM, R, RCND, SN, TOL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      INTEGER            IDAMAX
+      DOUBLE PRECISION   <a name="DLAMCH.123"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANST.123"></a><a href="dlanst.f.html#DLANST.1">DLANST</a>
+      EXTERNAL           IDAMAX, <a name="DLAMCH.124"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANST.124"></a><a href="dlanst.f.html#DLANST.1">DLANST</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DCOPY, DGEMM, <a name="DLACPY.127"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>, <a name="DLALSA.127"></a><a href="dlalsa.f.html#DLALSA.1">DLALSA</a>, <a name="DLARTG.127"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>, <a name="DLASCL.127"></a><a href="dlascl.f.html#DLASCL.1">DLASCL</a>,
+     $                   <a name="DLASDA.128"></a><a href="dlasda.f.html#DLASDA.1">DLASDA</a>, <a name="DLASDQ.128"></a><a href="dlasdq.f.html#DLASDQ.1">DLASDQ</a>, <a name="DLASET.128"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>, <a name="DLASRT.128"></a><a href="dlasrt.f.html#DLASRT.1">DLASRT</a>, DROT, <a name="XERBLA.128"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, DBLE, INT, LOG, SIGN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+<span class="comment">*</span><span class="comment">
+</span>      IF( N.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( NRHS.LT.1 ) THEN
+         INFO = -4
+      ELSE IF( ( LDB.LT.1 ) .OR. ( LDB.LT.N ) ) THEN
+         INFO = -8
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.147"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DLALSD.147"></a><a href="dlalsd.f.html#DLALSD.1">DLALSD</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      EPS = <a name="DLAMCH.151"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Epsilon'</span> )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set up the tolerance.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ( RCOND.LE.ZERO ) .OR. ( RCOND.GE.ONE ) ) THEN
+         RCND = EPS
+      ELSE
+         RCND = RCOND
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RANK = 0
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 ) THEN
+         RETURN
+      ELSE IF( N.EQ.1 ) THEN
+         IF( D( 1 ).EQ.ZERO ) THEN
+            CALL <a name="DLASET.169"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'A'</span>, 1, NRHS, ZERO, ZERO, B, LDB )
+         ELSE
+            RANK = 1
+            CALL <a name="DLASCL.172"></a><a href="dlascl.f.html#DLASCL.1">DLASCL</a>( <span class="string">'G'</span>, 0, 0, D( 1 ), ONE, 1, NRHS, B, LDB, INFO )
+            D( 1 ) = ABS( D( 1 ) )
+         END IF
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Rotate the matrix if it is lower bidiagonal.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( UPLO.EQ.<span class="string">'L'</span> ) THEN
+         DO 10 I = 1, N - 1
+            CALL <a name="DLARTG.182"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( D( I ), E( I ), CS, SN, R )
+            D( I ) = R
+            E( I ) = SN*D( I+1 )
+            D( I+1 ) = CS*D( I+1 )
+            IF( NRHS.EQ.1 ) THEN
+               CALL DROT( 1, B( I, 1 ), 1, B( I+1, 1 ), 1, CS, SN )
+            ELSE
+               WORK( I*2-1 ) = CS
+               WORK( I*2 ) = SN
+            END IF
+   10    CONTINUE
+         IF( NRHS.GT.1 ) THEN
+            DO 30 I = 1, NRHS
+               DO 20 J = 1, N - 1
+                  CS = WORK( J*2-1 )
+                  SN = WORK( J*2 )
+                  CALL DROT( 1, B( J, I ), 1, B( J+1, I ), 1, CS, SN )
+   20          CONTINUE
+   30       CONTINUE
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Scale.
+</span><span class="comment">*</span><span class="comment">
+</span>      NM1 = N - 1
+      ORGNRM = <a name="DLANST.207"></a><a href="dlanst.f.html#DLANST.1">DLANST</a>( <span class="string">'M'</span>, N, D, E )
+      IF( ORGNRM.EQ.ZERO ) THEN
+         CALL <a name="DLASET.209"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'A'</span>, N, NRHS, ZERO, ZERO, B, LDB )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      CALL <a name="DLASCL.213"></a><a href="dlascl.f.html#DLASCL.1">DLASCL</a>( <span class="string">'G'</span>, 0, 0, ORGNRM, ONE, N, 1, D, N, INFO )
+      CALL <a name="DLASCL.214"></a><a href="dlascl.f.html#DLASCL.1">DLASCL</a>( <span class="string">'G'</span>, 0, 0, ORGNRM, ONE, NM1, 1, E, NM1, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If N is smaller than the minimum divide size SMLSIZ, then solve
+</span><span class="comment">*</span><span class="comment">     the problem with another solver.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.LE.SMLSIZ ) THEN
+         NWORK = 1 + N*N
+         CALL <a name="DLASET.221"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'A'</span>, N, N, ZERO, ONE, WORK, N )
+         CALL <a name="DLASDQ.222"></a><a href="dlasdq.f.html#DLASDQ.1">DLASDQ</a>( <span class="string">'U'</span>, 0, N, N, 0, NRHS, D, E, WORK, N, WORK, N, B,
+     $                LDB, WORK( NWORK ), INFO )
+         IF( INFO.NE.0 ) THEN
+            RETURN
+         END IF
+         TOL = RCND*ABS( D( IDAMAX( N, D, 1 ) ) )
+         DO 40 I = 1, N
+            IF( D( I ).LE.TOL ) THEN
+               CALL <a name="DLASET.230"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'A'</span>, 1, NRHS, ZERO, ZERO, B( I, 1 ), LDB )
+            ELSE
+               CALL <a name="DLASCL.232"></a><a href="dlascl.f.html#DLASCL.1">DLASCL</a>( <span class="string">'G'</span>, 0, 0, D( I ), ONE, 1, NRHS, B( I, 1 ),
+     $                      LDB, INFO )
+               RANK = RANK + 1
+            END IF
+   40    CONTINUE
+         CALL DGEMM( <span class="string">'T'</span>, <span class="string">'N'</span>, N, NRHS, N, ONE, WORK, N, B, LDB, ZERO,
+     $               WORK( NWORK ), N )
+         CALL <a name="DLACPY.239"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>( <span class="string">'A'</span>, N, NRHS, WORK( NWORK ), N, B, LDB )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Unscale.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DLASCL.243"></a><a href="dlascl.f.html#DLASCL.1">DLASCL</a>( <span class="string">'G'</span>, 0, 0, ONE, ORGNRM, N, 1, D, N, INFO )
+         CALL <a name="DLASRT.244"></a><a href="dlasrt.f.html#DLASRT.1">DLASRT</a>( <span class="string">'D'</span>, N, D, INFO )
+         CALL <a name="DLASCL.245"></a><a href="dlascl.f.html#DLASCL.1">DLASCL</a>( <span class="string">'G'</span>, 0, 0, ORGNRM, ONE, N, NRHS, B, LDB, INFO )
+<span class="comment">*</span><span class="comment">
+</span>         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Book-keeping and setting up some constants.
+</span><span class="comment">*</span><span class="comment">
+</span>      NLVL = INT( LOG( DBLE( N ) / DBLE( SMLSIZ+1 ) ) / LOG( TWO ) ) + 1
+<span class="comment">*</span><span class="comment">
+</span>      SMLSZP = SMLSIZ + 1
+<span class="comment">*</span><span class="comment">
+</span>      U = 1
+      VT = 1 + SMLSIZ*N
+      DIFL = VT + SMLSZP*N
+      DIFR = DIFL + NLVL*N
+      Z = DIFR + NLVL*N*2
+      C = Z + NLVL*N
+      S = C + N
+      POLES = S + N
+      GIVNUM = POLES + 2*NLVL*N
+      BX = GIVNUM + 2*NLVL*N
+      NWORK = BX + N*NRHS
+<span class="comment">*</span><span class="comment">
+</span>      SIZEI = 1 + N
+      K = SIZEI + N
+      GIVPTR = K + N
+      PERM = GIVPTR + N
+      GIVCOL = PERM + NLVL*N
+      IWK = GIVCOL + NLVL*N*2
+<span class="comment">*</span><span class="comment">
+</span>      ST = 1
+      SQRE = 0
+      ICMPQ1 = 1
+      ICMPQ2 = 0
+      NSUB = 0
+<span class="comment">*</span><span class="comment">
+</span>      DO 50 I = 1, N
+         IF( ABS( D( I ) ).LT.EPS ) THEN
+            D( I ) = SIGN( EPS, D( I ) )
+         END IF
+   50 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      DO 60 I = 1, NM1
+         IF( ( ABS( E( I ) ).LT.EPS ) .OR. ( I.EQ.NM1 ) ) THEN
+            NSUB = NSUB + 1
+            IWORK( NSUB ) = ST
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Subproblem found. First determine its size and then
+</span><span class="comment">*</span><span class="comment">           apply divide and conquer on it.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( I.LT.NM1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              A subproblem with E(I) small for I &lt; NM1.
+</span><span class="comment">*</span><span class="comment">
+</span>               NSIZE = I - ST + 1
+               IWORK( SIZEI+NSUB-1 ) = NSIZE
+            ELSE IF( ABS( E( I ) ).GE.EPS ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              A subproblem with E(NM1) not too small but I = NM1.
+</span><span class="comment">*</span><span class="comment">
+</span>               NSIZE = N - ST + 1
+               IWORK( SIZEI+NSUB-1 ) = NSIZE
+            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              A subproblem with E(NM1) small. This implies an
+</span><span class="comment">*</span><span class="comment">              1-by-1 subproblem at D(N), which is not solved
+</span><span class="comment">*</span><span class="comment">              explicitly.
+</span><span class="comment">*</span><span class="comment">
+</span>               NSIZE = I - ST + 1
+               IWORK( SIZEI+NSUB-1 ) = NSIZE
+               NSUB = NSUB + 1
+               IWORK( NSUB ) = N
+               IWORK( SIZEI+NSUB-1 ) = 1
+               CALL DCOPY( NRHS, B( N, 1 ), LDB, WORK( BX+NM1 ), N )
+            END IF
+            ST1 = ST - 1
+            IF( NSIZE.EQ.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              This is a 1-by-1 subproblem and is not solved
+</span><span class="comment">*</span><span class="comment">              explicitly.
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL DCOPY( NRHS, B( ST, 1 ), LDB, WORK( BX+ST1 ), N )
+            ELSE IF( NSIZE.LE.SMLSIZ ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              This is a small subproblem and is solved by <a name="DLASDQ.329"></a><a href="dlasdq.f.html#DLASDQ.1">DLASDQ</a>.
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="DLASET.331"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'A'</span>, NSIZE, NSIZE, ZERO, ONE,
+     $                      WORK( VT+ST1 ), N )
+               CALL <a name="DLASDQ.333"></a><a href="dlasdq.f.html#DLASDQ.1">DLASDQ</a>( <span class="string">'U'</span>, 0, NSIZE, NSIZE, 0, NRHS, D( ST ),
+     $                      E( ST ), WORK( VT+ST1 ), N, WORK( NWORK ),
+     $                      N, B( ST, 1 ), LDB, WORK( NWORK ), INFO )
+               IF( INFO.NE.0 ) THEN
+                  RETURN
+               END IF
+               CALL <a name="DLACPY.339"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>( <span class="string">'A'</span>, NSIZE, NRHS, B( ST, 1 ), LDB,
+     $                      WORK( BX+ST1 ), N )
+            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              A large problem. Solve it using divide and conquer.
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="DLASDA.345"></a><a href="dlasda.f.html#DLASDA.1">DLASDA</a>( ICMPQ1, SMLSIZ, NSIZE, SQRE, D( ST ),
+     $                      E( ST ), WORK( U+ST1 ), N, WORK( VT+ST1 ),
+     $                      IWORK( K+ST1 ), WORK( DIFL+ST1 ),
+     $                      WORK( DIFR+ST1 ), WORK( Z+ST1 ),
+     $                      WORK( POLES+ST1 ), IWORK( GIVPTR+ST1 ),
+     $                      IWORK( GIVCOL+ST1 ), N, IWORK( PERM+ST1 ),
+     $                      WORK( GIVNUM+ST1 ), WORK( C+ST1 ),
+     $                      WORK( S+ST1 ), WORK( NWORK ), IWORK( IWK ),
+     $                      INFO )
+               IF( INFO.NE.0 ) THEN
+                  RETURN
+               END IF
+               BXST = BX + ST1
+               CALL <a name="DLALSA.358"></a><a href="dlalsa.f.html#DLALSA.1">DLALSA</a>( ICMPQ2, SMLSIZ, NSIZE, NRHS, B( ST, 1 ),
+     $                      LDB, WORK( BXST ), N, WORK( U+ST1 ), N,
+     $                      WORK( VT+ST1 ), IWORK( K+ST1 ),
+     $                      WORK( DIFL+ST1 ), WORK( DIFR+ST1 ),
+     $                      WORK( Z+ST1 ), WORK( POLES+ST1 ),
+     $                      IWORK( GIVPTR+ST1 ), IWORK( GIVCOL+ST1 ), N,
+     $                      IWORK( PERM+ST1 ), WORK( GIVNUM+ST1 ),
+     $                      WORK( C+ST1 ), WORK( S+ST1 ), WORK( NWORK ),
+     $                      IWORK( IWK ), INFO )
+               IF( INFO.NE.0 ) THEN
+                  RETURN
+               END IF
+            END IF
+            ST = I + 1
+         END IF
+   60 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Apply the singular values and treat the tiny ones as zero.
+</span><span class="comment">*</span><span class="comment">
+</span>      TOL = RCND*ABS( D( IDAMAX( N, D, 1 ) ) )
+<span class="comment">*</span><span class="comment">
+</span>      DO 70 I = 1, N
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Some of the elements in D can be negative because 1-by-1
+</span><span class="comment">*</span><span class="comment">        subproblems were not solved explicitly.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( ABS( D( I ) ).LE.TOL ) THEN
+            CALL <a name="DLASET.385"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'A'</span>, 1, NRHS, ZERO, ZERO, WORK( BX+I-1 ), N )
+         ELSE
+            RANK = RANK + 1
+            CALL <a name="DLASCL.388"></a><a href="dlascl.f.html#DLASCL.1">DLASCL</a>( <span class="string">'G'</span>, 0, 0, D( I ), ONE, 1, NRHS,
+     $                   WORK( BX+I-1 ), N, INFO )
+         END IF
+         D( I ) = ABS( D( I ) )
+   70 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Now apply back the right singular vectors.
+</span><span class="comment">*</span><span class="comment">
+</span>      ICMPQ2 = 1
+      DO 80 I = 1, NSUB
+         ST = IWORK( I )
+         ST1 = ST - 1
+         NSIZE = IWORK( SIZEI+I-1 )
+         BXST = BX + ST1
+         IF( NSIZE.EQ.1 ) THEN
+            CALL DCOPY( NRHS, WORK( BXST ), N, B( ST, 1 ), LDB )
+         ELSE IF( NSIZE.LE.SMLSIZ ) THEN
+            CALL DGEMM( <span class="string">'T'</span>, <span class="string">'N'</span>, NSIZE, NRHS, NSIZE, ONE,
+     $                  WORK( VT+ST1 ), N, WORK( BXST ), N, ZERO,
+     $                  B( ST, 1 ), LDB )
+         ELSE
+            CALL <a name="DLALSA.409"></a><a href="dlalsa.f.html#DLALSA.1">DLALSA</a>( ICMPQ2, SMLSIZ, NSIZE, NRHS, WORK( BXST ), N,
+     $                   B( ST, 1 ), LDB, WORK( U+ST1 ), N,
+     $                   WORK( VT+ST1 ), IWORK( K+ST1 ),
+     $                   WORK( DIFL+ST1 ), WORK( DIFR+ST1 ),
+     $                   WORK( Z+ST1 ), WORK( POLES+ST1 ),
+     $                   IWORK( GIVPTR+ST1 ), IWORK( GIVCOL+ST1 ), N,
+     $                   IWORK( PERM+ST1 ), WORK( GIVNUM+ST1 ),
+     $                   WORK( C+ST1 ), WORK( S+ST1 ), WORK( NWORK ),
+     $                   IWORK( IWK ), INFO )
+            IF( INFO.NE.0 ) THEN
+               RETURN
+            END IF
+         END IF
+   80 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Unscale and sort the singular values.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="DLASCL.426"></a><a href="dlascl.f.html#DLASCL.1">DLASCL</a>( <span class="string">'G'</span>, 0, 0, ONE, ORGNRM, N, 1, D, N, INFO )
+      CALL <a name="DLASRT.427"></a><a href="dlasrt.f.html#DLASRT.1">DLASRT</a>( <span class="string">'D'</span>, N, D, INFO )
+      CALL <a name="DLASCL.428"></a><a href="dlascl.f.html#DLASCL.1">DLASCL</a>( <span class="string">'G'</span>, 0, 0, ORGNRM, ONE, N, NRHS, B, LDB, INFO )
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLALSD.432"></a><a href="dlalsd.f.html#DLALSD.1">DLALSD</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

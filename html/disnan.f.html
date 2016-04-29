@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>disnan.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      LOGICAL FUNCTION <a name="DISNAN.1"></a><a href="disnan.f.html#DISNAN.1">DISNAN</a>(DIN)
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      DOUBLE PRECISION DIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DISNAN.14"></a><a href="disnan.f.html#DISNAN.1">DISNAN</a> returns .TRUE. if its argument is NaN, and .FALSE.
+</span><span class="comment">*</span><span class="comment">  otherwise.  To be replaced by the Fortran 2003 intrinsic in the
+</span><span class="comment">*</span><span class="comment">  future.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIN      (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          Input to test for NaN.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  .. External Functions ..
+</span>      LOGICAL <a name="DLAISNAN.27"></a><a href="dlaisnan.f.html#DLAISNAN.1">DLAISNAN</a>
+      EXTERNAL <a name="DLAISNAN.28"></a><a href="dlaisnan.f.html#DLAISNAN.1">DLAISNAN</a>
+<span class="comment">*</span><span class="comment">  ..
+</span><span class="comment">*</span><span class="comment">  .. Executable Statements ..
+</span>      <a name="DISNAN.31"></a><a href="disnan.f.html#DISNAN.1">DISNAN</a> = <a name="DLAISNAN.31"></a><a href="dlaisnan.f.html#DLAISNAN.1">DLAISNAN</a>(DIN,DIN)
+      RETURN
+      END
+
+</pre>
+
+ </body>
+</html>

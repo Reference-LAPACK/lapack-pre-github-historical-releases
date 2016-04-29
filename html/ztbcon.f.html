@@ -1,0 +1,233 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>ztbcon.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZTBCON.1"></a><a href="ztbcon.f.html#ZTBCON.1">ZTBCON</a>( NORM, UPLO, DIAG, N, KD, AB, LDAB, RCOND, WORK,
+     $                   RWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Modified to call <a name="ZLACN2.8"></a><a href="zlacn2.f.html#ZLACN2.1">ZLACN2</a> in place of <a name="ZLACON.8"></a><a href="zlacon.f.html#ZLACON.1">ZLACON</a>, 10 Feb 03, SJH.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          DIAG, NORM, UPLO
+      INTEGER            INFO, KD, LDAB, N
+      DOUBLE PRECISION   RCOND
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   RWORK( * )
+      COMPLEX*16         AB( LDAB, * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZTBCON.23"></a><a href="ztbcon.f.html#ZTBCON.1">ZTBCON</a> estimates the reciprocal of the condition number of a
+</span><span class="comment">*</span><span class="comment">  triangular band matrix A, in either the 1-norm or the infinity-norm.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The norm of A is computed and an estimate is obtained for
+</span><span class="comment">*</span><span class="comment">  norm(inv(A)), then the reciprocal of the condition number is
+</span><span class="comment">*</span><span class="comment">  computed as
+</span><span class="comment">*</span><span class="comment">     RCOND = 1 / ( norm(A) * norm(inv(A)) ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NORM    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether the 1-norm condition number or the
+</span><span class="comment">*</span><span class="comment">          infinity-norm condition number is required:
+</span><span class="comment">*</span><span class="comment">          = '1' or 'O':  1-norm;
+</span><span class="comment">*</span><span class="comment">          = 'I':         Infinity-norm.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  A is upper triangular;
+</span><span class="comment">*</span><span class="comment">          = 'L':  A is lower triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIAG    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'N':  A is non-unit triangular;
+</span><span class="comment">*</span><span class="comment">          = 'U':  A is unit triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KD      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of superdiagonals or subdiagonals of the
+</span><span class="comment">*</span><span class="comment">          triangular band matrix A.  KD &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AB      (input) COMPLEX*16 array, dimension (LDAB,N)
+</span><span class="comment">*</span><span class="comment">          The upper or lower triangular band matrix A, stored in the
+</span><span class="comment">*</span><span class="comment">          first kd+1 rows of the array. The j-th column of A is stored
+</span><span class="comment">*</span><span class="comment">          in the j-th column of the array AB as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', AB(kd+1+i-j,j) = A(i,j) for max(1,j-kd)&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', AB(1+i-j,j)    = A(i,j) for j&lt;=i&lt;=min(n,j+kd).
+</span><span class="comment">*</span><span class="comment">          If DIAG = 'U', the diagonal elements of A are not referenced
+</span><span class="comment">*</span><span class="comment">          and are assumed to be 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDAB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array AB.  LDAB &gt;= KD+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RCOND   (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The reciprocal of the condition number of the matrix A,
+</span><span class="comment">*</span><span class="comment">          computed as RCOND = 1/(norm(A) * norm(inv(A))).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) COMPLEX*16 array, dimension (2*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RWORK   (workspace) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ONE, ZERO
+      PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            NOUNIT, ONENRM, UPPER
+      CHARACTER          NORMIN
+      INTEGER            IX, KASE, KASE1
+      DOUBLE PRECISION   AINVNM, ANORM, SCALE, SMLNUM, XNORM
+      COMPLEX*16         ZDUM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      INTEGER            ISAVE( 3 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.96"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      INTEGER            IZAMAX
+      DOUBLE PRECISION   <a name="DLAMCH.98"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="ZLANTB.98"></a><a href="zlantb.f.html#ZLANTB.1">ZLANTB</a>
+      EXTERNAL           <a name="LSAME.99"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, IZAMAX, <a name="DLAMCH.99"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="ZLANTB.99"></a><a href="zlantb.f.html#ZLANTB.1">ZLANTB</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.102"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, <a name="ZDRSCL.102"></a><a href="zdrscl.f.html#ZDRSCL.1">ZDRSCL</a>, <a name="ZLACN2.102"></a><a href="zlacn2.f.html#ZLACN2.1">ZLACN2</a>, <a name="ZLATBS.102"></a><a href="zlatbs.f.html#ZLATBS.1">ZLATBS</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, DBLE, DIMAG, MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Functions ..
+</span>      DOUBLE PRECISION   CABS1
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Function definitions ..
+</span>      CABS1( ZDUM ) = ABS( DBLE( ZDUM ) ) + ABS( DIMAG( ZDUM ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      UPPER = <a name="LSAME.118"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> )
+      ONENRM = NORM.EQ.<span class="string">'1'</span> .OR. <a name="LSAME.119"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'O'</span> )
+      NOUNIT = <a name="LSAME.120"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIAG, <span class="string">'N'</span> )
+<span class="comment">*</span><span class="comment">
+</span>      IF( .NOT.ONENRM .AND. .NOT.<a name="LSAME.122"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'I'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.UPPER .AND. .NOT.<a name="LSAME.124"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) THEN
+         INFO = -2
+      ELSE IF( .NOT.NOUNIT .AND. .NOT.<a name="LSAME.126"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIAG, <span class="string">'U'</span> ) ) THEN
+         INFO = -3
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( KD.LT.0 ) THEN
+         INFO = -5
+      ELSE IF( LDAB.LT.KD+1 ) THEN
+         INFO = -7
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.136"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZTBCON.136"></a><a href="ztbcon.f.html#ZTBCON.1">ZTBCON</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 ) THEN
+         RCOND = ONE
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RCOND = ZERO
+      SMLNUM = <a name="DLAMCH.148"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Safe minimum'</span> )*DBLE( MAX( N, 1 ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the 1-norm of the triangular matrix A or A'.
+</span><span class="comment">*</span><span class="comment">
+</span>      ANORM = <a name="ZLANTB.152"></a><a href="zlantb.f.html#ZLANTB.1">ZLANTB</a>( NORM, UPLO, DIAG, N, KD, AB, LDAB, RWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Continue only if ANORM &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ANORM.GT.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Estimate the 1-norm of the inverse of A.
+</span><span class="comment">*</span><span class="comment">
+</span>         AINVNM = ZERO
+         NORMIN = <span class="string">'N'</span>
+         IF( ONENRM ) THEN
+            KASE1 = 1
+         ELSE
+            KASE1 = 2
+         END IF
+         KASE = 0
+   10    CONTINUE
+         CALL <a name="ZLACN2.169"></a><a href="zlacn2.f.html#ZLACN2.1">ZLACN2</a>( N, WORK( N+1 ), WORK, AINVNM, KASE, ISAVE )
+         IF( KASE.NE.0 ) THEN
+            IF( KASE.EQ.KASE1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Multiply by inv(A).
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="ZLATBS.175"></a><a href="zlatbs.f.html#ZLATBS.1">ZLATBS</a>( UPLO, <span class="string">'No transpose'</span>, DIAG, NORMIN, N, KD,
+     $                      AB, LDAB, WORK, SCALE, RWORK, INFO )
+            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Multiply by inv(A').
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="ZLATBS.181"></a><a href="zlatbs.f.html#ZLATBS.1">ZLATBS</a>( UPLO, <span class="string">'Conjugate transpose'</span>, DIAG, NORMIN,
+     $                      N, KD, AB, LDAB, WORK, SCALE, RWORK, INFO )
+            END IF
+            NORMIN = <span class="string">'Y'</span>
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Multiply by 1/SCALE if doing so will not cause overflow.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( SCALE.NE.ONE ) THEN
+               IX = IZAMAX( N, WORK, 1 )
+               XNORM = CABS1( WORK( IX ) )
+               IF( SCALE.LT.XNORM*SMLNUM .OR. SCALE.EQ.ZERO )
+     $            GO TO 20
+               CALL <a name="ZDRSCL.193"></a><a href="zdrscl.f.html#ZDRSCL.1">ZDRSCL</a>( N, SCALE, WORK, 1 )
+            END IF
+            GO TO 10
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute the estimate of the reciprocal condition number.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( AINVNM.NE.ZERO )
+     $      RCOND = ( ONE / ANORM ) / AINVNM
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>   20 CONTINUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZTBCON.207"></a><a href="ztbcon.f.html#ZTBCON.1">ZTBCON</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

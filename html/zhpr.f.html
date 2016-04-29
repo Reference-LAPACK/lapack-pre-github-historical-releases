@@ -1,0 +1,241 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zhpr.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZHPR.1"></a><a href="zhpr.f.html#ZHPR.1">ZHPR</a>(UPLO,N,ALPHA,X,INCX,AP)
+<span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      DOUBLE PRECISION ALPHA
+      INTEGER INCX,N
+      CHARACTER UPLO
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE COMPLEX AP(*),X(*)
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZHPR.14"></a><a href="zhpr.f.html#ZHPR.1">ZHPR</a>    performs the hermitian rank 1 operation
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     A := alpha*x*conjg( x' ) + A,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where alpha is a real scalar, x is an n element vector and A is an
+</span><span class="comment">*</span><span class="comment">  n by n hermitian matrix, supplied in packed form.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  ==========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO   - CHARACTER*1.
+</span><span class="comment">*</span><span class="comment">           On entry, UPLO specifies whether the upper or lower
+</span><span class="comment">*</span><span class="comment">           triangular part of the matrix A is supplied in the packed
+</span><span class="comment">*</span><span class="comment">           array AP as follows:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              UPLO = 'U' or 'u'   The upper triangular part of A is
+</span><span class="comment">*</span><span class="comment">                                  supplied in AP.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              UPLO = 'L' or 'l'   The lower triangular part of A is
+</span><span class="comment">*</span><span class="comment">                                  supplied in AP.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N      - INTEGER.
+</span><span class="comment">*</span><span class="comment">           On entry, N specifies the order of the matrix A.
+</span><span class="comment">*</span><span class="comment">           N must be at least zero.
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ALPHA  - DOUBLE PRECISION.
+</span><span class="comment">*</span><span class="comment">           On entry, ALPHA specifies the scalar alpha.
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X      - COMPLEX*16       array of dimension at least
+</span><span class="comment">*</span><span class="comment">           ( 1 + ( n - 1 )*abs( INCX ) ).
+</span><span class="comment">*</span><span class="comment">           Before entry, the incremented array X must contain the n
+</span><span class="comment">*</span><span class="comment">           element vector x.
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INCX   - INTEGER.
+</span><span class="comment">*</span><span class="comment">           On entry, INCX specifies the increment for the elements of
+</span><span class="comment">*</span><span class="comment">           X. INCX must not be zero.
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AP     - COMPLEX*16       array of DIMENSION at least
+</span><span class="comment">*</span><span class="comment">           ( ( n*( n + 1 ) )/2 ).
+</span><span class="comment">*</span><span class="comment">           Before entry with  UPLO = 'U' or 'u', the array AP must
+</span><span class="comment">*</span><span class="comment">           contain the upper triangular part of the hermitian matrix
+</span><span class="comment">*</span><span class="comment">           packed sequentially, column by column, so that AP( 1 )
+</span><span class="comment">*</span><span class="comment">           contains a( 1, 1 ), AP( 2 ) and AP( 3 ) contain a( 1, 2 )
+</span><span class="comment">*</span><span class="comment">           and a( 2, 2 ) respectively, and so on. On exit, the array
+</span><span class="comment">*</span><span class="comment">           AP is overwritten by the upper triangular part of the
+</span><span class="comment">*</span><span class="comment">           updated matrix.
+</span><span class="comment">*</span><span class="comment">           Before entry with UPLO = 'L' or 'l', the array AP must
+</span><span class="comment">*</span><span class="comment">           contain the lower triangular part of the hermitian matrix
+</span><span class="comment">*</span><span class="comment">           packed sequentially, column by column, so that AP( 1 )
+</span><span class="comment">*</span><span class="comment">           contains a( 1, 1 ), AP( 2 ) and AP( 3 ) contain a( 2, 1 )
+</span><span class="comment">*</span><span class="comment">           and a( 3, 1 ) respectively, and so on. On exit, the array
+</span><span class="comment">*</span><span class="comment">           AP is overwritten by the lower triangular part of the
+</span><span class="comment">*</span><span class="comment">           updated matrix.
+</span><span class="comment">*</span><span class="comment">           Note that the imaginary parts of the diagonal elements need
+</span><span class="comment">*</span><span class="comment">           not be set, they are assumed to be zero, and on exit they
+</span><span class="comment">*</span><span class="comment">           are set to zero.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Level 2 Blas routine.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- Written on 22-October-1986.
+</span><span class="comment">*</span><span class="comment">     Jack Dongarra, Argonne National Lab.
+</span><span class="comment">*</span><span class="comment">     Jeremy Du Croz, Nag Central Office.
+</span><span class="comment">*</span><span class="comment">     Sven Hammarling, Nag Central Office.
+</span><span class="comment">*</span><span class="comment">     Richard Hanson, Sandia National Labs.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE COMPLEX ZERO
+      PARAMETER (ZERO= (0.0D+0,0.0D+0))
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      DOUBLE COMPLEX TEMP
+      INTEGER I,INFO,IX,J,JX,K,KK,KX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL <a name="LSAME.96"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL <a name="LSAME.97"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL <a name="XERBLA.100"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC DBLE,DCONJG
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF (.NOT.<a name="LSAME.109"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(UPLO,<span class="string">'U'</span>) .AND. .NOT.<a name="LSAME.109"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(UPLO,<span class="string">'L'</span>)) THEN
+          INFO = 1
+      ELSE IF (N.LT.0) THEN
+          INFO = 2
+      ELSE IF (INCX.EQ.0) THEN
+          INFO = 5
+      END IF
+      IF (INFO.NE.0) THEN
+          CALL <a name="XERBLA.117"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>(<span class="string">'<a name="ZHPR.117"></a><a href="zhpr.f.html#ZHPR.1">ZHPR</a>  '</span>,INFO)
+          RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF ((N.EQ.0) .OR. (ALPHA.EQ.DBLE(ZERO))) RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set the start point in X if the increment is not unity.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF (INCX.LE.0) THEN
+          KX = 1 - (N-1)*INCX
+      ELSE IF (INCX.NE.1) THEN
+          KX = 1
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Start the operations. In this version the elements of the array AP
+</span><span class="comment">*</span><span class="comment">     are accessed sequentially with one pass through AP.
+</span><span class="comment">*</span><span class="comment">
+</span>      KK = 1
+      IF (<a name="LSAME.137"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(UPLO,<span class="string">'U'</span>)) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Form  A  when upper triangle is stored in AP.
+</span><span class="comment">*</span><span class="comment">
+</span>          IF (INCX.EQ.1) THEN
+              DO 20 J = 1,N
+                  IF (X(J).NE.ZERO) THEN
+                      TEMP = ALPHA*DCONJG(X(J))
+                      K = KK
+                      DO 10 I = 1,J - 1
+                          AP(K) = AP(K) + X(I)*TEMP
+                          K = K + 1
+   10                 CONTINUE
+                      AP(KK+J-1) = DBLE(AP(KK+J-1)) + DBLE(X(J)*TEMP)
+                  ELSE
+                      AP(KK+J-1) = DBLE(AP(KK+J-1))
+                  END IF
+                  KK = KK + J
+   20         CONTINUE
+          ELSE
+              JX = KX
+              DO 40 J = 1,N
+                  IF (X(JX).NE.ZERO) THEN
+                      TEMP = ALPHA*DCONJG(X(JX))
+                      IX = KX
+                      DO 30 K = KK,KK + J - 2
+                          AP(K) = AP(K) + X(IX)*TEMP
+                          IX = IX + INCX
+   30                 CONTINUE
+                      AP(KK+J-1) = DBLE(AP(KK+J-1)) + DBLE(X(JX)*TEMP)
+                  ELSE
+                      AP(KK+J-1) = DBLE(AP(KK+J-1))
+                  END IF
+                  JX = JX + INCX
+                  KK = KK + J
+   40         CONTINUE
+          END IF
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Form  A  when lower triangle is stored in AP.
+</span><span class="comment">*</span><span class="comment">
+</span>          IF (INCX.EQ.1) THEN
+              DO 60 J = 1,N
+                  IF (X(J).NE.ZERO) THEN
+                      TEMP = ALPHA*DCONJG(X(J))
+                      AP(KK) = DBLE(AP(KK)) + DBLE(TEMP*X(J))
+                      K = KK + 1
+                      DO 50 I = J + 1,N
+                          AP(K) = AP(K) + X(I)*TEMP
+                          K = K + 1
+   50                 CONTINUE
+                  ELSE
+                      AP(KK) = DBLE(AP(KK))
+                  END IF
+                  KK = KK + N - J + 1
+   60         CONTINUE
+          ELSE
+              JX = KX
+              DO 80 J = 1,N
+                  IF (X(JX).NE.ZERO) THEN
+                      TEMP = ALPHA*DCONJG(X(JX))
+                      AP(KK) = DBLE(AP(KK)) + DBLE(TEMP*X(JX))
+                      IX = JX
+                      DO 70 K = KK + 1,KK + N - J
+                          IX = IX + INCX
+                          AP(K) = AP(K) + X(IX)*TEMP
+   70                 CONTINUE
+                  ELSE
+                      AP(KK) = DBLE(AP(KK))
+                  END IF
+                  JX = JX + INCX
+                  KK = KK + N - J + 1
+   80         CONTINUE
+          END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZHPR.215"></a><a href="zhpr.f.html#ZHPR.1">ZHPR</a>  .
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

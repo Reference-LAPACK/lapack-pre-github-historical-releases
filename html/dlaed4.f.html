@@ -1,0 +1,868 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlaed4.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLAED4.1"></a><a href="dlaed4.f.html#DLAED4.1">DLAED4</a>( N, I, D, Z, DELTA, RHO, DLAM, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            I, INFO, N
+      DOUBLE PRECISION   DLAM, RHO
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   D( * ), DELTA( * ), Z( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This subroutine computes the I-th updated eigenvalue of a symmetric
+</span><span class="comment">*</span><span class="comment">  rank-one modification to a diagonal matrix whose elements are
+</span><span class="comment">*</span><span class="comment">  given in the array d, and that
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">             D(i) &lt; D(j)  for  i &lt; j
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  and that RHO &gt; 0.  This is arranged by the calling routine, and is
+</span><span class="comment">*</span><span class="comment">  no loss in generality.  The rank-one modified system is thus
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">             diag( D )  +  RHO *  Z * Z_transpose.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where we assume the Euclidean norm of Z is 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The method consists of approximating the rational functions in the
+</span><span class="comment">*</span><span class="comment">  secular equation by simpler interpolating rational functions.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The length of all arrays.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  I      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The index of the eigenvalue to be computed.  1 &lt;= I &lt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D      (input) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         The original eigenvalues.  It is assumed that they are in
+</span><span class="comment">*</span><span class="comment">         order, D(I) &lt; D(J)  for I &lt; J.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z      (input) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         The components of the updating vector.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DELTA  (output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         If N .GT. 2, DELTA contains (D(j) - lambda_I) in its  j-th
+</span><span class="comment">*</span><span class="comment">         component.  If N = 1, then DELTA(1) = 1. If N = 2, see <a name="DLAED5.52"></a><a href="dlaed5.f.html#DLAED5.1">DLAED5</a>
+</span><span class="comment">*</span><span class="comment">         for detail. The vector DELTA contains the information necessary
+</span><span class="comment">*</span><span class="comment">         to construct the eigenvectors by <a name="DLAED3.54"></a><a href="dlaed3.f.html#DLAED3.1">DLAED3</a> and <a name="DLAED9.54"></a><a href="dlaed9.f.html#DLAED9.1">DLAED9</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RHO    (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">         The scalar in the symmetric updating formula.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DLAM   (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">         The computed lambda_I, the I-th updated eigenvalue.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO   (output) INTEGER
+</span><span class="comment">*</span><span class="comment">         = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">         &gt; 0:  if INFO = 1, the updating process failed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Internal Parameters
+</span><span class="comment">*</span><span class="comment">  ===================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Logical variable ORGATI (origin-at-i?) is used for distinguishing
+</span><span class="comment">*</span><span class="comment">  whether D(i) or D(i+1) is treated as the origin.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">            ORGATI = .true.    origin at i
+</span><span class="comment">*</span><span class="comment">            ORGATI = .false.   origin at i+1
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">   Logical variable SWTCH3 (switch-for-3-poles?) is for noting
+</span><span class="comment">*</span><span class="comment">   if we are working with THREE poles!
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">   MAXIT is the maximum number of iterations allowed for each
+</span><span class="comment">*</span><span class="comment">   eigenvalue.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Ren-Cang Li, Computer Science Division, University of California
+</span><span class="comment">*</span><span class="comment">     at Berkeley, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      INTEGER            MAXIT
+      PARAMETER          ( MAXIT = 30 )
+      DOUBLE PRECISION   ZERO, ONE, TWO, THREE, FOUR, EIGHT, TEN
+      PARAMETER          ( ZERO = 0.0D0, ONE = 1.0D0, TWO = 2.0D0,
+     $                   THREE = 3.0D0, FOUR = 4.0D0, EIGHT = 8.0D0,
+     $                   TEN = 10.0D0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            ORGATI, SWTCH, SWTCH3
+      INTEGER            II, IIM1, IIP1, IP1, ITER, J, NITER
+      DOUBLE PRECISION   A, B, C, DEL, DLTLB, DLTUB, DPHI, DPSI, DW,
+     $                   EPS, ERRETM, ETA, MIDPT, PHI, PREW, PSI,
+     $                   RHOINV, TAU, TEMP, TEMP1, W
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      DOUBLE PRECISION   ZZ( 3 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      DOUBLE PRECISION   <a name="DLAMCH.109"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+      EXTERNAL           <a name="DLAMCH.110"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DLAED5.113"></a><a href="dlaed5.f.html#DLAED5.1">DLAED5</a>, <a name="DLAED6.113"></a><a href="dlaed6.f.html#DLAED6.1">DLAED6</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX, MIN, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Since this routine is called in an inner loop, we do no argument
+</span><span class="comment">*</span><span class="comment">     checking.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return for N=1 and 2.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( N.EQ.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">         Presumably, I=1 upon entry
+</span><span class="comment">*</span><span class="comment">
+</span>         DLAM = D( 1 ) + RHO*Z( 1 )*Z( 1 )
+         DELTA( 1 ) = ONE
+         RETURN
+      END IF
+      IF( N.EQ.2 ) THEN
+         CALL <a name="DLAED5.135"></a><a href="dlaed5.f.html#DLAED5.1">DLAED5</a>( I, D, Z, DELTA, RHO, DLAM )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute machine epsilon
+</span><span class="comment">*</span><span class="comment">
+</span>      EPS = <a name="DLAMCH.141"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Epsilon'</span> )
+      RHOINV = ONE / RHO
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The case I = N
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( I.EQ.N ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Initialize some basic variables
+</span><span class="comment">*</span><span class="comment">
+</span>         II = N - 1
+         NITER = 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Calculate initial guess
+</span><span class="comment">*</span><span class="comment">
+</span>         MIDPT = RHO / TWO
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        If ||Z||_2 is not one, then TEMP should be set to
+</span><span class="comment">*</span><span class="comment">        RHO * ||Z||_2^2 / TWO
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 10 J = 1, N
+            DELTA( J ) = ( D( J )-D( I ) ) - MIDPT
+   10    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         PSI = ZERO
+         DO 20 J = 1, N - 2
+            PSI = PSI + Z( J )*Z( J ) / DELTA( J )
+   20    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         C = RHOINV + PSI
+         W = C + Z( II )*Z( II ) / DELTA( II ) +
+     $       Z( N )*Z( N ) / DELTA( N )
+<span class="comment">*</span><span class="comment">
+</span>         IF( W.LE.ZERO ) THEN
+            TEMP = Z( N-1 )*Z( N-1 ) / ( D( N )-D( N-1 )+RHO ) +
+     $             Z( N )*Z( N ) / RHO
+            IF( C.LE.TEMP ) THEN
+               TAU = RHO
+            ELSE
+               DEL = D( N ) - D( N-1 )
+               A = -C*DEL + Z( N-1 )*Z( N-1 ) + Z( N )*Z( N )
+               B = Z( N )*Z( N )*DEL
+               IF( A.LT.ZERO ) THEN
+                  TAU = TWO*B / ( SQRT( A*A+FOUR*B*C )-A )
+               ELSE
+                  TAU = ( A+SQRT( A*A+FOUR*B*C ) ) / ( TWO*C )
+               END IF
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           It can be proved that
+</span><span class="comment">*</span><span class="comment">               D(N)+RHO/2 &lt;= LAMBDA(N) &lt; D(N)+TAU &lt;= D(N)+RHO
+</span><span class="comment">*</span><span class="comment">
+</span>            DLTLB = MIDPT
+            DLTUB = RHO
+         ELSE
+            DEL = D( N ) - D( N-1 )
+            A = -C*DEL + Z( N-1 )*Z( N-1 ) + Z( N )*Z( N )
+            B = Z( N )*Z( N )*DEL
+            IF( A.LT.ZERO ) THEN
+               TAU = TWO*B / ( SQRT( A*A+FOUR*B*C )-A )
+            ELSE
+               TAU = ( A+SQRT( A*A+FOUR*B*C ) ) / ( TWO*C )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           It can be proved that
+</span><span class="comment">*</span><span class="comment">               D(N) &lt; D(N)+TAU &lt; LAMBDA(N) &lt; D(N)+RHO/2
+</span><span class="comment">*</span><span class="comment">
+</span>            DLTLB = ZERO
+            DLTUB = MIDPT
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         DO 30 J = 1, N
+            DELTA( J ) = ( D( J )-D( I ) ) - TAU
+   30    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Evaluate PSI and the derivative DPSI
+</span><span class="comment">*</span><span class="comment">
+</span>         DPSI = ZERO
+         PSI = ZERO
+         ERRETM = ZERO
+         DO 40 J = 1, II
+            TEMP = Z( J ) / DELTA( J )
+            PSI = PSI + Z( J )*TEMP
+            DPSI = DPSI + TEMP*TEMP
+            ERRETM = ERRETM + PSI
+   40    CONTINUE
+         ERRETM = ABS( ERRETM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Evaluate PHI and the derivative DPHI
+</span><span class="comment">*</span><span class="comment">
+</span>         TEMP = Z( N ) / DELTA( N )
+         PHI = Z( N )*TEMP
+         DPHI = TEMP*TEMP
+         ERRETM = EIGHT*( -PHI-PSI ) + ERRETM - PHI + RHOINV +
+     $            ABS( TAU )*( DPSI+DPHI )
+<span class="comment">*</span><span class="comment">
+</span>         W = RHOINV + PHI + PSI
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Test for convergence
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( ABS( W ).LE.EPS*ERRETM ) THEN
+            DLAM = D( I ) + TAU
+            GO TO 250
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( W.LE.ZERO ) THEN
+            DLTLB = MAX( DLTLB, TAU )
+         ELSE
+            DLTUB = MIN( DLTUB, TAU )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Calculate the new step
+</span><span class="comment">*</span><span class="comment">
+</span>         NITER = NITER + 1
+         C = W - DELTA( N-1 )*DPSI - DELTA( N )*DPHI
+         A = ( DELTA( N-1 )+DELTA( N ) )*W -
+     $       DELTA( N-1 )*DELTA( N )*( DPSI+DPHI )
+         B = DELTA( N-1 )*DELTA( N )*W
+         IF( C.LT.ZERO )
+     $      C = ABS( C )
+         IF( C.EQ.ZERO ) THEN
+<span class="comment">*</span><span class="comment">          ETA = B/A
+</span><span class="comment">*</span><span class="comment">           ETA = RHO - TAU
+</span>            ETA = DLTUB - TAU
+         ELSE IF( A.GE.ZERO ) THEN
+            ETA = ( A+SQRT( ABS( A*A-FOUR*B*C ) ) ) / ( TWO*C )
+         ELSE
+            ETA = TWO*B / ( A-SQRT( ABS( A*A-FOUR*B*C ) ) )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Note, eta should be positive if w is negative, and
+</span><span class="comment">*</span><span class="comment">        eta should be negative otherwise. However,
+</span><span class="comment">*</span><span class="comment">        if for some reason caused by roundoff, eta*w &gt; 0,
+</span><span class="comment">*</span><span class="comment">        we simply use one Newton step instead. This way
+</span><span class="comment">*</span><span class="comment">        will guarantee eta*w &lt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( W*ETA.GT.ZERO )
+     $      ETA = -W / ( DPSI+DPHI )
+         TEMP = TAU + ETA
+         IF( TEMP.GT.DLTUB .OR. TEMP.LT.DLTLB ) THEN
+            IF( W.LT.ZERO ) THEN
+               ETA = ( DLTUB-TAU ) / TWO
+            ELSE
+               ETA = ( DLTLB-TAU ) / TWO
+            END IF
+         END IF
+         DO 50 J = 1, N
+            DELTA( J ) = DELTA( J ) - ETA
+   50    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         TAU = TAU + ETA
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Evaluate PSI and the derivative DPSI
+</span><span class="comment">*</span><span class="comment">
+</span>         DPSI = ZERO
+         PSI = ZERO
+         ERRETM = ZERO
+         DO 60 J = 1, II
+            TEMP = Z( J ) / DELTA( J )
+            PSI = PSI + Z( J )*TEMP
+            DPSI = DPSI + TEMP*TEMP
+            ERRETM = ERRETM + PSI
+   60    CONTINUE
+         ERRETM = ABS( ERRETM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Evaluate PHI and the derivative DPHI
+</span><span class="comment">*</span><span class="comment">
+</span>         TEMP = Z( N ) / DELTA( N )
+         PHI = Z( N )*TEMP
+         DPHI = TEMP*TEMP
+         ERRETM = EIGHT*( -PHI-PSI ) + ERRETM - PHI + RHOINV +
+     $            ABS( TAU )*( DPSI+DPHI )
+<span class="comment">*</span><span class="comment">
+</span>         W = RHOINV + PHI + PSI
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Main loop to update the values of the array   DELTA
+</span><span class="comment">*</span><span class="comment">
+</span>         ITER = NITER + 1
+<span class="comment">*</span><span class="comment">
+</span>         DO 90 NITER = ITER, MAXIT
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Test for convergence
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( ABS( W ).LE.EPS*ERRETM ) THEN
+               DLAM = D( I ) + TAU
+               GO TO 250
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>            IF( W.LE.ZERO ) THEN
+               DLTLB = MAX( DLTLB, TAU )
+            ELSE
+               DLTUB = MIN( DLTUB, TAU )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Calculate the new step
+</span><span class="comment">*</span><span class="comment">
+</span>            C = W - DELTA( N-1 )*DPSI - DELTA( N )*DPHI
+            A = ( DELTA( N-1 )+DELTA( N ) )*W -
+     $          DELTA( N-1 )*DELTA( N )*( DPSI+DPHI )
+            B = DELTA( N-1 )*DELTA( N )*W
+            IF( A.GE.ZERO ) THEN
+               ETA = ( A+SQRT( ABS( A*A-FOUR*B*C ) ) ) / ( TWO*C )
+            ELSE
+               ETA = TWO*B / ( A-SQRT( ABS( A*A-FOUR*B*C ) ) )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Note, eta should be positive if w is negative, and
+</span><span class="comment">*</span><span class="comment">           eta should be negative otherwise. However,
+</span><span class="comment">*</span><span class="comment">           if for some reason caused by roundoff, eta*w &gt; 0,
+</span><span class="comment">*</span><span class="comment">           we simply use one Newton step instead. This way
+</span><span class="comment">*</span><span class="comment">           will guarantee eta*w &lt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( W*ETA.GT.ZERO )
+     $         ETA = -W / ( DPSI+DPHI )
+            TEMP = TAU + ETA
+            IF( TEMP.GT.DLTUB .OR. TEMP.LT.DLTLB ) THEN
+               IF( W.LT.ZERO ) THEN
+                  ETA = ( DLTUB-TAU ) / TWO
+               ELSE
+                  ETA = ( DLTLB-TAU ) / TWO
+               END IF
+            END IF
+            DO 70 J = 1, N
+               DELTA( J ) = DELTA( J ) - ETA
+   70       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            TAU = TAU + ETA
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Evaluate PSI and the derivative DPSI
+</span><span class="comment">*</span><span class="comment">
+</span>            DPSI = ZERO
+            PSI = ZERO
+            ERRETM = ZERO
+            DO 80 J = 1, II
+               TEMP = Z( J ) / DELTA( J )
+               PSI = PSI + Z( J )*TEMP
+               DPSI = DPSI + TEMP*TEMP
+               ERRETM = ERRETM + PSI
+   80       CONTINUE
+            ERRETM = ABS( ERRETM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Evaluate PHI and the derivative DPHI
+</span><span class="comment">*</span><span class="comment">
+</span>            TEMP = Z( N ) / DELTA( N )
+            PHI = Z( N )*TEMP
+            DPHI = TEMP*TEMP
+            ERRETM = EIGHT*( -PHI-PSI ) + ERRETM - PHI + RHOINV +
+     $               ABS( TAU )*( DPSI+DPHI )
+<span class="comment">*</span><span class="comment">
+</span>            W = RHOINV + PHI + PSI
+   90    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Return with INFO = 1, NITER = MAXIT and not converged
+</span><span class="comment">*</span><span class="comment">
+</span>         INFO = 1
+         DLAM = D( I ) + TAU
+         GO TO 250
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        End for the case I = N
+</span><span class="comment">*</span><span class="comment">
+</span>      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        The case for I &lt; N
+</span><span class="comment">*</span><span class="comment">
+</span>         NITER = 1
+         IP1 = I + 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Calculate initial guess
+</span><span class="comment">*</span><span class="comment">
+</span>         DEL = D( IP1 ) - D( I )
+         MIDPT = DEL / TWO
+         DO 100 J = 1, N
+            DELTA( J ) = ( D( J )-D( I ) ) - MIDPT
+  100    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         PSI = ZERO
+         DO 110 J = 1, I - 1
+            PSI = PSI + Z( J )*Z( J ) / DELTA( J )
+  110    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         PHI = ZERO
+         DO 120 J = N, I + 2, -1
+            PHI = PHI + Z( J )*Z( J ) / DELTA( J )
+  120    CONTINUE
+         C = RHOINV + PSI + PHI
+         W = C + Z( I )*Z( I ) / DELTA( I ) +
+     $       Z( IP1 )*Z( IP1 ) / DELTA( IP1 )
+<span class="comment">*</span><span class="comment">
+</span>         IF( W.GT.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           d(i)&lt; the ith eigenvalue &lt; (d(i)+d(i+1))/2
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           We choose d(i) as origin.
+</span><span class="comment">*</span><span class="comment">
+</span>            ORGATI = .TRUE.
+            A = C*DEL + Z( I )*Z( I ) + Z( IP1 )*Z( IP1 )
+            B = Z( I )*Z( I )*DEL
+            IF( A.GT.ZERO ) THEN
+               TAU = TWO*B / ( A+SQRT( ABS( A*A-FOUR*B*C ) ) )
+            ELSE
+               TAU = ( A-SQRT( ABS( A*A-FOUR*B*C ) ) ) / ( TWO*C )
+            END IF
+            DLTLB = ZERO
+            DLTUB = MIDPT
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           (d(i)+d(i+1))/2 &lt;= the ith eigenvalue &lt; d(i+1)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           We choose d(i+1) as origin.
+</span><span class="comment">*</span><span class="comment">
+</span>            ORGATI = .FALSE.
+            A = C*DEL - Z( I )*Z( I ) - Z( IP1 )*Z( IP1 )
+            B = Z( IP1 )*Z( IP1 )*DEL
+            IF( A.LT.ZERO ) THEN
+               TAU = TWO*B / ( A-SQRT( ABS( A*A+FOUR*B*C ) ) )
+            ELSE
+               TAU = -( A+SQRT( ABS( A*A+FOUR*B*C ) ) ) / ( TWO*C )
+            END IF
+            DLTLB = -MIDPT
+            DLTUB = ZERO
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( ORGATI ) THEN
+            DO 130 J = 1, N
+               DELTA( J ) = ( D( J )-D( I ) ) - TAU
+  130       CONTINUE
+         ELSE
+            DO 140 J = 1, N
+               DELTA( J ) = ( D( J )-D( IP1 ) ) - TAU
+  140       CONTINUE
+         END IF
+         IF( ORGATI ) THEN
+            II = I
+         ELSE
+            II = I + 1
+         END IF
+         IIM1 = II - 1
+         IIP1 = II + 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Evaluate PSI and the derivative DPSI
+</span><span class="comment">*</span><span class="comment">
+</span>         DPSI = ZERO
+         PSI = ZERO
+         ERRETM = ZERO
+         DO 150 J = 1, IIM1
+            TEMP = Z( J ) / DELTA( J )
+            PSI = PSI + Z( J )*TEMP
+            DPSI = DPSI + TEMP*TEMP
+            ERRETM = ERRETM + PSI
+  150    CONTINUE
+         ERRETM = ABS( ERRETM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Evaluate PHI and the derivative DPHI
+</span><span class="comment">*</span><span class="comment">
+</span>         DPHI = ZERO
+         PHI = ZERO
+         DO 160 J = N, IIP1, -1
+            TEMP = Z( J ) / DELTA( J )
+            PHI = PHI + Z( J )*TEMP
+            DPHI = DPHI + TEMP*TEMP
+            ERRETM = ERRETM + PHI
+  160    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         W = RHOINV + PHI + PSI
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        W is the value of the secular function with
+</span><span class="comment">*</span><span class="comment">        its ii-th element removed.
+</span><span class="comment">*</span><span class="comment">
+</span>         SWTCH3 = .FALSE.
+         IF( ORGATI ) THEN
+            IF( W.LT.ZERO )
+     $         SWTCH3 = .TRUE.
+         ELSE
+            IF( W.GT.ZERO )
+     $         SWTCH3 = .TRUE.
+         END IF
+         IF( II.EQ.1 .OR. II.EQ.N )
+     $      SWTCH3 = .FALSE.
+<span class="comment">*</span><span class="comment">
+</span>         TEMP = Z( II ) / DELTA( II )
+         DW = DPSI + DPHI + TEMP*TEMP
+         TEMP = Z( II )*TEMP
+         W = W + TEMP
+         ERRETM = EIGHT*( PHI-PSI ) + ERRETM + TWO*RHOINV +
+     $            THREE*ABS( TEMP ) + ABS( TAU )*DW
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Test for convergence
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( ABS( W ).LE.EPS*ERRETM ) THEN
+            IF( ORGATI ) THEN
+               DLAM = D( I ) + TAU
+            ELSE
+               DLAM = D( IP1 ) + TAU
+            END IF
+            GO TO 250
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( W.LE.ZERO ) THEN
+            DLTLB = MAX( DLTLB, TAU )
+         ELSE
+            DLTUB = MIN( DLTUB, TAU )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Calculate the new step
+</span><span class="comment">*</span><span class="comment">
+</span>         NITER = NITER + 1
+         IF( .NOT.SWTCH3 ) THEN
+            IF( ORGATI ) THEN
+               C = W - DELTA( IP1 )*DW - ( D( I )-D( IP1 ) )*
+     $             ( Z( I ) / DELTA( I ) )**2
+            ELSE
+               C = W - DELTA( I )*DW - ( D( IP1 )-D( I ) )*
+     $             ( Z( IP1 ) / DELTA( IP1 ) )**2
+            END IF
+            A = ( DELTA( I )+DELTA( IP1 ) )*W -
+     $          DELTA( I )*DELTA( IP1 )*DW
+            B = DELTA( I )*DELTA( IP1 )*W
+            IF( C.EQ.ZERO ) THEN
+               IF( A.EQ.ZERO ) THEN
+                  IF( ORGATI ) THEN
+                     A = Z( I )*Z( I ) + DELTA( IP1 )*DELTA( IP1 )*
+     $                   ( DPSI+DPHI )
+                  ELSE
+                     A = Z( IP1 )*Z( IP1 ) + DELTA( I )*DELTA( I )*
+     $                   ( DPSI+DPHI )
+                  END IF
+               END IF
+               ETA = B / A
+            ELSE IF( A.LE.ZERO ) THEN
+               ETA = ( A-SQRT( ABS( A*A-FOUR*B*C ) ) ) / ( TWO*C )
+            ELSE
+               ETA = TWO*B / ( A+SQRT( ABS( A*A-FOUR*B*C ) ) )
+            END IF
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Interpolation using THREE most relevant poles
+</span><span class="comment">*</span><span class="comment">
+</span>            TEMP = RHOINV + PSI + PHI
+            IF( ORGATI ) THEN
+               TEMP1 = Z( IIM1 ) / DELTA( IIM1 )
+               TEMP1 = TEMP1*TEMP1
+               C = TEMP - DELTA( IIP1 )*( DPSI+DPHI ) -
+     $             ( D( IIM1 )-D( IIP1 ) )*TEMP1
+               ZZ( 1 ) = Z( IIM1 )*Z( IIM1 )
+               ZZ( 3 ) = DELTA( IIP1 )*DELTA( IIP1 )*
+     $                   ( ( DPSI-TEMP1 )+DPHI )
+            ELSE
+               TEMP1 = Z( IIP1 ) / DELTA( IIP1 )
+               TEMP1 = TEMP1*TEMP1
+               C = TEMP - DELTA( IIM1 )*( DPSI+DPHI ) -
+     $             ( D( IIP1 )-D( IIM1 ) )*TEMP1
+               ZZ( 1 ) = DELTA( IIM1 )*DELTA( IIM1 )*
+     $                   ( DPSI+( DPHI-TEMP1 ) )
+               ZZ( 3 ) = Z( IIP1 )*Z( IIP1 )
+            END IF
+            ZZ( 2 ) = Z( II )*Z( II )
+            CALL <a name="DLAED6.596"></a><a href="dlaed6.f.html#DLAED6.1">DLAED6</a>( NITER, ORGATI, C, DELTA( IIM1 ), ZZ, W, ETA,
+     $                   INFO )
+            IF( INFO.NE.0 )
+     $         GO TO 250
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Note, eta should be positive if w is negative, and
+</span><span class="comment">*</span><span class="comment">        eta should be negative otherwise. However,
+</span><span class="comment">*</span><span class="comment">        if for some reason caused by roundoff, eta*w &gt; 0,
+</span><span class="comment">*</span><span class="comment">        we simply use one Newton step instead. This way
+</span><span class="comment">*</span><span class="comment">        will guarantee eta*w &lt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( W*ETA.GE.ZERO )
+     $      ETA = -W / DW
+         TEMP = TAU + ETA
+         IF( TEMP.GT.DLTUB .OR. TEMP.LT.DLTLB ) THEN
+            IF( W.LT.ZERO ) THEN
+               ETA = ( DLTUB-TAU ) / TWO
+            ELSE
+               ETA = ( DLTLB-TAU ) / TWO
+            END IF
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         PREW = W
+<span class="comment">*</span><span class="comment">
+</span>         DO 180 J = 1, N
+            DELTA( J ) = DELTA( J ) - ETA
+  180    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Evaluate PSI and the derivative DPSI
+</span><span class="comment">*</span><span class="comment">
+</span>         DPSI = ZERO
+         PSI = ZERO
+         ERRETM = ZERO
+         DO 190 J = 1, IIM1
+            TEMP = Z( J ) / DELTA( J )
+            PSI = PSI + Z( J )*TEMP
+            DPSI = DPSI + TEMP*TEMP
+            ERRETM = ERRETM + PSI
+  190    CONTINUE
+         ERRETM = ABS( ERRETM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Evaluate PHI and the derivative DPHI
+</span><span class="comment">*</span><span class="comment">
+</span>         DPHI = ZERO
+         PHI = ZERO
+         DO 200 J = N, IIP1, -1
+            TEMP = Z( J ) / DELTA( J )
+            PHI = PHI + Z( J )*TEMP
+            DPHI = DPHI + TEMP*TEMP
+            ERRETM = ERRETM + PHI
+  200    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         TEMP = Z( II ) / DELTA( II )
+         DW = DPSI + DPHI + TEMP*TEMP
+         TEMP = Z( II )*TEMP
+         W = RHOINV + PHI + PSI + TEMP
+         ERRETM = EIGHT*( PHI-PSI ) + ERRETM + TWO*RHOINV +
+     $            THREE*ABS( TEMP ) + ABS( TAU+ETA )*DW
+<span class="comment">*</span><span class="comment">
+</span>         SWTCH = .FALSE.
+         IF( ORGATI ) THEN
+            IF( -W.GT.ABS( PREW ) / TEN )
+     $         SWTCH = .TRUE.
+         ELSE
+            IF( W.GT.ABS( PREW ) / TEN )
+     $         SWTCH = .TRUE.
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         TAU = TAU + ETA
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Main loop to update the values of the array   DELTA
+</span><span class="comment">*</span><span class="comment">
+</span>         ITER = NITER + 1
+<span class="comment">*</span><span class="comment">
+</span>         DO 240 NITER = ITER, MAXIT
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Test for convergence
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( ABS( W ).LE.EPS*ERRETM ) THEN
+               IF( ORGATI ) THEN
+                  DLAM = D( I ) + TAU
+               ELSE
+                  DLAM = D( IP1 ) + TAU
+               END IF
+               GO TO 250
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>            IF( W.LE.ZERO ) THEN
+               DLTLB = MAX( DLTLB, TAU )
+            ELSE
+               DLTUB = MIN( DLTUB, TAU )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Calculate the new step
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( .NOT.SWTCH3 ) THEN
+               IF( .NOT.SWTCH ) THEN
+                  IF( ORGATI ) THEN
+                     C = W - DELTA( IP1 )*DW -
+     $                   ( D( I )-D( IP1 ) )*( Z( I ) / DELTA( I ) )**2
+                  ELSE
+                     C = W - DELTA( I )*DW - ( D( IP1 )-D( I ) )*
+     $                   ( Z( IP1 ) / DELTA( IP1 ) )**2
+                  END IF
+               ELSE
+                  TEMP = Z( II ) / DELTA( II )
+                  IF( ORGATI ) THEN
+                     DPSI = DPSI + TEMP*TEMP
+                  ELSE
+                     DPHI = DPHI + TEMP*TEMP
+                  END IF
+                  C = W - DELTA( I )*DPSI - DELTA( IP1 )*DPHI
+               END IF
+               A = ( DELTA( I )+DELTA( IP1 ) )*W -
+     $             DELTA( I )*DELTA( IP1 )*DW
+               B = DELTA( I )*DELTA( IP1 )*W
+               IF( C.EQ.ZERO ) THEN
+                  IF( A.EQ.ZERO ) THEN
+                     IF( .NOT.SWTCH ) THEN
+                        IF( ORGATI ) THEN
+                           A = Z( I )*Z( I ) + DELTA( IP1 )*
+     $                         DELTA( IP1 )*( DPSI+DPHI )
+                        ELSE
+                           A = Z( IP1 )*Z( IP1 ) +
+     $                         DELTA( I )*DELTA( I )*( DPSI+DPHI )
+                        END IF
+                     ELSE
+                        A = DELTA( I )*DELTA( I )*DPSI +
+     $                      DELTA( IP1 )*DELTA( IP1 )*DPHI
+                     END IF
+                  END IF
+                  ETA = B / A
+               ELSE IF( A.LE.ZERO ) THEN
+                  ETA = ( A-SQRT( ABS( A*A-FOUR*B*C ) ) ) / ( TWO*C )
+               ELSE
+                  ETA = TWO*B / ( A+SQRT( ABS( A*A-FOUR*B*C ) ) )
+               END IF
+            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Interpolation using THREE most relevant poles
+</span><span class="comment">*</span><span class="comment">
+</span>               TEMP = RHOINV + PSI + PHI
+               IF( SWTCH ) THEN
+                  C = TEMP - DELTA( IIM1 )*DPSI - DELTA( IIP1 )*DPHI
+                  ZZ( 1 ) = DELTA( IIM1 )*DELTA( IIM1 )*DPSI
+                  ZZ( 3 ) = DELTA( IIP1 )*DELTA( IIP1 )*DPHI
+               ELSE
+                  IF( ORGATI ) THEN
+                     TEMP1 = Z( IIM1 ) / DELTA( IIM1 )
+                     TEMP1 = TEMP1*TEMP1
+                     C = TEMP - DELTA( IIP1 )*( DPSI+DPHI ) -
+     $                   ( D( IIM1 )-D( IIP1 ) )*TEMP1
+                     ZZ( 1 ) = Z( IIM1 )*Z( IIM1 )
+                     ZZ( 3 ) = DELTA( IIP1 )*DELTA( IIP1 )*
+     $                         ( ( DPSI-TEMP1 )+DPHI )
+                  ELSE
+                     TEMP1 = Z( IIP1 ) / DELTA( IIP1 )
+                     TEMP1 = TEMP1*TEMP1
+                     C = TEMP - DELTA( IIM1 )*( DPSI+DPHI ) -
+     $                   ( D( IIP1 )-D( IIM1 ) )*TEMP1
+                     ZZ( 1 ) = DELTA( IIM1 )*DELTA( IIM1 )*
+     $                         ( DPSI+( DPHI-TEMP1 ) )
+                     ZZ( 3 ) = Z( IIP1 )*Z( IIP1 )
+                  END IF
+               END IF
+               CALL <a name="DLAED6.762"></a><a href="dlaed6.f.html#DLAED6.1">DLAED6</a>( NITER, ORGATI, C, DELTA( IIM1 ), ZZ, W, ETA,
+     $                      INFO )
+               IF( INFO.NE.0 )
+     $            GO TO 250
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Note, eta should be positive if w is negative, and
+</span><span class="comment">*</span><span class="comment">           eta should be negative otherwise. However,
+</span><span class="comment">*</span><span class="comment">           if for some reason caused by roundoff, eta*w &gt; 0,
+</span><span class="comment">*</span><span class="comment">           we simply use one Newton step instead. This way
+</span><span class="comment">*</span><span class="comment">           will guarantee eta*w &lt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( W*ETA.GE.ZERO )
+     $         ETA = -W / DW
+            TEMP = TAU + ETA
+            IF( TEMP.GT.DLTUB .OR. TEMP.LT.DLTLB ) THEN
+               IF( W.LT.ZERO ) THEN
+                  ETA = ( DLTUB-TAU ) / TWO
+               ELSE
+                  ETA = ( DLTLB-TAU ) / TWO
+               END IF
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>            DO 210 J = 1, N
+               DELTA( J ) = DELTA( J ) - ETA
+  210       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            TAU = TAU + ETA
+            PREW = W
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Evaluate PSI and the derivative DPSI
+</span><span class="comment">*</span><span class="comment">
+</span>            DPSI = ZERO
+            PSI = ZERO
+            ERRETM = ZERO
+            DO 220 J = 1, IIM1
+               TEMP = Z( J ) / DELTA( J )
+               PSI = PSI + Z( J )*TEMP
+               DPSI = DPSI + TEMP*TEMP
+               ERRETM = ERRETM + PSI
+  220       CONTINUE
+            ERRETM = ABS( ERRETM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Evaluate PHI and the derivative DPHI
+</span><span class="comment">*</span><span class="comment">
+</span>            DPHI = ZERO
+            PHI = ZERO
+            DO 230 J = N, IIP1, -1
+               TEMP = Z( J ) / DELTA( J )
+               PHI = PHI + Z( J )*TEMP
+               DPHI = DPHI + TEMP*TEMP
+               ERRETM = ERRETM + PHI
+  230       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            TEMP = Z( II ) / DELTA( II )
+            DW = DPSI + DPHI + TEMP*TEMP
+            TEMP = Z( II )*TEMP
+            W = RHOINV + PHI + PSI + TEMP
+            ERRETM = EIGHT*( PHI-PSI ) + ERRETM + TWO*RHOINV +
+     $               THREE*ABS( TEMP ) + ABS( TAU )*DW
+            IF( W*PREW.GT.ZERO .AND. ABS( W ).GT.ABS( PREW ) / TEN )
+     $         SWTCH = .NOT.SWTCH
+<span class="comment">*</span><span class="comment">
+</span>  240    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Return with INFO = 1, NITER = MAXIT and not converged
+</span><span class="comment">*</span><span class="comment">
+</span>         INFO = 1
+         IF( ORGATI ) THEN
+            DLAM = D( I ) + TAU
+         ELSE
+            DLAM = D( IP1 ) + TAU
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>      END IF
+<span class="comment">*</span><span class="comment">
+</span>  250 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLAED4.842"></a><a href="dlaed4.f.html#DLAED4.1">DLAED4</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

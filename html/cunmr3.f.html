@@ -1,0 +1,236 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>cunmr3.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CUNMR3.1"></a><a href="cunmr3.f.html#CUNMR3.1">CUNMR3</a>( SIDE, TRANS, M, N, K, L, A, LDA, TAU, C, LDC,
+     $                   WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          SIDE, TRANS
+      INTEGER            INFO, K, L, LDA, LDC, M, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX            A( LDA, * ), C( LDC, * ), TAU( * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CUNMR3.19"></a><a href="cunmr3.f.html#CUNMR3.1">CUNMR3</a> overwrites the general complex m by n matrix C with
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Q * C  if SIDE = 'L' and TRANS = 'N', or
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Q'* C  if SIDE = 'L' and TRANS = 'C', or
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        C * Q  if SIDE = 'R' and TRANS = 'N', or
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        C * Q' if SIDE = 'R' and TRANS = 'C',
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where Q is a complex unitary matrix defined as the product of k
+</span><span class="comment">*</span><span class="comment">  elementary reflectors
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Q = H(1) H(2) . . . H(k)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  as returned by <a name="CTZRZF.34"></a><a href="ctzrzf.f.html#CTZRZF.1">CTZRZF</a>. Q is of order m if SIDE = 'L' and of order n
+</span><span class="comment">*</span><span class="comment">  if SIDE = 'R'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SIDE    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'L': apply Q or Q' from the Left
+</span><span class="comment">*</span><span class="comment">          = 'R': apply Q or Q' from the Right
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TRANS   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'N': apply Q  (No transpose)
+</span><span class="comment">*</span><span class="comment">          = 'C': apply Q' (Conjugate transpose)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix C. M &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix C. N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  K       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of elementary reflectors whose product defines
+</span><span class="comment">*</span><span class="comment">          the matrix Q.
+</span><span class="comment">*</span><span class="comment">          If SIDE = 'L', M &gt;= K &gt;= 0;
+</span><span class="comment">*</span><span class="comment">          if SIDE = 'R', N &gt;= K &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  L       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix A containing
+</span><span class="comment">*</span><span class="comment">          the meaningful part of the Householder reflectors.
+</span><span class="comment">*</span><span class="comment">          If SIDE = 'L', M &gt;= L &gt;= 0, if SIDE = 'R', N &gt;= L &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input) COMPLEX array, dimension
+</span><span class="comment">*</span><span class="comment">                               (LDA,M) if SIDE = 'L',
+</span><span class="comment">*</span><span class="comment">                               (LDA,N) if SIDE = 'R'
+</span><span class="comment">*</span><span class="comment">          The i-th row must contain the vector which defines the
+</span><span class="comment">*</span><span class="comment">          elementary reflector H(i), for i = 1,2,...,k, as returned by
+</span><span class="comment">*</span><span class="comment">          <a name="CTZRZF.70"></a><a href="ctzrzf.f.html#CTZRZF.1">CTZRZF</a> in the last k rows of its array argument A.
+</span><span class="comment">*</span><span class="comment">          A is modified by the routine but restored on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A. LDA &gt;= max(1,K).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TAU     (input) COMPLEX array, dimension (K)
+</span><span class="comment">*</span><span class="comment">          TAU(i) must contain the scalar factor of the elementary
+</span><span class="comment">*</span><span class="comment">          reflector H(i), as returned by <a name="CTZRZF.78"></a><a href="ctzrzf.f.html#CTZRZF.1">CTZRZF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C       (input/output) COMPLEX array, dimension (LDC,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the m-by-n matrix C.
+</span><span class="comment">*</span><span class="comment">          On exit, C is overwritten by Q*C or Q'*C or C*Q' or C*Q.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDC     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array C. LDC &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) COMPLEX array, dimension
+</span><span class="comment">*</span><span class="comment">                                   (N) if SIDE = 'L',
+</span><span class="comment">*</span><span class="comment">                                   (M) if SIDE = 'R'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0: successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0: if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">    A. Petitet, Computer Science Dept., Univ. of Tenn., Knoxville, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            LEFT, NOTRAN
+      INTEGER            I, I1, I2, I3, IC, JA, JC, MI, NI, NQ
+      COMPLEX            TAUI
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.109"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.110"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="CLARZ.113"></a><a href="clarz.f.html#CLARZ.1">CLARZ</a>, <a name="XERBLA.113"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          CONJG, MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input arguments
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      LEFT = <a name="LSAME.123"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'L'</span> )
+      NOTRAN = <a name="LSAME.124"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'N'</span> )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     NQ is the order of Q
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( LEFT ) THEN
+         NQ = M
+      ELSE
+         NQ = N
+      END IF
+      IF( .NOT.LEFT .AND. .NOT.<a name="LSAME.133"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'R'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.NOTRAN .AND. .NOT.<a name="LSAME.135"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'C'</span> ) ) THEN
+         INFO = -2
+      ELSE IF( M.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( K.LT.0 .OR. K.GT.NQ ) THEN
+         INFO = -5
+      ELSE IF( L.LT.0 .OR. ( LEFT .AND. ( L.GT.M ) ) .OR.
+     $         ( .NOT.LEFT .AND. ( L.GT.N ) ) ) THEN
+         INFO = -6
+      ELSE IF( LDA.LT.MAX( 1, K ) ) THEN
+         INFO = -8
+      ELSE IF( LDC.LT.MAX( 1, M ) ) THEN
+         INFO = -11
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.152"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CUNMR3.152"></a><a href="cunmr3.f.html#CUNMR3.1">CUNMR3</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( M.EQ.0 .OR. N.EQ.0 .OR. K.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      IF( ( LEFT .AND. .NOT.NOTRAN .OR. .NOT.LEFT .AND. NOTRAN ) ) THEN
+         I1 = 1
+         I2 = K
+         I3 = 1
+      ELSE
+         I1 = K
+         I2 = 1
+         I3 = -1
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( LEFT ) THEN
+         NI = N
+         JA = M - L + 1
+         JC = 1
+      ELSE
+         MI = M
+         JA = N - L + 1
+         IC = 1
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      DO 10 I = I1, I2, I3
+         IF( LEFT ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           H(i) or H(i)' is applied to C(i:m,1:n)
+</span><span class="comment">*</span><span class="comment">
+</span>            MI = M - I + 1
+            IC = I
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           H(i) or H(i)' is applied to C(1:m,i:n)
+</span><span class="comment">*</span><span class="comment">
+</span>            NI = N - I + 1
+            JC = I
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Apply H(i) or H(i)'
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( NOTRAN ) THEN
+            TAUI = TAU( I )
+         ELSE
+            TAUI = CONJG( TAU( I ) )
+         END IF
+         CALL <a name="CLARZ.203"></a><a href="clarz.f.html#CLARZ.1">CLARZ</a>( SIDE, MI, NI, L, A( I, JA ), LDA, TAUI,
+     $               C( IC, JC ), LDC, WORK )
+<span class="comment">*</span><span class="comment">
+</span>   10 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CUNMR3.210"></a><a href="cunmr3.f.html#CUNMR3.1">CUNMR3</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

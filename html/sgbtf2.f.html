@@ -1,0 +1,226 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>sgbtf2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SGBTF2.1"></a><a href="sgbtf2.f.html#SGBTF2.1">SGBTF2</a>( M, N, KL, KU, AB, LDAB, IPIV, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, KL, KU, LDAB, M, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IPIV( * )
+      REAL               AB( LDAB, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SGBTF2.18"></a><a href="sgbtf2.f.html#SGBTF2.1">SGBTF2</a> computes an LU factorization of a real m-by-n band matrix A
+</span><span class="comment">*</span><span class="comment">  using partial pivoting with row interchanges.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This is the unblocked version of the algorithm, calling Level 2 BLAS.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix A.  M &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KL      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of subdiagonals within the band of A.  KL &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KU      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of superdiagonals within the band of A.  KU &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AB      (input/output) REAL array, dimension (LDAB,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the matrix A in band storage, in rows KL+1 to
+</span><span class="comment">*</span><span class="comment">          2*KL+KU+1; rows 1 to KL of the array need not be set.
+</span><span class="comment">*</span><span class="comment">          The j-th column of A is stored in the j-th column of the
+</span><span class="comment">*</span><span class="comment">          array AB as follows:
+</span><span class="comment">*</span><span class="comment">          AB(kl+ku+1+i-j,j) = A(i,j) for max(1,j-ku)&lt;=i&lt;=min(m,j+kl)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, details of the factorization: U is stored as an
+</span><span class="comment">*</span><span class="comment">          upper triangular band matrix with KL+KU superdiagonals in
+</span><span class="comment">*</span><span class="comment">          rows 1 to KL+KU+1, and the multipliers used during the
+</span><span class="comment">*</span><span class="comment">          factorization are stored in rows KL+KU+2 to 2*KL+KU+1.
+</span><span class="comment">*</span><span class="comment">          See below for further details.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDAB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array AB.  LDAB &gt;= 2*KL+KU+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IPIV    (output) INTEGER array, dimension (min(M,N))
+</span><span class="comment">*</span><span class="comment">          The pivot indices; for 1 &lt;= i &lt;= min(M,N), row i of the
+</span><span class="comment">*</span><span class="comment">          matrix was interchanged with row IPIV(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0: successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0: if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0: if INFO = +i, U(i,i) is exactly zero. The factorization
+</span><span class="comment">*</span><span class="comment">               has been completed, but the factor U is exactly
+</span><span class="comment">*</span><span class="comment">               singular, and division by zero will occur if it is used
+</span><span class="comment">*</span><span class="comment">               to solve a system of equations.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The band storage scheme is illustrated by the following example, when
+</span><span class="comment">*</span><span class="comment">  M = N = 6, KL = 2, KU = 1:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  On entry:                       On exit:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">      *    *    *    +    +    +       *    *    *   u14  u25  u36
+</span><span class="comment">*</span><span class="comment">      *    *    +    +    +    +       *    *   u13  u24  u35  u46
+</span><span class="comment">*</span><span class="comment">      *   a12  a23  a34  a45  a56      *   u12  u23  u34  u45  u56
+</span><span class="comment">*</span><span class="comment">     a11  a22  a33  a44  a55  a66     u11  u22  u33  u44  u55  u66
+</span><span class="comment">*</span><span class="comment">     a21  a32  a43  a54  a65   *      m21  m32  m43  m54  m65   *
+</span><span class="comment">*</span><span class="comment">     a31  a42  a53  a64   *    *      m31  m42  m53  m64   *    *
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Array elements marked * are not used by the routine; elements marked
+</span><span class="comment">*</span><span class="comment">  + need not be set on entry, but are required by the routine to store
+</span><span class="comment">*</span><span class="comment">  elements of U, because of fill-in resulting from the row
+</span><span class="comment">*</span><span class="comment">  interchanges.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ONE, ZERO
+      PARAMETER          ( ONE = 1.0E+0, ZERO = 0.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, J, JP, JU, KM, KV
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      INTEGER            ISAMAX
+      EXTERNAL           ISAMAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           SGER, SSCAL, SSWAP, <a name="XERBLA.100"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     KV is the number of superdiagonals in the factor U, allowing for
+</span><span class="comment">*</span><span class="comment">     fill-in.
+</span><span class="comment">*</span><span class="comment">
+</span>      KV = KU + KL
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( M.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( KL.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( KU.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( LDAB.LT.KL+KV+1 ) THEN
+         INFO = -6
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.127"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="SGBTF2.127"></a><a href="sgbtf2.f.html#SGBTF2.1">SGBTF2</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( M.EQ.0 .OR. N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Gaussian elimination with partial pivoting
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set fill-in elements in columns KU+2 to KV to zero.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 20 J = KU + 2, MIN( KV, N )
+         DO 10 I = KV - J + 2, KL
+            AB( I, J ) = ZERO
+   10    CONTINUE
+   20 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     JU is the index of the last column affected by the current stage
+</span><span class="comment">*</span><span class="comment">     of the factorization.
+</span><span class="comment">*</span><span class="comment">
+</span>      JU = 1
+<span class="comment">*</span><span class="comment">
+</span>      DO 40 J = 1, MIN( M, N )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Set fill-in elements in column J+KV to zero.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( J+KV.LE.N ) THEN
+            DO 30 I = 1, KL
+               AB( I, J+KV ) = ZERO
+   30       CONTINUE
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find pivot and test for singularity. KM is the number of
+</span><span class="comment">*</span><span class="comment">        subdiagonal elements in the current column.
+</span><span class="comment">*</span><span class="comment">
+</span>         KM = MIN( KL, M-J )
+         JP = ISAMAX( KM+1, AB( KV+1, J ), 1 )
+         IPIV( J ) = JP + J - 1
+         IF( AB( KV+JP, J ).NE.ZERO ) THEN
+            JU = MAX( JU, MIN( J+KU+JP-1, N ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Apply interchange to columns J to JU.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( JP.NE.1 )
+     $         CALL SSWAP( JU-J+1, AB( KV+JP, J ), LDAB-1,
+     $                     AB( KV+1, J ), LDAB-1 )
+<span class="comment">*</span><span class="comment">
+</span>            IF( KM.GT.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Compute multipliers.
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL SSCAL( KM, ONE / AB( KV+1, J ), AB( KV+2, J ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Update trailing submatrix within the band.
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( JU.GT.J )
+     $            CALL SGER( KM, JU-J, -ONE, AB( KV+2, J ), 1,
+     $                       AB( KV, J+1 ), LDAB-1, AB( KV+1, J+1 ),
+     $                       LDAB-1 )
+            END IF
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           If pivot is zero, set INFO to the index of the pivot
+</span><span class="comment">*</span><span class="comment">           unless a zero pivot has already been found.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( INFO.EQ.0 )
+     $         INFO = J
+         END IF
+   40 CONTINUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SGBTF2.200"></a><a href="sgbtf2.f.html#SGBTF2.1">SGBTF2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

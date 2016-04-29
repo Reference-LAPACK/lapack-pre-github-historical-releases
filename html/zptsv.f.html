@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zptsv.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZPTSV.1"></a><a href="zptsv.f.html#ZPTSV.1">ZPTSV</a>( N, NRHS, D, E, B, LDB, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, LDB, N, NRHS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   D( * )
+      COMPLEX*16         B( LDB, * ), E( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZPTSV.18"></a><a href="zptsv.f.html#ZPTSV.1">ZPTSV</a> computes the solution to a complex system of linear equations
+</span><span class="comment">*</span><span class="comment">  A*X = B, where A is an N-by-N Hermitian positive definite tridiagonal
+</span><span class="comment">*</span><span class="comment">  matrix, and X and B are N-by-NRHS matrices.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A is factored as A = L*D*L**H, and the factored form of A is then
+</span><span class="comment">*</span><span class="comment">  used to solve the system of equations.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NRHS    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of right hand sides, i.e., the number of columns
+</span><span class="comment">*</span><span class="comment">          of the matrix B.  NRHS &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input/output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On entry, the n diagonal elements of the tridiagonal matrix
+</span><span class="comment">*</span><span class="comment">          A.  On exit, the n diagonal elements of the diagonal matrix
+</span><span class="comment">*</span><span class="comment">          D from the factorization A = L*D*L**H.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E       (input/output) COMPLEX*16 array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          On entry, the (n-1) subdiagonal elements of the tridiagonal
+</span><span class="comment">*</span><span class="comment">          matrix A.  On exit, the (n-1) subdiagonal elements of the
+</span><span class="comment">*</span><span class="comment">          unit bidiagonal factor L from the L*D*L**H factorization of
+</span><span class="comment">*</span><span class="comment">          A.  E can also be regarded as the superdiagonal of the unit
+</span><span class="comment">*</span><span class="comment">          bidiagonal factor U from the U**H*D*U factorization of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input/output) COMPLEX*16 array, dimension (LDB,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the N-by-NRHS right hand side matrix B.
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, the N-by-NRHS solution matrix X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B.  LDB &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = i, the leading minor of order i is not
+</span><span class="comment">*</span><span class="comment">                positive definite, and the solution has not been
+</span><span class="comment">*</span><span class="comment">                computed.  The factorization has not been completed
+</span><span class="comment">*</span><span class="comment">                unless i = N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.65"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, <a name="ZPTTRF.65"></a><a href="zpttrf.f.html#ZPTTRF.1">ZPTTRF</a>, <a name="ZPTTRS.65"></a><a href="zpttrs.f.html#ZPTTRS.1">ZPTTRS</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( N.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( NRHS.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
+         INFO = -6
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.83"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZPTSV.83"></a><a href="zptsv.f.html#ZPTSV.1">ZPTSV</a> '</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the L*D*L' (or U'*D*U) factorization of A.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="ZPTTRF.89"></a><a href="zpttrf.f.html#ZPTTRF.1">ZPTTRF</a>( N, D, E, INFO )
+      IF( INFO.EQ.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve the system A*X = B, overwriting B with X.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="ZPTTRS.94"></a><a href="zpttrs.f.html#ZPTTRS.1">ZPTTRS</a>( <span class="string">'Lower'</span>, N, NRHS, D, E, B, LDB, INFO )
+      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZPTSV.98"></a><a href="zptsv.f.html#ZPTSV.1">ZPTSV</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,541 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>cgbsvx.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CGBSVX.1"></a><a href="cgbsvx.f.html#CGBSVX.1">CGBSVX</a>( FACT, TRANS, N, KL, KU, NRHS, AB, LDAB, AFB,
+     $                   LDAFB, IPIV, EQUED, R, C, B, LDB, X, LDX,
+     $                   RCOND, FERR, BERR, WORK, RWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK driver routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          EQUED, FACT, TRANS
+      INTEGER            INFO, KL, KU, LDAB, LDAFB, LDB, LDX, N, NRHS
+      REAL               RCOND
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IPIV( * )
+      REAL               BERR( * ), C( * ), FERR( * ), R( * ),
+     $                   RWORK( * )
+      COMPLEX            AB( LDAB, * ), AFB( LDAFB, * ), B( LDB, * ),
+     $                   WORK( * ), X( LDX, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CGBSVX.25"></a><a href="cgbsvx.f.html#CGBSVX.1">CGBSVX</a> uses the LU factorization to compute the solution to a complex
+</span><span class="comment">*</span><span class="comment">  system of linear equations A * X = B, A**T * X = B, or A**H * X = B,
+</span><span class="comment">*</span><span class="comment">  where A is a band matrix of order N with KL subdiagonals and KU
+</span><span class="comment">*</span><span class="comment">  superdiagonals, and X and B are N-by-NRHS matrices.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Error bounds on the solution and a condition estimate are also
+</span><span class="comment">*</span><span class="comment">  provided.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Description
+</span><span class="comment">*</span><span class="comment">  ===========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The following steps are performed by this subroutine:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  1. If FACT = 'E', real scaling factors are computed to equilibrate
+</span><span class="comment">*</span><span class="comment">     the system:
+</span><span class="comment">*</span><span class="comment">        TRANS = 'N':  diag(R)*A*diag(C)     *inv(diag(C))*X = diag(R)*B
+</span><span class="comment">*</span><span class="comment">        TRANS = 'T': (diag(R)*A*diag(C))**T *inv(diag(R))*X = diag(C)*B
+</span><span class="comment">*</span><span class="comment">        TRANS = 'C': (diag(R)*A*diag(C))**H *inv(diag(R))*X = diag(C)*B
+</span><span class="comment">*</span><span class="comment">     Whether or not the system will be equilibrated depends on the
+</span><span class="comment">*</span><span class="comment">     scaling of the matrix A, but if equilibration is used, A is
+</span><span class="comment">*</span><span class="comment">     overwritten by diag(R)*A*diag(C) and B by diag(R)*B (if TRANS='N')
+</span><span class="comment">*</span><span class="comment">     or diag(C)*B (if TRANS = 'T' or 'C').
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  2. If FACT = 'N' or 'E', the LU decomposition is used to factor the
+</span><span class="comment">*</span><span class="comment">     matrix A (after equilibration if FACT = 'E') as
+</span><span class="comment">*</span><span class="comment">        A = L * U,
+</span><span class="comment">*</span><span class="comment">     where L is a product of permutation and unit lower triangular
+</span><span class="comment">*</span><span class="comment">     matrices with KL subdiagonals, and U is upper triangular with
+</span><span class="comment">*</span><span class="comment">     KL+KU superdiagonals.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  3. If some U(i,i)=0, so that U is exactly singular, then the routine
+</span><span class="comment">*</span><span class="comment">     returns with INFO = i. Otherwise, the factored form of A is used
+</span><span class="comment">*</span><span class="comment">     to estimate the condition number of the matrix A.  If the
+</span><span class="comment">*</span><span class="comment">     reciprocal of the condition number is less than machine precision,
+</span><span class="comment">*</span><span class="comment">     INFO = N+1 is returned as a warning, but the routine still goes on
+</span><span class="comment">*</span><span class="comment">     to solve for X and compute error bounds as described below.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  4. The system of equations is solved for X using the factored form
+</span><span class="comment">*</span><span class="comment">     of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  5. Iterative refinement is applied to improve the computed solution
+</span><span class="comment">*</span><span class="comment">     matrix and calculate error bounds and backward error estimates
+</span><span class="comment">*</span><span class="comment">     for it.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  6. If equilibration was used, the matrix X is premultiplied by
+</span><span class="comment">*</span><span class="comment">     diag(C) (if TRANS = 'N') or diag(R) (if TRANS = 'T' or 'C') so
+</span><span class="comment">*</span><span class="comment">     that it solves the original system before equilibration.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  FACT    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether or not the factored form of the matrix A is
+</span><span class="comment">*</span><span class="comment">          supplied on entry, and if not, whether the matrix A should be
+</span><span class="comment">*</span><span class="comment">          equilibrated before it is factored.
+</span><span class="comment">*</span><span class="comment">          = 'F':  On entry, AFB and IPIV contain the factored form of
+</span><span class="comment">*</span><span class="comment">                  A.  If EQUED is not 'N', the matrix A has been
+</span><span class="comment">*</span><span class="comment">                  equilibrated with scaling factors given by R and C.
+</span><span class="comment">*</span><span class="comment">                  AB, AFB, and IPIV are not modified.
+</span><span class="comment">*</span><span class="comment">          = 'N':  The matrix A will be copied to AFB and factored.
+</span><span class="comment">*</span><span class="comment">          = 'E':  The matrix A will be equilibrated if necessary, then
+</span><span class="comment">*</span><span class="comment">                  copied to AFB and factored.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TRANS   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies the form of the system of equations.
+</span><span class="comment">*</span><span class="comment">          = 'N':  A * X = B     (No transpose)
+</span><span class="comment">*</span><span class="comment">          = 'T':  A**T * X = B  (Transpose)
+</span><span class="comment">*</span><span class="comment">          = 'C':  A**H * X = B  (Conjugate transpose)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of linear equations, i.e., the order of the
+</span><span class="comment">*</span><span class="comment">          matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KL      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of subdiagonals within the band of A.  KL &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KU      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of superdiagonals within the band of A.  KU &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NRHS    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of right hand sides, i.e., the number of columns
+</span><span class="comment">*</span><span class="comment">          of the matrices B and X.  NRHS &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AB      (input/output) COMPLEX array, dimension (LDAB,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the matrix A in band storage, in rows 1 to KL+KU+1.
+</span><span class="comment">*</span><span class="comment">          The j-th column of A is stored in the j-th column of the
+</span><span class="comment">*</span><span class="comment">          array AB as follows:
+</span><span class="comment">*</span><span class="comment">          AB(KU+1+i-j,j) = A(i,j) for max(1,j-KU)&lt;=i&lt;=min(N,j+kl)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If FACT = 'F' and EQUED is not 'N', then A must have been
+</span><span class="comment">*</span><span class="comment">          equilibrated by the scaling factors in R and/or C.  AB is not
+</span><span class="comment">*</span><span class="comment">          modified if FACT = 'F' or 'N', or if FACT = 'E' and
+</span><span class="comment">*</span><span class="comment">          EQUED = 'N' on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, if EQUED .ne. 'N', A is scaled as follows:
+</span><span class="comment">*</span><span class="comment">          EQUED = 'R':  A := diag(R) * A
+</span><span class="comment">*</span><span class="comment">          EQUED = 'C':  A := A * diag(C)
+</span><span class="comment">*</span><span class="comment">          EQUED = 'B':  A := diag(R) * A * diag(C).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDAB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array AB.  LDAB &gt;= KL+KU+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AFB     (input or output) COMPLEX array, dimension (LDAFB,N)
+</span><span class="comment">*</span><span class="comment">          If FACT = 'F', then AFB is an input argument and on entry
+</span><span class="comment">*</span><span class="comment">          contains details of the LU factorization of the band matrix
+</span><span class="comment">*</span><span class="comment">          A, as computed by <a name="CGBTRF.130"></a><a href="cgbtrf.f.html#CGBTRF.1">CGBTRF</a>.  U is stored as an upper triangular
+</span><span class="comment">*</span><span class="comment">          band matrix with KL+KU superdiagonals in rows 1 to KL+KU+1,
+</span><span class="comment">*</span><span class="comment">          and the multipliers used during the factorization are stored
+</span><span class="comment">*</span><span class="comment">          in rows KL+KU+2 to 2*KL+KU+1.  If EQUED .ne. 'N', then AFB is
+</span><span class="comment">*</span><span class="comment">          the factored form of the equilibrated matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If FACT = 'N', then AFB is an output argument and on exit
+</span><span class="comment">*</span><span class="comment">          returns details of the LU factorization of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If FACT = 'E', then AFB is an output argument and on exit
+</span><span class="comment">*</span><span class="comment">          returns details of the LU factorization of the equilibrated
+</span><span class="comment">*</span><span class="comment">          matrix A (see the description of AB for the form of the
+</span><span class="comment">*</span><span class="comment">          equilibrated matrix).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDAFB   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array AFB.  LDAFB &gt;= 2*KL+KU+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IPIV    (input or output) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          If FACT = 'F', then IPIV is an input argument and on entry
+</span><span class="comment">*</span><span class="comment">          contains the pivot indices from the factorization A = L*U
+</span><span class="comment">*</span><span class="comment">          as computed by <a name="CGBTRF.150"></a><a href="cgbtrf.f.html#CGBTRF.1">CGBTRF</a>; row i of the matrix was interchanged
+</span><span class="comment">*</span><span class="comment">          with row IPIV(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If FACT = 'N', then IPIV is an output argument and on exit
+</span><span class="comment">*</span><span class="comment">          contains the pivot indices from the factorization A = L*U
+</span><span class="comment">*</span><span class="comment">          of the original matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If FACT = 'E', then IPIV is an output argument and on exit
+</span><span class="comment">*</span><span class="comment">          contains the pivot indices from the factorization A = L*U
+</span><span class="comment">*</span><span class="comment">          of the equilibrated matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  EQUED   (input or output) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies the form of equilibration that was done.
+</span><span class="comment">*</span><span class="comment">          = 'N':  No equilibration (always true if FACT = 'N').
+</span><span class="comment">*</span><span class="comment">          = 'R':  Row equilibration, i.e., A has been premultiplied by
+</span><span class="comment">*</span><span class="comment">                  diag(R).
+</span><span class="comment">*</span><span class="comment">          = 'C':  Column equilibration, i.e., A has been postmultiplied
+</span><span class="comment">*</span><span class="comment">                  by diag(C).
+</span><span class="comment">*</span><span class="comment">          = 'B':  Both row and column equilibration, i.e., A has been
+</span><span class="comment">*</span><span class="comment">                  replaced by diag(R) * A * diag(C).
+</span><span class="comment">*</span><span class="comment">          EQUED is an input argument if FACT = 'F'; otherwise, it is an
+</span><span class="comment">*</span><span class="comment">          output argument.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  R       (input or output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The row scale factors for A.  If EQUED = 'R' or 'B', A is
+</span><span class="comment">*</span><span class="comment">          multiplied on the left by diag(R); if EQUED = 'N' or 'C', R
+</span><span class="comment">*</span><span class="comment">          is not accessed.  R is an input argument if FACT = 'F';
+</span><span class="comment">*</span><span class="comment">          otherwise, R is an output argument.  If FACT = 'F' and
+</span><span class="comment">*</span><span class="comment">          EQUED = 'R' or 'B', each element of R must be positive.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C       (input or output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The column scale factors for A.  If EQUED = 'C' or 'B', A is
+</span><span class="comment">*</span><span class="comment">          multiplied on the right by diag(C); if EQUED = 'N' or 'R', C
+</span><span class="comment">*</span><span class="comment">          is not accessed.  C is an input argument if FACT = 'F';
+</span><span class="comment">*</span><span class="comment">          otherwise, C is an output argument.  If FACT = 'F' and
+</span><span class="comment">*</span><span class="comment">          EQUED = 'C' or 'B', each element of C must be positive.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input/output) COMPLEX array, dimension (LDB,NRHS)
+</span><span class="comment">*</span><span class="comment">          On entry, the right hand side matrix B.
+</span><span class="comment">*</span><span class="comment">          On exit,
+</span><span class="comment">*</span><span class="comment">          if EQUED = 'N', B is not modified;
+</span><span class="comment">*</span><span class="comment">          if TRANS = 'N' and EQUED = 'R' or 'B', B is overwritten by
+</span><span class="comment">*</span><span class="comment">          diag(R)*B;
+</span><span class="comment">*</span><span class="comment">          if TRANS = 'T' or 'C' and EQUED = 'C' or 'B', B is
+</span><span class="comment">*</span><span class="comment">          overwritten by diag(C)*B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B.  LDB &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X       (output) COMPLEX array, dimension (LDX,NRHS)
+</span><span class="comment">*</span><span class="comment">          If INFO = 0 or INFO = N+1, the N-by-NRHS solution matrix X
+</span><span class="comment">*</span><span class="comment">          to the original system of equations.  Note that A and B are
+</span><span class="comment">*</span><span class="comment">          modified on exit if EQUED .ne. 'N', and the solution to the
+</span><span class="comment">*</span><span class="comment">          equilibrated system is inv(diag(C))*X if TRANS = 'N' and
+</span><span class="comment">*</span><span class="comment">          EQUED = 'C' or 'B', or inv(diag(R))*X if TRANS = 'T' or 'C'
+</span><span class="comment">*</span><span class="comment">          and EQUED = 'R' or 'B'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDX     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array X.  LDX &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RCOND   (output) REAL
+</span><span class="comment">*</span><span class="comment">          The estimate of the reciprocal condition number of the matrix
+</span><span class="comment">*</span><span class="comment">          A after equilibration (if done).  If RCOND is less than the
+</span><span class="comment">*</span><span class="comment">          machine precision (in particular, if RCOND = 0), the matrix
+</span><span class="comment">*</span><span class="comment">          is singular to working precision.  This condition is
+</span><span class="comment">*</span><span class="comment">          indicated by a return code of INFO &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  FERR    (output) REAL array, dimension (NRHS)
+</span><span class="comment">*</span><span class="comment">          The estimated forward error bound for each solution vector
+</span><span class="comment">*</span><span class="comment">          X(j) (the j-th column of the solution matrix X).
+</span><span class="comment">*</span><span class="comment">          If XTRUE is the true solution corresponding to X(j), FERR(j)
+</span><span class="comment">*</span><span class="comment">          is an estimated upper bound for the magnitude of the largest
+</span><span class="comment">*</span><span class="comment">          element in (X(j) - XTRUE) divided by the magnitude of the
+</span><span class="comment">*</span><span class="comment">          largest element in X(j).  The estimate is as reliable as
+</span><span class="comment">*</span><span class="comment">          the estimate for RCOND, and is almost always a slight
+</span><span class="comment">*</span><span class="comment">          overestimate of the true error.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BERR    (output) REAL array, dimension (NRHS)
+</span><span class="comment">*</span><span class="comment">          The componentwise relative backward error of each solution
+</span><span class="comment">*</span><span class="comment">          vector X(j) (i.e., the smallest relative change in
+</span><span class="comment">*</span><span class="comment">          any element of A or B that makes X(j) an exact solution).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) COMPLEX array, dimension (2*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RWORK   (workspace/output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On exit, RWORK(1) contains the reciprocal pivot growth
+</span><span class="comment">*</span><span class="comment">          factor norm(A)/norm(U). The &quot;max absolute element&quot; norm is
+</span><span class="comment">*</span><span class="comment">          used. If RWORK(1) is much less than 1, then the stability
+</span><span class="comment">*</span><span class="comment">          of the LU factorization of the (equilibrated) matrix A
+</span><span class="comment">*</span><span class="comment">          could be poor. This also means that the solution X, condition
+</span><span class="comment">*</span><span class="comment">          estimator RCOND, and forward error bound FERR could be
+</span><span class="comment">*</span><span class="comment">          unreliable. If factorization fails with 0&lt;INFO&lt;=N, then
+</span><span class="comment">*</span><span class="comment">          RWORK(1) contains the reciprocal pivot growth factor for the
+</span><span class="comment">*</span><span class="comment">          leading INFO columns of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = i, and i is
+</span><span class="comment">*</span><span class="comment">                &lt;= N:  U(i,i) is exactly zero.  The factorization
+</span><span class="comment">*</span><span class="comment">                       has been completed, but the factor U is exactly
+</span><span class="comment">*</span><span class="comment">                       singular, so the solution and error bounds
+</span><span class="comment">*</span><span class="comment">                       could not be computed. RCOND = 0 is returned.
+</span><span class="comment">*</span><span class="comment">                = N+1: U is nonsingular, but RCOND is less than machine
+</span><span class="comment">*</span><span class="comment">                       precision, meaning that the matrix is singular
+</span><span class="comment">*</span><span class="comment">                       to working precision.  Nevertheless, the
+</span><span class="comment">*</span><span class="comment">                       solution and error bounds are computed because
+</span><span class="comment">*</span><span class="comment">                       there are a number of situations where the
+</span><span class="comment">*</span><span class="comment">                       computed solution can be more accurate than the
+</span><span class="comment">*</span><span class="comment">                       value of RCOND would suggest.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">  Moved setting of INFO = N+1 so INFO does not subsequently get
+</span><span class="comment">*</span><span class="comment">  overwritten.  Sven, 17 Mar 05. 
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, ONE
+      PARAMETER          ( ZERO = 0.0E+0, ONE = 1.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            COLEQU, EQUIL, NOFACT, NOTRAN, ROWEQU
+      CHARACTER          NORM
+      INTEGER            I, INFEQU, J, J1, J2
+      REAL               AMAX, ANORM, BIGNUM, COLCND, RCMAX, RCMIN,
+     $                   ROWCND, RPVGRW, SMLNUM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.278"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      REAL               <a name="CLANGB.279"></a><a href="clangb.f.html#CLANGB.1">CLANGB</a>, <a name="CLANTB.279"></a><a href="clantb.f.html#CLANTB.1">CLANTB</a>, <a name="SLAMCH.279"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      EXTERNAL           <a name="LSAME.280"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="CLANGB.280"></a><a href="clangb.f.html#CLANGB.1">CLANGB</a>, <a name="CLANTB.280"></a><a href="clantb.f.html#CLANTB.1">CLANTB</a>, <a name="SLAMCH.280"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           CCOPY, <a name="CGBCON.283"></a><a href="cgbcon.f.html#CGBCON.1">CGBCON</a>, <a name="CGBEQU.283"></a><a href="cgbequ.f.html#CGBEQU.1">CGBEQU</a>, <a name="CGBRFS.283"></a><a href="cgbrfs.f.html#CGBRFS.1">CGBRFS</a>, <a name="CGBTRF.283"></a><a href="cgbtrf.f.html#CGBTRF.1">CGBTRF</a>, <a name="CGBTRS.283"></a><a href="cgbtrs.f.html#CGBTRS.1">CGBTRS</a>,
+     $                   <a name="CLACPY.284"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>, <a name="CLAQGB.284"></a><a href="claqgb.f.html#CLAQGB.1">CLAQGB</a>, <a name="XERBLA.284"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      NOFACT = <a name="LSAME.292"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( FACT, <span class="string">'N'</span> )
+      EQUIL = <a name="LSAME.293"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( FACT, <span class="string">'E'</span> )
+      NOTRAN = <a name="LSAME.294"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'N'</span> )
+      IF( NOFACT .OR. EQUIL ) THEN
+         EQUED = <span class="string">'N'</span>
+         ROWEQU = .FALSE.
+         COLEQU = .FALSE.
+      ELSE
+         ROWEQU = <a name="LSAME.300"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( EQUED, <span class="string">'R'</span> ) .OR. <a name="LSAME.300"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( EQUED, <span class="string">'B'</span> )
+         COLEQU = <a name="LSAME.301"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( EQUED, <span class="string">'C'</span> ) .OR. <a name="LSAME.301"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( EQUED, <span class="string">'B'</span> )
+         SMLNUM = <a name="SLAMCH.302"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Safe minimum'</span> )
+         BIGNUM = ONE / SMLNUM
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( .NOT.NOFACT .AND. .NOT.EQUIL .AND. .NOT.<a name="LSAME.308"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( FACT, <span class="string">'F'</span> ) )
+     $     THEN
+         INFO = -1
+      ELSE IF( .NOT.NOTRAN .AND. .NOT.<a name="LSAME.311"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'T'</span> ) .AND. .NOT.
+     $         <a name="LSAME.312"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'C'</span> ) ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( KL.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( KU.LT.0 ) THEN
+         INFO = -5
+      ELSE IF( NRHS.LT.0 ) THEN
+         INFO = -6
+      ELSE IF( LDAB.LT.KL+KU+1 ) THEN
+         INFO = -8
+      ELSE IF( LDAFB.LT.2*KL+KU+1 ) THEN
+         INFO = -10
+      ELSE IF( <a name="LSAME.326"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( FACT, <span class="string">'F'</span> ) .AND. .NOT.
+     $         ( ROWEQU .OR. COLEQU .OR. <a name="LSAME.327"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( EQUED, <span class="string">'N'</span> ) ) ) THEN
+         INFO = -12
+      ELSE
+         IF( ROWEQU ) THEN
+            RCMIN = BIGNUM
+            RCMAX = ZERO
+            DO 10 J = 1, N
+               RCMIN = MIN( RCMIN, R( J ) )
+               RCMAX = MAX( RCMAX, R( J ) )
+   10       CONTINUE
+            IF( RCMIN.LE.ZERO ) THEN
+               INFO = -13
+            ELSE IF( N.GT.0 ) THEN
+               ROWCND = MAX( RCMIN, SMLNUM ) / MIN( RCMAX, BIGNUM )
+            ELSE
+               ROWCND = ONE
+            END IF
+         END IF
+         IF( COLEQU .AND. INFO.EQ.0 ) THEN
+            RCMIN = BIGNUM
+            RCMAX = ZERO
+            DO 20 J = 1, N
+               RCMIN = MIN( RCMIN, C( J ) )
+               RCMAX = MAX( RCMAX, C( J ) )
+   20       CONTINUE
+            IF( RCMIN.LE.ZERO ) THEN
+               INFO = -14
+            ELSE IF( N.GT.0 ) THEN
+               COLCND = MAX( RCMIN, SMLNUM ) / MIN( RCMAX, BIGNUM )
+            ELSE
+               COLCND = ONE
+            END IF
+         END IF
+         IF( INFO.EQ.0 ) THEN
+            IF( LDB.LT.MAX( 1, N ) ) THEN
+               INFO = -16
+            ELSE IF( LDX.LT.MAX( 1, N ) ) THEN
+               INFO = -18
+            END IF
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.370"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CGBSVX.370"></a><a href="cgbsvx.f.html#CGBSVX.1">CGBSVX</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( EQUIL ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute row and column scalings to equilibrate the matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="CGBEQU.378"></a><a href="cgbequ.f.html#CGBEQU.1">CGBEQU</a>( N, N, KL, KU, AB, LDAB, R, C, ROWCND, COLCND,
+     $                AMAX, INFEQU )
+         IF( INFEQU.EQ.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Equilibrate the matrix.
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="CLAQGB.384"></a><a href="claqgb.f.html#CLAQGB.1">CLAQGB</a>( N, N, KL, KU, AB, LDAB, R, C, ROWCND, COLCND,
+     $                   AMAX, EQUED )
+            ROWEQU = <a name="LSAME.386"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( EQUED, <span class="string">'R'</span> ) .OR. <a name="LSAME.386"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( EQUED, <span class="string">'B'</span> )
+            COLEQU = <a name="LSAME.387"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( EQUED, <span class="string">'C'</span> ) .OR. <a name="LSAME.387"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( EQUED, <span class="string">'B'</span> )
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Scale the right hand side.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( NOTRAN ) THEN
+         IF( ROWEQU ) THEN
+            DO 40 J = 1, NRHS
+               DO 30 I = 1, N
+                  B( I, J ) = R( I )*B( I, J )
+   30          CONTINUE
+   40       CONTINUE
+         END IF
+      ELSE IF( COLEQU ) THEN
+         DO 60 J = 1, NRHS
+            DO 50 I = 1, N
+               B( I, J ) = C( I )*B( I, J )
+   50       CONTINUE
+   60    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( NOFACT .OR. EQUIL ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute the LU factorization of the band matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 70 J = 1, N
+            J1 = MAX( J-KU, 1 )
+            J2 = MIN( J+KL, N )
+            CALL CCOPY( J2-J1+1, AB( KU+1-J+J1, J ), 1,
+     $                  AFB( KL+KU+1-J+J1, J ), 1 )
+   70    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         CALL <a name="CGBTRF.420"></a><a href="cgbtrf.f.html#CGBTRF.1">CGBTRF</a>( N, N, KL, KU, AFB, LDAFB, IPIV, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Return if INFO is non-zero.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( INFO.GT.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute the reciprocal pivot growth factor of the
+</span><span class="comment">*</span><span class="comment">           leading rank-deficient INFO columns of A.
+</span><span class="comment">*</span><span class="comment">
+</span>            ANORM = ZERO
+            DO 90 J = 1, INFO
+               DO 80 I = MAX( KU+2-J, 1 ), MIN( N+KU+1-J, KL+KU+1 )
+                  ANORM = MAX( ANORM, ABS( AB( I, J ) ) )
+   80          CONTINUE
+   90       CONTINUE
+            RPVGRW = <a name="CLANTB.435"></a><a href="clantb.f.html#CLANTB.1">CLANTB</a>( <span class="string">'M'</span>, <span class="string">'U'</span>, <span class="string">'N'</span>, INFO, MIN( INFO-1, KL+KU ),
+     $                       AFB( MAX( 1, KL+KU+2-INFO ), 1 ), LDAFB,
+     $                       RWORK )
+            IF( RPVGRW.EQ.ZERO ) THEN
+               RPVGRW = ONE
+            ELSE
+               RPVGRW = ANORM / RPVGRW
+            END IF
+            RWORK( 1 ) = RPVGRW
+            RCOND = ZERO
+            RETURN
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the norm of the matrix A and the
+</span><span class="comment">*</span><span class="comment">     reciprocal pivot growth factor RPVGRW.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( NOTRAN ) THEN
+         NORM = <span class="string">'1'</span>
+      ELSE
+         NORM = <span class="string">'I'</span>
+      END IF
+      ANORM = <a name="CLANGB.457"></a><a href="clangb.f.html#CLANGB.1">CLANGB</a>( NORM, N, KL, KU, AB, LDAB, RWORK )
+      RPVGRW = <a name="CLANTB.458"></a><a href="clantb.f.html#CLANTB.1">CLANTB</a>( <span class="string">'M'</span>, <span class="string">'U'</span>, <span class="string">'N'</span>, N, KL+KU, AFB, LDAFB, RWORK )
+      IF( RPVGRW.EQ.ZERO ) THEN
+         RPVGRW = ONE
+      ELSE
+         RPVGRW = <a name="CLANGB.462"></a><a href="clangb.f.html#CLANGB.1">CLANGB</a>( <span class="string">'M'</span>, N, KL, KU, AB, LDAB, RWORK ) / RPVGRW
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the reciprocal of the condition number of A.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="CGBCON.467"></a><a href="cgbcon.f.html#CGBCON.1">CGBCON</a>( NORM, N, KL, KU, AFB, LDAFB, IPIV, ANORM, RCOND,
+     $             WORK, RWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the solution matrix X.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="CLACPY.472"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>( <span class="string">'Full'</span>, N, NRHS, B, LDB, X, LDX )
+      CALL <a name="CGBTRS.473"></a><a href="cgbtrs.f.html#CGBTRS.1">CGBTRS</a>( TRANS, N, KL, KU, NRHS, AFB, LDAFB, IPIV, X, LDX,
+     $             INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Use iterative refinement to improve the computed solution and
+</span><span class="comment">*</span><span class="comment">     compute error bounds and backward error estimates for it.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="CGBRFS.479"></a><a href="cgbrfs.f.html#CGBRFS.1">CGBRFS</a>( TRANS, N, KL, KU, NRHS, AB, LDAB, AFB, LDAFB, IPIV,
+     $             B, LDB, X, LDX, FERR, BERR, WORK, RWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Transform the solution matrix X to a solution of the original
+</span><span class="comment">*</span><span class="comment">     system.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( NOTRAN ) THEN
+         IF( COLEQU ) THEN
+            DO 110 J = 1, NRHS
+               DO 100 I = 1, N
+                  X( I, J ) = C( I )*X( I, J )
+  100          CONTINUE
+  110       CONTINUE
+            DO 120 J = 1, NRHS
+               FERR( J ) = FERR( J ) / COLCND
+  120       CONTINUE
+         END IF
+      ELSE IF( ROWEQU ) THEN
+         DO 140 J = 1, NRHS
+            DO 130 I = 1, N
+               X( I, J ) = R( I )*X( I, J )
+  130       CONTINUE
+  140    CONTINUE
+         DO 150 J = 1, NRHS
+            FERR( J ) = FERR( J ) / ROWCND
+  150    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set INFO = N+1 if the matrix is singular to working precision.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( RCOND.LT.<a name="SLAMCH.509"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Epsilon'</span> ) )
+     $   INFO = N + 1
+<span class="comment">*</span><span class="comment">
+</span>      RWORK( 1 ) = RPVGRW
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CGBSVX.515"></a><a href="cgbsvx.f.html#CGBSVX.1">CGBSVX</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

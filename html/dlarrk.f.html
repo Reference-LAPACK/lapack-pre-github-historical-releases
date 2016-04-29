@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlarrk.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLARRK.1"></a><a href="dlarrk.f.html#DLARRK.1">DLARRK</a>( N, IW, GL, GU,
+     $                    D, E2, PIVMIN, RELTOL, W, WERR, INFO)
+      IMPLICIT NONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER   INFO, IW, N
+      DOUBLE PRECISION    PIVMIN, RELTOL, GL, GU, W, WERR
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   D( * ), E2( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLARRK.20"></a><a href="dlarrk.f.html#DLARRK.1">DLARRK</a> computes one eigenvalue of a symmetric tridiagonal
+</span><span class="comment">*</span><span class="comment">  matrix T to suitable accuracy. This is an auxiliary code to be
+</span><span class="comment">*</span><span class="comment">  called from <a name="DSTEMR.22"></a><a href="dstemr.f.html#DSTEMR.1">DSTEMR</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  To avoid overflow, the matrix must be scaled so that its
+</span><span class="comment">*</span><span class="comment">  largest element is no greater than overflow**(1/2) *
+</span><span class="comment">*</span><span class="comment">  underflow**(1/4) in absolute value, and for greatest
+</span><span class="comment">*</span><span class="comment">  accuracy, it should not be much smaller than that.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  See W. Kahan &quot;Accurate Eigenvalues of a Symmetric Tridiagonal
+</span><span class="comment">*</span><span class="comment">  Matrix&quot;, Report CS41, Computer Science Dept., Stanford
+</span><span class="comment">*</span><span class="comment">  University, July 21, 1966.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the tridiagonal matrix T.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IW      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The index of the eigenvalues to be returned.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GL      (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">  GU      (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          An upper and a lower bound on the eigenvalue.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The n diagonal elements of the tridiagonal matrix T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E2      (input) DOUBLE PRECISION array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          The (n-1) squared off-diagonal elements of the tridiagonal matrix T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  PIVMIN  (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The minimum pivot allowed in the Sturm sequence for T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RELTOL  (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The minimum relative width of an interval.  When an interval
+</span><span class="comment">*</span><span class="comment">          is narrower than RELTOL times the larger (in
+</span><span class="comment">*</span><span class="comment">          magnitude) endpoint, then it is considered to be
+</span><span class="comment">*</span><span class="comment">          sufficiently small, i.e., converged.  Note: this should
+</span><span class="comment">*</span><span class="comment">          always be at least radix*machine epsilon.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  W       (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WERR    (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The error bound on the corresponding eigenvalue approximation
+</span><span class="comment">*</span><span class="comment">          in W.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:       Eigenvalue converged
+</span><span class="comment">*</span><span class="comment">          = -1:      Eigenvalue did NOT converge
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Internal Parameters
+</span><span class="comment">*</span><span class="comment">  ===================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  FUDGE   DOUBLE PRECISION, default = 2
+</span><span class="comment">*</span><span class="comment">          A &quot;fudge factor&quot; to widen the Gershgorin intervals.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   FUDGE, HALF, TWO, ZERO
+      PARAMETER          ( HALF = 0.5D0, TWO = 2.0D0,
+     $                     FUDGE = TWO, ZERO = 0.0D0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER   I, IT, ITMAX, NEGCNT
+      DOUBLE PRECISION   ATOLI, EPS, LEFT, MID, RIGHT, RTOLI, TMP1,
+     $                   TMP2, TNORM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      DOUBLE PRECISION   <a name="DLAMCH.91"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+      EXTERNAL   <a name="DLAMCH.92"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, INT, LOG, MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Get machine constants
+</span>      EPS = <a name="DLAMCH.100"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'P'</span> )
+
+      TNORM = MAX( ABS( GL ), ABS( GU ) )
+      RTOLI = RELTOL
+      ATOLI = FUDGE*TWO*PIVMIN
+
+      ITMAX = INT( ( LOG( TNORM+PIVMIN )-LOG( PIVMIN ) ) /
+     $           LOG( TWO ) ) + 2
+
+      INFO = -1
+
+      LEFT = GL - FUDGE*TNORM*EPS*N - FUDGE*TWO*PIVMIN
+      RIGHT = GU + FUDGE*TNORM*EPS*N + FUDGE*TWO*PIVMIN
+      IT = 0
+
+ 10   CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Check if interval converged or maximum number of iterations reached
+</span><span class="comment">*</span><span class="comment">
+</span>      TMP1 = ABS( RIGHT - LEFT )
+      TMP2 = MAX( ABS(RIGHT), ABS(LEFT) )
+      IF( TMP1.LT.MAX( ATOLI, PIVMIN, RTOLI*TMP2 ) ) THEN
+         INFO = 0
+         GOTO 30
+      ENDIF
+      IF(IT.GT.ITMAX)
+     $   GOTO 30
+
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Count number of negative pivots for mid-point
+</span><span class="comment">*</span><span class="comment">
+</span>      IT = IT + 1
+      MID = HALF * (LEFT + RIGHT)
+      NEGCNT = 0
+      TMP1 = D( 1 ) - MID
+      IF( ABS( TMP1 ).LT.PIVMIN )
+     $   TMP1 = -PIVMIN
+      IF( TMP1.LE.ZERO )
+     $   NEGCNT = NEGCNT + 1
+<span class="comment">*</span><span class="comment">
+</span>      DO 20 I = 2, N
+         TMP1 = D( I ) - E2( I-1 ) / TMP1 - MID
+         IF( ABS( TMP1 ).LT.PIVMIN )
+     $      TMP1 = -PIVMIN
+         IF( TMP1.LE.ZERO )
+     $      NEGCNT = NEGCNT + 1
+ 20   CONTINUE
+
+      IF(NEGCNT.GE.IW) THEN
+         RIGHT = MID
+      ELSE
+         LEFT = MID
+      ENDIF
+      GOTO 10
+
+ 30   CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Converged or maximum number of iterations reached
+</span><span class="comment">*</span><span class="comment">
+</span>      W = HALF * (LEFT + RIGHT)
+      WERR = HALF * ABS( RIGHT - LEFT )
+
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLARRK.164"></a><a href="dlarrk.f.html#DLARRK.1">DLARRK</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

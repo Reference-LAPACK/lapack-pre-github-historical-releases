@@ -1,0 +1,351 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zhetri.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZHETRI.1"></a><a href="zhetri.f.html#ZHETRI.1">ZHETRI</a>( UPLO, N, A, LDA, IPIV, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          UPLO
+      INTEGER            INFO, LDA, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IPIV( * )
+      COMPLEX*16         A( LDA, * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZHETRI.19"></a><a href="zhetri.f.html#ZHETRI.1">ZHETRI</a> computes the inverse of a complex Hermitian indefinite matrix
+</span><span class="comment">*</span><span class="comment">  A using the factorization A = U*D*U**H or A = L*D*L**H computed by
+</span><span class="comment">*</span><span class="comment">  <a name="ZHETRF.21"></a><a href="zhetrf.f.html#ZHETRF.1">ZHETRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether the details of the factorization are stored
+</span><span class="comment">*</span><span class="comment">          as an upper or lower triangular matrix.
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangular, form is A = U*D*U**H;
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangular, form is A = L*D*L**H.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) COMPLEX*16 array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the block diagonal matrix D and the multipliers
+</span><span class="comment">*</span><span class="comment">          used to obtain the factor U or L as computed by <a name="ZHETRF.37"></a><a href="zhetrf.f.html#ZHETRF.1">ZHETRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, the (Hermitian) inverse of the original
+</span><span class="comment">*</span><span class="comment">          matrix.  If UPLO = 'U', the upper triangular part of the
+</span><span class="comment">*</span><span class="comment">          inverse is formed and the part of A below the diagonal is not
+</span><span class="comment">*</span><span class="comment">          referenced; if UPLO = 'L' the lower triangular part of the
+</span><span class="comment">*</span><span class="comment">          inverse is formed and the part of A above the diagonal is
+</span><span class="comment">*</span><span class="comment">          not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IPIV    (input) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          Details of the interchanges and the block structure of D
+</span><span class="comment">*</span><span class="comment">          as determined by <a name="ZHETRF.51"></a><a href="zhetrf.f.html#ZHETRF.1">ZHETRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) COMPLEX*16 array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0: successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0: if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0: if INFO = i, D(i,i) = 0; the matrix is singular and its
+</span><span class="comment">*</span><span class="comment">               inverse could not be computed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ONE
+      COMPLEX*16         CONE, ZERO
+      PARAMETER          ( ONE = 1.0D+0, CONE = ( 1.0D+0, 0.0D+0 ),
+     $                   ZERO = ( 0.0D+0, 0.0D+0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            UPPER
+      INTEGER            J, K, KP, KSTEP
+      DOUBLE PRECISION   AK, AKP1, D, T
+      COMPLEX*16         AKKP1, TEMP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.76"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      COMPLEX*16         ZDOTC
+      EXTERNAL           <a name="LSAME.78"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, ZDOTC
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.81"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, ZCOPY, ZHEMV, ZSWAP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, DBLE, DCONJG, MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      UPPER = <a name="LSAME.91"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> )
+      IF( .NOT.UPPER .AND. .NOT.<a name="LSAME.92"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+         INFO = -4
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.100"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZHETRI.100"></a><a href="zhetri.f.html#ZHETRI.1">ZHETRI</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Check that the diagonal matrix D is nonsingular.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( UPPER ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Upper triangular storage: examine D from bottom to top
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 10 INFO = N, 1, -1
+            IF( IPIV( INFO ).GT.0 .AND. A( INFO, INFO ).EQ.ZERO )
+     $         RETURN
+   10    CONTINUE
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Lower triangular storage: examine D from top to bottom.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 20 INFO = 1, N
+            IF( IPIV( INFO ).GT.0 .AND. A( INFO, INFO ).EQ.ZERO )
+     $         RETURN
+   20    CONTINUE
+      END IF
+      INFO = 0
+<span class="comment">*</span><span class="comment">
+</span>      IF( UPPER ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute inv(A) from the factorization A = U*D*U'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        K is the main loop index, increasing from 1 to N in steps of
+</span><span class="comment">*</span><span class="comment">        1 or 2, depending on the size of the diagonal blocks.
+</span><span class="comment">*</span><span class="comment">
+</span>         K = 1
+   30    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        If K &gt; N, exit from loop.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( K.GT.N )
+     $      GO TO 50
+<span class="comment">*</span><span class="comment">
+</span>         IF( IPIV( K ).GT.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           1 x 1 diagonal block
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Invert the diagonal block.
+</span><span class="comment">*</span><span class="comment">
+</span>            A( K, K ) = ONE / DBLE( A( K, K ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute column K of the inverse.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( K.GT.1 ) THEN
+               CALL ZCOPY( K-1, A( 1, K ), 1, WORK, 1 )
+               CALL ZHEMV( UPLO, K-1, -CONE, A, LDA, WORK, 1, ZERO,
+     $                     A( 1, K ), 1 )
+               A( K, K ) = A( K, K ) - DBLE( ZDOTC( K-1, WORK, 1, A( 1,
+     $                     K ), 1 ) )
+            END IF
+            KSTEP = 1
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           2 x 2 diagonal block
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Invert the diagonal block.
+</span><span class="comment">*</span><span class="comment">
+</span>            T = ABS( A( K, K+1 ) )
+            AK = DBLE( A( K, K ) ) / T
+            AKP1 = DBLE( A( K+1, K+1 ) ) / T
+            AKKP1 = A( K, K+1 ) / T
+            D = T*( AK*AKP1-ONE )
+            A( K, K ) = AKP1 / D
+            A( K+1, K+1 ) = AK / D
+            A( K, K+1 ) = -AKKP1 / D
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute columns K and K+1 of the inverse.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( K.GT.1 ) THEN
+               CALL ZCOPY( K-1, A( 1, K ), 1, WORK, 1 )
+               CALL ZHEMV( UPLO, K-1, -CONE, A, LDA, WORK, 1, ZERO,
+     $                     A( 1, K ), 1 )
+               A( K, K ) = A( K, K ) - DBLE( ZDOTC( K-1, WORK, 1, A( 1,
+     $                     K ), 1 ) )
+               A( K, K+1 ) = A( K, K+1 ) -
+     $                       ZDOTC( K-1, A( 1, K ), 1, A( 1, K+1 ), 1 )
+               CALL ZCOPY( K-1, A( 1, K+1 ), 1, WORK, 1 )
+               CALL ZHEMV( UPLO, K-1, -CONE, A, LDA, WORK, 1, ZERO,
+     $                     A( 1, K+1 ), 1 )
+               A( K+1, K+1 ) = A( K+1, K+1 ) -
+     $                         DBLE( ZDOTC( K-1, WORK, 1, A( 1, K+1 ),
+     $                         1 ) )
+            END IF
+            KSTEP = 2
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         KP = ABS( IPIV( K ) )
+         IF( KP.NE.K ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Interchange rows and columns K and KP in the leading
+</span><span class="comment">*</span><span class="comment">           submatrix A(1:k+1,1:k+1)
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL ZSWAP( KP-1, A( 1, K ), 1, A( 1, KP ), 1 )
+            DO 40 J = KP + 1, K - 1
+               TEMP = DCONJG( A( J, K ) )
+               A( J, K ) = DCONJG( A( KP, J ) )
+               A( KP, J ) = TEMP
+   40       CONTINUE
+            A( KP, K ) = DCONJG( A( KP, K ) )
+            TEMP = A( K, K )
+            A( K, K ) = A( KP, KP )
+            A( KP, KP ) = TEMP
+            IF( KSTEP.EQ.2 ) THEN
+               TEMP = A( K, K+1 )
+               A( K, K+1 ) = A( KP, K+1 )
+               A( KP, K+1 ) = TEMP
+            END IF
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         K = K + KSTEP
+         GO TO 30
+   50    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute inv(A) from the factorization A = L*D*L'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        K is the main loop index, increasing from 1 to N in steps of
+</span><span class="comment">*</span><span class="comment">        1 or 2, depending on the size of the diagonal blocks.
+</span><span class="comment">*</span><span class="comment">
+</span>         K = N
+   60    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        If K &lt; 1, exit from loop.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( K.LT.1 )
+     $      GO TO 80
+<span class="comment">*</span><span class="comment">
+</span>         IF( IPIV( K ).GT.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           1 x 1 diagonal block
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Invert the diagonal block.
+</span><span class="comment">*</span><span class="comment">
+</span>            A( K, K ) = ONE / DBLE( A( K, K ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute column K of the inverse.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( K.LT.N ) THEN
+               CALL ZCOPY( N-K, A( K+1, K ), 1, WORK, 1 )
+               CALL ZHEMV( UPLO, N-K, -CONE, A( K+1, K+1 ), LDA, WORK,
+     $                     1, ZERO, A( K+1, K ), 1 )
+               A( K, K ) = A( K, K ) - DBLE( ZDOTC( N-K, WORK, 1,
+     $                     A( K+1, K ), 1 ) )
+            END IF
+            KSTEP = 1
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           2 x 2 diagonal block
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Invert the diagonal block.
+</span><span class="comment">*</span><span class="comment">
+</span>            T = ABS( A( K, K-1 ) )
+            AK = DBLE( A( K-1, K-1 ) ) / T
+            AKP1 = DBLE( A( K, K ) ) / T
+            AKKP1 = A( K, K-1 ) / T
+            D = T*( AK*AKP1-ONE )
+            A( K-1, K-1 ) = AKP1 / D
+            A( K, K ) = AK / D
+            A( K, K-1 ) = -AKKP1 / D
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute columns K-1 and K of the inverse.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( K.LT.N ) THEN
+               CALL ZCOPY( N-K, A( K+1, K ), 1, WORK, 1 )
+               CALL ZHEMV( UPLO, N-K, -CONE, A( K+1, K+1 ), LDA, WORK,
+     $                     1, ZERO, A( K+1, K ), 1 )
+               A( K, K ) = A( K, K ) - DBLE( ZDOTC( N-K, WORK, 1,
+     $                     A( K+1, K ), 1 ) )
+               A( K, K-1 ) = A( K, K-1 ) -
+     $                       ZDOTC( N-K, A( K+1, K ), 1, A( K+1, K-1 ),
+     $                       1 )
+               CALL ZCOPY( N-K, A( K+1, K-1 ), 1, WORK, 1 )
+               CALL ZHEMV( UPLO, N-K, -CONE, A( K+1, K+1 ), LDA, WORK,
+     $                     1, ZERO, A( K+1, K-1 ), 1 )
+               A( K-1, K-1 ) = A( K-1, K-1 ) -
+     $                         DBLE( ZDOTC( N-K, WORK, 1, A( K+1, K-1 ),
+     $                         1 ) )
+            END IF
+            KSTEP = 2
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         KP = ABS( IPIV( K ) )
+         IF( KP.NE.K ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Interchange rows and columns K and KP in the trailing
+</span><span class="comment">*</span><span class="comment">           submatrix A(k-1:n,k-1:n)
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( KP.LT.N )
+     $         CALL ZSWAP( N-KP, A( KP+1, K ), 1, A( KP+1, KP ), 1 )
+            DO 70 J = K + 1, KP - 1
+               TEMP = DCONJG( A( J, K ) )
+               A( J, K ) = DCONJG( A( KP, J ) )
+               A( KP, J ) = TEMP
+   70       CONTINUE
+            A( KP, K ) = DCONJG( A( KP, K ) )
+            TEMP = A( K, K )
+            A( K, K ) = A( KP, KP )
+            A( KP, KP ) = TEMP
+            IF( KSTEP.EQ.2 ) THEN
+               TEMP = A( K, K-1 )
+               A( K, K-1 ) = A( KP, K-1 )
+               A( KP, K-1 ) = TEMP
+            END IF
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         K = K - KSTEP
+         GO TO 60
+   80    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZHETRI.325"></a><a href="zhetri.f.html#ZHETRI.1">ZHETRI</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

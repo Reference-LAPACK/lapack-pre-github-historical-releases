@@ -1,0 +1,256 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slasd1.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLASD1.1"></a><a href="slasd1.f.html#SLASD1.1">SLASD1</a>( NL, NR, SQRE, D, ALPHA, BETA, U, LDU, VT, LDVT,
+     $                   IDXQ, IWORK, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, LDU, LDVT, NL, NR, SQRE
+      REAL               ALPHA, BETA
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IDXQ( * ), IWORK( * )
+      REAL               D( * ), U( LDU, * ), VT( LDVT, * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLASD1.20"></a><a href="slasd1.f.html#SLASD1.1">SLASD1</a> computes the SVD of an upper bidiagonal N-by-M matrix B,
+</span><span class="comment">*</span><span class="comment">  where N = NL + NR + 1 and M = N + SQRE. <a name="SLASD1.21"></a><a href="slasd1.f.html#SLASD1.1">SLASD1</a> is called from <a name="SLASD0.21"></a><a href="slasd0.f.html#SLASD0.1">SLASD0</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A related subroutine <a name="SLASD7.23"></a><a href="slasd7.f.html#SLASD7.1">SLASD7</a> handles the case in which the singular
+</span><span class="comment">*</span><span class="comment">  values (and the singular vectors in factored form) are desired.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLASD1.26"></a><a href="slasd1.f.html#SLASD1.1">SLASD1</a> computes the SVD as follows:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                ( D1(in)  0    0     0 )
+</span><span class="comment">*</span><span class="comment">    B = U(in) * (   Z1'   a   Z2'    b ) * VT(in)
+</span><span class="comment">*</span><span class="comment">                (   0     0   D2(in) 0 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">      = U(out) * ( D(out) 0) * VT(out)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where Z' = (Z1' a Z2' b) = u' VT', and u is a vector of dimension M
+</span><span class="comment">*</span><span class="comment">  with ALPHA and BETA in the NL+1 and NL+2 th entries and zeros
+</span><span class="comment">*</span><span class="comment">  elsewhere; and the entry b is empty if SQRE = 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The left singular vectors of the original matrix are stored in U, and
+</span><span class="comment">*</span><span class="comment">  the transpose of the right singular vectors are stored in VT, and the
+</span><span class="comment">*</span><span class="comment">  singular values are in D.  The algorithm consists of three stages:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The first stage consists of deflating the size of the problem
+</span><span class="comment">*</span><span class="comment">     when there are multiple singular values or when there are zeros in
+</span><span class="comment">*</span><span class="comment">     the Z vector.  For each such occurence the dimension of the
+</span><span class="comment">*</span><span class="comment">     secular equation problem is reduced by one.  This stage is
+</span><span class="comment">*</span><span class="comment">     performed by the routine <a name="SLASD2.46"></a><a href="slasd2.f.html#SLASD2.1">SLASD2</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The second stage consists of calculating the updated
+</span><span class="comment">*</span><span class="comment">     singular values. This is done by finding the square roots of the
+</span><span class="comment">*</span><span class="comment">     roots of the secular equation via the routine <a name="SLASD4.50"></a><a href="slasd4.f.html#SLASD4.1">SLASD4</a> (as called
+</span><span class="comment">*</span><span class="comment">     by <a name="SLASD3.51"></a><a href="slasd3.f.html#SLASD3.1">SLASD3</a>). This routine also calculates the singular vectors of
+</span><span class="comment">*</span><span class="comment">     the current problem.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The final stage consists of computing the updated singular vectors
+</span><span class="comment">*</span><span class="comment">     directly using the updated singular values.  The singular vectors
+</span><span class="comment">*</span><span class="comment">     for the current problem are multiplied with the singular vectors
+</span><span class="comment">*</span><span class="comment">     from the overall problem.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NL     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The row dimension of the upper block.  NL &gt;= 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NR     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The row dimension of the lower block.  NR &gt;= 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SQRE   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         = 0: the lower block is an NR-by-NR square matrix.
+</span><span class="comment">*</span><span class="comment">         = 1: the lower block is an NR-by-(NR+1) rectangular matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">         The bidiagonal matrix has row dimension N = NL + NR + 1,
+</span><span class="comment">*</span><span class="comment">         and column dimension M = N + SQRE.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D      (input/output) REAL array, dimension (NL+NR+1).
+</span><span class="comment">*</span><span class="comment">         N = NL+NR+1
+</span><span class="comment">*</span><span class="comment">         On entry D(1:NL,1:NL) contains the singular values of the
+</span><span class="comment">*</span><span class="comment">         upper block; and D(NL+2:N) contains the singular values of
+</span><span class="comment">*</span><span class="comment">         the lower block. On exit D(1:N) contains the singular values
+</span><span class="comment">*</span><span class="comment">         of the modified matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ALPHA  (input/output) REAL
+</span><span class="comment">*</span><span class="comment">         Contains the diagonal element associated with the added row.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BETA   (input/output) REAL
+</span><span class="comment">*</span><span class="comment">         Contains the off-diagonal element associated with the added
+</span><span class="comment">*</span><span class="comment">         row.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  U      (input/output) REAL array, dimension (LDU,N)
+</span><span class="comment">*</span><span class="comment">         On entry U(1:NL, 1:NL) contains the left singular vectors of
+</span><span class="comment">*</span><span class="comment">         the upper block; U(NL+2:N, NL+2:N) contains the left singular
+</span><span class="comment">*</span><span class="comment">         vectors of the lower block. On exit U contains the left
+</span><span class="comment">*</span><span class="comment">         singular vectors of the bidiagonal matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDU    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of the array U.  LDU &gt;= max( 1, N ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VT     (input/output) REAL array, dimension (LDVT,M)
+</span><span class="comment">*</span><span class="comment">         where M = N + SQRE.
+</span><span class="comment">*</span><span class="comment">         On entry VT(1:NL+1, 1:NL+1)' contains the right singular
+</span><span class="comment">*</span><span class="comment">         vectors of the upper block; VT(NL+2:M, NL+2:M)' contains
+</span><span class="comment">*</span><span class="comment">         the right singular vectors of the lower block. On exit
+</span><span class="comment">*</span><span class="comment">         VT' contains the right singular vectors of the
+</span><span class="comment">*</span><span class="comment">         bidiagonal matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDVT   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of the array VT.  LDVT &gt;= max( 1, M ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IDXQ  (output) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         This contains the permutation which will reintegrate the
+</span><span class="comment">*</span><span class="comment">         subproblem just solved back into sorted order, i.e.
+</span><span class="comment">*</span><span class="comment">         D( IDXQ( I = 1, N ) ) will be in ascending order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK  (workspace) INTEGER array, dimension (4*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK   (workspace) REAL array, dimension (3*M**2+2*M)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO   (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit.
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = 1, an singular value did not converge
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Ming Gu and Huan Ren, Computer Science Division, University of
+</span><span class="comment">*</span><span class="comment">     California at Berkeley, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span><span class="comment">*</span><span class="comment">
+</span>      REAL               ONE, ZERO
+      PARAMETER          ( ONE = 1.0E+0, ZERO = 0.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            COLTYP, I, IDX, IDXC, IDXP, IQ, ISIGMA, IU2,
+     $                   IVT2, IZ, K, LDQ, LDU2, LDVT2, M, N, N1, N2
+      REAL               ORGNRM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="SLAMRG.143"></a><a href="slamrg.f.html#SLAMRG.1">SLAMRG</a>, <a name="SLASCL.143"></a><a href="slascl.f.html#SLASCL.1">SLASCL</a>, <a name="SLASD2.143"></a><a href="slasd2.f.html#SLASD2.1">SLASD2</a>, <a name="SLASD3.143"></a><a href="slasd3.f.html#SLASD3.1">SLASD3</a>, <a name="XERBLA.143"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+<span class="comment">*</span><span class="comment">
+</span>      IF( NL.LT.1 ) THEN
+         INFO = -1
+      ELSE IF( NR.LT.1 ) THEN
+         INFO = -2
+      ELSE IF( ( SQRE.LT.0 ) .OR. ( SQRE.GT.1 ) ) THEN
+         INFO = -3
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.162"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="SLASD1.162"></a><a href="slasd1.f.html#SLASD1.1">SLASD1</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      N = NL + NR + 1
+      M = N + SQRE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The following values are for bookkeeping purposes only.  They are
+</span><span class="comment">*</span><span class="comment">     integer pointers which indicate the portion of the workspace
+</span><span class="comment">*</span><span class="comment">     used by a particular array in <a name="SLASD2.171"></a><a href="slasd2.f.html#SLASD2.1">SLASD2</a> and <a name="SLASD3.171"></a><a href="slasd3.f.html#SLASD3.1">SLASD3</a>.
+</span><span class="comment">*</span><span class="comment">
+</span>      LDU2 = N
+      LDVT2 = M
+<span class="comment">*</span><span class="comment">
+</span>      IZ = 1
+      ISIGMA = IZ + M
+      IU2 = ISIGMA + N
+      IVT2 = IU2 + LDU2*N
+      IQ = IVT2 + LDVT2*M
+<span class="comment">*</span><span class="comment">
+</span>      IDX = 1
+      IDXC = IDX + N
+      COLTYP = IDXC + N
+      IDXP = COLTYP + N
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Scale.
+</span><span class="comment">*</span><span class="comment">
+</span>      ORGNRM = MAX( ABS( ALPHA ), ABS( BETA ) )
+      D( NL+1 ) = ZERO
+      DO 10 I = 1, N
+         IF( ABS( D( I ) ).GT.ORGNRM ) THEN
+            ORGNRM = ABS( D( I ) )
+         END IF
+   10 CONTINUE
+      CALL <a name="SLASCL.196"></a><a href="slascl.f.html#SLASCL.1">SLASCL</a>( <span class="string">'G'</span>, 0, 0, ORGNRM, ONE, N, 1, D, N, INFO )
+      ALPHA = ALPHA / ORGNRM
+      BETA = BETA / ORGNRM
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Deflate singular values.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="SLASD2.202"></a><a href="slasd2.f.html#SLASD2.1">SLASD2</a>( NL, NR, SQRE, K, D, WORK( IZ ), ALPHA, BETA, U, LDU,
+     $             VT, LDVT, WORK( ISIGMA ), WORK( IU2 ), LDU2,
+     $             WORK( IVT2 ), LDVT2, IWORK( IDXP ), IWORK( IDX ),
+     $             IWORK( IDXC ), IDXQ, IWORK( COLTYP ), INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Solve Secular Equation and update singular vectors.
+</span><span class="comment">*</span><span class="comment">
+</span>      LDQ = K
+      CALL <a name="SLASD3.210"></a><a href="slasd3.f.html#SLASD3.1">SLASD3</a>( NL, NR, SQRE, K, D, WORK( IQ ), LDQ, WORK( ISIGMA ),
+     $             U, LDU, WORK( IU2 ), LDU2, VT, LDVT, WORK( IVT2 ),
+     $             LDVT2, IWORK( IDXC ), IWORK( COLTYP ), WORK( IZ ),
+     $             INFO )
+      IF( INFO.NE.0 ) THEN
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Unscale.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="SLASCL.220"></a><a href="slascl.f.html#SLASCL.1">SLASCL</a>( <span class="string">'G'</span>, 0, 0, ONE, ORGNRM, N, 1, D, N, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Prepare the IDXQ sorting permutation.
+</span><span class="comment">*</span><span class="comment">
+</span>      N1 = K
+      N2 = N - K
+      CALL <a name="SLAMRG.226"></a><a href="slamrg.f.html#SLAMRG.1">SLAMRG</a>( N1, N2, D, 1, -1, IDXQ )
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLASD1.230"></a><a href="slasd1.f.html#SLASD1.1">SLASD1</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

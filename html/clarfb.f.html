@@ -1,0 +1,632 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>clarfb.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CLARFB.1"></a><a href="clarfb.f.html#CLARFB.1">CLARFB</a>( SIDE, TRANS, DIRECT, STOREV, M, N, K, V, LDV,
+     $                   T, LDT, C, LDC, WORK, LDWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          DIRECT, SIDE, STOREV, TRANS
+      INTEGER            K, LDC, LDT, LDV, LDWORK, M, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX            C( LDC, * ), T( LDT, * ), V( LDV, * ),
+     $                   WORK( LDWORK, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CLARFB.20"></a><a href="clarfb.f.html#CLARFB.1">CLARFB</a> applies a complex block reflector H or its transpose H' to a
+</span><span class="comment">*</span><span class="comment">  complex M-by-N matrix C, from either the left or the right.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SIDE    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'L': apply H or H' from the Left
+</span><span class="comment">*</span><span class="comment">          = 'R': apply H or H' from the Right
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TRANS   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'N': apply H (No transpose)
+</span><span class="comment">*</span><span class="comment">          = 'C': apply H' (Conjugate transpose)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIRECT  (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Indicates how H is formed from a product of elementary
+</span><span class="comment">*</span><span class="comment">          reflectors
+</span><span class="comment">*</span><span class="comment">          = 'F': H = H(1) H(2) . . . H(k) (Forward)
+</span><span class="comment">*</span><span class="comment">          = 'B': H = H(k) . . . H(2) H(1) (Backward)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  STOREV  (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Indicates how the vectors which define the elementary
+</span><span class="comment">*</span><span class="comment">          reflectors are stored:
+</span><span class="comment">*</span><span class="comment">          = 'C': Columnwise
+</span><span class="comment">*</span><span class="comment">          = 'R': Rowwise
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix C.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix C.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  K       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix T (= the number of elementary
+</span><span class="comment">*</span><span class="comment">          reflectors whose product defines the block reflector).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  V       (input) COMPLEX array, dimension
+</span><span class="comment">*</span><span class="comment">                                (LDV,K) if STOREV = 'C'
+</span><span class="comment">*</span><span class="comment">                                (LDV,M) if STOREV = 'R' and SIDE = 'L'
+</span><span class="comment">*</span><span class="comment">                                (LDV,N) if STOREV = 'R' and SIDE = 'R'
+</span><span class="comment">*</span><span class="comment">          The matrix V. See further details.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDV     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array V.
+</span><span class="comment">*</span><span class="comment">          If STOREV = 'C' and SIDE = 'L', LDV &gt;= max(1,M);
+</span><span class="comment">*</span><span class="comment">          if STOREV = 'C' and SIDE = 'R', LDV &gt;= max(1,N);
+</span><span class="comment">*</span><span class="comment">          if STOREV = 'R', LDV &gt;= K.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  T       (input) COMPLEX array, dimension (LDT,K)
+</span><span class="comment">*</span><span class="comment">          The triangular K-by-K matrix T in the representation of the
+</span><span class="comment">*</span><span class="comment">          block reflector.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDT     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array T. LDT &gt;= K.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C       (input/output) COMPLEX array, dimension (LDC,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the M-by-N matrix C.
+</span><span class="comment">*</span><span class="comment">          On exit, C is overwritten by H*C or H'*C or C*H or C*H'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDC     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array C. LDC &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) COMPLEX array, dimension (LDWORK,K)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDWORK  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array WORK.
+</span><span class="comment">*</span><span class="comment">          If SIDE = 'L', LDWORK &gt;= max(1,N);
+</span><span class="comment">*</span><span class="comment">          if SIDE = 'R', LDWORK &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      COMPLEX            ONE
+      PARAMETER          ( ONE = ( 1.0E+0, 0.0E+0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      CHARACTER          TRANST
+      INTEGER            I, J
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.100"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.101"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           CCOPY, CGEMM, <a name="CLACGV.104"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>, CTRMM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          CONJG
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( M.LE.0 .OR. N.LE.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      IF( <a name="LSAME.116"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'N'</span> ) ) THEN
+         TRANST = <span class="string">'C'</span>
+      ELSE
+         TRANST = <span class="string">'N'</span>
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( <a name="LSAME.122"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( STOREV, <span class="string">'C'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span>         IF( <a name="LSAME.124"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIRECT, <span class="string">'F'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Let  V =  ( V1 )    (first K rows)
+</span><span class="comment">*</span><span class="comment">                     ( V2 )
+</span><span class="comment">*</span><span class="comment">           where  V1  is unit lower triangular.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( <a name="LSAME.130"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'L'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Form  H * C  or  H' * C  where  C = ( C1 )
+</span><span class="comment">*</span><span class="comment">                                                  ( C2 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := C' * V  =  (C1'*V1 + C2'*V2)  (stored in WORK)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := C1'
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 10 J = 1, K
+                  CALL CCOPY( N, C( J, 1 ), LDC, WORK( 1, J ), 1 )
+                  CALL <a name="CLACGV.141"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( N, WORK( 1, J ), 1 )
+   10          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * V1
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Lower'</span>, <span class="string">'No transpose'</span>, <span class="string">'Unit'</span>, N,
+     $                     K, ONE, V, LDV, WORK, LDWORK )
+               IF( M.GT.K ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 W := W + C2'*V2
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL CGEMM( <span class="string">'Conjugate transpose'</span>, <span class="string">'No transpose'</span>, N,
+     $                        K, M-K, ONE, C( K+1, 1 ), LDC,
+     $                        V( K+1, 1 ), LDV, ONE, WORK, LDWORK )
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * T'  or  W * T
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Upper'</span>, TRANST, <span class="string">'Non-unit'</span>, N, K,
+     $                     ONE, T, LDT, WORK, LDWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              C := C - V * W'
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( M.GT.K ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 C2 := C2 - V2 * W'
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL CGEMM( <span class="string">'No transpose'</span>, <span class="string">'Conjugate transpose'</span>,
+     $                        M-K, N, K, -ONE, V( K+1, 1 ), LDV, WORK,
+     $                        LDWORK, ONE, C( K+1, 1 ), LDC )
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * V1'
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Lower'</span>, <span class="string">'Conjugate transpose'</span>,
+     $                     <span class="string">'Unit'</span>, N, K, ONE, V, LDV, WORK, LDWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              C1 := C1 - W'
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 30 J = 1, K
+                  DO 20 I = 1, N
+                     C( J, I ) = C( J, I ) - CONJG( WORK( I, J ) )
+   20             CONTINUE
+   30          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            ELSE IF( <a name="LSAME.186"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'R'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Form  C * H  or  C * H'  where  C = ( C1  C2 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := C * V  =  (C1*V1 + C2*V2)  (stored in WORK)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := C1
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 40 J = 1, K
+                  CALL CCOPY( M, C( 1, J ), 1, WORK( 1, J ), 1 )
+   40          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * V1
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Lower'</span>, <span class="string">'No transpose'</span>, <span class="string">'Unit'</span>, M,
+     $                     K, ONE, V, LDV, WORK, LDWORK )
+               IF( N.GT.K ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 W := W + C2 * V2
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL CGEMM( <span class="string">'No transpose'</span>, <span class="string">'No transpose'</span>, M, K, N-K,
+     $                        ONE, C( 1, K+1 ), LDC, V( K+1, 1 ), LDV,
+     $                        ONE, WORK, LDWORK )
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * T  or  W * T'
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Upper'</span>, TRANS, <span class="string">'Non-unit'</span>, M, K,
+     $                     ONE, T, LDT, WORK, LDWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              C := C - W * V'
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( N.GT.K ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 C2 := C2 - W * V2'
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL CGEMM( <span class="string">'No transpose'</span>, <span class="string">'Conjugate transpose'</span>, M,
+     $                        N-K, K, -ONE, WORK, LDWORK, V( K+1, 1 ),
+     $                        LDV, ONE, C( 1, K+1 ), LDC )
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * V1'
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Lower'</span>, <span class="string">'Conjugate transpose'</span>,
+     $                     <span class="string">'Unit'</span>, M, K, ONE, V, LDV, WORK, LDWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              C1 := C1 - W
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 60 J = 1, K
+                  DO 50 I = 1, M
+                     C( I, J ) = C( I, J ) - WORK( I, J )
+   50             CONTINUE
+   60          CONTINUE
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Let  V =  ( V1 )
+</span><span class="comment">*</span><span class="comment">                     ( V2 )    (last K rows)
+</span><span class="comment">*</span><span class="comment">           where  V2  is unit upper triangular.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( <a name="LSAME.247"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'L'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Form  H * C  or  H' * C  where  C = ( C1 )
+</span><span class="comment">*</span><span class="comment">                                                  ( C2 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := C' * V  =  (C1'*V1 + C2'*V2)  (stored in WORK)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := C2'
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 70 J = 1, K
+                  CALL CCOPY( N, C( M-K+J, 1 ), LDC, WORK( 1, J ), 1 )
+                  CALL <a name="CLACGV.258"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( N, WORK( 1, J ), 1 )
+   70          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * V2
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Upper'</span>, <span class="string">'No transpose'</span>, <span class="string">'Unit'</span>, N,
+     $                     K, ONE, V( M-K+1, 1 ), LDV, WORK, LDWORK )
+               IF( M.GT.K ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 W := W + C1'*V1
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL CGEMM( <span class="string">'Conjugate transpose'</span>, <span class="string">'No transpose'</span>, N,
+     $                        K, M-K, ONE, C, LDC, V, LDV, ONE, WORK,
+     $                        LDWORK )
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * T'  or  W * T
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Lower'</span>, TRANST, <span class="string">'Non-unit'</span>, N, K,
+     $                     ONE, T, LDT, WORK, LDWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              C := C - V * W'
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( M.GT.K ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 C1 := C1 - V1 * W'
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL CGEMM( <span class="string">'No transpose'</span>, <span class="string">'Conjugate transpose'</span>,
+     $                        M-K, N, K, -ONE, V, LDV, WORK, LDWORK,
+     $                        ONE, C, LDC )
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * V2'
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Upper'</span>, <span class="string">'Conjugate transpose'</span>,
+     $                     <span class="string">'Unit'</span>, N, K, ONE, V( M-K+1, 1 ), LDV, WORK,
+     $                     LDWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              C2 := C2 - W'
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 90 J = 1, K
+                  DO 80 I = 1, N
+                     C( M-K+J, I ) = C( M-K+J, I ) -
+     $                               CONJG( WORK( I, J ) )
+   80             CONTINUE
+   90          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            ELSE IF( <a name="LSAME.305"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'R'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Form  C * H  or  C * H'  where  C = ( C1  C2 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := C * V  =  (C1*V1 + C2*V2)  (stored in WORK)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := C2
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 100 J = 1, K
+                  CALL CCOPY( M, C( 1, N-K+J ), 1, WORK( 1, J ), 1 )
+  100          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * V2
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Upper'</span>, <span class="string">'No transpose'</span>, <span class="string">'Unit'</span>, M,
+     $                     K, ONE, V( N-K+1, 1 ), LDV, WORK, LDWORK )
+               IF( N.GT.K ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 W := W + C1 * V1
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL CGEMM( <span class="string">'No transpose'</span>, <span class="string">'No transpose'</span>, M, K, N-K,
+     $                        ONE, C, LDC, V, LDV, ONE, WORK, LDWORK )
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * T  or  W * T'
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Lower'</span>, TRANS, <span class="string">'Non-unit'</span>, M, K,
+     $                     ONE, T, LDT, WORK, LDWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              C := C - W * V'
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( N.GT.K ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 C1 := C1 - W * V1'
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL CGEMM( <span class="string">'No transpose'</span>, <span class="string">'Conjugate transpose'</span>, M,
+     $                        N-K, K, -ONE, WORK, LDWORK, V, LDV, ONE,
+     $                        C, LDC )
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * V2'
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Upper'</span>, <span class="string">'Conjugate transpose'</span>,
+     $                     <span class="string">'Unit'</span>, M, K, ONE, V( N-K+1, 1 ), LDV, WORK,
+     $                     LDWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              C2 := C2 - W
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 120 J = 1, K
+                  DO 110 I = 1, M
+                     C( I, N-K+J ) = C( I, N-K+J ) - WORK( I, J )
+  110             CONTINUE
+  120          CONTINUE
+            END IF
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>      ELSE IF( <a name="LSAME.361"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( STOREV, <span class="string">'R'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span>         IF( <a name="LSAME.363"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIRECT, <span class="string">'F'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Let  V =  ( V1  V2 )    (V1: first K columns)
+</span><span class="comment">*</span><span class="comment">           where  V1  is unit upper triangular.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( <a name="LSAME.368"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'L'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Form  H * C  or  H' * C  where  C = ( C1 )
+</span><span class="comment">*</span><span class="comment">                                                  ( C2 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := C' * V'  =  (C1'*V1' + C2'*V2') (stored in WORK)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := C1'
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 130 J = 1, K
+                  CALL CCOPY( N, C( J, 1 ), LDC, WORK( 1, J ), 1 )
+                  CALL <a name="CLACGV.379"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( N, WORK( 1, J ), 1 )
+  130          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * V1'
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Upper'</span>, <span class="string">'Conjugate transpose'</span>,
+     $                     <span class="string">'Unit'</span>, N, K, ONE, V, LDV, WORK, LDWORK )
+               IF( M.GT.K ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 W := W + C2'*V2'
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL CGEMM( <span class="string">'Conjugate transpose'</span>,
+     $                        <span class="string">'Conjugate transpose'</span>, N, K, M-K, ONE,
+     $                        C( K+1, 1 ), LDC, V( 1, K+1 ), LDV, ONE,
+     $                        WORK, LDWORK )
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * T'  or  W * T
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Upper'</span>, TRANST, <span class="string">'Non-unit'</span>, N, K,
+     $                     ONE, T, LDT, WORK, LDWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              C := C - V' * W'
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( M.GT.K ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 C2 := C2 - V2' * W'
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL CGEMM( <span class="string">'Conjugate transpose'</span>,
+     $                        <span class="string">'Conjugate transpose'</span>, M-K, N, K, -ONE,
+     $                        V( 1, K+1 ), LDV, WORK, LDWORK, ONE,
+     $                        C( K+1, 1 ), LDC )
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * V1
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Upper'</span>, <span class="string">'No transpose'</span>, <span class="string">'Unit'</span>, N,
+     $                     K, ONE, V, LDV, WORK, LDWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              C1 := C1 - W'
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 150 J = 1, K
+                  DO 140 I = 1, N
+                     C( J, I ) = C( J, I ) - CONJG( WORK( I, J ) )
+  140             CONTINUE
+  150          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            ELSE IF( <a name="LSAME.426"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'R'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Form  C * H  or  C * H'  where  C = ( C1  C2 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := C * V'  =  (C1*V1' + C2*V2')  (stored in WORK)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := C1
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 160 J = 1, K
+                  CALL CCOPY( M, C( 1, J ), 1, WORK( 1, J ), 1 )
+  160          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * V1'
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Upper'</span>, <span class="string">'Conjugate transpose'</span>,
+     $                     <span class="string">'Unit'</span>, M, K, ONE, V, LDV, WORK, LDWORK )
+               IF( N.GT.K ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 W := W + C2 * V2'
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL CGEMM( <span class="string">'No transpose'</span>, <span class="string">'Conjugate transpose'</span>, M,
+     $                        K, N-K, ONE, C( 1, K+1 ), LDC,
+     $                        V( 1, K+1 ), LDV, ONE, WORK, LDWORK )
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * T  or  W * T'
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Upper'</span>, TRANS, <span class="string">'Non-unit'</span>, M, K,
+     $                     ONE, T, LDT, WORK, LDWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              C := C - W * V
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( N.GT.K ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 C2 := C2 - W * V2
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL CGEMM( <span class="string">'No transpose'</span>, <span class="string">'No transpose'</span>, M, N-K, K,
+     $                        -ONE, WORK, LDWORK, V( 1, K+1 ), LDV, ONE,
+     $                        C( 1, K+1 ), LDC )
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * V1
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Upper'</span>, <span class="string">'No transpose'</span>, <span class="string">'Unit'</span>, M,
+     $                     K, ONE, V, LDV, WORK, LDWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              C1 := C1 - W
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 180 J = 1, K
+                  DO 170 I = 1, M
+                     C( I, J ) = C( I, J ) - WORK( I, J )
+  170             CONTINUE
+  180          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            END IF
+<span class="comment">*</span><span class="comment">
+</span>         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Let  V =  ( V1  V2 )    (V2: last K columns)
+</span><span class="comment">*</span><span class="comment">           where  V2  is unit lower triangular.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( <a name="LSAME.487"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'L'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Form  H * C  or  H' * C  where  C = ( C1 )
+</span><span class="comment">*</span><span class="comment">                                                  ( C2 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := C' * V'  =  (C1'*V1' + C2'*V2') (stored in WORK)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := C2'
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 190 J = 1, K
+                  CALL CCOPY( N, C( M-K+J, 1 ), LDC, WORK( 1, J ), 1 )
+                  CALL <a name="CLACGV.498"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( N, WORK( 1, J ), 1 )
+  190          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * V2'
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Lower'</span>, <span class="string">'Conjugate transpose'</span>,
+     $                     <span class="string">'Unit'</span>, N, K, ONE, V( 1, M-K+1 ), LDV, WORK,
+     $                     LDWORK )
+               IF( M.GT.K ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 W := W + C1'*V1'
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL CGEMM( <span class="string">'Conjugate transpose'</span>,
+     $                        <span class="string">'Conjugate transpose'</span>, N, K, M-K, ONE, C,
+     $                        LDC, V, LDV, ONE, WORK, LDWORK )
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * T'  or  W * T
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Lower'</span>, TRANST, <span class="string">'Non-unit'</span>, N, K,
+     $                     ONE, T, LDT, WORK, LDWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              C := C - V' * W'
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( M.GT.K ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 C1 := C1 - V1' * W'
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL CGEMM( <span class="string">'Conjugate transpose'</span>,
+     $                        <span class="string">'Conjugate transpose'</span>, M-K, N, K, -ONE, V,
+     $                        LDV, WORK, LDWORK, ONE, C, LDC )
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * V2
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Lower'</span>, <span class="string">'No transpose'</span>, <span class="string">'Unit'</span>, N,
+     $                     K, ONE, V( 1, M-K+1 ), LDV, WORK, LDWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              C2 := C2 - W'
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 210 J = 1, K
+                  DO 200 I = 1, N
+                     C( M-K+J, I ) = C( M-K+J, I ) -
+     $                               CONJG( WORK( I, J ) )
+  200             CONTINUE
+  210          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            ELSE IF( <a name="LSAME.545"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'R'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Form  C * H  or  C * H'  where  C = ( C1  C2 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := C * V'  =  (C1*V1' + C2*V2')  (stored in WORK)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := C2
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 220 J = 1, K
+                  CALL CCOPY( M, C( 1, N-K+J ), 1, WORK( 1, J ), 1 )
+  220          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * V2'
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Lower'</span>, <span class="string">'Conjugate transpose'</span>,
+     $                     <span class="string">'Unit'</span>, M, K, ONE, V( 1, N-K+1 ), LDV, WORK,
+     $                     LDWORK )
+               IF( N.GT.K ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 W := W + C1 * V1'
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL CGEMM( <span class="string">'No transpose'</span>, <span class="string">'Conjugate transpose'</span>, M,
+     $                        K, N-K, ONE, C, LDC, V, LDV, ONE, WORK,
+     $                        LDWORK )
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * T  or  W * T'
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Lower'</span>, TRANS, <span class="string">'Non-unit'</span>, M, K,
+     $                     ONE, T, LDT, WORK, LDWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              C := C - W * V
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( N.GT.K ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 C1 := C1 - W * V1
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL CGEMM( <span class="string">'No transpose'</span>, <span class="string">'No transpose'</span>, M, N-K, K,
+     $                        -ONE, WORK, LDWORK, V, LDV, ONE, C, LDC )
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              W := W * V2
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CTRMM( <span class="string">'Right'</span>, <span class="string">'Lower'</span>, <span class="string">'No transpose'</span>, <span class="string">'Unit'</span>, M,
+     $                     K, ONE, V( 1, N-K+1 ), LDV, WORK, LDWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              C1 := C1 - W
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 240 J = 1, K
+                  DO 230 I = 1, M
+                     C( I, N-K+J ) = C( I, N-K+J ) - WORK( I, J )
+  230             CONTINUE
+  240          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            END IF
+<span class="comment">*</span><span class="comment">
+</span>         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CLARFB.606"></a><a href="clarfb.f.html#CLARFB.1">CLARFB</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dspsv.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DSPSV.1"></a><a href="dspsv.f.html#DSPSV.1">DSPSV</a>( UPLO, N, NRHS, AP, IPIV, B, LDB, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK driver routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          UPLO
+      INTEGER            INFO, LDB, N, NRHS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IPIV( * )
+      DOUBLE PRECISION   AP( * ), B( LDB, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DSPSV.19"></a><a href="dspsv.f.html#DSPSV.1">DSPSV</a> computes the solution to a real system of linear equations
+</span><span class="comment">*</span><span class="comment">     A * X = B,
+</span><span class="comment">*</span><span class="comment">  where A is an N-by-N symmetric matrix stored in packed format and X
+</span><span class="comment">*</span><span class="comment">  and B are N-by-NRHS matrices.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The diagonal pivoting method is used to factor A as
+</span><span class="comment">*</span><span class="comment">     A = U * D * U**T,  if UPLO = 'U', or
+</span><span class="comment">*</span><span class="comment">     A = L * D * L**T,  if UPLO = 'L',
+</span><span class="comment">*</span><span class="comment">  where U (or L) is a product of permutation and unit upper (lower)
+</span><span class="comment">*</span><span class="comment">  triangular matrices, D is symmetric and block diagonal with 1-by-1
+</span><span class="comment">*</span><span class="comment">  and 2-by-2 diagonal blocks.  The factored form of A is then used to
+</span><span class="comment">*</span><span class="comment">  solve the system of equations A * X = B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangle of A is stored;
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangle of A is stored.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of linear equations, i.e., the order of the
+</span><span class="comment">*</span><span class="comment">          matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NRHS    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of right hand sides, i.e., the number of columns
+</span><span class="comment">*</span><span class="comment">          of the matrix B.  NRHS &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AP      (input/output) DOUBLE PRECISION array, dimension (N*(N+1)/2)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper or lower triangle of the symmetric matrix
+</span><span class="comment">*</span><span class="comment">          A, packed columnwise in a linear array.  The j-th column of A
+</span><span class="comment">*</span><span class="comment">          is stored in the array AP as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', AP(i + (j-1)*j/2) = A(i,j) for 1&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', AP(i + (j-1)*(2n-j)/2) = A(i,j) for j&lt;=i&lt;=n.
+</span><span class="comment">*</span><span class="comment">          See below for further details.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, the block diagonal matrix D and the multipliers used
+</span><span class="comment">*</span><span class="comment">          to obtain the factor U or L from the factorization
+</span><span class="comment">*</span><span class="comment">          A = U*D*U**T or A = L*D*L**T as computed by <a name="DSPTRF.57"></a><a href="dsptrf.f.html#DSPTRF.1">DSPTRF</a>, stored as
+</span><span class="comment">*</span><span class="comment">          a packed triangular matrix in the same storage format as A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IPIV    (output) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          Details of the interchanges and the block structure of D, as
+</span><span class="comment">*</span><span class="comment">          determined by <a name="DSPTRF.62"></a><a href="dsptrf.f.html#DSPTRF.1">DSPTRF</a>.  If IPIV(k) &gt; 0, then rows and columns
+</span><span class="comment">*</span><span class="comment">          k and IPIV(k) were interchanged, and D(k,k) is a 1-by-1
+</span><span class="comment">*</span><span class="comment">          diagonal block.  If UPLO = 'U' and IPIV(k) = IPIV(k-1) &lt; 0,
+</span><span class="comment">*</span><span class="comment">          then rows and columns k-1 and -IPIV(k) were interchanged and
+</span><span class="comment">*</span><span class="comment">          D(k-1:k,k-1:k) is a 2-by-2 diagonal block.  If UPLO = 'L' and
+</span><span class="comment">*</span><span class="comment">          IPIV(k) = IPIV(k+1) &lt; 0, then rows and columns k+1 and
+</span><span class="comment">*</span><span class="comment">          -IPIV(k) were interchanged and D(k:k+1,k:k+1) is a 2-by-2
+</span><span class="comment">*</span><span class="comment">          diagonal block.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input/output) DOUBLE PRECISION array, dimension (LDB,NRHS)
+</span><span class="comment">*</span><span class="comment">          On entry, the N-by-NRHS right hand side matrix B.
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, the N-by-NRHS solution matrix X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B.  LDB &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = i, D(i,i) is exactly zero.  The factorization
+</span><span class="comment">*</span><span class="comment">                has been completed, but the block diagonal matrix D is
+</span><span class="comment">*</span><span class="comment">                exactly singular, so the solution could not be
+</span><span class="comment">*</span><span class="comment">                computed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The packed storage scheme is illustrated by the following example
+</span><span class="comment">*</span><span class="comment">  when N = 4, UPLO = 'U':
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Two-dimensional storage of the symmetric matrix A:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     a11 a12 a13 a14
+</span><span class="comment">*</span><span class="comment">         a22 a23 a24
+</span><span class="comment">*</span><span class="comment">             a33 a34     (aij = aji)
+</span><span class="comment">*</span><span class="comment">                 a44
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Packed storage of the upper triangle of A:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AP = [ a11, a12, a22, a13, a23, a33, a14, a24, a34, a44 ]
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.106"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.107"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DSPTRF.110"></a><a href="dsptrf.f.html#DSPTRF.1">DSPTRF</a>, <a name="DSPTRS.110"></a><a href="dsptrs.f.html#DSPTRS.1">DSPTRS</a>, <a name="XERBLA.110"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( .NOT.<a name="LSAME.120"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) .AND. .NOT.<a name="LSAME.120"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( NRHS.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
+         INFO = -7
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.130"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DSPSV.130"></a><a href="dspsv.f.html#DSPSV.1">DSPSV</a> '</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the factorization A = U*D*U' or A = L*D*L'.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="DSPTRF.136"></a><a href="dsptrf.f.html#DSPTRF.1">DSPTRF</a>( UPLO, N, AP, IPIV, INFO )
+      IF( INFO.EQ.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve the system A*X = B, overwriting B with X.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DSPTRS.141"></a><a href="dsptrs.f.html#DSPTRS.1">DSPTRS</a>( UPLO, N, NRHS, AP, IPIV, B, LDB, INFO )
+<span class="comment">*</span><span class="comment">
+</span>      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DSPSV.146"></a><a href="dspsv.f.html#DSPSV.1">DSPSV</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

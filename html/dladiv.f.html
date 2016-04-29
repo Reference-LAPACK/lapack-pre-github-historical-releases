@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dladiv.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLADIV.1"></a><a href="dladiv.f.html#DLADIV.1">DLADIV</a>( A, B, C, D, P, Q )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      DOUBLE PRECISION   A, B, C, D, P, Q
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLADIV.14"></a><a href="dladiv.f.html#DLADIV.1">DLADIV</a> performs complex division in  real arithmetic
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                        a + i*b
+</span><span class="comment">*</span><span class="comment">             p + i*q = ---------
+</span><span class="comment">*</span><span class="comment">                        c + i*d
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The algorithm is due to Robert L. Smith and can be found
+</span><span class="comment">*</span><span class="comment">  in D. Knuth, The art of Computer Programming, Vol.2, p.195
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">  B       (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">  C       (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">  D       (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The scalars a, b, c, and d in the above expression.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  P       (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">  Q       (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The scalars p and q in the above expression.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      DOUBLE PRECISION   E, F
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ABS( D ).LT.ABS( C ) ) THEN
+         E = D / C
+         F = C + D*E
+         P = ( A+B*E ) / F
+         Q = ( B-A*E ) / F
+      ELSE
+         E = C / D
+         F = D + C*E
+         P = ( B+A*E ) / F
+         Q = ( -A+B*E ) / F
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLADIV.60"></a><a href="dladiv.f.html#DLADIV.1">DLADIV</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

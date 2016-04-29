@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlamrg.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLAMRG.1"></a><a href="dlamrg.f.html#DLAMRG.1">DLAMRG</a>( N1, N2, A, DTRD1, DTRD2, INDEX )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            DTRD1, DTRD2, N1, N2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            INDEX( * )
+      DOUBLE PRECISION   A( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLAMRG.18"></a><a href="dlamrg.f.html#DLAMRG.1">DLAMRG</a> will create a permutation list which will merge the elements
+</span><span class="comment">*</span><span class="comment">  of A (which is composed of two independently sorted sets) into a
+</span><span class="comment">*</span><span class="comment">  single set which is sorted in ascending order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N1     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">  N2     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         These arguements contain the respective lengths of the two
+</span><span class="comment">*</span><span class="comment">         sorted lists to be merged.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A      (input) DOUBLE PRECISION array, dimension (N1+N2)
+</span><span class="comment">*</span><span class="comment">         The first N1 elements of A contain a list of numbers which
+</span><span class="comment">*</span><span class="comment">         are sorted in either ascending or descending order.  Likewise
+</span><span class="comment">*</span><span class="comment">         for the final N2 elements.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DTRD1  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">  DTRD2  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         These are the strides to be taken through the array A.
+</span><span class="comment">*</span><span class="comment">         Allowable strides are 1 and -1.  They indicate whether a
+</span><span class="comment">*</span><span class="comment">         subset of A is sorted in ascending (DTRDx = 1) or descending
+</span><span class="comment">*</span><span class="comment">         (DTRDx = -1) order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INDEX  (output) INTEGER array, dimension (N1+N2)
+</span><span class="comment">*</span><span class="comment">         On exit this array will contain a permutation such that
+</span><span class="comment">*</span><span class="comment">         if B( I ) = A( INDEX( I ) ) for I=1,N1+N2, then B will be
+</span><span class="comment">*</span><span class="comment">         sorted in ascending order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, IND1, IND2, N1SV, N2SV
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      N1SV = N1
+      N2SV = N2
+      IF( DTRD1.GT.0 ) THEN
+         IND1 = 1
+      ELSE
+         IND1 = N1
+      END IF
+      IF( DTRD2.GT.0 ) THEN
+         IND2 = 1 + N1
+      ELSE
+         IND2 = N1 + N2
+      END IF
+      I = 1
+<span class="comment">*</span><span class="comment">     while ( (N1SV &gt; 0) &amp; (N2SV &gt; 0) )
+</span>   10 CONTINUE
+      IF( N1SV.GT.0 .AND. N2SV.GT.0 ) THEN
+         IF( A( IND1 ).LE.A( IND2 ) ) THEN
+            INDEX( I ) = IND1
+            I = I + 1
+            IND1 = IND1 + DTRD1
+            N1SV = N1SV - 1
+         ELSE
+            INDEX( I ) = IND2
+            I = I + 1
+            IND2 = IND2 + DTRD2
+            N2SV = N2SV - 1
+         END IF
+         GO TO 10
+      END IF
+<span class="comment">*</span><span class="comment">     end while
+</span>      IF( N1SV.EQ.0 ) THEN
+         DO 20 N1SV = 1, N2SV
+            INDEX( I ) = IND2
+            I = I + 1
+            IND2 = IND2 + DTRD2
+   20    CONTINUE
+      ELSE
+<span class="comment">*</span><span class="comment">     N2SV .EQ. 0
+</span>         DO 30 N2SV = 1, N1SV
+            INDEX( I ) = IND1
+            I = I + 1
+            IND1 = IND1 + DTRD1
+   30    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLAMRG.101"></a><a href="dlamrg.f.html#DLAMRG.1">DLAMRG</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>sggsvd.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SGGSVD.1"></a><a href="sggsvd.f.html#SGGSVD.1">SGGSVD</a>( JOBU, JOBV, JOBQ, M, N, P, K, L, A, LDA, B,
+     $                   LDB, ALPHA, BETA, U, LDU, V, LDV, Q, LDQ, WORK,
+     $                   IWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK driver routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          JOBQ, JOBU, JOBV
+      INTEGER            INFO, K, L, LDA, LDB, LDQ, LDU, LDV, M, N, P
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IWORK( * )
+      REAL               A( LDA, * ), ALPHA( * ), B( LDB, * ),
+     $                   BETA( * ), Q( LDQ, * ), U( LDU, * ),
+     $                   V( LDV, * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SGGSVD.23"></a><a href="sggsvd.f.html#SGGSVD.1">SGGSVD</a> computes the generalized singular value decomposition (GSVD)
+</span><span class="comment">*</span><span class="comment">  of an M-by-N real matrix A and P-by-N real matrix B:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">      U'*A*Q = D1*( 0 R ),    V'*B*Q = D2*( 0 R )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where U, V and Q are orthogonal matrices, and Z' is the transpose
+</span><span class="comment">*</span><span class="comment">  of Z.  Let K+L = the effective numerical rank of the matrix (A',B')',
+</span><span class="comment">*</span><span class="comment">  then R is a K+L-by-K+L nonsingular upper triangular matrix, D1 and
+</span><span class="comment">*</span><span class="comment">  D2 are M-by-(K+L) and P-by-(K+L) &quot;diagonal&quot; matrices and of the
+</span><span class="comment">*</span><span class="comment">  following structures, respectively:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If M-K-L &gt;= 0,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                      K  L
+</span><span class="comment">*</span><span class="comment">         D1 =     K ( I  0 )
+</span><span class="comment">*</span><span class="comment">                  L ( 0  C )
+</span><span class="comment">*</span><span class="comment">              M-K-L ( 0  0 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    K  L
+</span><span class="comment">*</span><span class="comment">         D2 =   L ( 0  S )
+</span><span class="comment">*</span><span class="comment">              P-L ( 0  0 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                  N-K-L  K    L
+</span><span class="comment">*</span><span class="comment">    ( 0 R ) = K (  0   R11  R12 )
+</span><span class="comment">*</span><span class="comment">              L (  0    0   R22 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">    C = diag( ALPHA(K+1), ... , ALPHA(K+L) ),
+</span><span class="comment">*</span><span class="comment">    S = diag( BETA(K+1),  ... , BETA(K+L) ),
+</span><span class="comment">*</span><span class="comment">    C**2 + S**2 = I.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">    R is stored in A(1:K+L,N-K-L+1:N) on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If M-K-L &lt; 0,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    K M-K K+L-M
+</span><span class="comment">*</span><span class="comment">         D1 =   K ( I  0    0   )
+</span><span class="comment">*</span><span class="comment">              M-K ( 0  C    0   )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                      K M-K K+L-M
+</span><span class="comment">*</span><span class="comment">         D2 =   M-K ( 0  S    0  )
+</span><span class="comment">*</span><span class="comment">              K+L-M ( 0  0    I  )
+</span><span class="comment">*</span><span class="comment">                P-L ( 0  0    0  )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                     N-K-L  K   M-K  K+L-M
+</span><span class="comment">*</span><span class="comment">    ( 0 R ) =     K ( 0    R11  R12  R13  )
+</span><span class="comment">*</span><span class="comment">                M-K ( 0     0   R22  R23  )
+</span><span class="comment">*</span><span class="comment">              K+L-M ( 0     0    0   R33  )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">    C = diag( ALPHA(K+1), ... , ALPHA(M) ),
+</span><span class="comment">*</span><span class="comment">    S = diag( BETA(K+1),  ... , BETA(M) ),
+</span><span class="comment">*</span><span class="comment">    C**2 + S**2 = I.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">    (R11 R12 R13 ) is stored in A(1:M, N-K-L+1:N), and R33 is stored
+</span><span class="comment">*</span><span class="comment">    ( 0  R22 R23 )
+</span><span class="comment">*</span><span class="comment">    in B(M-K+1:L,N+M-K-L+1:N) on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The routine computes C, S, R, and optionally the orthogonal
+</span><span class="comment">*</span><span class="comment">  transformation matrices U, V and Q.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  In particular, if B is an N-by-N nonsingular matrix, then the GSVD of
+</span><span class="comment">*</span><span class="comment">  A and B implicitly gives the SVD of A*inv(B):
+</span><span class="comment">*</span><span class="comment">                       A*inv(B) = U*(D1*inv(D2))*V'.
+</span><span class="comment">*</span><span class="comment">  If ( A',B')' has orthonormal columns, then the GSVD of A and B is
+</span><span class="comment">*</span><span class="comment">  also equal to the CS decomposition of A and B. Furthermore, the GSVD
+</span><span class="comment">*</span><span class="comment">  can be used to derive the solution of the eigenvalue problem:
+</span><span class="comment">*</span><span class="comment">                       A'*A x = lambda* B'*B x.
+</span><span class="comment">*</span><span class="comment">  In some literature, the GSVD of A and B is presented in the form
+</span><span class="comment">*</span><span class="comment">                   U'*A*X = ( 0 D1 ),   V'*B*X = ( 0 D2 )
+</span><span class="comment">*</span><span class="comment">  where U and V are orthogonal and X is nonsingular, D1 and D2 are
+</span><span class="comment">*</span><span class="comment">  ``diagonal''.  The former GSVD form can be converted to the latter
+</span><span class="comment">*</span><span class="comment">  form by taking the nonsingular matrix X as
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                       X = Q*( I   0    )
+</span><span class="comment">*</span><span class="comment">                             ( 0 inv(R) ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOBU    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  Orthogonal matrix U is computed;
+</span><span class="comment">*</span><span class="comment">          = 'N':  U is not computed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOBV    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'V':  Orthogonal matrix V is computed;
+</span><span class="comment">*</span><span class="comment">          = 'N':  V is not computed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOBQ    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'Q':  Orthogonal matrix Q is computed;
+</span><span class="comment">*</span><span class="comment">          = 'N':  Q is not computed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix A.  M &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrices A and B.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  P       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix B.  P &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  K       (output) INTEGER
+</span><span class="comment">*</span><span class="comment">  L       (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          On exit, K and L specify the dimension of the subblocks
+</span><span class="comment">*</span><span class="comment">          described in the Purpose section.
+</span><span class="comment">*</span><span class="comment">          K + L = effective numerical rank of (A',B')'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) REAL array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the M-by-N matrix A.
+</span><span class="comment">*</span><span class="comment">          On exit, A contains the triangular matrix R, or part of R.
+</span><span class="comment">*</span><span class="comment">          See Purpose for details.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A. LDA &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input/output) REAL array, dimension (LDB,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the P-by-N matrix B.
+</span><span class="comment">*</span><span class="comment">          On exit, B contains the triangular matrix R if M-K-L &lt; 0.
+</span><span class="comment">*</span><span class="comment">          See Purpose for details.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B. LDB &gt;= max(1,P).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ALPHA   (output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">  BETA    (output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On exit, ALPHA and BETA contain the generalized singular
+</span><span class="comment">*</span><span class="comment">          value pairs of A and B;
+</span><span class="comment">*</span><span class="comment">            ALPHA(1:K) = 1,
+</span><span class="comment">*</span><span class="comment">            BETA(1:K)  = 0,
+</span><span class="comment">*</span><span class="comment">          and if M-K-L &gt;= 0,
+</span><span class="comment">*</span><span class="comment">            ALPHA(K+1:K+L) = C,
+</span><span class="comment">*</span><span class="comment">            BETA(K+1:K+L)  = S,
+</span><span class="comment">*</span><span class="comment">          or if M-K-L &lt; 0,
+</span><span class="comment">*</span><span class="comment">            ALPHA(K+1:M)=C, ALPHA(M+1:K+L)=0
+</span><span class="comment">*</span><span class="comment">            BETA(K+1:M) =S, BETA(M+1:K+L) =1
+</span><span class="comment">*</span><span class="comment">          and
+</span><span class="comment">*</span><span class="comment">            ALPHA(K+L+1:N) = 0
+</span><span class="comment">*</span><span class="comment">            BETA(K+L+1:N)  = 0
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  U       (output) REAL array, dimension (LDU,M)
+</span><span class="comment">*</span><span class="comment">          If JOBU = 'U', U contains the M-by-M orthogonal matrix U.
+</span><span class="comment">*</span><span class="comment">          If JOBU = 'N', U is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDU     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array U. LDU &gt;= max(1,M) if
+</span><span class="comment">*</span><span class="comment">          JOBU = 'U'; LDU &gt;= 1 otherwise.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  V       (output) REAL array, dimension (LDV,P)
+</span><span class="comment">*</span><span class="comment">          If JOBV = 'V', V contains the P-by-P orthogonal matrix V.
+</span><span class="comment">*</span><span class="comment">          If JOBV = 'N', V is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDV     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array V. LDV &gt;= max(1,P) if
+</span><span class="comment">*</span><span class="comment">          JOBV = 'V'; LDV &gt;= 1 otherwise.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Q       (output) REAL array, dimension (LDQ,N)
+</span><span class="comment">*</span><span class="comment">          If JOBQ = 'Q', Q contains the N-by-N orthogonal matrix Q.
+</span><span class="comment">*</span><span class="comment">          If JOBQ = 'N', Q is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDQ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Q. LDQ &gt;= max(1,N) if
+</span><span class="comment">*</span><span class="comment">          JOBQ = 'Q'; LDQ &gt;= 1 otherwise.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) REAL array,
+</span><span class="comment">*</span><span class="comment">                      dimension (max(3*N,M,P)+N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK   (workspace/output) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On exit, IWORK stores the sorting information. More
+</span><span class="comment">*</span><span class="comment">          precisely, the following loop will sort ALPHA
+</span><span class="comment">*</span><span class="comment">             for I = K+1, min(M,K+L)
+</span><span class="comment">*</span><span class="comment">                 swap ALPHA(I) and ALPHA(IWORK(I))
+</span><span class="comment">*</span><span class="comment">             endfor
+</span><span class="comment">*</span><span class="comment">          such that ALPHA(1) &gt;= ALPHA(2) &gt;= ... &gt;= ALPHA(N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = 1, the Jacobi-type procedure failed to
+</span><span class="comment">*</span><span class="comment">                converge.  For further details, see subroutine <a name="STGSJA.203"></a><a href="stgsja.f.html#STGSJA.1">STGSJA</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Internal Parameters
+</span><span class="comment">*</span><span class="comment">  ===================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TOLA    REAL
+</span><span class="comment">*</span><span class="comment">  TOLB    REAL
+</span><span class="comment">*</span><span class="comment">          TOLA and TOLB are the thresholds to determine the effective
+</span><span class="comment">*</span><span class="comment">          rank of (A',B')'. Generally, they are set to
+</span><span class="comment">*</span><span class="comment">                   TOLA = MAX(M,N)*norm(A)*MACHEPS,
+</span><span class="comment">*</span><span class="comment">                   TOLB = MAX(P,N)*norm(B)*MACHEPS.
+</span><span class="comment">*</span><span class="comment">          The size of TOLA and TOLB may affect the size of backward
+</span><span class="comment">*</span><span class="comment">          errors of the decomposition.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  2-96 Based on modifications by
+</span><span class="comment">*</span><span class="comment">     Ming Gu and Huan Ren, Computer Science Division, University of
+</span><span class="comment">*</span><span class="comment">     California at Berkeley, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            WANTQ, WANTU, WANTV
+      INTEGER            I, IBND, ISUB, J, NCYCLE
+      REAL               ANORM, BNORM, SMAX, TEMP, TOLA, TOLB, ULP, UNFL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.232"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      REAL               <a name="SLAMCH.233"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANGE.233"></a><a href="slange.f.html#SLANGE.1">SLANGE</a>
+      EXTERNAL           <a name="LSAME.234"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="SLAMCH.234"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANGE.234"></a><a href="slange.f.html#SLANGE.1">SLANGE</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           SCOPY, <a name="SGGSVP.237"></a><a href="sggsvp.f.html#SGGSVP.1">SGGSVP</a>, <a name="STGSJA.237"></a><a href="stgsja.f.html#STGSJA.1">STGSJA</a>, <a name="XERBLA.237"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters
+</span><span class="comment">*</span><span class="comment">
+</span>      WANTU = <a name="LSAME.246"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBU, <span class="string">'U'</span> )
+      WANTV = <a name="LSAME.247"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBV, <span class="string">'V'</span> )
+      WANTQ = <a name="LSAME.248"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBQ, <span class="string">'Q'</span> )
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( .NOT.( WANTU .OR. <a name="LSAME.251"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBU, <span class="string">'N'</span> ) ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.( WANTV .OR. <a name="LSAME.253"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBV, <span class="string">'N'</span> ) ) ) THEN
+         INFO = -2
+      ELSE IF( .NOT.( WANTQ .OR. <a name="LSAME.255"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBQ, <span class="string">'N'</span> ) ) ) THEN
+         INFO = -3
+      ELSE IF( M.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -5
+      ELSE IF( P.LT.0 ) THEN
+         INFO = -6
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -10
+      ELSE IF( LDB.LT.MAX( 1, P ) ) THEN
+         INFO = -12
+      ELSE IF( LDU.LT.1 .OR. ( WANTU .AND. LDU.LT.M ) ) THEN
+         INFO = -16
+      ELSE IF( LDV.LT.1 .OR. ( WANTV .AND. LDV.LT.P ) ) THEN
+         INFO = -18
+      ELSE IF( LDQ.LT.1 .OR. ( WANTQ .AND. LDQ.LT.N ) ) THEN
+         INFO = -20
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.275"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="SGGSVD.275"></a><a href="sggsvd.f.html#SGGSVD.1">SGGSVD</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the Frobenius norm of matrices A and B
+</span><span class="comment">*</span><span class="comment">
+</span>      ANORM = <a name="SLANGE.281"></a><a href="slange.f.html#SLANGE.1">SLANGE</a>( <span class="string">'1'</span>, M, N, A, LDA, WORK )
+      BNORM = <a name="SLANGE.282"></a><a href="slange.f.html#SLANGE.1">SLANGE</a>( <span class="string">'1'</span>, P, N, B, LDB, WORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Get machine precision and set up threshold for determining
+</span><span class="comment">*</span><span class="comment">     the effective numerical rank of the matrices A and B.
+</span><span class="comment">*</span><span class="comment">
+</span>      ULP = <a name="SLAMCH.287"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Precision'</span> )
+      UNFL = <a name="SLAMCH.288"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Safe Minimum'</span> )
+      TOLA = MAX( M, N )*MAX( ANORM, UNFL )*ULP
+      TOLB = MAX( P, N )*MAX( BNORM, UNFL )*ULP
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Preprocessing
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="SGGSVP.294"></a><a href="sggsvp.f.html#SGGSVP.1">SGGSVP</a>( JOBU, JOBV, JOBQ, M, P, N, A, LDA, B, LDB, TOLA,
+     $             TOLB, K, L, U, LDU, V, LDV, Q, LDQ, IWORK, WORK,
+     $             WORK( N+1 ), INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the GSVD of two upper &quot;triangular&quot; matrices
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="STGSJA.300"></a><a href="stgsja.f.html#STGSJA.1">STGSJA</a>( JOBU, JOBV, JOBQ, M, P, N, K, L, A, LDA, B, LDB,
+     $             TOLA, TOLB, ALPHA, BETA, U, LDU, V, LDV, Q, LDQ,
+     $             WORK, NCYCLE, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Sort the singular values and store the pivot indices in IWORK
+</span><span class="comment">*</span><span class="comment">     Copy ALPHA to WORK, then sort ALPHA in WORK
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL SCOPY( N, ALPHA, 1, WORK, 1 )
+      IBND = MIN( L, M-K )
+      DO 20 I = 1, IBND
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Scan for largest ALPHA(K+I)
+</span><span class="comment">*</span><span class="comment">
+</span>         ISUB = I
+         SMAX = WORK( K+I )
+         DO 10 J = I + 1, IBND
+            TEMP = WORK( K+J )
+            IF( TEMP.GT.SMAX ) THEN
+               ISUB = J
+               SMAX = TEMP
+            END IF
+   10    CONTINUE
+         IF( ISUB.NE.I ) THEN
+            WORK( K+ISUB ) = WORK( K+I )
+            WORK( K+I ) = SMAX
+            IWORK( K+I ) = K + ISUB
+         ELSE
+            IWORK( K+I ) = K + I
+         END IF
+   20 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SGGSVD.333"></a><a href="sggsvd.f.html#SGGSVD.1">SGGSVD</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zlaesy.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZLAESY.1"></a><a href="zlaesy.f.html#ZLAESY.1">ZLAESY</a>( A, B, C, RT1, RT2, EVSCAL, CS1, SN1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      COMPLEX*16         A, B, C, CS1, EVSCAL, RT1, RT2, SN1
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZLAESY.14"></a><a href="zlaesy.f.html#ZLAESY.1">ZLAESY</a> computes the eigendecomposition of a 2-by-2 symmetric matrix
+</span><span class="comment">*</span><span class="comment">     ( ( A, B );( B, C ) )
+</span><span class="comment">*</span><span class="comment">  provided the norm of the matrix of eigenvectors is larger than
+</span><span class="comment">*</span><span class="comment">  some threshold value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RT1 is the eigenvalue of larger absolute value, and RT2 of
+</span><span class="comment">*</span><span class="comment">  smaller absolute value.  If the eigenvectors are computed, then
+</span><span class="comment">*</span><span class="comment">  on return ( CS1, SN1 ) is the unit eigenvector for RT1, hence
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  [  CS1     SN1   ] . [ A  B ] . [ CS1    -SN1   ] = [ RT1  0  ]
+</span><span class="comment">*</span><span class="comment">  [ -SN1     CS1   ]   [ B  C ]   [ SN1     CS1   ]   [  0  RT2 ]
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input) COMPLEX*16
+</span><span class="comment">*</span><span class="comment">          The ( 1, 1 ) element of input matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input) COMPLEX*16
+</span><span class="comment">*</span><span class="comment">          The ( 1, 2 ) element of input matrix.  The ( 2, 1 ) element
+</span><span class="comment">*</span><span class="comment">          is also given by B, since the 2-by-2 matrix is symmetric.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C       (input) COMPLEX*16
+</span><span class="comment">*</span><span class="comment">          The ( 2, 2 ) element of input matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RT1     (output) COMPLEX*16
+</span><span class="comment">*</span><span class="comment">          The eigenvalue of larger modulus.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RT2     (output) COMPLEX*16
+</span><span class="comment">*</span><span class="comment">          The eigenvalue of smaller modulus.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  EVSCAL  (output) COMPLEX*16
+</span><span class="comment">*</span><span class="comment">          The complex value by which the eigenvector matrix was scaled
+</span><span class="comment">*</span><span class="comment">          to make it orthonormal.  If EVSCAL is zero, the eigenvectors
+</span><span class="comment">*</span><span class="comment">          were not computed.  This means one of two things:  the 2-by-2
+</span><span class="comment">*</span><span class="comment">          matrix could not be diagonalized, or the norm of the matrix
+</span><span class="comment">*</span><span class="comment">          of eigenvectors before scaling was larger than the threshold
+</span><span class="comment">*</span><span class="comment">          value THRESH (set below).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CS1     (output) COMPLEX*16
+</span><span class="comment">*</span><span class="comment">  SN1     (output) COMPLEX*16
+</span><span class="comment">*</span><span class="comment">          If EVSCAL .NE. 0,  ( CS1, SN1 ) is the unit right eigenvector
+</span><span class="comment">*</span><span class="comment">          for RT1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment"> =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO
+      PARAMETER          ( ZERO = 0.0D0 )
+      DOUBLE PRECISION   ONE
+      PARAMETER          ( ONE = 1.0D0 )
+      COMPLEX*16         CONE
+      PARAMETER          ( CONE = ( 1.0D0, 0.0D0 ) )
+      DOUBLE PRECISION   HALF
+      PARAMETER          ( HALF = 0.5D0 )
+      DOUBLE PRECISION   THRESH
+      PARAMETER          ( THRESH = 0.1D0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      DOUBLE PRECISION   BABS, EVNORM, TABS, Z
+      COMPLEX*16         S, T, TMP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Special case:  The matrix is actually diagonal.
+</span><span class="comment">*</span><span class="comment">     To avoid divide by zero later, we treat this case separately.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ABS( B ).EQ.ZERO ) THEN
+         RT1 = A
+         RT2 = C
+         IF( ABS( RT1 ).LT.ABS( RT2 ) ) THEN
+            TMP = RT1
+            RT1 = RT2
+            RT2 = TMP
+            CS1 = ZERO
+            SN1 = ONE
+         ELSE
+            CS1 = ONE
+            SN1 = ZERO
+         END IF
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute the eigenvalues and eigenvectors.
+</span><span class="comment">*</span><span class="comment">        The characteristic equation is
+</span><span class="comment">*</span><span class="comment">           lambda **2 - (A+C) lambda + (A*C - B*B)
+</span><span class="comment">*</span><span class="comment">        and we solve it using the quadratic formula.
+</span><span class="comment">*</span><span class="comment">
+</span>         S = ( A+C )*HALF
+         T = ( A-C )*HALF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Take the square root carefully to avoid over/under flow.
+</span><span class="comment">*</span><span class="comment">
+</span>         BABS = ABS( B )
+         TABS = ABS( T )
+         Z = MAX( BABS, TABS )
+         IF( Z.GT.ZERO )
+     $      T = Z*SQRT( ( T / Z )**2+( B / Z )**2 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute the two eigenvalues.  RT1 and RT2 are exchanged
+</span><span class="comment">*</span><span class="comment">        if necessary so that RT1 will have the greater magnitude.
+</span><span class="comment">*</span><span class="comment">
+</span>         RT1 = S + T
+         RT2 = S - T
+         IF( ABS( RT1 ).LT.ABS( RT2 ) ) THEN
+            TMP = RT1
+            RT1 = RT2
+            RT2 = TMP
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Choose CS1 = 1 and SN1 to satisfy the first equation, then
+</span><span class="comment">*</span><span class="comment">        scale the components of this eigenvector so that the matrix
+</span><span class="comment">*</span><span class="comment">        of eigenvectors X satisfies  X * X' = I .  (No scaling is
+</span><span class="comment">*</span><span class="comment">        done if the norm of the eigenvalue matrix is less than THRESH.)
+</span><span class="comment">*</span><span class="comment">
+</span>         SN1 = ( RT1-A ) / B
+         TABS = ABS( SN1 )
+         IF( TABS.GT.ONE ) THEN
+            T = TABS*SQRT( ( ONE / TABS )**2+( SN1 / TABS )**2 )
+         ELSE
+            T = SQRT( CONE+SN1*SN1 )
+         END IF
+         EVNORM = ABS( T )
+         IF( EVNORM.GE.THRESH ) THEN
+            EVSCAL = CONE / T
+            CS1 = EVSCAL
+            SN1 = SN1*EVSCAL
+         ELSE
+            EVSCAL = ZERO
+         END IF
+      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZLAESY.150"></a><a href="zlaesy.f.html#ZLAESY.1">ZLAESY</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

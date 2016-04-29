@@ -1,0 +1,322 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slag2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLAG2.1"></a><a href="slag2.f.html#SLAG2.1">SLAG2</a>( A, LDA, B, LDB, SAFMIN, SCALE1, SCALE2, WR1,
+     $                  WR2, WI )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            LDA, LDB
+      REAL               SAFMIN, SCALE1, SCALE2, WI, WR1, WR2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               A( LDA, * ), B( LDB, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLAG2.19"></a><a href="slag2.f.html#SLAG2.1">SLAG2</a> computes the eigenvalues of a 2 x 2 generalized eigenvalue
+</span><span class="comment">*</span><span class="comment">  problem  A - w B, with scaling as necessary to avoid over-/underflow.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The scaling factor &quot;s&quot; results in a modified eigenvalue equation
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">      s A - w B
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where  s  is a non-negative scaling factor chosen so that  w,  w B,
+</span><span class="comment">*</span><span class="comment">  and  s A  do not overflow and, if possible, do not underflow, either.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input) REAL array, dimension (LDA, 2)
+</span><span class="comment">*</span><span class="comment">          On entry, the 2 x 2 matrix A.  It is assumed that its 1-norm
+</span><span class="comment">*</span><span class="comment">          is less than 1/SAFMIN.  Entries less than
+</span><span class="comment">*</span><span class="comment">          sqrt(SAFMIN)*norm(A) are subject to being treated as zero.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= 2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input) REAL array, dimension (LDB, 2)
+</span><span class="comment">*</span><span class="comment">          On entry, the 2 x 2 upper triangular matrix B.  It is
+</span><span class="comment">*</span><span class="comment">          assumed that the one-norm of B is less than 1/SAFMIN.  The
+</span><span class="comment">*</span><span class="comment">          diagonals should be at least sqrt(SAFMIN) times the largest
+</span><span class="comment">*</span><span class="comment">          element of B (in absolute value); if a diagonal is smaller
+</span><span class="comment">*</span><span class="comment">          than that, then  +/- sqrt(SAFMIN) will be used instead of
+</span><span class="comment">*</span><span class="comment">          that diagonal.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B.  LDB &gt;= 2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SAFMIN  (input) REAL
+</span><span class="comment">*</span><span class="comment">          The smallest positive number s.t. 1/SAFMIN does not
+</span><span class="comment">*</span><span class="comment">          overflow.  (This should always be <a name="SLAMCH.53"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>('S') -- it is an
+</span><span class="comment">*</span><span class="comment">          argument in order to avoid having to call <a name="SLAMCH.54"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a> frequently.)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SCALE1  (output) REAL
+</span><span class="comment">*</span><span class="comment">          A scaling factor used to avoid over-/underflow in the
+</span><span class="comment">*</span><span class="comment">          eigenvalue equation which defines the first eigenvalue.  If
+</span><span class="comment">*</span><span class="comment">          the eigenvalues are complex, then the eigenvalues are
+</span><span class="comment">*</span><span class="comment">          ( WR1  +/-  WI i ) / SCALE1  (which may lie outside the
+</span><span class="comment">*</span><span class="comment">          exponent range of the machine), SCALE1=SCALE2, and SCALE1
+</span><span class="comment">*</span><span class="comment">          will always be positive.  If the eigenvalues are real, then
+</span><span class="comment">*</span><span class="comment">          the first (real) eigenvalue is  WR1 / SCALE1 , but this may
+</span><span class="comment">*</span><span class="comment">          overflow or underflow, and in fact, SCALE1 may be zero or
+</span><span class="comment">*</span><span class="comment">          less than the underflow threshhold if the exact eigenvalue
+</span><span class="comment">*</span><span class="comment">          is sufficiently large.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SCALE2  (output) REAL
+</span><span class="comment">*</span><span class="comment">          A scaling factor used to avoid over-/underflow in the
+</span><span class="comment">*</span><span class="comment">          eigenvalue equation which defines the second eigenvalue.  If
+</span><span class="comment">*</span><span class="comment">          the eigenvalues are complex, then SCALE2=SCALE1.  If the
+</span><span class="comment">*</span><span class="comment">          eigenvalues are real, then the second (real) eigenvalue is
+</span><span class="comment">*</span><span class="comment">          WR2 / SCALE2 , but this may overflow or underflow, and in
+</span><span class="comment">*</span><span class="comment">          fact, SCALE2 may be zero or less than the underflow
+</span><span class="comment">*</span><span class="comment">          threshhold if the exact eigenvalue is sufficiently large.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WR1     (output) REAL
+</span><span class="comment">*</span><span class="comment">          If the eigenvalue is real, then WR1 is SCALE1 times the
+</span><span class="comment">*</span><span class="comment">          eigenvalue closest to the (2,2) element of A B**(-1).  If the
+</span><span class="comment">*</span><span class="comment">          eigenvalue is complex, then WR1=WR2 is SCALE1 times the real
+</span><span class="comment">*</span><span class="comment">          part of the eigenvalues.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WR2     (output) REAL
+</span><span class="comment">*</span><span class="comment">          If the eigenvalue is real, then WR2 is SCALE2 times the
+</span><span class="comment">*</span><span class="comment">          other eigenvalue.  If the eigenvalue is complex, then
+</span><span class="comment">*</span><span class="comment">          WR1=WR2 is SCALE1 times the real part of the eigenvalues.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WI      (output) REAL
+</span><span class="comment">*</span><span class="comment">          If the eigenvalue is real, then WI is zero.  If the
+</span><span class="comment">*</span><span class="comment">          eigenvalue is complex, then WI is SCALE1 times the imaginary
+</span><span class="comment">*</span><span class="comment">          part of the eigenvalues.  WI will always be non-negative.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, ONE, TWO
+      PARAMETER          ( ZERO = 0.0E+0, ONE = 1.0E+0, TWO = 2.0E+0 )
+      REAL               HALF
+      PARAMETER          ( HALF = ONE / TWO )
+      REAL               FUZZY1
+      PARAMETER          ( FUZZY1 = ONE+1.0E-5 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      REAL               A11, A12, A21, A22, ABI22, ANORM, AS11, AS12,
+     $                   AS22, ASCALE, B11, B12, B22, BINV11, BINV22,
+     $                   BMIN, BNORM, BSCALE, BSIZE, C1, C2, C3, C4, C5,
+     $                   DIFF, DISCR, PP, QQ, R, RTMAX, RTMIN, S1, S2,
+     $                   SAFMAX, SHIFT, SS, SUM, WABS, WBIG, WDET,
+     $                   WSCALE, WSIZE, WSMALL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX, MIN, SIGN, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      RTMIN = SQRT( SAFMIN )
+      RTMAX = ONE / RTMIN
+      SAFMAX = ONE / SAFMIN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Scale A
+</span><span class="comment">*</span><span class="comment">
+</span>      ANORM = MAX( ABS( A( 1, 1 ) )+ABS( A( 2, 1 ) ),
+     $        ABS( A( 1, 2 ) )+ABS( A( 2, 2 ) ), SAFMIN )
+      ASCALE = ONE / ANORM
+      A11 = ASCALE*A( 1, 1 )
+      A21 = ASCALE*A( 2, 1 )
+      A12 = ASCALE*A( 1, 2 )
+      A22 = ASCALE*A( 2, 2 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Perturb B if necessary to insure non-singularity
+</span><span class="comment">*</span><span class="comment">
+</span>      B11 = B( 1, 1 )
+      B12 = B( 1, 2 )
+      B22 = B( 2, 2 )
+      BMIN = RTMIN*MAX( ABS( B11 ), ABS( B12 ), ABS( B22 ), RTMIN )
+      IF( ABS( B11 ).LT.BMIN )
+     $   B11 = SIGN( BMIN, B11 )
+      IF( ABS( B22 ).LT.BMIN )
+     $   B22 = SIGN( BMIN, B22 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Scale B
+</span><span class="comment">*</span><span class="comment">
+</span>      BNORM = MAX( ABS( B11 ), ABS( B12 )+ABS( B22 ), SAFMIN )
+      BSIZE = MAX( ABS( B11 ), ABS( B22 ) )
+      BSCALE = ONE / BSIZE
+      B11 = B11*BSCALE
+      B12 = B12*BSCALE
+      B22 = B22*BSCALE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute larger eigenvalue by method described by C. van Loan
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ( AS is A shifted by -SHIFT*B )
+</span><span class="comment">*</span><span class="comment">
+</span>      BINV11 = ONE / B11
+      BINV22 = ONE / B22
+      S1 = A11*BINV11
+      S2 = A22*BINV22
+      IF( ABS( S1 ).LE.ABS( S2 ) ) THEN
+         AS12 = A12 - S1*B12
+         AS22 = A22 - S1*B22
+         SS = A21*( BINV11*BINV22 )
+         ABI22 = AS22*BINV22 - SS*B12
+         PP = HALF*ABI22
+         SHIFT = S1
+      ELSE
+         AS12 = A12 - S2*B12
+         AS11 = A11 - S2*B11
+         SS = A21*( BINV11*BINV22 )
+         ABI22 = -SS*B12
+         PP = HALF*( AS11*BINV11+ABI22 )
+         SHIFT = S2
+      END IF
+      QQ = SS*AS12
+      IF( ABS( PP*RTMIN ).GE.ONE ) THEN
+         DISCR = ( RTMIN*PP )**2 + QQ*SAFMIN
+         R = SQRT( ABS( DISCR ) )*RTMAX
+      ELSE
+         IF( PP**2+ABS( QQ ).LE.SAFMIN ) THEN
+            DISCR = ( RTMAX*PP )**2 + QQ*SAFMAX
+            R = SQRT( ABS( DISCR ) )*RTMIN
+         ELSE
+            DISCR = PP**2 + QQ
+            R = SQRT( ABS( DISCR ) )
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Note: the test of R in the following IF is to cover the case when
+</span><span class="comment">*</span><span class="comment">           DISCR is small and negative and is flushed to zero during
+</span><span class="comment">*</span><span class="comment">           the calculation of R.  On machines which have a consistent
+</span><span class="comment">*</span><span class="comment">           flush-to-zero threshhold and handle numbers above that
+</span><span class="comment">*</span><span class="comment">           threshhold correctly, it would not be necessary.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( DISCR.GE.ZERO .OR. R.EQ.ZERO ) THEN
+         SUM = PP + SIGN( R, PP )
+         DIFF = PP - SIGN( R, PP )
+         WBIG = SHIFT + SUM
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute smaller eigenvalue
+</span><span class="comment">*</span><span class="comment">
+</span>         WSMALL = SHIFT + DIFF
+         IF( HALF*ABS( WBIG ).GT.MAX( ABS( WSMALL ), SAFMIN ) ) THEN
+            WDET = ( A11*A22-A12*A21 )*( BINV11*BINV22 )
+            WSMALL = WDET / WBIG
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Choose (real) eigenvalue closest to 2,2 element of A*B**(-1)
+</span><span class="comment">*</span><span class="comment">        for WR1.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( PP.GT.ABI22 ) THEN
+            WR1 = MIN( WBIG, WSMALL )
+            WR2 = MAX( WBIG, WSMALL )
+         ELSE
+            WR1 = MAX( WBIG, WSMALL )
+            WR2 = MIN( WBIG, WSMALL )
+         END IF
+         WI = ZERO
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Complex eigenvalues
+</span><span class="comment">*</span><span class="comment">
+</span>         WR1 = SHIFT + PP
+         WR2 = WR1
+         WI = R
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Further scaling to avoid underflow and overflow in computing
+</span><span class="comment">*</span><span class="comment">     SCALE1 and overflow in computing w*B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     This scale factor (WSCALE) is bounded from above using C1 and C2,
+</span><span class="comment">*</span><span class="comment">     and from below using C3 and C4.
+</span><span class="comment">*</span><span class="comment">        C1 implements the condition  s A  must never overflow.
+</span><span class="comment">*</span><span class="comment">        C2 implements the condition  w B  must never overflow.
+</span><span class="comment">*</span><span class="comment">        C3, with C2,
+</span><span class="comment">*</span><span class="comment">           implement the condition that s A - w B must never overflow.
+</span><span class="comment">*</span><span class="comment">        C4 implements the condition  s    should not underflow.
+</span><span class="comment">*</span><span class="comment">        C5 implements the condition  max(s,|w|) should be at least 2.
+</span><span class="comment">*</span><span class="comment">
+</span>      C1 = BSIZE*( SAFMIN*MAX( ONE, ASCALE ) )
+      C2 = SAFMIN*MAX( ONE, BNORM )
+      C3 = BSIZE*SAFMIN
+      IF( ASCALE.LE.ONE .AND. BSIZE.LE.ONE ) THEN
+         C4 = MIN( ONE, ( ASCALE / SAFMIN )*BSIZE )
+      ELSE
+         C4 = ONE
+      END IF
+      IF( ASCALE.LE.ONE .OR. BSIZE.LE.ONE ) THEN
+         C5 = MIN( ONE, ASCALE*BSIZE )
+      ELSE
+         C5 = ONE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Scale first eigenvalue
+</span><span class="comment">*</span><span class="comment">
+</span>      WABS = ABS( WR1 ) + ABS( WI )
+      WSIZE = MAX( SAFMIN, C1, FUZZY1*( WABS*C2+C3 ),
+     $        MIN( C4, HALF*MAX( WABS, C5 ) ) )
+      IF( WSIZE.NE.ONE ) THEN
+         WSCALE = ONE / WSIZE
+         IF( WSIZE.GT.ONE ) THEN
+            SCALE1 = ( MAX( ASCALE, BSIZE )*WSCALE )*
+     $               MIN( ASCALE, BSIZE )
+         ELSE
+            SCALE1 = ( MIN( ASCALE, BSIZE )*WSCALE )*
+     $               MAX( ASCALE, BSIZE )
+         END IF
+         WR1 = WR1*WSCALE
+         IF( WI.NE.ZERO ) THEN
+            WI = WI*WSCALE
+            WR2 = WR1
+            SCALE2 = SCALE1
+         END IF
+      ELSE
+         SCALE1 = ASCALE*BSIZE
+         SCALE2 = SCALE1
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Scale second eigenvalue (if real)
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( WI.EQ.ZERO ) THEN
+         WSIZE = MAX( SAFMIN, C1, FUZZY1*( ABS( WR2 )*C2+C3 ),
+     $           MIN( C4, HALF*MAX( ABS( WR2 ), C5 ) ) )
+         IF( WSIZE.NE.ONE ) THEN
+            WSCALE = ONE / WSIZE
+            IF( WSIZE.GT.ONE ) THEN
+               SCALE2 = ( MAX( ASCALE, BSIZE )*WSCALE )*
+     $                  MIN( ASCALE, BSIZE )
+            ELSE
+               SCALE2 = ( MIN( ASCALE, BSIZE )*WSCALE )*
+     $                  MAX( ASCALE, BSIZE )
+            END IF
+            WR2 = WR2*WSCALE
+         ELSE
+            SCALE2 = ASCALE*BSIZE
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLAG2.297"></a><a href="slag2.f.html#SLAG2.1">SLAG2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      RETURN
+      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slasd0.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLASD0.1"></a><a href="slasd0.f.html#SLASD0.1">SLASD0</a>( N, SQRE, D, E, U, LDU, VT, LDVT, SMLSIZ, IWORK,
+     $                   WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, LDU, LDVT, N, SMLSIZ, SQRE
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IWORK( * )
+      REAL               D( * ), E( * ), U( LDU, * ), VT( LDVT, * ),
+     $                   WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Using a divide and conquer approach, <a name="SLASD0.20"></a><a href="slasd0.f.html#SLASD0.1">SLASD0</a> computes the singular
+</span><span class="comment">*</span><span class="comment">  value decomposition (SVD) of a real upper bidiagonal N-by-M
+</span><span class="comment">*</span><span class="comment">  matrix B with diagonal D and offdiagonal E, where M = N + SQRE.
+</span><span class="comment">*</span><span class="comment">  The algorithm computes orthogonal matrices U and VT such that
+</span><span class="comment">*</span><span class="comment">  B = U * S * VT. The singular values S are overwritten on D.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A related subroutine, <a name="SLASDA.26"></a><a href="slasda.f.html#SLASDA.1">SLASDA</a>, computes only the singular values,
+</span><span class="comment">*</span><span class="comment">  and optionally, the singular vectors in compact form.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         On entry, the row dimension of the upper bidiagonal matrix.
+</span><span class="comment">*</span><span class="comment">         This is also the dimension of the main diagonal array D.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SQRE   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         Specifies the column dimension of the bidiagonal matrix.
+</span><span class="comment">*</span><span class="comment">         = 0: The bidiagonal matrix has column dimension M = N;
+</span><span class="comment">*</span><span class="comment">         = 1: The bidiagonal matrix has column dimension M = N+1;
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D      (input/output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         On entry D contains the main diagonal of the bidiagonal
+</span><span class="comment">*</span><span class="comment">         matrix.
+</span><span class="comment">*</span><span class="comment">         On exit D, if INFO = 0, contains its singular values.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E      (input) REAL array, dimension (M-1)
+</span><span class="comment">*</span><span class="comment">         Contains the subdiagonal entries of the bidiagonal matrix.
+</span><span class="comment">*</span><span class="comment">         On exit, E has been destroyed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  U      (output) REAL array, dimension at least (LDQ, N)
+</span><span class="comment">*</span><span class="comment">         On exit, U contains the left singular vectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDU    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         On entry, leading dimension of U.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VT     (output) REAL array, dimension at least (LDVT, M)
+</span><span class="comment">*</span><span class="comment">         On exit, VT' contains the right singular vectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDVT   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         On entry, leading dimension of VT.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SMLSIZ (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         On entry, maximum size of the subproblems at the
+</span><span class="comment">*</span><span class="comment">         bottom of the computation tree.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK  (workspace) INTEGER array, dimension (8*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK   (workspace) REAL array, dimension (3*M**2+2*M)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO   (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit.
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = 1, an singular value did not converge
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Ming Gu and Huan Ren, Computer Science Division, University of
+</span><span class="comment">*</span><span class="comment">     California at Berkeley, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, I1, IC, IDXQ, IDXQC, IM1, INODE, ITEMP, IWK,
+     $                   J, LF, LL, LVL, M, NCC, ND, NDB1, NDIML, NDIMR,
+     $                   NL, NLF, NLP1, NLVL, NR, NRF, NRP1, SQREI
+      REAL               ALPHA, BETA
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="SLASD1.91"></a><a href="slasd1.f.html#SLASD1.1">SLASD1</a>, <a name="SLASDQ.91"></a><a href="slasdq.f.html#SLASDQ.1">SLASDQ</a>, <a name="SLASDT.91"></a><a href="slasdt.f.html#SLASDT.1">SLASDT</a>, <a name="XERBLA.91"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+<span class="comment">*</span><span class="comment">
+</span>      IF( N.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( ( SQRE.LT.0 ) .OR. ( SQRE.GT.1 ) ) THEN
+         INFO = -2
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      M = N + SQRE
+<span class="comment">*</span><span class="comment">
+</span>      IF( LDU.LT.N ) THEN
+         INFO = -6
+      ELSE IF( LDVT.LT.M ) THEN
+         INFO = -8
+      ELSE IF( SMLSIZ.LT.3 ) THEN
+         INFO = -9
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.115"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="SLASD0.115"></a><a href="slasd0.f.html#SLASD0.1">SLASD0</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If the input matrix is too small, call <a name="SLASDQ.119"></a><a href="slasdq.f.html#SLASDQ.1">SLASDQ</a> to find the SVD.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.LE.SMLSIZ ) THEN
+         CALL <a name="SLASDQ.122"></a><a href="slasdq.f.html#SLASDQ.1">SLASDQ</a>( <span class="string">'U'</span>, SQRE, N, M, N, 0, D, E, VT, LDVT, U, LDU, U,
+     $                LDU, WORK, INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set up the computation tree.
+</span><span class="comment">*</span><span class="comment">
+</span>      INODE = 1
+      NDIML = INODE + N
+      NDIMR = NDIML + N
+      IDXQ = NDIMR + N
+      IWK = IDXQ + N
+      CALL <a name="SLASDT.134"></a><a href="slasdt.f.html#SLASDT.1">SLASDT</a>( N, NLVL, ND, IWORK( INODE ), IWORK( NDIML ),
+     $             IWORK( NDIMR ), SMLSIZ )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     For the nodes on bottom level of the tree, solve
+</span><span class="comment">*</span><span class="comment">     their subproblems by <a name="SLASDQ.138"></a><a href="slasdq.f.html#SLASDQ.1">SLASDQ</a>.
+</span><span class="comment">*</span><span class="comment">
+</span>      NDB1 = ( ND+1 ) / 2
+      NCC = 0
+      DO 30 I = NDB1, ND
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     IC : center row of each node
+</span><span class="comment">*</span><span class="comment">     NL : number of rows of left  subproblem
+</span><span class="comment">*</span><span class="comment">     NR : number of rows of right subproblem
+</span><span class="comment">*</span><span class="comment">     NLF: starting row of the left   subproblem
+</span><span class="comment">*</span><span class="comment">     NRF: starting row of the right  subproblem
+</span><span class="comment">*</span><span class="comment">
+</span>         I1 = I - 1
+         IC = IWORK( INODE+I1 )
+         NL = IWORK( NDIML+I1 )
+         NLP1 = NL + 1
+         NR = IWORK( NDIMR+I1 )
+         NRP1 = NR + 1
+         NLF = IC - NL
+         NRF = IC + 1
+         SQREI = 1
+         CALL <a name="SLASDQ.159"></a><a href="slasdq.f.html#SLASDQ.1">SLASDQ</a>( <span class="string">'U'</span>, SQREI, NL, NLP1, NL, NCC, D( NLF ), E( NLF ),
+     $                VT( NLF, NLF ), LDVT, U( NLF, NLF ), LDU,
+     $                U( NLF, NLF ), LDU, WORK, INFO )
+         IF( INFO.NE.0 ) THEN
+            RETURN
+         END IF
+         ITEMP = IDXQ + NLF - 2
+         DO 10 J = 1, NL
+            IWORK( ITEMP+J ) = J
+   10    CONTINUE
+         IF( I.EQ.ND ) THEN
+            SQREI = SQRE
+         ELSE
+            SQREI = 1
+         END IF
+         NRP1 = NR + SQREI
+         CALL <a name="SLASDQ.175"></a><a href="slasdq.f.html#SLASDQ.1">SLASDQ</a>( <span class="string">'U'</span>, SQREI, NR, NRP1, NR, NCC, D( NRF ), E( NRF ),
+     $                VT( NRF, NRF ), LDVT, U( NRF, NRF ), LDU,
+     $                U( NRF, NRF ), LDU, WORK, INFO )
+         IF( INFO.NE.0 ) THEN
+            RETURN
+         END IF
+         ITEMP = IDXQ + IC
+         DO 20 J = 1, NR
+            IWORK( ITEMP+J-1 ) = J
+   20    CONTINUE
+   30 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Now conquer each subproblem bottom-up.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 50 LVL = NLVL, 1, -1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find the first node LF and last node LL on the
+</span><span class="comment">*</span><span class="comment">        current level LVL.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( LVL.EQ.1 ) THEN
+            LF = 1
+            LL = 1
+         ELSE
+            LF = 2**( LVL-1 )
+            LL = 2*LF - 1
+         END IF
+         DO 40 I = LF, LL
+            IM1 = I - 1
+            IC = IWORK( INODE+IM1 )
+            NL = IWORK( NDIML+IM1 )
+            NR = IWORK( NDIMR+IM1 )
+            NLF = IC - NL
+            IF( ( SQRE.EQ.0 ) .AND. ( I.EQ.LL ) ) THEN
+               SQREI = SQRE
+            ELSE
+               SQREI = 1
+            END IF
+            IDXQC = IDXQ + NLF - 1
+            ALPHA = D( IC )
+            BETA = E( IC )
+            CALL <a name="SLASD1.215"></a><a href="slasd1.f.html#SLASD1.1">SLASD1</a>( NL, NR, SQREI, D( NLF ), ALPHA, BETA,
+     $                   U( NLF, NLF ), LDU, VT( NLF, NLF ), LDVT,
+     $                   IWORK( IDXQC ), IWORK( IWK ), WORK, INFO )
+            IF( INFO.NE.0 ) THEN
+               RETURN
+            END IF
+   40    CONTINUE
+   50 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLASD0.226"></a><a href="slasd0.f.html#SLASD0.1">SLASD0</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

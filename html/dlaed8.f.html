@@ -1,0 +1,423 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlaed8.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLAED8.1"></a><a href="dlaed8.f.html#DLAED8.1">DLAED8</a>( ICOMPQ, K, N, QSIZ, D, Q, LDQ, INDXQ, RHO,
+     $                   CUTPNT, Z, DLAMDA, Q2, LDQ2, W, PERM, GIVPTR,
+     $                   GIVCOL, GIVNUM, INDXP, INDX, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            CUTPNT, GIVPTR, ICOMPQ, INFO, K, LDQ, LDQ2, N,
+     $                   QSIZ
+      DOUBLE PRECISION   RHO
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            GIVCOL( 2, * ), INDX( * ), INDXP( * ),
+     $                   INDXQ( * ), PERM( * )
+      DOUBLE PRECISION   D( * ), DLAMDA( * ), GIVNUM( 2, * ),
+     $                   Q( LDQ, * ), Q2( LDQ2, * ), W( * ), Z( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLAED8.24"></a><a href="dlaed8.f.html#DLAED8.1">DLAED8</a> merges the two sets of eigenvalues together into a single
+</span><span class="comment">*</span><span class="comment">  sorted set.  Then it tries to deflate the size of the problem.
+</span><span class="comment">*</span><span class="comment">  There are two ways in which deflation can occur:  when two or more
+</span><span class="comment">*</span><span class="comment">  eigenvalues are close together or if there is a tiny element in the
+</span><span class="comment">*</span><span class="comment">  Z vector.  For each such occurrence the order of the related secular
+</span><span class="comment">*</span><span class="comment">  equation problem is reduced by one.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ICOMPQ  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  Compute eigenvalues only.
+</span><span class="comment">*</span><span class="comment">          = 1:  Compute eigenvectors of original dense symmetric matrix
+</span><span class="comment">*</span><span class="comment">                also.  On entry, Q contains the orthogonal matrix used
+</span><span class="comment">*</span><span class="comment">                to reduce the original matrix to tridiagonal form.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  K      (output) INTEGER
+</span><span class="comment">*</span><span class="comment">         The number of non-deflated eigenvalues, and the order of the
+</span><span class="comment">*</span><span class="comment">         related secular equation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The dimension of the symmetric tridiagonal matrix.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  QSIZ   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The dimension of the orthogonal matrix used to reduce
+</span><span class="comment">*</span><span class="comment">         the full matrix to tridiagonal form.  QSIZ &gt;= N if ICOMPQ = 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D      (input/output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         On entry, the eigenvalues of the two submatrices to be
+</span><span class="comment">*</span><span class="comment">         combined.  On exit, the trailing (N-K) updated eigenvalues
+</span><span class="comment">*</span><span class="comment">         (those which were deflated) sorted into increasing order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Q      (input/output) DOUBLE PRECISION array, dimension (LDQ,N)
+</span><span class="comment">*</span><span class="comment">         If ICOMPQ = 0, Q is not referenced.  Otherwise,
+</span><span class="comment">*</span><span class="comment">         on entry, Q contains the eigenvectors of the partially solved
+</span><span class="comment">*</span><span class="comment">         system which has been previously updated in matrix
+</span><span class="comment">*</span><span class="comment">         multiplies with other partially solved eigensystems.
+</span><span class="comment">*</span><span class="comment">         On exit, Q contains the trailing (N-K) updated eigenvectors
+</span><span class="comment">*</span><span class="comment">         (those which were deflated) in its last N-K columns.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDQ    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of the array Q.  LDQ &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INDXQ  (input) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         The permutation which separately sorts the two sub-problems
+</span><span class="comment">*</span><span class="comment">         in D into ascending order.  Note that elements in the second
+</span><span class="comment">*</span><span class="comment">         half of this permutation must first have CUTPNT added to
+</span><span class="comment">*</span><span class="comment">         their values in order to be accurate.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RHO    (input/output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">         On entry, the off-diagonal element associated with the rank-1
+</span><span class="comment">*</span><span class="comment">         cut which originally split the two submatrices which are now
+</span><span class="comment">*</span><span class="comment">         being recombined.
+</span><span class="comment">*</span><span class="comment">         On exit, RHO has been modified to the value required by
+</span><span class="comment">*</span><span class="comment">         <a name="DLAED3.78"></a><a href="dlaed3.f.html#DLAED3.1">DLAED3</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CUTPNT (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The location of the last eigenvalue in the leading
+</span><span class="comment">*</span><span class="comment">         sub-matrix.  min(1,N) &lt;= CUTPNT &lt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z      (input) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         On entry, Z contains the updating vector (the last row of
+</span><span class="comment">*</span><span class="comment">         the first sub-eigenvector matrix and the first row of the
+</span><span class="comment">*</span><span class="comment">         second sub-eigenvector matrix).
+</span><span class="comment">*</span><span class="comment">         On exit, the contents of Z are destroyed by the updating
+</span><span class="comment">*</span><span class="comment">         process.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DLAMDA (output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         A copy of the first K eigenvalues which will be used by
+</span><span class="comment">*</span><span class="comment">         <a name="DLAED3.93"></a><a href="dlaed3.f.html#DLAED3.1">DLAED3</a> to form the secular equation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Q2     (output) DOUBLE PRECISION array, dimension (LDQ2,N)
+</span><span class="comment">*</span><span class="comment">         If ICOMPQ = 0, Q2 is not referenced.  Otherwise,
+</span><span class="comment">*</span><span class="comment">         a copy of the first K eigenvectors which will be used by
+</span><span class="comment">*</span><span class="comment">         <a name="DLAED7.98"></a><a href="dlaed7.f.html#DLAED7.1">DLAED7</a> in a matrix multiply (DGEMM) to update the new
+</span><span class="comment">*</span><span class="comment">         eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDQ2   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of the array Q2.  LDQ2 &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  W      (output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         The first k values of the final deflation-altered z-vector and
+</span><span class="comment">*</span><span class="comment">         will be passed to <a name="DLAED3.106"></a><a href="dlaed3.f.html#DLAED3.1">DLAED3</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  PERM   (output) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         The permutations (from deflation and sorting) to be applied
+</span><span class="comment">*</span><span class="comment">         to each eigenblock.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GIVPTR (output) INTEGER
+</span><span class="comment">*</span><span class="comment">         The number of Givens rotations which took place in this
+</span><span class="comment">*</span><span class="comment">         subproblem.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GIVCOL (output) INTEGER array, dimension (2, N)
+</span><span class="comment">*</span><span class="comment">         Each pair of numbers indicates a pair of columns to take place
+</span><span class="comment">*</span><span class="comment">         in a Givens rotation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GIVNUM (output) DOUBLE PRECISION array, dimension (2, N)
+</span><span class="comment">*</span><span class="comment">         Each number indicates the S value to be used in the
+</span><span class="comment">*</span><span class="comment">         corresponding Givens rotation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INDXP  (workspace) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         The permutation used to place deflated values of D at the end
+</span><span class="comment">*</span><span class="comment">         of the array.  INDXP(1:K) points to the nondeflated D-values
+</span><span class="comment">*</span><span class="comment">         and INDXP(K+1:N) points to the deflated eigenvalues.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INDX   (workspace) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         The permutation used to sort the contents of D into ascending
+</span><span class="comment">*</span><span class="comment">         order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO   (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit.
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Jeff Rutter, Computer Science Division, University of California
+</span><span class="comment">*</span><span class="comment">     at Berkeley, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   MONE, ZERO, ONE, TWO, EIGHT
+      PARAMETER          ( MONE = -1.0D0, ZERO = 0.0D0, ONE = 1.0D0,
+     $                   TWO = 2.0D0, EIGHT = 8.0D0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span><span class="comment">*</span><span class="comment">
+</span>      INTEGER            I, IMAX, J, JLAM, JMAX, JP, K2, N1, N1P1, N2
+      DOUBLE PRECISION   C, EPS, S, T, TAU, TOL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      INTEGER            IDAMAX
+      DOUBLE PRECISION   <a name="DLAMCH.158"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLAPY2.158"></a><a href="dlapy2.f.html#DLAPY2.1">DLAPY2</a>
+      EXTERNAL           IDAMAX, <a name="DLAMCH.159"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLAPY2.159"></a><a href="dlapy2.f.html#DLAPY2.1">DLAPY2</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DCOPY, <a name="DLACPY.162"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>, <a name="DLAMRG.162"></a><a href="dlamrg.f.html#DLAMRG.1">DLAMRG</a>, DROT, DSCAL, <a name="XERBLA.162"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX, MIN, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+<span class="comment">*</span><span class="comment">
+</span>      IF( ICOMPQ.LT.0 .OR. ICOMPQ.GT.1 ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( ICOMPQ.EQ.1 .AND. QSIZ.LT.N ) THEN
+         INFO = -4
+      ELSE IF( LDQ.LT.MAX( 1, N ) ) THEN
+         INFO = -7
+      ELSE IF( CUTPNT.LT.MIN( 1, N ) .OR. CUTPNT.GT.N ) THEN
+         INFO = -10
+      ELSE IF( LDQ2.LT.MAX( 1, N ) ) THEN
+         INFO = -14
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.187"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DLAED8.187"></a><a href="dlaed8.f.html#DLAED8.1">DLAED8</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      N1 = CUTPNT
+      N2 = N - N1
+      N1P1 = N1 + 1
+<span class="comment">*</span><span class="comment">
+</span>      IF( RHO.LT.ZERO ) THEN
+         CALL DSCAL( N2, MONE, Z( N1P1 ), 1 )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Normalize z so that norm(z) = 1
+</span><span class="comment">*</span><span class="comment">
+</span>      T = ONE / SQRT( TWO )
+      DO 10 J = 1, N
+         INDX( J ) = J
+   10 CONTINUE
+      CALL DSCAL( N, T, Z, 1 )
+      RHO = ABS( TWO*RHO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Sort the eigenvalues into increasing order
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 20 I = CUTPNT + 1, N
+         INDXQ( I ) = INDXQ( I ) + CUTPNT
+   20 CONTINUE
+      DO 30 I = 1, N
+         DLAMDA( I ) = D( INDXQ( I ) )
+         W( I ) = Z( INDXQ( I ) )
+   30 CONTINUE
+      I = 1
+      J = CUTPNT + 1
+      CALL <a name="DLAMRG.224"></a><a href="dlamrg.f.html#DLAMRG.1">DLAMRG</a>( N1, N2, DLAMDA, 1, 1, INDX )
+      DO 40 I = 1, N
+         D( I ) = DLAMDA( INDX( I ) )
+         Z( I ) = W( INDX( I ) )
+   40 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Calculate the allowable deflation tolerence
+</span><span class="comment">*</span><span class="comment">
+</span>      IMAX = IDAMAX( N, Z, 1 )
+      JMAX = IDAMAX( N, D, 1 )
+      EPS = <a name="DLAMCH.234"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Epsilon'</span> )
+      TOL = EIGHT*EPS*ABS( D( JMAX ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If the rank-1 modifier is small enough, no more needs to be done
+</span><span class="comment">*</span><span class="comment">     except to reorganize Q so that its columns correspond with the
+</span><span class="comment">*</span><span class="comment">     elements in D.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( RHO*ABS( Z( IMAX ) ).LE.TOL ) THEN
+         K = 0
+         IF( ICOMPQ.EQ.0 ) THEN
+            DO 50 J = 1, N
+               PERM( J ) = INDXQ( INDX( J ) )
+   50       CONTINUE
+         ELSE
+            DO 60 J = 1, N
+               PERM( J ) = INDXQ( INDX( J ) )
+               CALL DCOPY( QSIZ, Q( 1, PERM( J ) ), 1, Q2( 1, J ), 1 )
+   60       CONTINUE
+            CALL <a name="DLACPY.252"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>( <span class="string">'A'</span>, QSIZ, N, Q2( 1, 1 ), LDQ2, Q( 1, 1 ),
+     $                   LDQ )
+         END IF
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If there are multiple eigenvalues then the problem deflates.  Here
+</span><span class="comment">*</span><span class="comment">     the number of equal eigenvalues are found.  As each equal
+</span><span class="comment">*</span><span class="comment">     eigenvalue is found, an elementary reflector is computed to rotate
+</span><span class="comment">*</span><span class="comment">     the corresponding eigensubspace so that the corresponding
+</span><span class="comment">*</span><span class="comment">     components of Z are zero in this new basis.
+</span><span class="comment">*</span><span class="comment">
+</span>      K = 0
+      GIVPTR = 0
+      K2 = N + 1
+      DO 70 J = 1, N
+         IF( RHO*ABS( Z( J ) ).LE.TOL ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Deflate due to small z component.
+</span><span class="comment">*</span><span class="comment">
+</span>            K2 = K2 - 1
+            INDXP( K2 ) = J
+            IF( J.EQ.N )
+     $         GO TO 110
+         ELSE
+            JLAM = J
+            GO TO 80
+         END IF
+   70 CONTINUE
+   80 CONTINUE
+      J = J + 1
+      IF( J.GT.N )
+     $   GO TO 100
+      IF( RHO*ABS( Z( J ) ).LE.TOL ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Deflate due to small z component.
+</span><span class="comment">*</span><span class="comment">
+</span>         K2 = K2 - 1
+         INDXP( K2 ) = J
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Check if eigenvalues are close enough to allow deflation.
+</span><span class="comment">*</span><span class="comment">
+</span>         S = Z( JLAM )
+         C = Z( J )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find sqrt(a**2+b**2) without overflow or
+</span><span class="comment">*</span><span class="comment">        destructive underflow.
+</span><span class="comment">*</span><span class="comment">
+</span>         TAU = <a name="DLAPY2.301"></a><a href="dlapy2.f.html#DLAPY2.1">DLAPY2</a>( C, S )
+         T = D( J ) - D( JLAM )
+         C = C / TAU
+         S = -S / TAU
+         IF( ABS( T*C*S ).LE.TOL ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Deflation is possible.
+</span><span class="comment">*</span><span class="comment">
+</span>            Z( J ) = TAU
+            Z( JLAM ) = ZERO
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Record the appropriate Givens rotation
+</span><span class="comment">*</span><span class="comment">
+</span>            GIVPTR = GIVPTR + 1
+            GIVCOL( 1, GIVPTR ) = INDXQ( INDX( JLAM ) )
+            GIVCOL( 2, GIVPTR ) = INDXQ( INDX( J ) )
+            GIVNUM( 1, GIVPTR ) = C
+            GIVNUM( 2, GIVPTR ) = S
+            IF( ICOMPQ.EQ.1 ) THEN
+               CALL DROT( QSIZ, Q( 1, INDXQ( INDX( JLAM ) ) ), 1,
+     $                    Q( 1, INDXQ( INDX( J ) ) ), 1, C, S )
+            END IF
+            T = D( JLAM )*C*C + D( J )*S*S
+            D( J ) = D( JLAM )*S*S + D( J )*C*C
+            D( JLAM ) = T
+            K2 = K2 - 1
+            I = 1
+   90       CONTINUE
+            IF( K2+I.LE.N ) THEN
+               IF( D( JLAM ).LT.D( INDXP( K2+I ) ) ) THEN
+                  INDXP( K2+I-1 ) = INDXP( K2+I )
+                  INDXP( K2+I ) = JLAM
+                  I = I + 1
+                  GO TO 90
+               ELSE
+                  INDXP( K2+I-1 ) = JLAM
+               END IF
+            ELSE
+               INDXP( K2+I-1 ) = JLAM
+            END IF
+            JLAM = J
+         ELSE
+            K = K + 1
+            W( K ) = Z( JLAM )
+            DLAMDA( K ) = D( JLAM )
+            INDXP( K ) = JLAM
+            JLAM = J
+         END IF
+      END IF
+      GO TO 80
+  100 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Record the last eigenvalue.
+</span><span class="comment">*</span><span class="comment">
+</span>      K = K + 1
+      W( K ) = Z( JLAM )
+      DLAMDA( K ) = D( JLAM )
+      INDXP( K ) = JLAM
+<span class="comment">*</span><span class="comment">
+</span>  110 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Sort the eigenvalues and corresponding eigenvectors into DLAMDA
+</span><span class="comment">*</span><span class="comment">     and Q2 respectively.  The eigenvalues/vectors which were not
+</span><span class="comment">*</span><span class="comment">     deflated go into the first K slots of DLAMDA and Q2 respectively,
+</span><span class="comment">*</span><span class="comment">     while those which were deflated go into the last N - K slots.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ICOMPQ.EQ.0 ) THEN
+         DO 120 J = 1, N
+            JP = INDXP( J )
+            DLAMDA( J ) = D( JP )
+            PERM( J ) = INDXQ( INDX( JP ) )
+  120    CONTINUE
+      ELSE
+         DO 130 J = 1, N
+            JP = INDXP( J )
+            DLAMDA( J ) = D( JP )
+            PERM( J ) = INDXQ( INDX( JP ) )
+            CALL DCOPY( QSIZ, Q( 1, PERM( J ) ), 1, Q2( 1, J ), 1 )
+  130    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The deflated eigenvalues and their corresponding vectors go back
+</span><span class="comment">*</span><span class="comment">     into the last N - K slots of D and Q respectively.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( K.LT.N ) THEN
+         IF( ICOMPQ.EQ.0 ) THEN
+            CALL DCOPY( N-K, DLAMDA( K+1 ), 1, D( K+1 ), 1 )
+         ELSE
+            CALL DCOPY( N-K, DLAMDA( K+1 ), 1, D( K+1 ), 1 )
+            CALL <a name="DLACPY.390"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>( <span class="string">'A'</span>, QSIZ, N-K, Q2( 1, K+1 ), LDQ2,
+     $                   Q( 1, K+1 ), LDQ )
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLAED8.397"></a><a href="dlaed8.f.html#DLAED8.1">DLAED8</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

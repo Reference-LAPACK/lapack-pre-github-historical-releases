@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zlarnv.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZLARNV.1"></a><a href="zlarnv.f.html#ZLARNV.1">ZLARNV</a>( IDIST, ISEED, N, X )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            IDIST, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            ISEED( 4 )
+      COMPLEX*16         X( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZLARNV.18"></a><a href="zlarnv.f.html#ZLARNV.1">ZLARNV</a> returns a vector of n random complex numbers from a uniform or
+</span><span class="comment">*</span><span class="comment">  normal distribution.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IDIST   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          Specifies the distribution of the random numbers:
+</span><span class="comment">*</span><span class="comment">          = 1:  real and imaginary parts each uniform (0,1)
+</span><span class="comment">*</span><span class="comment">          = 2:  real and imaginary parts each uniform (-1,1)
+</span><span class="comment">*</span><span class="comment">          = 3:  real and imaginary parts each normal (0,1)
+</span><span class="comment">*</span><span class="comment">          = 4:  uniformly distributed on the disc abs(z) &lt; 1
+</span><span class="comment">*</span><span class="comment">          = 5:  uniformly distributed on the circle abs(z) = 1
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ISEED   (input/output) INTEGER array, dimension (4)
+</span><span class="comment">*</span><span class="comment">          On entry, the seed of the random number generator; the array
+</span><span class="comment">*</span><span class="comment">          elements must be between 0 and 4095, and ISEED(4) must be
+</span><span class="comment">*</span><span class="comment">          odd.
+</span><span class="comment">*</span><span class="comment">          On exit, the seed is updated.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of random numbers to be generated.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X       (output) COMPLEX*16 array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The generated random numbers.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This routine calls the auxiliary routine <a name="DLARUV.47"></a><a href="dlaruv.f.html#DLARUV.1">DLARUV</a> to generate random
+</span><span class="comment">*</span><span class="comment">  real numbers from a uniform (0,1) distribution, in batches of up to
+</span><span class="comment">*</span><span class="comment">  128 using vectorisable code. The Box-Muller method is used to
+</span><span class="comment">*</span><span class="comment">  transform numbers from a uniform to a normal distribution.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE, TWO
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0, TWO = 2.0D+0 )
+      INTEGER            LV
+      PARAMETER          ( LV = 128 )
+      DOUBLE PRECISION   TWOPI
+      PARAMETER          ( TWOPI = 6.2831853071795864769252867663D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, IL, IV
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      DOUBLE PRECISION   U( LV )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          DCMPLX, EXP, LOG, MIN, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DLARUV.72"></a><a href="dlaruv.f.html#DLARUV.1">DLARUV</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 60 IV = 1, N, LV / 2
+         IL = MIN( LV / 2, N-IV+1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Call <a name="DLARUV.79"></a><a href="dlaruv.f.html#DLARUV.1">DLARUV</a> to generate 2*IL real numbers from a uniform (0,1)
+</span><span class="comment">*</span><span class="comment">        distribution (2*IL &lt;= LV)
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DLARUV.82"></a><a href="dlaruv.f.html#DLARUV.1">DLARUV</a>( ISEED, 2*IL, U )
+<span class="comment">*</span><span class="comment">
+</span>         IF( IDIST.EQ.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Copy generated numbers
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 10 I = 1, IL
+               X( IV+I-1 ) = DCMPLX( U( 2*I-1 ), U( 2*I ) )
+   10       CONTINUE
+         ELSE IF( IDIST.EQ.2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Convert generated numbers to uniform (-1,1) distribution
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 20 I = 1, IL
+               X( IV+I-1 ) = DCMPLX( TWO*U( 2*I-1 )-ONE,
+     $                       TWO*U( 2*I )-ONE )
+   20       CONTINUE
+         ELSE IF( IDIST.EQ.3 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Convert generated numbers to normal (0,1) distribution
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 30 I = 1, IL
+               X( IV+I-1 ) = SQRT( -TWO*LOG( U( 2*I-1 ) ) )*
+     $                       EXP( DCMPLX( ZERO, TWOPI*U( 2*I ) ) )
+   30       CONTINUE
+         ELSE IF( IDIST.EQ.4 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Convert generated numbers to complex numbers uniformly
+</span><span class="comment">*</span><span class="comment">           distributed on the unit disk
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 40 I = 1, IL
+               X( IV+I-1 ) = SQRT( U( 2*I-1 ) )*
+     $                       EXP( DCMPLX( ZERO, TWOPI*U( 2*I ) ) )
+   40       CONTINUE
+         ELSE IF( IDIST.EQ.5 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Convert generated numbers to complex numbers uniformly
+</span><span class="comment">*</span><span class="comment">           distributed on the unit circle
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 50 I = 1, IL
+               X( IV+I-1 ) = EXP( DCMPLX( ZERO, TWOPI*U( 2*I ) ) )
+   50       CONTINUE
+         END IF
+   60 CONTINUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZLARNV.128"></a><a href="zlarnv.f.html#ZLARNV.1">ZLARNV</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>cungl2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CUNGL2.1"></a><a href="cungl2.f.html#CUNGL2.1">CUNGL2</a>( M, N, K, A, LDA, TAU, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, K, LDA, M, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX            A( LDA, * ), TAU( * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CUNGL2.17"></a><a href="cungl2.f.html#CUNGL2.1">CUNGL2</a> generates an m-by-n complex matrix Q with orthonormal rows,
+</span><span class="comment">*</span><span class="comment">  which is defined as the first m rows of a product of k elementary
+</span><span class="comment">*</span><span class="comment">  reflectors of order n
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Q  =  H(k)' . . . H(2)' H(1)'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  as returned by <a name="CGELQF.23"></a><a href="cgelqf.f.html#CGELQF.1">CGELQF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix Q. M &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix Q. N &gt;= M.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  K       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of elementary reflectors whose product defines the
+</span><span class="comment">*</span><span class="comment">          matrix Q. M &gt;= K &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) COMPLEX array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the i-th row must contain the vector which defines
+</span><span class="comment">*</span><span class="comment">          the elementary reflector H(i), for i = 1,2,...,k, as returned
+</span><span class="comment">*</span><span class="comment">          by <a name="CGELQF.41"></a><a href="cgelqf.f.html#CGELQF.1">CGELQF</a> in the first k rows of its array argument A.
+</span><span class="comment">*</span><span class="comment">          On exit, the m by n matrix Q.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The first dimension of the array A. LDA &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TAU     (input) COMPLEX array, dimension (K)
+</span><span class="comment">*</span><span class="comment">          TAU(i) must contain the scalar factor of the elementary
+</span><span class="comment">*</span><span class="comment">          reflector H(i), as returned by <a name="CGELQF.49"></a><a href="cgelqf.f.html#CGELQF.1">CGELQF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) COMPLEX array, dimension (M)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0: successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0: if INFO = -i, the i-th argument has an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      COMPLEX            ONE, ZERO
+      PARAMETER          ( ONE = ( 1.0E+0, 0.0E+0 ),
+     $                   ZERO = ( 0.0E+0, 0.0E+0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, J, L
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="CLACGV.68"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>, <a name="CLARF.68"></a><a href="clarf.f.html#CLARF.1">CLARF</a>, CSCAL, <a name="XERBLA.68"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          CONJG, MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input arguments
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( M.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( N.LT.M ) THEN
+         INFO = -2
+      ELSE IF( K.LT.0 .OR. K.GT.M ) THEN
+         INFO = -3
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -5
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.88"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CUNGL2.88"></a><a href="cungl2.f.html#CUNGL2.1">CUNGL2</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( M.LE.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      IF( K.LT.M ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Initialise rows k+1:m to rows of the unit matrix
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 20 J = 1, N
+            DO 10 L = K + 1, M
+               A( L, J ) = ZERO
+   10       CONTINUE
+            IF( J.GT.K .AND. J.LE.M )
+     $         A( J, J ) = ONE
+   20    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      DO 40 I = K, 1, -1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Apply H(i)' to A(i:m,i:n) from the right
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( I.LT.N ) THEN
+            CALL <a name="CLACGV.115"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( N-I, A( I, I+1 ), LDA )
+            IF( I.LT.M ) THEN
+               A( I, I ) = ONE
+               CALL <a name="CLARF.118"></a><a href="clarf.f.html#CLARF.1">CLARF</a>( <span class="string">'Right'</span>, M-I, N-I+1, A( I, I ), LDA,
+     $                     CONJG( TAU( I ) ), A( I+1, I ), LDA, WORK )
+            END IF
+            CALL CSCAL( N-I, -TAU( I ), A( I, I+1 ), LDA )
+            CALL <a name="CLACGV.122"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( N-I, A( I, I+1 ), LDA )
+         END IF
+         A( I, I ) = ONE - CONJG( TAU( I ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Set A(i,1:i-1,i) to zero
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 30 L = 1, I - 1
+            A( I, L ) = ZERO
+   30    CONTINUE
+   40 CONTINUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CUNGL2.134"></a><a href="cungl2.f.html#CUNGL2.1">CUNGL2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

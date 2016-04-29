@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slapy3.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      REAL             FUNCTION <a name="SLAPY3.1"></a><a href="slapy3.f.html#SLAPY3.1">SLAPY3</a>( X, Y, Z )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      REAL               X, Y, Z
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLAPY3.14"></a><a href="slapy3.f.html#SLAPY3.1">SLAPY3</a> returns sqrt(x**2+y**2+z**2), taking care not to cause
+</span><span class="comment">*</span><span class="comment">  unnecessary overflow.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X       (input) REAL
+</span><span class="comment">*</span><span class="comment">  Y       (input) REAL
+</span><span class="comment">*</span><span class="comment">  Z       (input) REAL
+</span><span class="comment">*</span><span class="comment">          X, Y and Z specify the values x, y and z.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO
+      PARAMETER          ( ZERO = 0.0E0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      REAL               W, XABS, YABS, ZABS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      XABS = ABS( X )
+      YABS = ABS( Y )
+      ZABS = ABS( Z )
+      W = MAX( XABS, YABS, ZABS )
+      IF( W.EQ.ZERO ) THEN
+<span class="comment">*</span><span class="comment">     W can be zero for max(0,nan,0)
+</span><span class="comment">*</span><span class="comment">     adding all three entries together will make sure
+</span><span class="comment">*</span><span class="comment">     NaN will not disappear.
+</span>         <a name="SLAPY3.47"></a><a href="slapy3.f.html#SLAPY3.1">SLAPY3</a> =  XABS + YABS + ZABS
+      ELSE
+         <a name="SLAPY3.49"></a><a href="slapy3.f.html#SLAPY3.1">SLAPY3</a> = W*SQRT( ( XABS / W )**2+( YABS / W )**2+
+     $            ( ZABS / W )**2 )
+      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLAPY3.54"></a><a href="slapy3.f.html#SLAPY3.1">SLAPY3</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

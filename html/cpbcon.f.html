@@ -1,0 +1,222 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>cpbcon.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CPBCON.1"></a><a href="cpbcon.f.html#CPBCON.1">CPBCON</a>( UPLO, N, KD, AB, LDAB, ANORM, RCOND, WORK,
+     $                   RWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Modified to call <a name="CLACN2.8"></a><a href="clacn2.f.html#CLACN2.1">CLACN2</a> in place of <a name="CLACON.8"></a><a href="clacon.f.html#CLACON.1">CLACON</a>, 10 Feb 03, SJH.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          UPLO
+      INTEGER            INFO, KD, LDAB, N
+      REAL               ANORM, RCOND
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               RWORK( * )
+      COMPLEX            AB( LDAB, * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CPBCON.23"></a><a href="cpbcon.f.html#CPBCON.1">CPBCON</a> estimates the reciprocal of the condition number (in the
+</span><span class="comment">*</span><span class="comment">  1-norm) of a complex Hermitian positive definite band matrix using
+</span><span class="comment">*</span><span class="comment">  the Cholesky factorization A = U**H*U or A = L*L**H computed by
+</span><span class="comment">*</span><span class="comment">  <a name="CPBTRF.26"></a><a href="cpbtrf.f.html#CPBTRF.1">CPBTRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  An estimate is obtained for norm(inv(A)), and the reciprocal of the
+</span><span class="comment">*</span><span class="comment">  condition number is computed as RCOND = 1 / (ANORM * norm(inv(A))).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangular factor stored in AB;
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangular factor stored in AB.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KD      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of superdiagonals of the matrix A if UPLO = 'U',
+</span><span class="comment">*</span><span class="comment">          or the number of sub-diagonals if UPLO = 'L'.  KD &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AB      (input) COMPLEX array, dimension (LDAB,N)
+</span><span class="comment">*</span><span class="comment">          The triangular factor U or L from the Cholesky factorization
+</span><span class="comment">*</span><span class="comment">          A = U**H*U or A = L*L**H of the band matrix A, stored in the
+</span><span class="comment">*</span><span class="comment">          first KD+1 rows of the array.  The j-th column of U or L is
+</span><span class="comment">*</span><span class="comment">          stored in the j-th column of the array AB as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO ='U', AB(kd+1+i-j,j) = U(i,j) for max(1,j-kd)&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO ='L', AB(1+i-j,j)    = L(i,j) for j&lt;=i&lt;=min(n,j+kd).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDAB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array AB.  LDAB &gt;= KD+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ANORM   (input) REAL
+</span><span class="comment">*</span><span class="comment">          The 1-norm (or infinity-norm) of the Hermitian band matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RCOND   (output) REAL
+</span><span class="comment">*</span><span class="comment">          The reciprocal of the condition number of the matrix A,
+</span><span class="comment">*</span><span class="comment">          computed as RCOND = 1/(ANORM * AINVNM), where AINVNM is an
+</span><span class="comment">*</span><span class="comment">          estimate of the 1-norm of inv(A) computed in this routine.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) COMPLEX array, dimension (2*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RWORK   (workspace) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ONE, ZERO
+      PARAMETER          ( ONE = 1.0E+0, ZERO = 0.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            UPPER
+      CHARACTER          NORMIN
+      INTEGER            IX, KASE
+      REAL               AINVNM, SCALE, SCALEL, SCALEU, SMLNUM
+      COMPLEX            ZDUM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      INTEGER            ISAVE( 3 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.89"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      INTEGER            ICAMAX
+      REAL               <a name="SLAMCH.91"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      EXTERNAL           <a name="LSAME.92"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, ICAMAX, <a name="SLAMCH.92"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="CLACN2.95"></a><a href="clacn2.f.html#CLACN2.1">CLACN2</a>, <a name="CLATBS.95"></a><a href="clatbs.f.html#CLATBS.1">CLATBS</a>, <a name="CSRSCL.95"></a><a href="csrscl.f.html#CSRSCL.1">CSRSCL</a>, <a name="XERBLA.95"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, AIMAG, REAL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Functions ..
+</span>      REAL               CABS1
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Function definitions ..
+</span>      CABS1( ZDUM ) = ABS( REAL( ZDUM ) ) + ABS( AIMAG( ZDUM ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      UPPER = <a name="LSAME.111"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> )
+      IF( .NOT.UPPER .AND. .NOT.<a name="LSAME.112"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( KD.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( LDAB.LT.KD+1 ) THEN
+         INFO = -5
+      ELSE IF( ANORM.LT.ZERO ) THEN
+         INFO = -6
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.124"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CPBCON.124"></a><a href="cpbcon.f.html#CPBCON.1">CPBCON</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      RCOND = ZERO
+      IF( N.EQ.0 ) THEN
+         RCOND = ONE
+         RETURN
+      ELSE IF( ANORM.EQ.ZERO ) THEN
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      SMLNUM = <a name="SLAMCH.138"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Safe minimum'</span> )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Estimate the 1-norm of the inverse.
+</span><span class="comment">*</span><span class="comment">
+</span>      KASE = 0
+      NORMIN = <span class="string">'N'</span>
+   10 CONTINUE
+      CALL <a name="CLACN2.145"></a><a href="clacn2.f.html#CLACN2.1">CLACN2</a>( N, WORK( N+1 ), WORK, AINVNM, KASE, ISAVE )
+      IF( KASE.NE.0 ) THEN
+         IF( UPPER ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Multiply by inv(U').
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="CLATBS.151"></a><a href="clatbs.f.html#CLATBS.1">CLATBS</a>( <span class="string">'Upper'</span>, <span class="string">'Conjugate transpose'</span>, <span class="string">'Non-unit'</span>,
+     $                   NORMIN, N, KD, AB, LDAB, WORK, SCALEL, RWORK,
+     $                   INFO )
+            NORMIN = <span class="string">'Y'</span>
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Multiply by inv(U).
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="CLATBS.158"></a><a href="clatbs.f.html#CLATBS.1">CLATBS</a>( <span class="string">'Upper'</span>, <span class="string">'No transpose'</span>, <span class="string">'Non-unit'</span>, NORMIN, N,
+     $                   KD, AB, LDAB, WORK, SCALEU, RWORK, INFO )
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Multiply by inv(L).
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="CLATBS.164"></a><a href="clatbs.f.html#CLATBS.1">CLATBS</a>( <span class="string">'Lower'</span>, <span class="string">'No transpose'</span>, <span class="string">'Non-unit'</span>, NORMIN, N,
+     $                   KD, AB, LDAB, WORK, SCALEL, RWORK, INFO )
+            NORMIN = <span class="string">'Y'</span>
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Multiply by inv(L').
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="CLATBS.170"></a><a href="clatbs.f.html#CLATBS.1">CLATBS</a>( <span class="string">'Lower'</span>, <span class="string">'Conjugate transpose'</span>, <span class="string">'Non-unit'</span>,
+     $                   NORMIN, N, KD, AB, LDAB, WORK, SCALEU, RWORK,
+     $                   INFO )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Multiply by 1/SCALE if doing so will not cause overflow.
+</span><span class="comment">*</span><span class="comment">
+</span>         SCALE = SCALEL*SCALEU
+         IF( SCALE.NE.ONE ) THEN
+            IX = ICAMAX( N, WORK, 1 )
+            IF( SCALE.LT.CABS1( WORK( IX ) )*SMLNUM .OR. SCALE.EQ.ZERO )
+     $         GO TO 20
+            CALL <a name="CSRSCL.182"></a><a href="csrscl.f.html#CSRSCL.1">CSRSCL</a>( N, SCALE, WORK, 1 )
+         END IF
+         GO TO 10
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the estimate of the reciprocal condition number.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( AINVNM.NE.ZERO )
+     $   RCOND = ( ONE / AINVNM ) / ANORM
+<span class="comment">*</span><span class="comment">
+</span>   20 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CPBCON.196"></a><a href="cpbcon.f.html#CPBCON.1">CPBCON</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

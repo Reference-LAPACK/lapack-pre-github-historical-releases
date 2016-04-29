@@ -1,0 +1,257 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dptsvx.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DPTSVX.1"></a><a href="dptsvx.f.html#DPTSVX.1">DPTSVX</a>( FACT, N, NRHS, D, E, DF, EF, B, LDB, X, LDX,
+     $                   RCOND, FERR, BERR, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          FACT
+      INTEGER            INFO, LDB, LDX, N, NRHS
+      DOUBLE PRECISION   RCOND
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   B( LDB, * ), BERR( * ), D( * ), DF( * ),
+     $                   E( * ), EF( * ), FERR( * ), WORK( * ),
+     $                   X( LDX, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DPTSVX.22"></a><a href="dptsvx.f.html#DPTSVX.1">DPTSVX</a> uses the factorization A = L*D*L**T to compute the solution
+</span><span class="comment">*</span><span class="comment">  to a real system of linear equations A*X = B, where A is an N-by-N
+</span><span class="comment">*</span><span class="comment">  symmetric positive definite tridiagonal matrix and X and B are
+</span><span class="comment">*</span><span class="comment">  N-by-NRHS matrices.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Error bounds on the solution and a condition estimate are also
+</span><span class="comment">*</span><span class="comment">  provided.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Description
+</span><span class="comment">*</span><span class="comment">  ===========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The following steps are performed:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  1. If FACT = 'N', the matrix A is factored as A = L*D*L**T, where L
+</span><span class="comment">*</span><span class="comment">     is a unit lower bidiagonal matrix and D is diagonal.  The
+</span><span class="comment">*</span><span class="comment">     factorization can also be regarded as having the form
+</span><span class="comment">*</span><span class="comment">     A = U**T*D*U.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  2. If the leading i-by-i principal minor is not positive definite,
+</span><span class="comment">*</span><span class="comment">     then the routine returns with INFO = i. Otherwise, the factored
+</span><span class="comment">*</span><span class="comment">     form of A is used to estimate the condition number of the matrix
+</span><span class="comment">*</span><span class="comment">     A.  If the reciprocal of the condition number is less than machine
+</span><span class="comment">*</span><span class="comment">     precision, INFO = N+1 is returned as a warning, but the routine
+</span><span class="comment">*</span><span class="comment">     still goes on to solve for X and compute error bounds as
+</span><span class="comment">*</span><span class="comment">     described below.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  3. The system of equations is solved for X using the factored form
+</span><span class="comment">*</span><span class="comment">     of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  4. Iterative refinement is applied to improve the computed solution
+</span><span class="comment">*</span><span class="comment">     matrix and calculate error bounds and backward error estimates
+</span><span class="comment">*</span><span class="comment">     for it.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  FACT    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether or not the factored form of A has been
+</span><span class="comment">*</span><span class="comment">          supplied on entry.
+</span><span class="comment">*</span><span class="comment">          = 'F':  On entry, DF and EF contain the factored form of A.
+</span><span class="comment">*</span><span class="comment">                  D, E, DF, and EF will not be modified.
+</span><span class="comment">*</span><span class="comment">          = 'N':  The matrix A will be copied to DF and EF and
+</span><span class="comment">*</span><span class="comment">                  factored.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NRHS    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of right hand sides, i.e., the number of columns
+</span><span class="comment">*</span><span class="comment">          of the matrices B and X.  NRHS &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The n diagonal elements of the tridiagonal matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E       (input) DOUBLE PRECISION array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          The (n-1) subdiagonal elements of the tridiagonal matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DF      (input or output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          If FACT = 'F', then DF is an input argument and on entry
+</span><span class="comment">*</span><span class="comment">          contains the n diagonal elements of the diagonal matrix D
+</span><span class="comment">*</span><span class="comment">          from the L*D*L**T factorization of A.
+</span><span class="comment">*</span><span class="comment">          If FACT = 'N', then DF is an output argument and on exit
+</span><span class="comment">*</span><span class="comment">          contains the n diagonal elements of the diagonal matrix D
+</span><span class="comment">*</span><span class="comment">          from the L*D*L**T factorization of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  EF      (input or output) DOUBLE PRECISION array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          If FACT = 'F', then EF is an input argument and on entry
+</span><span class="comment">*</span><span class="comment">          contains the (n-1) subdiagonal elements of the unit
+</span><span class="comment">*</span><span class="comment">          bidiagonal factor L from the L*D*L**T factorization of A.
+</span><span class="comment">*</span><span class="comment">          If FACT = 'N', then EF is an output argument and on exit
+</span><span class="comment">*</span><span class="comment">          contains the (n-1) subdiagonal elements of the unit
+</span><span class="comment">*</span><span class="comment">          bidiagonal factor L from the L*D*L**T factorization of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input) DOUBLE PRECISION array, dimension (LDB,NRHS)
+</span><span class="comment">*</span><span class="comment">          The N-by-NRHS right hand side matrix B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B.  LDB &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X       (output) DOUBLE PRECISION array, dimension (LDX,NRHS)
+</span><span class="comment">*</span><span class="comment">          If INFO = 0 of INFO = N+1, the N-by-NRHS solution matrix X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDX     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array X.  LDX &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RCOND   (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The reciprocal condition number of the matrix A.  If RCOND
+</span><span class="comment">*</span><span class="comment">          is less than the machine precision (in particular, if
+</span><span class="comment">*</span><span class="comment">          RCOND = 0), the matrix is singular to working precision.
+</span><span class="comment">*</span><span class="comment">          This condition is indicated by a return code of INFO &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  FERR    (output) DOUBLE PRECISION array, dimension (NRHS)
+</span><span class="comment">*</span><span class="comment">          The forward error bound for each solution vector
+</span><span class="comment">*</span><span class="comment">          X(j) (the j-th column of the solution matrix X).
+</span><span class="comment">*</span><span class="comment">          If XTRUE is the true solution corresponding to X(j), FERR(j)
+</span><span class="comment">*</span><span class="comment">          is an estimated upper bound for the magnitude of the largest
+</span><span class="comment">*</span><span class="comment">          element in (X(j) - XTRUE) divided by the magnitude of the
+</span><span class="comment">*</span><span class="comment">          largest element in X(j).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BERR    (output) DOUBLE PRECISION array, dimension (NRHS)
+</span><span class="comment">*</span><span class="comment">          The componentwise relative backward error of each solution
+</span><span class="comment">*</span><span class="comment">          vector X(j) (i.e., the smallest relative change in any
+</span><span class="comment">*</span><span class="comment">          element of A or B that makes X(j) an exact solution).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) DOUBLE PRECISION array, dimension (2*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = i, and i is
+</span><span class="comment">*</span><span class="comment">                &lt;= N:  the leading minor of order i of A is
+</span><span class="comment">*</span><span class="comment">                       not positive definite, so the factorization
+</span><span class="comment">*</span><span class="comment">                       could not be completed, and the solution has not
+</span><span class="comment">*</span><span class="comment">                       been computed. RCOND = 0 is returned.
+</span><span class="comment">*</span><span class="comment">                = N+1: U is nonsingular, but RCOND is less than machine
+</span><span class="comment">*</span><span class="comment">                       precision, meaning that the matrix is singular
+</span><span class="comment">*</span><span class="comment">                       to working precision.  Nevertheless, the
+</span><span class="comment">*</span><span class="comment">                       solution and error bounds are computed because
+</span><span class="comment">*</span><span class="comment">                       there are a number of situations where the
+</span><span class="comment">*</span><span class="comment">                       computed solution can be more accurate than the
+</span><span class="comment">*</span><span class="comment">                       value of RCOND would suggest.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO
+      PARAMETER          ( ZERO = 0.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            NOFACT
+      DOUBLE PRECISION   ANORM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.155"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      DOUBLE PRECISION   <a name="DLAMCH.156"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANST.156"></a><a href="dlanst.f.html#DLANST.1">DLANST</a>
+      EXTERNAL           <a name="LSAME.157"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="DLAMCH.157"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLANST.157"></a><a href="dlanst.f.html#DLANST.1">DLANST</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DCOPY, <a name="DLACPY.160"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>, <a name="DPTCON.160"></a><a href="dptcon.f.html#DPTCON.1">DPTCON</a>, <a name="DPTRFS.160"></a><a href="dptrfs.f.html#DPTRFS.1">DPTRFS</a>, <a name="DPTTRF.160"></a><a href="dpttrf.f.html#DPTTRF.1">DPTTRF</a>, <a name="DPTTRS.160"></a><a href="dpttrs.f.html#DPTTRS.1">DPTTRS</a>,
+     $                   <a name="XERBLA.161"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      NOFACT = <a name="LSAME.171"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( FACT, <span class="string">'N'</span> )
+      IF( .NOT.NOFACT .AND. .NOT.<a name="LSAME.172"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( FACT, <span class="string">'F'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( NRHS.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
+         INFO = -9
+      ELSE IF( LDX.LT.MAX( 1, N ) ) THEN
+         INFO = -11
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.184"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DPTSVX.184"></a><a href="dptsvx.f.html#DPTSVX.1">DPTSVX</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( NOFACT ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute the L*D*L' (or U'*D*U) factorization of A.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL DCOPY( N, D, 1, DF, 1 )
+         IF( N.GT.1 )
+     $      CALL DCOPY( N-1, E, 1, EF, 1 )
+         CALL <a name="DPTTRF.195"></a><a href="dpttrf.f.html#DPTTRF.1">DPTTRF</a>( N, DF, EF, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Return if INFO is non-zero.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( INFO.GT.0 )THEN
+            RCOND = ZERO
+            RETURN
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the norm of the matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span>      ANORM = <a name="DLANST.207"></a><a href="dlanst.f.html#DLANST.1">DLANST</a>( <span class="string">'1'</span>, N, D, E )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the reciprocal of the condition number of A.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="DPTCON.211"></a><a href="dptcon.f.html#DPTCON.1">DPTCON</a>( N, DF, EF, ANORM, RCOND, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the solution vectors X.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="DLACPY.215"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>( <span class="string">'Full'</span>, N, NRHS, B, LDB, X, LDX )
+      CALL <a name="DPTTRS.216"></a><a href="dpttrs.f.html#DPTTRS.1">DPTTRS</a>( N, NRHS, DF, EF, X, LDX, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Use iterative refinement to improve the computed solutions and
+</span><span class="comment">*</span><span class="comment">     compute error bounds and backward error estimates for them.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="DPTRFS.221"></a><a href="dptrfs.f.html#DPTRFS.1">DPTRFS</a>( N, NRHS, D, E, DF, EF, B, LDB, X, LDX, FERR, BERR,
+     $             WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set INFO = N+1 if the matrix is singular to working precision.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( RCOND.LT.<a name="DLAMCH.226"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Epsilon'</span> ) )
+     $   INFO = N + 1
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DPTSVX.231"></a><a href="dptsvx.f.html#DPTSVX.1">DPTSVX</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

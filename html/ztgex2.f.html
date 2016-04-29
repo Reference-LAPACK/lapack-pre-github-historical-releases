@@ -1,0 +1,289 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>ztgex2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZTGEX2.1"></a><a href="ztgex2.f.html#ZTGEX2.1">ZTGEX2</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ, Z,
+     $                   LDZ, J1, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      LOGICAL            WANTQ, WANTZ
+      INTEGER            INFO, J1, LDA, LDB, LDQ, LDZ, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX*16         A( LDA, * ), B( LDB, * ), Q( LDQ, * ),
+     $                   Z( LDZ, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZTGEX2.20"></a><a href="ztgex2.f.html#ZTGEX2.1">ZTGEX2</a> swaps adjacent diagonal 1 by 1 blocks (A11,B11) and (A22,B22)
+</span><span class="comment">*</span><span class="comment">  in an upper triangular matrix pair (A, B) by an unitary equivalence
+</span><span class="comment">*</span><span class="comment">  transformation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  (A, B) must be in generalized Schur canonical form, that is, A and
+</span><span class="comment">*</span><span class="comment">  B are both upper triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Optionally, the matrices Q and Z of generalized Schur vectors are
+</span><span class="comment">*</span><span class="comment">  updated.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">         Q(in) * A(in) * Z(in)' = Q(out) * A(out) * Z(out)'
+</span><span class="comment">*</span><span class="comment">         Q(in) * B(in) * Z(in)' = Q(out) * B(out) * Z(out)'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WANTQ   (input) LOGICAL
+</span><span class="comment">*</span><span class="comment">          .TRUE. : update the left transformation matrix Q;
+</span><span class="comment">*</span><span class="comment">          .FALSE.: do not update Q.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WANTZ   (input) LOGICAL
+</span><span class="comment">*</span><span class="comment">          .TRUE. : update the right transformation matrix Z;
+</span><span class="comment">*</span><span class="comment">          .FALSE.: do not update Z.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrices A and B. N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) COMPLEX*16 arrays, dimensions (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the matrix A in the pair (A, B).
+</span><span class="comment">*</span><span class="comment">          On exit, the updated matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input)  INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A. LDA &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input/output) COMPLEX*16 arrays, dimensions (LDB,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the matrix B in the pair (A, B).
+</span><span class="comment">*</span><span class="comment">          On exit, the updated matrix B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input)  INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B. LDB &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Q       (input/output) COMPLEX*16 array, dimension (LDZ,N)
+</span><span class="comment">*</span><span class="comment">          If WANTQ = .TRUE, on entry, the unitary matrix Q. On exit,
+</span><span class="comment">*</span><span class="comment">          the updated matrix Q.
+</span><span class="comment">*</span><span class="comment">          Not referenced if WANTQ = .FALSE..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDQ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Q. LDQ &gt;= 1;
+</span><span class="comment">*</span><span class="comment">          If WANTQ = .TRUE., LDQ &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z       (input/output) COMPLEX*16 array, dimension (LDZ,N)
+</span><span class="comment">*</span><span class="comment">          If WANTZ = .TRUE, on entry, the unitary matrix Z. On exit,
+</span><span class="comment">*</span><span class="comment">          the updated matrix Z.
+</span><span class="comment">*</span><span class="comment">          Not referenced if WANTZ = .FALSE..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDZ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Z. LDZ &gt;= 1;
+</span><span class="comment">*</span><span class="comment">          If WANTZ = .TRUE., LDZ &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  J1      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The index to the first block (A11, B11).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">           =0:  Successful exit.
+</span><span class="comment">*</span><span class="comment">           =1:  The transformed matrix pair (A, B) would be too far
+</span><span class="comment">*</span><span class="comment">                from generalized Schur form; the problem is ill-
+</span><span class="comment">*</span><span class="comment">                conditioned. 
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Bo Kagstrom and Peter Poromaa, Department of Computing Science,
+</span><span class="comment">*</span><span class="comment">     Umea University, S-901 87 Umea, Sweden.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  In the current code both weak and strong stability tests are
+</span><span class="comment">*</span><span class="comment">  performed. The user can omit the strong stability test by changing
+</span><span class="comment">*</span><span class="comment">  the internal logical parameter WANDS to .FALSE.. See ref. [2] for
+</span><span class="comment">*</span><span class="comment">  details.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  [1] B. Kagstrom; A Direct Method for Reordering Eigenvalues in the
+</span><span class="comment">*</span><span class="comment">      Generalized Real Schur Form of a Regular Matrix Pair (A, B), in
+</span><span class="comment">*</span><span class="comment">      M.S. Moonen et al (eds), Linear Algebra for Large Scale and
+</span><span class="comment">*</span><span class="comment">      Real-Time Applications, Kluwer Academic Publ. 1993, pp 195-218.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  [2] B. Kagstrom and P. Poromaa; Computing Eigenspaces with Specified
+</span><span class="comment">*</span><span class="comment">      Eigenvalues of a Regular Matrix Pair (A, B) and Condition
+</span><span class="comment">*</span><span class="comment">      Estimation: Theory, Algorithms and Software, Report UMINF-94.04,
+</span><span class="comment">*</span><span class="comment">      Department of Computing Science, Umea University, S-901 87 Umea,
+</span><span class="comment">*</span><span class="comment">      Sweden, 1994. Also as LAPACK Working Note 87. To appear in
+</span><span class="comment">*</span><span class="comment">      Numerical Algorithms, 1996.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      COMPLEX*16         CZERO, CONE
+      PARAMETER          ( CZERO = ( 0.0D+0, 0.0D+0 ),
+     $                   CONE = ( 1.0D+0, 0.0D+0 ) )
+      DOUBLE PRECISION   TEN
+      PARAMETER          ( TEN = 10.0D+0 )
+      INTEGER            LDST
+      PARAMETER          ( LDST = 2 )
+      LOGICAL            WANDS
+      PARAMETER          ( WANDS = .TRUE. )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            DTRONG, WEAK
+      INTEGER            I, M
+      DOUBLE PRECISION   CQ, CZ, EPS, SA, SB, SCALE, SMLNUM, SS, SUM,
+     $                   THRESH, WS
+      COMPLEX*16         CDUM, F, G, SQ, SZ
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      COMPLEX*16         S( LDST, LDST ), T( LDST, LDST ), WORK( 8 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      DOUBLE PRECISION   <a name="DLAMCH.138"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+      EXTERNAL           <a name="DLAMCH.139"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="ZLACPY.142"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>, <a name="ZLARTG.142"></a><a href="zlartg.f.html#ZLARTG.1">ZLARTG</a>, <a name="ZLASSQ.142"></a><a href="zlassq.f.html#ZLASSQ.1">ZLASSQ</a>, <a name="ZROT.142"></a><a href="zrot.f.html#ZROT.1">ZROT</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, DBLE, DCONJG, MAX, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.LE.1 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      M = LDST
+      WEAK = .FALSE.
+      DTRONG = .FALSE.
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Make a local copy of selected block in (A, B)
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="ZLACPY.162"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'Full'</span>, M, M, A( J1, J1 ), LDA, S, LDST )
+      CALL <a name="ZLACPY.163"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'Full'</span>, M, M, B( J1, J1 ), LDB, T, LDST )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the threshold for testing the acceptance of swapping.
+</span><span class="comment">*</span><span class="comment">
+</span>      EPS = <a name="DLAMCH.167"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'P'</span> )
+      SMLNUM = <a name="DLAMCH.168"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'S'</span> ) / EPS
+      SCALE = DBLE( CZERO )
+      SUM = DBLE( CONE )
+      CALL <a name="ZLACPY.171"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'Full'</span>, M, M, S, LDST, WORK, M )
+      CALL <a name="ZLACPY.172"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'Full'</span>, M, M, T, LDST, WORK( M*M+1 ), M )
+      CALL <a name="ZLASSQ.173"></a><a href="zlassq.f.html#ZLASSQ.1">ZLASSQ</a>( 2*M*M, WORK, 1, SCALE, SUM )
+      SA = SCALE*SQRT( SUM )
+      THRESH = MAX( TEN*EPS*SA, SMLNUM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute unitary QL and RQ that swap 1-by-1 and 1-by-1 blocks
+</span><span class="comment">*</span><span class="comment">     using Givens rotations and perform the swap tentatively.
+</span><span class="comment">*</span><span class="comment">
+</span>      F = S( 2, 2 )*T( 1, 1 ) - T( 2, 2 )*S( 1, 1 )
+      G = S( 2, 2 )*T( 1, 2 ) - T( 2, 2 )*S( 1, 2 )
+      SA = ABS( S( 2, 2 ) )
+      SB = ABS( T( 2, 2 ) )
+      CALL <a name="ZLARTG.184"></a><a href="zlartg.f.html#ZLARTG.1">ZLARTG</a>( G, F, CZ, SZ, CDUM )
+      SZ = -SZ
+      CALL <a name="ZROT.186"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( 2, S( 1, 1 ), 1, S( 1, 2 ), 1, CZ, DCONJG( SZ ) )
+      CALL <a name="ZROT.187"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( 2, T( 1, 1 ), 1, T( 1, 2 ), 1, CZ, DCONJG( SZ ) )
+      IF( SA.GE.SB ) THEN
+         CALL <a name="ZLARTG.189"></a><a href="zlartg.f.html#ZLARTG.1">ZLARTG</a>( S( 1, 1 ), S( 2, 1 ), CQ, SQ, CDUM )
+      ELSE
+         CALL <a name="ZLARTG.191"></a><a href="zlartg.f.html#ZLARTG.1">ZLARTG</a>( T( 1, 1 ), T( 2, 1 ), CQ, SQ, CDUM )
+      END IF
+      CALL <a name="ZROT.193"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( 2, S( 1, 1 ), LDST, S( 2, 1 ), LDST, CQ, SQ )
+      CALL <a name="ZROT.194"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( 2, T( 1, 1 ), LDST, T( 2, 1 ), LDST, CQ, SQ )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Weak stability test: |S21| + |T21| &lt;= O(EPS F-norm((S, T)))
+</span><span class="comment">*</span><span class="comment">
+</span>      WS = ABS( S( 2, 1 ) ) + ABS( T( 2, 1 ) )
+      WEAK = WS.LE.THRESH
+      IF( .NOT.WEAK )
+     $   GO TO 20
+<span class="comment">*</span><span class="comment">
+</span>      IF( WANDS ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Strong stability test:
+</span><span class="comment">*</span><span class="comment">           F-norm((A-QL'*S*QR, B-QL'*T*QR)) &lt;= O(EPS*F-norm((A, B)))
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="ZLACPY.208"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'Full'</span>, M, M, S, LDST, WORK, M )
+         CALL <a name="ZLACPY.209"></a><a href="zlacpy.f.html#ZLACPY.1">ZLACPY</a>( <span class="string">'Full'</span>, M, M, T, LDST, WORK( M*M+1 ), M )
+         CALL <a name="ZROT.210"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( 2, WORK, 1, WORK( 3 ), 1, CZ, -DCONJG( SZ ) )
+         CALL <a name="ZROT.211"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( 2, WORK( 5 ), 1, WORK( 7 ), 1, CZ, -DCONJG( SZ ) )
+         CALL <a name="ZROT.212"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( 2, WORK, 2, WORK( 2 ), 2, CQ, -SQ )
+         CALL <a name="ZROT.213"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( 2, WORK( 5 ), 2, WORK( 6 ), 2, CQ, -SQ )
+         DO 10 I = 1, 2
+            WORK( I ) = WORK( I ) - A( J1+I-1, J1 )
+            WORK( I+2 ) = WORK( I+2 ) - A( J1+I-1, J1+1 )
+            WORK( I+4 ) = WORK( I+4 ) - B( J1+I-1, J1 )
+            WORK( I+6 ) = WORK( I+6 ) - B( J1+I-1, J1+1 )
+   10    CONTINUE
+         SCALE = DBLE( CZERO )
+         SUM = DBLE( CONE )
+         CALL <a name="ZLASSQ.222"></a><a href="zlassq.f.html#ZLASSQ.1">ZLASSQ</a>( 2*M*M, WORK, 1, SCALE, SUM )
+         SS = SCALE*SQRT( SUM )
+         DTRONG = SS.LE.THRESH
+         IF( .NOT.DTRONG )
+     $      GO TO 20
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If the swap is accepted (&quot;weakly&quot; and &quot;strongly&quot;), apply the
+</span><span class="comment">*</span><span class="comment">     equivalence transformations to the original matrix pair (A,B)
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="ZROT.232"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( J1+1, A( 1, J1 ), 1, A( 1, J1+1 ), 1, CZ,
+     $           DCONJG( SZ ) )
+      CALL <a name="ZROT.234"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( J1+1, B( 1, J1 ), 1, B( 1, J1+1 ), 1, CZ,
+     $           DCONJG( SZ ) )
+      CALL <a name="ZROT.236"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( N-J1+1, A( J1, J1 ), LDA, A( J1+1, J1 ), LDA, CQ, SQ )
+      CALL <a name="ZROT.237"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( N-J1+1, B( J1, J1 ), LDB, B( J1+1, J1 ), LDB, CQ, SQ )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set  N1 by N2 (2,1) blocks to 0
+</span><span class="comment">*</span><span class="comment">
+</span>      A( J1+1, J1 ) = CZERO
+      B( J1+1, J1 ) = CZERO
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Accumulate transformations into Q and Z if requested.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( WANTZ )
+     $   CALL <a name="ZROT.247"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( N, Z( 1, J1 ), 1, Z( 1, J1+1 ), 1, CZ,
+     $              DCONJG( SZ ) )
+      IF( WANTQ )
+     $   CALL <a name="ZROT.250"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( N, Q( 1, J1 ), 1, Q( 1, J1+1 ), 1, CQ,
+     $              DCONJG( SQ ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Exit with INFO = 0 if swap was successfully performed.
+</span><span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Exit with INFO = 1 if swap was rejected.
+</span><span class="comment">*</span><span class="comment">
+</span>   20 CONTINUE
+      INFO = 1
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZTGEX2.263"></a><a href="ztgex2.f.html#ZTGEX2.1">ZTGEX2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

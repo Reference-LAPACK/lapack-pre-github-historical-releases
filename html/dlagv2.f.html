@@ -1,0 +1,311 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlagv2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLAGV2.1"></a><a href="dlagv2.f.html#DLAGV2.1">DLAGV2</a>( A, LDA, B, LDB, ALPHAR, ALPHAI, BETA, CSL, SNL,
+     $                   CSR, SNR )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            LDA, LDB
+      DOUBLE PRECISION   CSL, CSR, SNL, SNR
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   A( LDA, * ), ALPHAI( 2 ), ALPHAR( 2 ),
+     $                   B( LDB, * ), BETA( 2 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLAGV2.20"></a><a href="dlagv2.f.html#DLAGV2.1">DLAGV2</a> computes the Generalized Schur factorization of a real 2-by-2
+</span><span class="comment">*</span><span class="comment">  matrix pencil (A,B) where B is upper triangular. This routine
+</span><span class="comment">*</span><span class="comment">  computes orthogonal (rotation) matrices given by CSL, SNL and CSR,
+</span><span class="comment">*</span><span class="comment">  SNR such that
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  1) if the pencil (A,B) has two real eigenvalues (include 0/0 or 1/0
+</span><span class="comment">*</span><span class="comment">     types), then
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     [ a11 a12 ] := [  CSL  SNL ] [ a11 a12 ] [  CSR -SNR ]
+</span><span class="comment">*</span><span class="comment">     [  0  a22 ]    [ -SNL  CSL ] [ a21 a22 ] [  SNR  CSR ]
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     [ b11 b12 ] := [  CSL  SNL ] [ b11 b12 ] [  CSR -SNR ]
+</span><span class="comment">*</span><span class="comment">     [  0  b22 ]    [ -SNL  CSL ] [  0  b22 ] [  SNR  CSR ],
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  2) if the pencil (A,B) has a pair of complex conjugate eigenvalues,
+</span><span class="comment">*</span><span class="comment">     then
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     [ a11 a12 ] := [  CSL  SNL ] [ a11 a12 ] [  CSR -SNR ]
+</span><span class="comment">*</span><span class="comment">     [ a21 a22 ]    [ -SNL  CSL ] [ a21 a22 ] [  SNR  CSR ]
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     [ b11  0  ] := [  CSL  SNL ] [ b11 b12 ] [  CSR -SNR ]
+</span><span class="comment">*</span><span class="comment">     [  0  b22 ]    [ -SNL  CSL ] [  0  b22 ] [  SNR  CSR ]
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     where b11 &gt;= b22 &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) DOUBLE PRECISION array, dimension (LDA, 2)
+</span><span class="comment">*</span><span class="comment">          On entry, the 2 x 2 matrix A.
+</span><span class="comment">*</span><span class="comment">          On exit, A is overwritten by the ``A-part'' of the
+</span><span class="comment">*</span><span class="comment">          generalized Schur form.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          THe leading dimension of the array A.  LDA &gt;= 2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input/output) DOUBLE PRECISION array, dimension (LDB, 2)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper triangular 2 x 2 matrix B.
+</span><span class="comment">*</span><span class="comment">          On exit, B is overwritten by the ``B-part'' of the
+</span><span class="comment">*</span><span class="comment">          generalized Schur form.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          THe leading dimension of the array B.  LDB &gt;= 2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ALPHAR  (output) DOUBLE PRECISION array, dimension (2)
+</span><span class="comment">*</span><span class="comment">  ALPHAI  (output) DOUBLE PRECISION array, dimension (2)
+</span><span class="comment">*</span><span class="comment">  BETA    (output) DOUBLE PRECISION array, dimension (2)
+</span><span class="comment">*</span><span class="comment">          (ALPHAR(k)+i*ALPHAI(k))/BETA(k) are the eigenvalues of the
+</span><span class="comment">*</span><span class="comment">          pencil (A,B), k=1,2, i = sqrt(-1).  Note that BETA(k) may
+</span><span class="comment">*</span><span class="comment">          be zero.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CSL     (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The cosine of the left rotation matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SNL     (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The sine of the left rotation matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CSR     (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The cosine of the right rotation matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SNR     (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The sine of the right rotation matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Mark Fahey, Department of Mathematics, Univ. of Kentucky, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      DOUBLE PRECISION   ANORM, ASCALE, BNORM, BSCALE, H1, H2, H3, QQ,
+     $                   R, RR, SAFMIN, SCALE1, SCALE2, T, ULP, WI, WR1,
+     $                   WR2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DLAG2.102"></a><a href="dlag2.f.html#DLAG2.1">DLAG2</a>, <a name="DLARTG.102"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>, <a name="DLASV2.102"></a><a href="dlasv2.f.html#DLASV2.1">DLASV2</a>, DROT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      DOUBLE PRECISION   <a name="DLAMCH.105"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLAPY2.105"></a><a href="dlapy2.f.html#DLAPY2.1">DLAPY2</a>
+      EXTERNAL           <a name="DLAMCH.106"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLAPY2.106"></a><a href="dlapy2.f.html#DLAPY2.1">DLAPY2</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      SAFMIN = <a name="DLAMCH.113"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'S'</span> )
+      ULP = <a name="DLAMCH.114"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'P'</span> )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Scale A
+</span><span class="comment">*</span><span class="comment">
+</span>      ANORM = MAX( ABS( A( 1, 1 ) )+ABS( A( 2, 1 ) ),
+     $        ABS( A( 1, 2 ) )+ABS( A( 2, 2 ) ), SAFMIN )
+      ASCALE = ONE / ANORM
+      A( 1, 1 ) = ASCALE*A( 1, 1 )
+      A( 1, 2 ) = ASCALE*A( 1, 2 )
+      A( 2, 1 ) = ASCALE*A( 2, 1 )
+      A( 2, 2 ) = ASCALE*A( 2, 2 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Scale B
+</span><span class="comment">*</span><span class="comment">
+</span>      BNORM = MAX( ABS( B( 1, 1 ) ), ABS( B( 1, 2 ) )+ABS( B( 2, 2 ) ),
+     $        SAFMIN )
+      BSCALE = ONE / BNORM
+      B( 1, 1 ) = BSCALE*B( 1, 1 )
+      B( 1, 2 ) = BSCALE*B( 1, 2 )
+      B( 2, 2 ) = BSCALE*B( 2, 2 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Check if A can be deflated
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ABS( A( 2, 1 ) ).LE.ULP ) THEN
+         CSL = ONE
+         SNL = ZERO
+         CSR = ONE
+         SNR = ZERO
+         A( 2, 1 ) = ZERO
+         B( 2, 1 ) = ZERO
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Check if B is singular
+</span><span class="comment">*</span><span class="comment">
+</span>      ELSE IF( ABS( B( 1, 1 ) ).LE.ULP ) THEN
+         CALL <a name="DLARTG.148"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( A( 1, 1 ), A( 2, 1 ), CSL, SNL, R )
+         CSR = ONE
+         SNR = ZERO
+         CALL DROT( 2, A( 1, 1 ), LDA, A( 2, 1 ), LDA, CSL, SNL )
+         CALL DROT( 2, B( 1, 1 ), LDB, B( 2, 1 ), LDB, CSL, SNL )
+         A( 2, 1 ) = ZERO
+         B( 1, 1 ) = ZERO
+         B( 2, 1 ) = ZERO
+<span class="comment">*</span><span class="comment">
+</span>      ELSE IF( ABS( B( 2, 2 ) ).LE.ULP ) THEN
+         CALL <a name="DLARTG.158"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( A( 2, 2 ), A( 2, 1 ), CSR, SNR, T )
+         SNR = -SNR
+         CALL DROT( 2, A( 1, 1 ), 1, A( 1, 2 ), 1, CSR, SNR )
+         CALL DROT( 2, B( 1, 1 ), 1, B( 1, 2 ), 1, CSR, SNR )
+         CSL = ONE
+         SNL = ZERO
+         A( 2, 1 ) = ZERO
+         B( 2, 1 ) = ZERO
+         B( 2, 2 ) = ZERO
+<span class="comment">*</span><span class="comment">
+</span>      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        B is nonsingular, first compute the eigenvalues of (A,B)
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DLAG2.172"></a><a href="dlag2.f.html#DLAG2.1">DLAG2</a>( A, LDA, B, LDB, SAFMIN, SCALE1, SCALE2, WR1, WR2,
+     $               WI )
+<span class="comment">*</span><span class="comment">
+</span>         IF( WI.EQ.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           two real eigenvalues, compute s*A-w*B
+</span><span class="comment">*</span><span class="comment">
+</span>            H1 = SCALE1*A( 1, 1 ) - WR1*B( 1, 1 )
+            H2 = SCALE1*A( 1, 2 ) - WR1*B( 1, 2 )
+            H3 = SCALE1*A( 2, 2 ) - WR1*B( 2, 2 )
+<span class="comment">*</span><span class="comment">
+</span>            RR = <a name="DLAPY2.183"></a><a href="dlapy2.f.html#DLAPY2.1">DLAPY2</a>( H1, H2 )
+            QQ = <a name="DLAPY2.184"></a><a href="dlapy2.f.html#DLAPY2.1">DLAPY2</a>( SCALE1*A( 2, 1 ), H3 )
+<span class="comment">*</span><span class="comment">
+</span>            IF( RR.GT.QQ ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              find right rotation matrix to zero 1,1 element of
+</span><span class="comment">*</span><span class="comment">              (sA - wB)
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="DLARTG.191"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( H2, H1, CSR, SNR, T )
+<span class="comment">*</span><span class="comment">
+</span>            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              find right rotation matrix to zero 2,1 element of
+</span><span class="comment">*</span><span class="comment">              (sA - wB)
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="DLARTG.198"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( H3, SCALE1*A( 2, 1 ), CSR, SNR, T )
+<span class="comment">*</span><span class="comment">
+</span>            END IF
+<span class="comment">*</span><span class="comment">
+</span>            SNR = -SNR
+            CALL DROT( 2, A( 1, 1 ), 1, A( 1, 2 ), 1, CSR, SNR )
+            CALL DROT( 2, B( 1, 1 ), 1, B( 1, 2 ), 1, CSR, SNR )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           compute inf norms of A and B
+</span><span class="comment">*</span><span class="comment">
+</span>            H1 = MAX( ABS( A( 1, 1 ) )+ABS( A( 1, 2 ) ),
+     $           ABS( A( 2, 1 ) )+ABS( A( 2, 2 ) ) )
+            H2 = MAX( ABS( B( 1, 1 ) )+ABS( B( 1, 2 ) ),
+     $           ABS( B( 2, 1 ) )+ABS( B( 2, 2 ) ) )
+<span class="comment">*</span><span class="comment">
+</span>            IF( ( SCALE1*H1 ).GE.ABS( WR1 )*H2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              find left rotation matrix Q to zero out B(2,1)
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="DLARTG.217"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( B( 1, 1 ), B( 2, 1 ), CSL, SNL, R )
+<span class="comment">*</span><span class="comment">
+</span>            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              find left rotation matrix Q to zero out A(2,1)
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="DLARTG.223"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( A( 1, 1 ), A( 2, 1 ), CSL, SNL, R )
+<span class="comment">*</span><span class="comment">
+</span>            END IF
+<span class="comment">*</span><span class="comment">
+</span>            CALL DROT( 2, A( 1, 1 ), LDA, A( 2, 1 ), LDA, CSL, SNL )
+            CALL DROT( 2, B( 1, 1 ), LDB, B( 2, 1 ), LDB, CSL, SNL )
+<span class="comment">*</span><span class="comment">
+</span>            A( 2, 1 ) = ZERO
+            B( 2, 1 ) = ZERO
+<span class="comment">*</span><span class="comment">
+</span>         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           a pair of complex conjugate eigenvalues
+</span><span class="comment">*</span><span class="comment">           first compute the SVD of the matrix B
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="DLASV2.238"></a><a href="dlasv2.f.html#DLASV2.1">DLASV2</a>( B( 1, 1 ), B( 1, 2 ), B( 2, 2 ), R, T, SNR,
+     $                   CSR, SNL, CSL )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Form (A,B) := Q(A,B)Z' where Q is left rotation matrix and
+</span><span class="comment">*</span><span class="comment">           Z is right rotation matrix computed from <a name="DLASV2.242"></a><a href="dlasv2.f.html#DLASV2.1">DLASV2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL DROT( 2, A( 1, 1 ), LDA, A( 2, 1 ), LDA, CSL, SNL )
+            CALL DROT( 2, B( 1, 1 ), LDB, B( 2, 1 ), LDB, CSL, SNL )
+            CALL DROT( 2, A( 1, 1 ), 1, A( 1, 2 ), 1, CSR, SNR )
+            CALL DROT( 2, B( 1, 1 ), 1, B( 1, 2 ), 1, CSR, SNR )
+<span class="comment">*</span><span class="comment">
+</span>            B( 2, 1 ) = ZERO
+            B( 1, 2 ) = ZERO
+<span class="comment">*</span><span class="comment">
+</span>         END IF
+<span class="comment">*</span><span class="comment">
+</span>      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Unscaling
+</span><span class="comment">*</span><span class="comment">
+</span>      A( 1, 1 ) = ANORM*A( 1, 1 )
+      A( 2, 1 ) = ANORM*A( 2, 1 )
+      A( 1, 2 ) = ANORM*A( 1, 2 )
+      A( 2, 2 ) = ANORM*A( 2, 2 )
+      B( 1, 1 ) = BNORM*B( 1, 1 )
+      B( 2, 1 ) = BNORM*B( 2, 1 )
+      B( 1, 2 ) = BNORM*B( 1, 2 )
+      B( 2, 2 ) = BNORM*B( 2, 2 )
+<span class="comment">*</span><span class="comment">
+</span>      IF( WI.EQ.ZERO ) THEN
+         ALPHAR( 1 ) = A( 1, 1 )
+         ALPHAR( 2 ) = A( 2, 2 )
+         ALPHAI( 1 ) = ZERO
+         ALPHAI( 2 ) = ZERO
+         BETA( 1 ) = B( 1, 1 )
+         BETA( 2 ) = B( 2, 2 )
+      ELSE
+         ALPHAR( 1 ) = ANORM*WR1 / SCALE1 / BNORM
+         ALPHAI( 1 ) = ANORM*WI / SCALE1 / BNORM
+         ALPHAR( 2 ) = ALPHAR( 1 )
+         ALPHAI( 2 ) = -ALPHAI( 1 )
+         BETA( 1 ) = ONE
+         BETA( 2 ) = ONE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLAGV2.285"></a><a href="dlagv2.f.html#DLAGV2.1">DLAGV2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

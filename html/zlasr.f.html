@@ -1,0 +1,387 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zlasr.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZLASR.1"></a><a href="zlasr.f.html#ZLASR.1">ZLASR</a>( SIDE, PIVOT, DIRECT, M, N, C, S, A, LDA )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          DIRECT, PIVOT, SIDE
+      INTEGER            LDA, M, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   C( * ), S( * )
+      COMPLEX*16         A( LDA, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZLASR.19"></a><a href="zlasr.f.html#ZLASR.1">ZLASR</a> applies a sequence of real plane rotations to a complex matrix
+</span><span class="comment">*</span><span class="comment">  A, from either the left or the right.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  When SIDE = 'L', the transformation takes the form
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     A := P*A
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  and when SIDE = 'R', the transformation takes the form
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     A := A*P**T
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where P is an orthogonal matrix consisting of a sequence of z plane
+</span><span class="comment">*</span><span class="comment">  rotations, with z = M when SIDE = 'L' and z = N when SIDE = 'R',
+</span><span class="comment">*</span><span class="comment">  and P**T is the transpose of P.
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  When DIRECT = 'F' (Forward sequence), then
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">     P = P(z-1) * ... * P(2) * P(1)
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  and when DIRECT = 'B' (Backward sequence), then
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">     P = P(1) * P(2) * ... * P(z-1)
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  where P(k) is a plane rotation matrix defined by the 2-by-2 rotation
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">     R(k) = (  c(k)  s(k) )
+</span><span class="comment">*</span><span class="comment">          = ( -s(k)  c(k) ).
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  When PIVOT = 'V' (Variable pivot), the rotation is performed
+</span><span class="comment">*</span><span class="comment">  for the plane (k,k+1), i.e., P(k) has the form
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">     P(k) = (  1                                            )
+</span><span class="comment">*</span><span class="comment">            (       ...                                     )
+</span><span class="comment">*</span><span class="comment">            (              1                                )
+</span><span class="comment">*</span><span class="comment">            (                   c(k)  s(k)                  )
+</span><span class="comment">*</span><span class="comment">            (                  -s(k)  c(k)                  )
+</span><span class="comment">*</span><span class="comment">            (                                1              )
+</span><span class="comment">*</span><span class="comment">            (                                     ...       )
+</span><span class="comment">*</span><span class="comment">            (                                            1  )
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  where R(k) appears as a rank-2 modification to the identity matrix in
+</span><span class="comment">*</span><span class="comment">  rows and columns k and k+1.
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  When PIVOT = 'T' (Top pivot), the rotation is performed for the
+</span><span class="comment">*</span><span class="comment">  plane (1,k+1), so P(k) has the form
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">     P(k) = (  c(k)                    s(k)                 )
+</span><span class="comment">*</span><span class="comment">            (         1                                     )
+</span><span class="comment">*</span><span class="comment">            (              ...                              )
+</span><span class="comment">*</span><span class="comment">            (                     1                         )
+</span><span class="comment">*</span><span class="comment">            ( -s(k)                    c(k)                 )
+</span><span class="comment">*</span><span class="comment">            (                                 1             )
+</span><span class="comment">*</span><span class="comment">            (                                      ...      )
+</span><span class="comment">*</span><span class="comment">            (                                             1 )
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  where R(k) appears in rows and columns 1 and k+1.
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  Similarly, when PIVOT = 'B' (Bottom pivot), the rotation is
+</span><span class="comment">*</span><span class="comment">  performed for the plane (k,z), giving P(k) the form
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">     P(k) = ( 1                                             )
+</span><span class="comment">*</span><span class="comment">            (      ...                                      )
+</span><span class="comment">*</span><span class="comment">            (             1                                 )
+</span><span class="comment">*</span><span class="comment">            (                  c(k)                    s(k) )
+</span><span class="comment">*</span><span class="comment">            (                         1                     )
+</span><span class="comment">*</span><span class="comment">            (                              ...              )
+</span><span class="comment">*</span><span class="comment">            (                                     1         )
+</span><span class="comment">*</span><span class="comment">            (                 -s(k)                    c(k) )
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  where R(k) appears in rows and columns k and z.  The rotations are
+</span><span class="comment">*</span><span class="comment">  performed without ever forming P(k) explicitly.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SIDE    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether the plane rotation matrix P is applied to
+</span><span class="comment">*</span><span class="comment">          A on the left or the right.
+</span><span class="comment">*</span><span class="comment">          = 'L':  Left, compute A := P*A
+</span><span class="comment">*</span><span class="comment">          = 'R':  Right, compute A:= A*P**T
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  PIVOT   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies the plane for which P(k) is a plane rotation
+</span><span class="comment">*</span><span class="comment">          matrix.
+</span><span class="comment">*</span><span class="comment">          = 'V':  Variable pivot, the plane (k,k+1)
+</span><span class="comment">*</span><span class="comment">          = 'T':  Top pivot, the plane (1,k+1)
+</span><span class="comment">*</span><span class="comment">          = 'B':  Bottom pivot, the plane (k,z)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIRECT  (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether P is a forward or backward sequence of
+</span><span class="comment">*</span><span class="comment">          plane rotations.
+</span><span class="comment">*</span><span class="comment">          = 'F':  Forward, P = P(z-1)*...*P(2)*P(1)
+</span><span class="comment">*</span><span class="comment">          = 'B':  Backward, P = P(1)*P(2)*...*P(z-1)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix A.  If m &lt;= 1, an immediate
+</span><span class="comment">*</span><span class="comment">          return is effected.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix A.  If n &lt;= 1, an
+</span><span class="comment">*</span><span class="comment">          immediate return is effected.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C       (input) DOUBLE PRECISION array, dimension
+</span><span class="comment">*</span><span class="comment">                  (M-1) if SIDE = 'L'
+</span><span class="comment">*</span><span class="comment">                  (N-1) if SIDE = 'R'
+</span><span class="comment">*</span><span class="comment">          The cosines c(k) of the plane rotations.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  S       (input) DOUBLE PRECISION array, dimension
+</span><span class="comment">*</span><span class="comment">                  (M-1) if SIDE = 'L'
+</span><span class="comment">*</span><span class="comment">                  (N-1) if SIDE = 'R'
+</span><span class="comment">*</span><span class="comment">          The sines s(k) of the plane rotations.  The 2-by-2 plane
+</span><span class="comment">*</span><span class="comment">          rotation part of the matrix P(k), R(k), has the form
+</span><span class="comment">*</span><span class="comment">          R(k) = (  c(k)  s(k) )
+</span><span class="comment">*</span><span class="comment">                 ( -s(k)  c(k) ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) COMPLEX*16 array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          The M-by-N matrix A.  On exit, A is overwritten by P*A if
+</span><span class="comment">*</span><span class="comment">          SIDE = 'R' or by A*P**T if SIDE = 'L'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ONE, ZERO
+      PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, INFO, J
+      DOUBLE PRECISION   CTEMP, STEMP
+      COMPLEX*16         TEMP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.156"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.157"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.160"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( .NOT.( <a name="LSAME.167"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'L'</span> ) .OR. <a name="LSAME.167"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'R'</span> ) ) ) THEN
+         INFO = 1
+      ELSE IF( .NOT.( <a name="LSAME.169"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( PIVOT, <span class="string">'V'</span> ) .OR. <a name="LSAME.169"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( PIVOT,
+     $         <span class="string">'T'</span> ) .OR. <a name="LSAME.170"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( PIVOT, <span class="string">'B'</span> ) ) ) THEN
+         INFO = 2
+      ELSE IF( .NOT.( <a name="LSAME.172"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIRECT, <span class="string">'F'</span> ) .OR. <a name="LSAME.172"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIRECT, <span class="string">'B'</span> ) ) )
+     $          THEN
+         INFO = 3
+      ELSE IF( M.LT.0 ) THEN
+         INFO = 4
+      ELSE IF( N.LT.0 ) THEN
+         INFO = 5
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = 9
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.183"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZLASR.183"></a><a href="zlasr.f.html#ZLASR.1">ZLASR</a> '</span>, INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ( M.EQ.0 ) .OR. ( N.EQ.0 ) )
+     $   RETURN
+      IF( <a name="LSAME.191"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'L'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Form  P * A
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( <a name="LSAME.195"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( PIVOT, <span class="string">'V'</span> ) ) THEN
+            IF( <a name="LSAME.196"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIRECT, <span class="string">'F'</span> ) ) THEN
+               DO 20 J = 1, M - 1
+                  CTEMP = C( J )
+                  STEMP = S( J )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 10 I = 1, N
+                        TEMP = A( J+1, I )
+                        A( J+1, I ) = CTEMP*TEMP - STEMP*A( J, I )
+                        A( J, I ) = STEMP*TEMP + CTEMP*A( J, I )
+   10                CONTINUE
+                  END IF
+   20          CONTINUE
+            ELSE IF( <a name="LSAME.208"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIRECT, <span class="string">'B'</span> ) ) THEN
+               DO 40 J = M - 1, 1, -1
+                  CTEMP = C( J )
+                  STEMP = S( J )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 30 I = 1, N
+                        TEMP = A( J+1, I )
+                        A( J+1, I ) = CTEMP*TEMP - STEMP*A( J, I )
+                        A( J, I ) = STEMP*TEMP + CTEMP*A( J, I )
+   30                CONTINUE
+                  END IF
+   40          CONTINUE
+            END IF
+         ELSE IF( <a name="LSAME.221"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( PIVOT, <span class="string">'T'</span> ) ) THEN
+            IF( <a name="LSAME.222"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIRECT, <span class="string">'F'</span> ) ) THEN
+               DO 60 J = 2, M
+                  CTEMP = C( J-1 )
+                  STEMP = S( J-1 )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 50 I = 1, N
+                        TEMP = A( J, I )
+                        A( J, I ) = CTEMP*TEMP - STEMP*A( 1, I )
+                        A( 1, I ) = STEMP*TEMP + CTEMP*A( 1, I )
+   50                CONTINUE
+                  END IF
+   60          CONTINUE
+            ELSE IF( <a name="LSAME.234"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIRECT, <span class="string">'B'</span> ) ) THEN
+               DO 80 J = M, 2, -1
+                  CTEMP = C( J-1 )
+                  STEMP = S( J-1 )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 70 I = 1, N
+                        TEMP = A( J, I )
+                        A( J, I ) = CTEMP*TEMP - STEMP*A( 1, I )
+                        A( 1, I ) = STEMP*TEMP + CTEMP*A( 1, I )
+   70                CONTINUE
+                  END IF
+   80          CONTINUE
+            END IF
+         ELSE IF( <a name="LSAME.247"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( PIVOT, <span class="string">'B'</span> ) ) THEN
+            IF( <a name="LSAME.248"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIRECT, <span class="string">'F'</span> ) ) THEN
+               DO 100 J = 1, M - 1
+                  CTEMP = C( J )
+                  STEMP = S( J )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 90 I = 1, N
+                        TEMP = A( J, I )
+                        A( J, I ) = STEMP*A( M, I ) + CTEMP*TEMP
+                        A( M, I ) = CTEMP*A( M, I ) - STEMP*TEMP
+   90                CONTINUE
+                  END IF
+  100          CONTINUE
+            ELSE IF( <a name="LSAME.260"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIRECT, <span class="string">'B'</span> ) ) THEN
+               DO 120 J = M - 1, 1, -1
+                  CTEMP = C( J )
+                  STEMP = S( J )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 110 I = 1, N
+                        TEMP = A( J, I )
+                        A( J, I ) = STEMP*A( M, I ) + CTEMP*TEMP
+                        A( M, I ) = CTEMP*A( M, I ) - STEMP*TEMP
+  110                CONTINUE
+                  END IF
+  120          CONTINUE
+            END IF
+         END IF
+      ELSE IF( <a name="LSAME.274"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'R'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Form A * P'
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( <a name="LSAME.278"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( PIVOT, <span class="string">'V'</span> ) ) THEN
+            IF( <a name="LSAME.279"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIRECT, <span class="string">'F'</span> ) ) THEN
+               DO 140 J = 1, N - 1
+                  CTEMP = C( J )
+                  STEMP = S( J )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 130 I = 1, M
+                        TEMP = A( I, J+1 )
+                        A( I, J+1 ) = CTEMP*TEMP - STEMP*A( I, J )
+                        A( I, J ) = STEMP*TEMP + CTEMP*A( I, J )
+  130                CONTINUE
+                  END IF
+  140          CONTINUE
+            ELSE IF( <a name="LSAME.291"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIRECT, <span class="string">'B'</span> ) ) THEN
+               DO 160 J = N - 1, 1, -1
+                  CTEMP = C( J )
+                  STEMP = S( J )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 150 I = 1, M
+                        TEMP = A( I, J+1 )
+                        A( I, J+1 ) = CTEMP*TEMP - STEMP*A( I, J )
+                        A( I, J ) = STEMP*TEMP + CTEMP*A( I, J )
+  150                CONTINUE
+                  END IF
+  160          CONTINUE
+            END IF
+         ELSE IF( <a name="LSAME.304"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( PIVOT, <span class="string">'T'</span> ) ) THEN
+            IF( <a name="LSAME.305"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIRECT, <span class="string">'F'</span> ) ) THEN
+               DO 180 J = 2, N
+                  CTEMP = C( J-1 )
+                  STEMP = S( J-1 )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 170 I = 1, M
+                        TEMP = A( I, J )
+                        A( I, J ) = CTEMP*TEMP - STEMP*A( I, 1 )
+                        A( I, 1 ) = STEMP*TEMP + CTEMP*A( I, 1 )
+  170                CONTINUE
+                  END IF
+  180          CONTINUE
+            ELSE IF( <a name="LSAME.317"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIRECT, <span class="string">'B'</span> ) ) THEN
+               DO 200 J = N, 2, -1
+                  CTEMP = C( J-1 )
+                  STEMP = S( J-1 )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 190 I = 1, M
+                        TEMP = A( I, J )
+                        A( I, J ) = CTEMP*TEMP - STEMP*A( I, 1 )
+                        A( I, 1 ) = STEMP*TEMP + CTEMP*A( I, 1 )
+  190                CONTINUE
+                  END IF
+  200          CONTINUE
+            END IF
+         ELSE IF( <a name="LSAME.330"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( PIVOT, <span class="string">'B'</span> ) ) THEN
+            IF( <a name="LSAME.331"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIRECT, <span class="string">'F'</span> ) ) THEN
+               DO 220 J = 1, N - 1
+                  CTEMP = C( J )
+                  STEMP = S( J )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 210 I = 1, M
+                        TEMP = A( I, J )
+                        A( I, J ) = STEMP*A( I, N ) + CTEMP*TEMP
+                        A( I, N ) = CTEMP*A( I, N ) - STEMP*TEMP
+  210                CONTINUE
+                  END IF
+  220          CONTINUE
+            ELSE IF( <a name="LSAME.343"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIRECT, <span class="string">'B'</span> ) ) THEN
+               DO 240 J = N - 1, 1, -1
+                  CTEMP = C( J )
+                  STEMP = S( J )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 230 I = 1, M
+                        TEMP = A( I, J )
+                        A( I, J ) = STEMP*A( I, N ) + CTEMP*TEMP
+                        A( I, N ) = CTEMP*A( I, N ) - STEMP*TEMP
+  230                CONTINUE
+                  END IF
+  240          CONTINUE
+            END IF
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZLASR.361"></a><a href="zlasr.f.html#ZLASR.1">ZLASR</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

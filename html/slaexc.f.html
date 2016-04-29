@@ -1,0 +1,377 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slaexc.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLAEXC.1"></a><a href="slaexc.f.html#SLAEXC.1">SLAEXC</a>( WANTQ, N, T, LDT, Q, LDQ, J1, N1, N2, WORK,
+     $                   INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      LOGICAL            WANTQ
+      INTEGER            INFO, J1, LDQ, LDT, N, N1, N2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               Q( LDQ, * ), T( LDT, * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLAEXC.19"></a><a href="slaexc.f.html#SLAEXC.1">SLAEXC</a> swaps adjacent diagonal blocks T11 and T22 of order 1 or 2 in
+</span><span class="comment">*</span><span class="comment">  an upper quasi-triangular matrix T by an orthogonal similarity
+</span><span class="comment">*</span><span class="comment">  transformation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  T must be in Schur canonical form, that is, block upper triangular
+</span><span class="comment">*</span><span class="comment">  with 1-by-1 and 2-by-2 diagonal blocks; each 2-by-2 diagonal block
+</span><span class="comment">*</span><span class="comment">  has its diagonal elemnts equal and its off-diagonal elements of
+</span><span class="comment">*</span><span class="comment">  opposite sign.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WANTQ   (input) LOGICAL
+</span><span class="comment">*</span><span class="comment">          = .TRUE. : accumulate the transformation in the matrix Q;
+</span><span class="comment">*</span><span class="comment">          = .FALSE.: do not accumulate the transformation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix T. N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  T       (input/output) REAL array, dimension (LDT,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper quasi-triangular matrix T, in Schur
+</span><span class="comment">*</span><span class="comment">          canonical form.
+</span><span class="comment">*</span><span class="comment">          On exit, the updated matrix T, again in Schur canonical form.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDT     (input)  INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array T. LDT &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Q       (input/output) REAL array, dimension (LDQ,N)
+</span><span class="comment">*</span><span class="comment">          On entry, if WANTQ is .TRUE., the orthogonal matrix Q.
+</span><span class="comment">*</span><span class="comment">          On exit, if WANTQ is .TRUE., the updated matrix Q.
+</span><span class="comment">*</span><span class="comment">          If WANTQ is .FALSE., Q is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDQ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Q.
+</span><span class="comment">*</span><span class="comment">          LDQ &gt;= 1; and if WANTQ is .TRUE., LDQ &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  J1      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The index of the first row of the first block T11.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N1      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the first block T11. N1 = 0, 1 or 2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N2      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the second block T22. N2 = 0, 1 or 2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0: successful exit
+</span><span class="comment">*</span><span class="comment">          = 1: the transformed matrix T would be too far from Schur
+</span><span class="comment">*</span><span class="comment">               form; the blocks are not swapped and T and Q are
+</span><span class="comment">*</span><span class="comment">               unchanged.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, ONE
+      PARAMETER          ( ZERO = 0.0E+0, ONE = 1.0E+0 )
+      REAL               TEN
+      PARAMETER          ( TEN = 1.0E+1 )
+      INTEGER            LDD, LDX
+      PARAMETER          ( LDD = 4, LDX = 2 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            IERR, J2, J3, J4, K, ND
+      REAL               CS, DNORM, EPS, SCALE, SMLNUM, SN, T11, T22,
+     $                   T33, TAU, TAU1, TAU2, TEMP, THRESH, WI1, WI2,
+     $                   WR1, WR2, XNORM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      REAL               D( LDD, 4 ), U( 3 ), U1( 3 ), U2( 3 ),
+     $                   X( LDX, 2 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      REAL               <a name="SLAMCH.93"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANGE.93"></a><a href="slange.f.html#SLANGE.1">SLANGE</a>
+      EXTERNAL           <a name="SLAMCH.94"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANGE.94"></a><a href="slange.f.html#SLANGE.1">SLANGE</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="SLACPY.97"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>, <a name="SLANV2.97"></a><a href="slanv2.f.html#SLANV2.1">SLANV2</a>, <a name="SLARFG.97"></a><a href="slarfg.f.html#SLARFG.1">SLARFG</a>, <a name="SLARFX.97"></a><a href="slarfx.f.html#SLARFX.1">SLARFX</a>, <a name="SLARTG.97"></a><a href="slartg.f.html#SLARTG.1">SLARTG</a>, <a name="SLASY2.97"></a><a href="slasy2.f.html#SLASY2.1">SLASY2</a>,
+     $                   SROT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 .OR. N1.EQ.0 .OR. N2.EQ.0 )
+     $   RETURN
+      IF( J1+N1.GT.N )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      J2 = J1 + 1
+      J3 = J1 + 2
+      J4 = J1 + 3
+<span class="comment">*</span><span class="comment">
+</span>      IF( N1.EQ.1 .AND. N2.EQ.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Swap two 1-by-1 blocks.
+</span><span class="comment">*</span><span class="comment">
+</span>         T11 = T( J1, J1 )
+         T22 = T( J2, J2 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Determine the transformation to perform the interchange.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="SLARTG.127"></a><a href="slartg.f.html#SLARTG.1">SLARTG</a>( T( J1, J2 ), T22-T11, CS, SN, TEMP )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Apply transformation to the matrix T.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( J3.LE.N )
+     $      CALL SROT( N-J1-1, T( J1, J3 ), LDT, T( J2, J3 ), LDT, CS,
+     $                 SN )
+         CALL SROT( J1-1, T( 1, J1 ), 1, T( 1, J2 ), 1, CS, SN )
+<span class="comment">*</span><span class="comment">
+</span>         T( J1, J1 ) = T22
+         T( J2, J2 ) = T11
+<span class="comment">*</span><span class="comment">
+</span>         IF( WANTQ ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Accumulate transformation in the matrix Q.
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL SROT( N, Q( 1, J1 ), 1, Q( 1, J2 ), 1, CS, SN )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Swapping involves at least one 2-by-2 block.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Copy the diagonal block of order N1+N2 to the local array D
+</span><span class="comment">*</span><span class="comment">        and compute its norm.
+</span><span class="comment">*</span><span class="comment">
+</span>         ND = N1 + N2
+         CALL <a name="SLACPY.154"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, ND, ND, T( J1, J1 ), LDT, D, LDD )
+         DNORM = <a name="SLANGE.155"></a><a href="slange.f.html#SLANGE.1">SLANGE</a>( <span class="string">'Max'</span>, ND, ND, D, LDD, WORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute machine-dependent threshold for test for accepting
+</span><span class="comment">*</span><span class="comment">        swap.
+</span><span class="comment">*</span><span class="comment">
+</span>         EPS = <a name="SLAMCH.160"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'P'</span> )
+         SMLNUM = <a name="SLAMCH.161"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'S'</span> ) / EPS
+         THRESH = MAX( TEN*EPS*DNORM, SMLNUM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve T11*X - X*T22 = scale*T12 for X.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="SLASY2.166"></a><a href="slasy2.f.html#SLASY2.1">SLASY2</a>( .FALSE., .FALSE., -1, N1, N2, D, LDD,
+     $                D( N1+1, N1+1 ), LDD, D( 1, N1+1 ), LDD, SCALE, X,
+     $                LDX, XNORM, IERR )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Swap the adjacent diagonal blocks.
+</span><span class="comment">*</span><span class="comment">
+</span>         K = N1 + N1 + N2 - 3
+         GO TO ( 10, 20, 30 )K
+<span class="comment">*</span><span class="comment">
+</span>   10    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        N1 = 1, N2 = 2: generate elementary reflector H so that:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ( scale, X11, X12 ) H = ( 0, 0, * )
+</span><span class="comment">*</span><span class="comment">
+</span>         U( 1 ) = SCALE
+         U( 2 ) = X( 1, 1 )
+         U( 3 ) = X( 1, 2 )
+         CALL <a name="SLARFG.184"></a><a href="slarfg.f.html#SLARFG.1">SLARFG</a>( 3, U( 3 ), U, 1, TAU )
+         U( 3 ) = ONE
+         T11 = T( J1, J1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Perform swap provisionally on diagonal block in D.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="SLARFX.190"></a><a href="slarfx.f.html#SLARFX.1">SLARFX</a>( <span class="string">'L'</span>, 3, 3, U, TAU, D, LDD, WORK )
+         CALL <a name="SLARFX.191"></a><a href="slarfx.f.html#SLARFX.1">SLARFX</a>( <span class="string">'R'</span>, 3, 3, U, TAU, D, LDD, WORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Test whether to reject swap.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( MAX( ABS( D( 3, 1 ) ), ABS( D( 3, 2 ) ), ABS( D( 3,
+     $       3 )-T11 ) ).GT.THRESH )GO TO 50
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Accept swap: apply transformation to the entire matrix T.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="SLARFX.200"></a><a href="slarfx.f.html#SLARFX.1">SLARFX</a>( <span class="string">'L'</span>, 3, N-J1+1, U, TAU, T( J1, J1 ), LDT, WORK )
+         CALL <a name="SLARFX.201"></a><a href="slarfx.f.html#SLARFX.1">SLARFX</a>( <span class="string">'R'</span>, J2, 3, U, TAU, T( 1, J1 ), LDT, WORK )
+<span class="comment">*</span><span class="comment">
+</span>         T( J3, J1 ) = ZERO
+         T( J3, J2 ) = ZERO
+         T( J3, J3 ) = T11
+<span class="comment">*</span><span class="comment">
+</span>         IF( WANTQ ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Accumulate transformation in the matrix Q.
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="SLARFX.211"></a><a href="slarfx.f.html#SLARFX.1">SLARFX</a>( <span class="string">'R'</span>, N, 3, U, TAU, Q( 1, J1 ), LDQ, WORK )
+         END IF
+         GO TO 40
+<span class="comment">*</span><span class="comment">
+</span>   20    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        N1 = 2, N2 = 1: generate elementary reflector H so that:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        H (  -X11 ) = ( * )
+</span><span class="comment">*</span><span class="comment">          (  -X21 ) = ( 0 )
+</span><span class="comment">*</span><span class="comment">          ( scale ) = ( 0 )
+</span><span class="comment">*</span><span class="comment">
+</span>         U( 1 ) = -X( 1, 1 )
+         U( 2 ) = -X( 2, 1 )
+         U( 3 ) = SCALE
+         CALL <a name="SLARFG.226"></a><a href="slarfg.f.html#SLARFG.1">SLARFG</a>( 3, U( 1 ), U( 2 ), 1, TAU )
+         U( 1 ) = ONE
+         T33 = T( J3, J3 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Perform swap provisionally on diagonal block in D.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="SLARFX.232"></a><a href="slarfx.f.html#SLARFX.1">SLARFX</a>( <span class="string">'L'</span>, 3, 3, U, TAU, D, LDD, WORK )
+         CALL <a name="SLARFX.233"></a><a href="slarfx.f.html#SLARFX.1">SLARFX</a>( <span class="string">'R'</span>, 3, 3, U, TAU, D, LDD, WORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Test whether to reject swap.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( MAX( ABS( D( 2, 1 ) ), ABS( D( 3, 1 ) ), ABS( D( 1,
+     $       1 )-T33 ) ).GT.THRESH )GO TO 50
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Accept swap: apply transformation to the entire matrix T.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="SLARFX.242"></a><a href="slarfx.f.html#SLARFX.1">SLARFX</a>( <span class="string">'R'</span>, J3, 3, U, TAU, T( 1, J1 ), LDT, WORK )
+         CALL <a name="SLARFX.243"></a><a href="slarfx.f.html#SLARFX.1">SLARFX</a>( <span class="string">'L'</span>, 3, N-J1, U, TAU, T( J1, J2 ), LDT, WORK )
+<span class="comment">*</span><span class="comment">
+</span>         T( J1, J1 ) = T33
+         T( J2, J1 ) = ZERO
+         T( J3, J1 ) = ZERO
+<span class="comment">*</span><span class="comment">
+</span>         IF( WANTQ ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Accumulate transformation in the matrix Q.
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="SLARFX.253"></a><a href="slarfx.f.html#SLARFX.1">SLARFX</a>( <span class="string">'R'</span>, N, 3, U, TAU, Q( 1, J1 ), LDQ, WORK )
+         END IF
+         GO TO 40
+<span class="comment">*</span><span class="comment">
+</span>   30    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        N1 = 2, N2 = 2: generate elementary reflectors H(1) and H(2) so
+</span><span class="comment">*</span><span class="comment">        that:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        H(2) H(1) (  -X11  -X12 ) = (  *  * )
+</span><span class="comment">*</span><span class="comment">                  (  -X21  -X22 )   (  0  * )
+</span><span class="comment">*</span><span class="comment">                  ( scale    0  )   (  0  0 )
+</span><span class="comment">*</span><span class="comment">                  (    0  scale )   (  0  0 )
+</span><span class="comment">*</span><span class="comment">
+</span>         U1( 1 ) = -X( 1, 1 )
+         U1( 2 ) = -X( 2, 1 )
+         U1( 3 ) = SCALE
+         CALL <a name="SLARFG.270"></a><a href="slarfg.f.html#SLARFG.1">SLARFG</a>( 3, U1( 1 ), U1( 2 ), 1, TAU1 )
+         U1( 1 ) = ONE
+<span class="comment">*</span><span class="comment">
+</span>         TEMP = -TAU1*( X( 1, 2 )+U1( 2 )*X( 2, 2 ) )
+         U2( 1 ) = -TEMP*U1( 2 ) - X( 2, 2 )
+         U2( 2 ) = -TEMP*U1( 3 )
+         U2( 3 ) = SCALE
+         CALL <a name="SLARFG.277"></a><a href="slarfg.f.html#SLARFG.1">SLARFG</a>( 3, U2( 1 ), U2( 2 ), 1, TAU2 )
+         U2( 1 ) = ONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Perform swap provisionally on diagonal block in D.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="SLARFX.282"></a><a href="slarfx.f.html#SLARFX.1">SLARFX</a>( <span class="string">'L'</span>, 3, 4, U1, TAU1, D, LDD, WORK )
+         CALL <a name="SLARFX.283"></a><a href="slarfx.f.html#SLARFX.1">SLARFX</a>( <span class="string">'R'</span>, 4, 3, U1, TAU1, D, LDD, WORK )
+         CALL <a name="SLARFX.284"></a><a href="slarfx.f.html#SLARFX.1">SLARFX</a>( <span class="string">'L'</span>, 3, 4, U2, TAU2, D( 2, 1 ), LDD, WORK )
+         CALL <a name="SLARFX.285"></a><a href="slarfx.f.html#SLARFX.1">SLARFX</a>( <span class="string">'R'</span>, 4, 3, U2, TAU2, D( 1, 2 ), LDD, WORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Test whether to reject swap.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( MAX( ABS( D( 3, 1 ) ), ABS( D( 3, 2 ) ), ABS( D( 4, 1 ) ),
+     $       ABS( D( 4, 2 ) ) ).GT.THRESH )GO TO 50
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Accept swap: apply transformation to the entire matrix T.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="SLARFX.294"></a><a href="slarfx.f.html#SLARFX.1">SLARFX</a>( <span class="string">'L'</span>, 3, N-J1+1, U1, TAU1, T( J1, J1 ), LDT, WORK )
+         CALL <a name="SLARFX.295"></a><a href="slarfx.f.html#SLARFX.1">SLARFX</a>( <span class="string">'R'</span>, J4, 3, U1, TAU1, T( 1, J1 ), LDT, WORK )
+         CALL <a name="SLARFX.296"></a><a href="slarfx.f.html#SLARFX.1">SLARFX</a>( <span class="string">'L'</span>, 3, N-J1+1, U2, TAU2, T( J2, J1 ), LDT, WORK )
+         CALL <a name="SLARFX.297"></a><a href="slarfx.f.html#SLARFX.1">SLARFX</a>( <span class="string">'R'</span>, J4, 3, U2, TAU2, T( 1, J2 ), LDT, WORK )
+<span class="comment">*</span><span class="comment">
+</span>         T( J3, J1 ) = ZERO
+         T( J3, J2 ) = ZERO
+         T( J4, J1 ) = ZERO
+         T( J4, J2 ) = ZERO
+<span class="comment">*</span><span class="comment">
+</span>         IF( WANTQ ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Accumulate transformation in the matrix Q.
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="SLARFX.308"></a><a href="slarfx.f.html#SLARFX.1">SLARFX</a>( <span class="string">'R'</span>, N, 3, U1, TAU1, Q( 1, J1 ), LDQ, WORK )
+            CALL <a name="SLARFX.309"></a><a href="slarfx.f.html#SLARFX.1">SLARFX</a>( <span class="string">'R'</span>, N, 3, U2, TAU2, Q( 1, J2 ), LDQ, WORK )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>   40    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         IF( N2.EQ.2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Standardize new 2-by-2 block T11
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="SLANV2.318"></a><a href="slanv2.f.html#SLANV2.1">SLANV2</a>( T( J1, J1 ), T( J1, J2 ), T( J2, J1 ),
+     $                   T( J2, J2 ), WR1, WI1, WR2, WI2, CS, SN )
+            CALL SROT( N-J1-1, T( J1, J1+2 ), LDT, T( J2, J1+2 ), LDT,
+     $                 CS, SN )
+            CALL SROT( J1-1, T( 1, J1 ), 1, T( 1, J2 ), 1, CS, SN )
+            IF( WANTQ )
+     $         CALL SROT( N, Q( 1, J1 ), 1, Q( 1, J2 ), 1, CS, SN )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( N1.EQ.2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Standardize new 2-by-2 block T22
+</span><span class="comment">*</span><span class="comment">
+</span>            J3 = J1 + N2
+            J4 = J3 + 1
+            CALL <a name="SLANV2.333"></a><a href="slanv2.f.html#SLANV2.1">SLANV2</a>( T( J3, J3 ), T( J3, J4 ), T( J4, J3 ),
+     $                   T( J4, J4 ), WR1, WI1, WR2, WI2, CS, SN )
+            IF( J3+2.LE.N )
+     $         CALL SROT( N-J3-1, T( J3, J3+2 ), LDT, T( J4, J3+2 ),
+     $                    LDT, CS, SN )
+            CALL SROT( J3-1, T( 1, J3 ), 1, T( 1, J4 ), 1, CS, SN )
+            IF( WANTQ )
+     $         CALL SROT( N, Q( 1, J3 ), 1, Q( 1, J4 ), 1, CS, SN )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Exit with INFO = 1 if swap was rejected.
+</span><span class="comment">*</span><span class="comment">
+</span>   50 INFO = 1
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLAEXC.351"></a><a href="slaexc.f.html#SLAEXC.1">SLAEXC</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

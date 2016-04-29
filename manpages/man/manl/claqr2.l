@@ -1,0 +1,591 @@
+.TH  CLAQR2 1 "November 2006" " LAPACK auxiliary routine (version 3.1) " " LAPACK auxiliary routine (version 3.1) " 
+.SH NAME
+
+.SH SYNOPSIS
+.TP 19
+SUBROUTINE CLAQR2(
+WANTT, WANTZ, N, KTOP, KBOT, NW, H, LDH, ILOZ,
+IHIZ, Z, LDZ, NS, ND, SH, V, LDV, NH, T, LDT,
+NV, WV, LDWV, WORK, LWORK )
+.TP 19
+.ti +4
+INTEGER
+IHIZ, ILOZ, KBOT, KTOP, LDH, LDT, LDV, LDWV,
+LDZ, LWORK, N, ND, NH, NS, NV, NW
+.TP 19
+.ti +4
+LOGICAL
+WANTT, WANTZ
+.TP 19
+.ti +4
+COMPLEX
+H( LDH, * ), SH( * ), T( LDT, * ), V( LDV, * ),
+WORK( * ), WV( LDWV, * ), Z( LDZ, * )
+.TP 19
+.ti +4
+COMPLEX
+ZERO, ONE
+.TP 19
+.ti +4
+PARAMETER
+( ZERO = ( 0.0e0, 0.0e0 ),
+ONE = ( 1.0e0, 0.0e0 ) )
+.TP 19
+.ti +4
+REAL
+RZERO, RONE
+.TP 19
+.ti +4
+PARAMETER
+( RZERO = 0.0e0, RONE = 1.0e0 )
+.TP 19
+.ti +4
+COMPLEX
+BETA, CDUM, S, TAU
+.TP 19
+.ti +4
+REAL
+FOO, SAFMAX, SAFMIN, SMLNUM, ULP
+.TP 19
+.ti +4
+INTEGER
+I, IFST, ILST, INFO, INFQR, J, JW, KCOL, KLN,
+KNT, KROW, KWTOP, LTOP, LWK1, LWK2, LWKOPT
+.TP 19
+.ti +4
+REAL
+SLAMCH
+.TP 19
+.ti +4
+EXTERNAL
+SLAMCH
+.TP 19
+.ti +4
+EXTERNAL
+CCOPY, CGEHRD, CGEMM, CLACPY, CLAHQR, CLARF,
+CLARFG, CLASET, CTREXC, CUNGHR, SLABAD
+.TP 19
+.ti +4
+INTRINSIC
+ABS, AIMAG, CMPLX, CONJG, INT, MAX, MIN, REAL
+.TP 19
+.ti +4
+REAL
+CABS1
+.TP 19
+.ti +4
+CABS1(
+CDUM ) = ABS( REAL( CDUM ) ) + ABS( AIMAG( CDUM ) )
+.TP 19
+.ti +4
+JW
+= MIN( NW, KBOT-KTOP+1 )
+.TP 19
+.ti +4
+IF(
+JW.LE.2 ) THEN
+.TP 19
+.ti +4
+LWKOPT
+= 1
+.TP 19
+.ti +4
+ELSE
+.TP 19
+.ti +4
+CALL
+CGEHRD( JW, 1, JW-1, T, LDT, WORK, WORK, -1, INFO )
+.TP 19
+.ti +4
+LWK1
+= INT( WORK( 1 ) )
+.TP 19
+.ti +4
+CALL
+CUNGHR( JW, 1, JW-1, T, LDT, WORK, WORK, -1, INFO )
+.TP 19
+.ti +4
+LWK2
+= INT( WORK( 1 ) )
+.TP 19
+.ti +4
+LWKOPT
+= JW + MAX( LWK1, LWK2 )
+.TP 19
+.ti +4
+END
+IF
+.TP 19
+.ti +4
+IF(
+LWORK.EQ.-1 ) THEN
+.TP 19
+.ti +4
+WORK(
+1 ) = CMPLX( LWKOPT, 0 )
+.TP 19
+.ti +4
+RETURN
+.TP 19
+.ti +4
+END
+IF
+.TP 19
+.ti +4
+NS
+= 0
+.TP 19
+.ti +4
+ND
+= 0
+.TP 19
+.ti +4
+IF(
+KTOP.GT.KBOT )
+RETURN
+.TP 19
+.ti +4
+IF(
+NW.LT.1 )
+RETURN
+.TP 19
+.ti +4
+SAFMIN
+= SLAMCH( \(aqSAFE MINIMUM\(aq )
+.TP 19
+.ti +4
+SAFMAX
+= RONE / SAFMIN
+.TP 19
+.ti +4
+CALL
+SLABAD( SAFMIN, SAFMAX )
+.TP 19
+.ti +4
+ULP
+= SLAMCH( \(aqPRECISION\(aq )
+.TP 19
+.ti +4
+SMLNUM
+= SAFMIN*( REAL( N ) / ULP )
+.TP 19
+.ti +4
+JW
+= MIN( NW, KBOT-KTOP+1 )
+.TP 19
+.ti +4
+KWTOP
+= KBOT - JW + 1
+.TP 19
+.ti +4
+IF(
+KWTOP.EQ.KTOP ) THEN
+.TP 19
+.ti +4
+S
+= ZERO
+.TP 19
+.ti +4
+ELSE
+.TP 19
+.ti +4
+S
+= H( KWTOP, KWTOP-1 )
+.TP 19
+.ti +4
+END
+IF
+.TP 19
+.ti +4
+IF(
+KBOT.EQ.KWTOP ) THEN
+.TP 19
+.ti +4
+SH(
+KWTOP ) = H( KWTOP, KWTOP )
+.TP 19
+.ti +4
+NS
+= 1
+.TP 19
+.ti +4
+ND
+= 0
+.TP 19
+.ti +4
+IF(
+CABS1( S ).LE.MAX( SMLNUM, ULP*CABS1( H( KWTOP,
+KWTOP ) ) ) ) THEN
+.TP 19
+.ti +4
+NS
+= 0
+.TP 19
+.ti +4
+ND
+= 1
+.TP 19
+.ti +4
+IF(
+KWTOP.GT.KTOP )
+H( KWTOP, KWTOP-1 ) = ZERO
+.TP 19
+.ti +4
+END
+IF
+.TP 19
+.ti +4
+RETURN
+.TP 19
+.ti +4
+END
+IF
+.TP 19
+.ti +4
+CALL
+CLACPY( \(aqU\(aq, JW, JW, H( KWTOP, KWTOP ), LDH, T, LDT )
+.TP 19
+.ti +4
+CALL
+CCOPY( JW-1, H( KWTOP+1, KWTOP ), LDH+1, T( 2, 1 ), LDT+1 )
+.TP 19
+.ti +4
+CALL
+CLASET( \(aqA\(aq, JW, JW, ZERO, ONE, V, LDV )
+.TP 19
+.ti +4
+CALL
+CLAHQR( .true., .true., JW, 1, JW, T, LDT, SH( KWTOP ), 1,
+JW, V, LDV, INFQR )
+.TP 19
+.ti +4
+NS
+= JW
+.TP 19
+.ti +4
+ILST
+= INFQR + 1
+.TP 19
+.ti +4
+DO
+10 KNT = INFQR + 1, JW
+.TP 19
+.ti +4
+FOO
+= CABS1( T( NS, NS ) )
+.TP 19
+.ti +4
+IF(
+FOO.EQ.RZERO )
+FOO = CABS1( S )
+.TP 19
+.ti +4
+IF(
+CABS1( S )*CABS1( V( 1, NS ) ).LE.MAX( SMLNUM, ULP*FOO ) )
+THEN
+.TP 19
+.ti +4
+NS
+= NS - 1
+.TP 19
+.ti +4
+ELSE
+.TP 19
+.ti +4
+IFST
+= NS
+.TP 19
+.ti +4
+CALL
+CTREXC( \(aqV\(aq, JW, T, LDT, V, LDV, IFST, ILST, INFO )
+.TP 19
+.ti +4
+ILST
+= ILST + 1
+.TP 19
+.ti +4
+END
+IF
+.TP 19
+.ti +4
+10
+CONTINUE
+.TP 19
+.ti +4
+IF(
+NS.EQ.0 )
+S = ZERO
+.TP 19
+.ti +4
+IF(
+NS.LT.JW ) THEN
+.TP 19
+.ti +4
+DO
+30 I = INFQR + 1, NS
+.TP 19
+.ti +4
+IFST
+= I
+.TP 19
+.ti +4
+DO
+20 J = I + 1, NS
+.TP 19
+.ti +4
+IF(
+CABS1( T( J, J ) ).GT.CABS1( T( IFST, IFST ) ) )
+IFST = J
+.TP 19
+.ti +4
+20
+CONTINUE
+.TP 19
+.ti +4
+ILST
+= I
+.TP 19
+.ti +4
+IF(
+IFST.NE.ILST )
+CALL CTREXC( \(aqV\(aq, JW, T, LDT, V, LDV, IFST, ILST, INFO )
+.TP 19
+.ti +4
+30
+CONTINUE
+.TP 19
+.ti +4
+END
+IF
+.TP 19
+.ti +4
+DO
+40 I = INFQR + 1, JW
+.TP 19
+.ti +4
+SH(
+KWTOP+I-1 ) = T( I, I )
+.TP 19
+.ti +4
+40
+CONTINUE
+.TP 19
+.ti +4
+IF(
+NS.LT.JW .OR. S.EQ.ZERO ) THEN
+.TP 19
+.ti +4
+IF(
+NS.GT.1 .AND. S.NE.ZERO ) THEN
+.TP 19
+.ti +4
+CALL
+CCOPY( NS, V, LDV, WORK, 1 )
+.TP 19
+.ti +4
+DO
+50 I = 1, NS
+.TP 19
+.ti +4
+WORK(
+I ) = CONJG( WORK( I ) )
+.TP 19
+.ti +4
+50
+CONTINUE
+.TP 19
+.ti +4
+BETA
+= WORK( 1 )
+.TP 19
+.ti +4
+CALL
+CLARFG( NS, BETA, WORK( 2 ), 1, TAU )
+.TP 19
+.ti +4
+WORK(
+1 ) = ONE
+.TP 19
+.ti +4
+CALL
+CLASET( \(aqL\(aq, JW-2, JW-2, ZERO, ZERO, T( 3, 1 ), LDT )
+.TP 19
+.ti +4
+CALL
+CLARF( \(aqL\(aq, NS, JW, WORK, 1, CONJG( TAU ), T, LDT,
+WORK( JW+1 ) )
+.TP 19
+.ti +4
+CALL
+CLARF( \(aqR\(aq, NS, NS, WORK, 1, TAU, T, LDT,
+WORK( JW+1 ) )
+.TP 19
+.ti +4
+CALL
+CLARF( \(aqR\(aq, JW, NS, WORK, 1, TAU, V, LDV,
+WORK( JW+1 ) )
+.TP 19
+.ti +4
+CALL
+CGEHRD( JW, 1, NS, T, LDT, WORK, WORK( JW+1 ),
+LWORK-JW, INFO )
+.TP 19
+.ti +4
+END
+IF
+.TP 19
+.ti +4
+IF(
+KWTOP.GT.1 )
+H( KWTOP, KWTOP-1 ) = S*CONJG( V( 1, 1 ) )
+.TP 19
+.ti +4
+CALL
+CLACPY( \(aqU\(aq, JW, JW, T, LDT, H( KWTOP, KWTOP ), LDH )
+.TP 19
+.ti +4
+CALL
+CCOPY( JW-1, T( 2, 1 ), LDT+1, H( KWTOP+1, KWTOP ),
+LDH+1 )
+.TP 19
+.ti +4
+IF(
+NS.GT.1 .AND. S.NE.ZERO ) THEN
+.TP 19
+.ti +4
+CALL
+CUNGHR( JW, 1, NS, T, LDT, WORK, WORK( JW+1 ),
+LWORK-JW, INFO )
+.TP 19
+.ti +4
+CALL
+CGEMM( \(aqN\(aq, \(aqN\(aq, JW, NS, NS, ONE, V, LDV, T, LDT, ZERO,
+WV, LDWV )
+.TP 19
+.ti +4
+CALL
+CLACPY( \(aqA\(aq, JW, NS, WV, LDWV, V, LDV )
+.TP 19
+.ti +4
+END
+IF
+.TP 19
+.ti +4
+IF(
+WANTT ) THEN
+.TP 19
+.ti +4
+LTOP
+= 1
+.TP 19
+.ti +4
+ELSE
+.TP 19
+.ti +4
+LTOP
+= KTOP
+.TP 19
+.ti +4
+END
+IF
+.TP 19
+.ti +4
+DO
+60 KROW = LTOP, KWTOP - 1, NV
+.TP 19
+.ti +4
+KLN
+= MIN( NV, KWTOP-KROW )
+.TP 19
+.ti +4
+CALL
+CGEMM( \(aqN\(aq, \(aqN\(aq, KLN, JW, JW, ONE, H( KROW, KWTOP ),
+LDH, V, LDV, ZERO, WV, LDWV )
+.TP 19
+.ti +4
+CALL
+CLACPY( \(aqA\(aq, KLN, JW, WV, LDWV, H( KROW, KWTOP ), LDH )
+.TP 19
+.ti +4
+60
+CONTINUE
+.TP 19
+.ti +4
+IF(
+WANTT ) THEN
+.TP 19
+.ti +4
+DO
+70 KCOL = KBOT + 1, N, NH
+.TP 19
+.ti +4
+KLN
+= MIN( NH, N-KCOL+1 )
+.TP 19
+.ti +4
+CALL
+CGEMM( \(aqC\(aq, \(aqN\(aq, JW, KLN, JW, ONE, V, LDV,
+H( KWTOP, KCOL ), LDH, ZERO, T, LDT )
+.TP 19
+.ti +4
+CALL
+CLACPY( \(aqA\(aq, JW, KLN, T, LDT, H( KWTOP, KCOL ),
+LDH )
+.TP 19
+.ti +4
+70
+CONTINUE
+.TP 19
+.ti +4
+END
+IF
+.TP 19
+.ti +4
+IF(
+WANTZ ) THEN
+.TP 19
+.ti +4
+DO
+80 KROW = ILOZ, IHIZ, NV
+.TP 19
+.ti +4
+KLN
+= MIN( NV, IHIZ-KROW+1 )
+.TP 19
+.ti +4
+CALL
+CGEMM( \(aqN\(aq, \(aqN\(aq, KLN, JW, JW, ONE, Z( KROW, KWTOP ),
+LDZ, V, LDV, ZERO, WV, LDWV )
+.TP 19
+.ti +4
+CALL
+CLACPY( \(aqA\(aq, KLN, JW, WV, LDWV, Z( KROW, KWTOP ),
+LDZ )
+.TP 19
+.ti +4
+80
+CONTINUE
+.TP 19
+.ti +4
+END
+IF
+.TP 19
+.ti +4
+END
+IF
+.TP 19
+.ti +4
+ND
+= JW - NS
+.TP 19
+.ti +4
+NS
+= NS - INFQR
+.TP 19
+.ti +4
+WORK(
+1 ) = CMPLX( LWKOPT, 0 )
+.TP 19
+.ti +4
+END
+.SH PURPOSE

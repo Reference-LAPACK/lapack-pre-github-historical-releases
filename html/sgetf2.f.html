@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>sgetf2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SGETF2.1"></a><a href="sgetf2.f.html#SGETF2.1">SGETF2</a>( M, N, A, LDA, IPIV, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, LDA, M, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IPIV( * )
+      REAL               A( LDA, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SGETF2.18"></a><a href="sgetf2.f.html#SGETF2.1">SGETF2</a> computes an LU factorization of a general m-by-n matrix A
+</span><span class="comment">*</span><span class="comment">  using partial pivoting with row interchanges.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The factorization has the form
+</span><span class="comment">*</span><span class="comment">     A = P * L * U
+</span><span class="comment">*</span><span class="comment">  where P is a permutation matrix, L is lower triangular with unit
+</span><span class="comment">*</span><span class="comment">  diagonal elements (lower trapezoidal if m &gt; n), and U is upper
+</span><span class="comment">*</span><span class="comment">  triangular (upper trapezoidal if m &lt; n).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This is the right-looking Level 2 BLAS version of the algorithm.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix A.  M &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) REAL array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the m by n matrix to be factored.
+</span><span class="comment">*</span><span class="comment">          On exit, the factors L and U from the factorization
+</span><span class="comment">*</span><span class="comment">          A = P*L*U; the unit diagonal elements of L are not stored.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IPIV    (output) INTEGER array, dimension (min(M,N))
+</span><span class="comment">*</span><span class="comment">          The pivot indices; for 1 &lt;= i &lt;= min(M,N), row i of the
+</span><span class="comment">*</span><span class="comment">          matrix was interchanged with row IPIV(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0: successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0: if INFO = -k, the k-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0: if INFO = k, U(k,k) is exactly zero. The factorization
+</span><span class="comment">*</span><span class="comment">               has been completed, but the factor U is exactly
+</span><span class="comment">*</span><span class="comment">               singular, and division by zero will occur if it is used
+</span><span class="comment">*</span><span class="comment">               to solve a system of equations.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ONE, ZERO
+      PARAMETER          ( ONE = 1.0E+0, ZERO = 0.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      REAL               SFMIN
+      INTEGER            I, J, JP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      REAL               <a name="SLAMCH.69"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      INTEGER            ISAMAX
+      EXTERNAL           <a name="SLAMCH.71"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, ISAMAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           SGER, SSCAL, SSWAP, <a name="XERBLA.74"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( M.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -4
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.92"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="SGETF2.92"></a><a href="sgetf2.f.html#SGETF2.1">SGETF2</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( M.EQ.0 .OR. N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute machine safe minimum 
+</span><span class="comment">*</span><span class="comment"> 
+</span>      SFMIN = <a name="SLAMCH.103"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>(<span class="string">'S'</span>)
+<span class="comment">*</span><span class="comment">
+</span>      DO 10 J = 1, MIN( M, N )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find pivot and test for singularity.
+</span><span class="comment">*</span><span class="comment">
+</span>         JP = J - 1 + ISAMAX( M-J+1, A( J, J ), 1 )
+         IPIV( J ) = JP
+         IF( A( JP, J ).NE.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Apply the interchange to columns 1:N.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( JP.NE.J )
+     $         CALL SSWAP( N, A( J, 1 ), LDA, A( JP, 1 ), LDA )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute elements J+1:M of J-th column.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( J.LT.M ) THEN 
+               IF( ABS(A( J, J )) .GE. SFMIN ) THEN 
+                  CALL SSCAL( M-J, ONE / A( J, J ), A( J+1, J ), 1 ) 
+               ELSE 
+                 DO 20 I = 1, M-J 
+                    A( J+I, J ) = A( J+I, J ) / A( J, J ) 
+   20            CONTINUE 
+               END IF 
+            END IF 
+<span class="comment">*</span><span class="comment">
+</span>         ELSE IF( INFO.EQ.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span>            INFO = J
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( J.LT.MIN( M, N ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Update trailing submatrix.
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL SGER( M-J, N-J, -ONE, A( J+1, J ), 1, A( J, J+1 ), LDA,
+     $                 A( J+1, J+1 ), LDA )
+         END IF
+   10 CONTINUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SGETF2.145"></a><a href="sgetf2.f.html#SGETF2.1">SGETF2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

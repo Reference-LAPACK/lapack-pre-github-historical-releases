@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slaed5.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLAED5.1"></a><a href="slaed5.f.html#SLAED5.1">SLAED5</a>( I, D, Z, DELTA, RHO, DLAM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            I
+      REAL               DLAM, RHO
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               D( 2 ), DELTA( 2 ), Z( 2 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This subroutine computes the I-th eigenvalue of a symmetric rank-one
+</span><span class="comment">*</span><span class="comment">  modification of a 2-by-2 diagonal matrix
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">             diag( D )  +  RHO *  Z * transpose(Z) .
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The diagonal elements in the array D are assumed to satisfy
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">             D(i) &lt; D(j)  for  i &lt; j .
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  We also assume RHO &gt; 0 and that the Euclidean norm of the vector
+</span><span class="comment">*</span><span class="comment">  Z is one.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  I      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The index of the eigenvalue to be computed.  I = 1 or I = 2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D      (input) REAL array, dimension (2)
+</span><span class="comment">*</span><span class="comment">         The original eigenvalues.  We assume D(1) &lt; D(2).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z      (input) REAL array, dimension (2)
+</span><span class="comment">*</span><span class="comment">         The components of the updating vector.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DELTA  (output) REAL array, dimension (2)
+</span><span class="comment">*</span><span class="comment">         The vector DELTA contains the information necessary
+</span><span class="comment">*</span><span class="comment">         to construct the eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RHO    (input) REAL
+</span><span class="comment">*</span><span class="comment">         The scalar in the symmetric updating formula.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DLAM   (output) REAL
+</span><span class="comment">*</span><span class="comment">         The computed lambda_I, the I-th updated eigenvalue.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Ren-Cang Li, Computer Science Division, University of California
+</span><span class="comment">*</span><span class="comment">     at Berkeley, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, ONE, TWO, FOUR
+      PARAMETER          ( ZERO = 0.0E0, ONE = 1.0E0, TWO = 2.0E0,
+     $                   FOUR = 4.0E0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      REAL               B, C, DEL, TAU, TEMP, W
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      DEL = D( 2 ) - D( 1 )
+      IF( I.EQ.1 ) THEN
+         W = ONE + TWO*RHO*( Z( 2 )*Z( 2 )-Z( 1 )*Z( 1 ) ) / DEL
+         IF( W.GT.ZERO ) THEN
+            B = DEL + RHO*( Z( 1 )*Z( 1 )+Z( 2 )*Z( 2 ) )
+            C = RHO*Z( 1 )*Z( 1 )*DEL
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           B &gt; ZERO, always
+</span><span class="comment">*</span><span class="comment">
+</span>            TAU = TWO*C / ( B+SQRT( ABS( B*B-FOUR*C ) ) )
+            DLAM = D( 1 ) + TAU
+            DELTA( 1 ) = -Z( 1 ) / TAU
+            DELTA( 2 ) = Z( 2 ) / ( DEL-TAU )
+         ELSE
+            B = -DEL + RHO*( Z( 1 )*Z( 1 )+Z( 2 )*Z( 2 ) )
+            C = RHO*Z( 2 )*Z( 2 )*DEL
+            IF( B.GT.ZERO ) THEN
+               TAU = -TWO*C / ( B+SQRT( B*B+FOUR*C ) )
+            ELSE
+               TAU = ( B-SQRT( B*B+FOUR*C ) ) / TWO
+            END IF
+            DLAM = D( 2 ) + TAU
+            DELTA( 1 ) = -Z( 1 ) / ( DEL+TAU )
+            DELTA( 2 ) = -Z( 2 ) / TAU
+         END IF
+         TEMP = SQRT( DELTA( 1 )*DELTA( 1 )+DELTA( 2 )*DELTA( 2 ) )
+         DELTA( 1 ) = DELTA( 1 ) / TEMP
+         DELTA( 2 ) = DELTA( 2 ) / TEMP
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Now I=2
+</span><span class="comment">*</span><span class="comment">
+</span>         B = -DEL + RHO*( Z( 1 )*Z( 1 )+Z( 2 )*Z( 2 ) )
+         C = RHO*Z( 2 )*Z( 2 )*DEL
+         IF( B.GT.ZERO ) THEN
+            TAU = ( B+SQRT( B*B+FOUR*C ) ) / TWO
+         ELSE
+            TAU = TWO*C / ( -B+SQRT( B*B+FOUR*C ) )
+         END IF
+         DLAM = D( 2 ) + TAU
+         DELTA( 1 ) = -Z( 1 ) / ( DEL+TAU )
+         DELTA( 2 ) = -Z( 2 ) / TAU
+         TEMP = SQRT( DELTA( 1 )*DELTA( 1 )+DELTA( 2 )*DELTA( 2 ) )
+         DELTA( 1 ) = DELTA( 1 ) / TEMP
+         DELTA( 2 ) = DELTA( 2 ) / TEMP
+      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End OF <a name="SLAED5.122"></a><a href="slaed5.f.html#SLAED5.1">SLAED5</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

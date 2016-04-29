@@ -1,0 +1,236 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zlacon.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZLACON.1"></a><a href="zlacon.f.html#ZLACON.1">ZLACON</a>( N, V, X, EST, KASE )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            KASE, N
+      DOUBLE PRECISION   EST
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX*16         V( N ), X( N )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZLACON.18"></a><a href="zlacon.f.html#ZLACON.1">ZLACON</a> estimates the 1-norm of a square, complex matrix A.
+</span><span class="comment">*</span><span class="comment">  Reverse communication is used for evaluating matrix-vector products.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The order of the matrix.  N &gt;= 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  V      (workspace) COMPLEX*16 array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         On the final return, V = A*W,  where  EST = norm(V)/norm(W)
+</span><span class="comment">*</span><span class="comment">         (W is not returned).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X      (input/output) COMPLEX*16 array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         On an intermediate return, X should be overwritten by
+</span><span class="comment">*</span><span class="comment">               A * X,   if KASE=1,
+</span><span class="comment">*</span><span class="comment">               A' * X,  if KASE=2,
+</span><span class="comment">*</span><span class="comment">         where A' is the conjugate transpose of A, and <a name="ZLACON.35"></a><a href="zlacon.f.html#ZLACON.1">ZLACON</a> must be
+</span><span class="comment">*</span><span class="comment">         re-called with all the other parameters unchanged.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  EST    (input/output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">         On entry with KASE = 1 or 2 and JUMP = 3, EST should be
+</span><span class="comment">*</span><span class="comment">         unchanged from the previous call to <a name="ZLACON.40"></a><a href="zlacon.f.html#ZLACON.1">ZLACON</a>.
+</span><span class="comment">*</span><span class="comment">         On exit, EST is an estimate (a lower bound) for norm(A). 
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KASE   (input/output) INTEGER
+</span><span class="comment">*</span><span class="comment">         On the initial call to <a name="ZLACON.44"></a><a href="zlacon.f.html#ZLACON.1">ZLACON</a>, KASE should be 0.
+</span><span class="comment">*</span><span class="comment">         On an intermediate return, KASE will be 1 or 2, indicating
+</span><span class="comment">*</span><span class="comment">         whether X should be overwritten by A * X  or A' * X.
+</span><span class="comment">*</span><span class="comment">         On the final return from <a name="ZLACON.47"></a><a href="zlacon.f.html#ZLACON.1">ZLACON</a>, KASE will again be 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ======= =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Contributed by Nick Higham, University of Manchester.
+</span><span class="comment">*</span><span class="comment">  Originally named CONEST, dated March 16, 1988.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Reference: N.J. Higham, &quot;FORTRAN codes for estimating the one-norm of
+</span><span class="comment">*</span><span class="comment">  a real or complex matrix, with applications to condition estimation&quot;,
+</span><span class="comment">*</span><span class="comment">  ACM Trans. Math. Soft., vol. 14, no. 4, pp. 381-396, December 1988.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Last modified:  April, 1999
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      INTEGER            ITMAX
+      PARAMETER          ( ITMAX = 5 )
+      DOUBLE PRECISION   ONE, TWO
+      PARAMETER          ( ONE = 1.0D0, TWO = 2.0D0 )
+      COMPLEX*16         CZERO, CONE
+      PARAMETER          ( CZERO = ( 0.0D0, 0.0D0 ),
+     $                   CONE = ( 1.0D0, 0.0D0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, ITER, J, JLAST, JUMP
+      DOUBLE PRECISION   ABSXI, ALTSGN, ESTOLD, SAFMIN, TEMP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      INTEGER            <a name="IZMAX1.77"></a><a href="izmax1.f.html#IZMAX1.1">IZMAX1</a>
+      DOUBLE PRECISION   <a name="DLAMCH.78"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DZSUM1.78"></a><a href="dzsum1.f.html#DZSUM1.1">DZSUM1</a>
+      EXTERNAL           <a name="IZMAX1.79"></a><a href="izmax1.f.html#IZMAX1.1">IZMAX1</a>, <a name="DLAMCH.79"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DZSUM1.79"></a><a href="dzsum1.f.html#DZSUM1.1">DZSUM1</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           ZCOPY
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, DBLE, DCMPLX, DIMAG
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Save statement ..
+</span>      SAVE
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      SAFMIN = <a name="DLAMCH.92"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Safe minimum'</span> )
+      IF( KASE.EQ.0 ) THEN
+         DO 10 I = 1, N
+            X( I ) = DCMPLX( ONE / DBLE( N ) )
+   10    CONTINUE
+         KASE = 1
+         JUMP = 1
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      GO TO ( 20, 40, 70, 90, 120 )JUMP
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ................ ENTRY   (JUMP = 1)
+</span><span class="comment">*</span><span class="comment">     FIRST ITERATION.  X HAS BEEN OVERWRITTEN BY A*X.
+</span><span class="comment">*</span><span class="comment">
+</span>   20 CONTINUE
+      IF( N.EQ.1 ) THEN
+         V( 1 ) = X( 1 )
+         EST = ABS( V( 1 ) )
+<span class="comment">*</span><span class="comment">        ... QUIT
+</span>         GO TO 130
+      END IF
+      EST = <a name="DZSUM1.114"></a><a href="dzsum1.f.html#DZSUM1.1">DZSUM1</a>( N, X, 1 )
+<span class="comment">*</span><span class="comment">
+</span>      DO 30 I = 1, N
+         ABSXI = ABS( X( I ) )
+         IF( ABSXI.GT.SAFMIN ) THEN
+            X( I ) = DCMPLX( DBLE( X( I ) ) / ABSXI,
+     $               DIMAG( X( I ) ) / ABSXI )
+         ELSE
+            X( I ) = CONE
+         END IF
+   30 CONTINUE
+      KASE = 2
+      JUMP = 2
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ................ ENTRY   (JUMP = 2)
+</span><span class="comment">*</span><span class="comment">     FIRST ITERATION.  X HAS BEEN OVERWRITTEN BY CTRANS(A)*X.
+</span><span class="comment">*</span><span class="comment">
+</span>   40 CONTINUE
+      J = <a name="IZMAX1.133"></a><a href="izmax1.f.html#IZMAX1.1">IZMAX1</a>( N, X, 1 )
+      ITER = 2
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     MAIN LOOP - ITERATIONS 2,3,...,ITMAX.
+</span><span class="comment">*</span><span class="comment">
+</span>   50 CONTINUE
+      DO 60 I = 1, N
+         X( I ) = CZERO
+   60 CONTINUE
+      X( J ) = CONE
+      KASE = 1
+      JUMP = 3
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ................ ENTRY   (JUMP = 3)
+</span><span class="comment">*</span><span class="comment">     X HAS BEEN OVERWRITTEN BY A*X.
+</span><span class="comment">*</span><span class="comment">
+</span>   70 CONTINUE
+      CALL ZCOPY( N, X, 1, V, 1 )
+      ESTOLD = EST
+      EST = <a name="DZSUM1.153"></a><a href="dzsum1.f.html#DZSUM1.1">DZSUM1</a>( N, V, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     TEST FOR CYCLING.
+</span>      IF( EST.LE.ESTOLD )
+     $   GO TO 100
+<span class="comment">*</span><span class="comment">
+</span>      DO 80 I = 1, N
+         ABSXI = ABS( X( I ) )
+         IF( ABSXI.GT.SAFMIN ) THEN
+            X( I ) = DCMPLX( DBLE( X( I ) ) / ABSXI,
+     $               DIMAG( X( I ) ) / ABSXI )
+         ELSE
+            X( I ) = CONE
+         END IF
+   80 CONTINUE
+      KASE = 2
+      JUMP = 4
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ................ ENTRY   (JUMP = 4)
+</span><span class="comment">*</span><span class="comment">     X HAS BEEN OVERWRITTEN BY CTRANS(A)*X.
+</span><span class="comment">*</span><span class="comment">
+</span>   90 CONTINUE
+      JLAST = J
+      J = <a name="IZMAX1.177"></a><a href="izmax1.f.html#IZMAX1.1">IZMAX1</a>( N, X, 1 )
+      IF( ( ABS( X( JLAST ) ).NE.ABS( X( J ) ) ) .AND.
+     $    ( ITER.LT.ITMAX ) ) THEN
+         ITER = ITER + 1
+         GO TO 50
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ITERATION COMPLETE.  FINAL STAGE.
+</span><span class="comment">*</span><span class="comment">
+</span>  100 CONTINUE
+      ALTSGN = ONE
+      DO 110 I = 1, N
+         X( I ) = DCMPLX( ALTSGN*( ONE+DBLE( I-1 ) / DBLE( N-1 ) ) )
+         ALTSGN = -ALTSGN
+  110 CONTINUE
+      KASE = 1
+      JUMP = 5
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ................ ENTRY   (JUMP = 5)
+</span><span class="comment">*</span><span class="comment">     X HAS BEEN OVERWRITTEN BY A*X.
+</span><span class="comment">*</span><span class="comment">
+</span>  120 CONTINUE
+      TEMP = TWO*( <a name="DZSUM1.200"></a><a href="dzsum1.f.html#DZSUM1.1">DZSUM1</a>( N, X, 1 ) / DBLE( 3*N ) )
+      IF( TEMP.GT.EST ) THEN
+         CALL ZCOPY( N, X, 1, V, 1 )
+         EST = TEMP
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>  130 CONTINUE
+      KASE = 0
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZLACON.210"></a><a href="zlacon.f.html#ZLACON.1">ZLACON</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

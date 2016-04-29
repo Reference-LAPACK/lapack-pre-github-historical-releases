@@ -1,0 +1,220 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlansp.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      DOUBLE PRECISION FUNCTION <a name="DLANSP.1"></a><a href="dlansp.f.html#DLANSP.1">DLANSP</a>( NORM, UPLO, N, AP, WORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          NORM, UPLO
+      INTEGER            N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   AP( * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLANSP.18"></a><a href="dlansp.f.html#DLANSP.1">DLANSP</a>  returns the value of the one norm,  or the Frobenius norm, or
+</span><span class="comment">*</span><span class="comment">  the  infinity norm,  or the  element of  largest absolute value  of a
+</span><span class="comment">*</span><span class="comment">  real symmetric matrix A,  supplied in packed form.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Description
+</span><span class="comment">*</span><span class="comment">  ===========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLANSP.25"></a><a href="dlansp.f.html#DLANSP.1">DLANSP</a> returns the value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     <a name="DLANSP.27"></a><a href="dlansp.f.html#DLANSP.1">DLANSP</a> = ( max(abs(A(i,j))), NORM = 'M' or 'm'
+</span><span class="comment">*</span><span class="comment">              (
+</span><span class="comment">*</span><span class="comment">              ( norm1(A),         NORM = '1', 'O' or 'o'
+</span><span class="comment">*</span><span class="comment">              (
+</span><span class="comment">*</span><span class="comment">              ( normI(A),         NORM = 'I' or 'i'
+</span><span class="comment">*</span><span class="comment">              (
+</span><span class="comment">*</span><span class="comment">              ( normF(A),         NORM = 'F', 'f', 'E' or 'e'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where  norm1  denotes the  one norm of a matrix (maximum column sum),
+</span><span class="comment">*</span><span class="comment">  normI  denotes the  infinity norm  of a matrix  (maximum row sum) and
+</span><span class="comment">*</span><span class="comment">  normF  denotes the  Frobenius norm of a matrix (square root of sum of
+</span><span class="comment">*</span><span class="comment">  squares).  Note that  max(abs(A(i,j)))  is not a consistent matrix norm.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NORM    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies the value to be returned in <a name="DLANSP.44"></a><a href="dlansp.f.html#DLANSP.1">DLANSP</a> as described
+</span><span class="comment">*</span><span class="comment">          above.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether the upper or lower triangular part of the
+</span><span class="comment">*</span><span class="comment">          symmetric matrix A is supplied.
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangular part of A is supplied
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangular part of A is supplied
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.  When N = 0, <a name="DLANSP.54"></a><a href="dlansp.f.html#DLANSP.1">DLANSP</a> is
+</span><span class="comment">*</span><span class="comment">          set to zero.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AP      (input) DOUBLE PRECISION array, dimension (N*(N+1)/2)
+</span><span class="comment">*</span><span class="comment">          The upper or lower triangle of the symmetric matrix A, packed
+</span><span class="comment">*</span><span class="comment">          columnwise in a linear array.  The j-th column of A is stored
+</span><span class="comment">*</span><span class="comment">          in the array AP as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', AP(i + (j-1)*j/2) = A(i,j) for 1&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', AP(i + (j-1)*(2n-j)/2) = A(i,j) for j&lt;=i&lt;=n.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) DOUBLE PRECISION array, dimension (MAX(1,LWORK)),
+</span><span class="comment">*</span><span class="comment">          where LWORK &gt;= N when NORM = 'I' or '1' or 'O'; otherwise,
+</span><span class="comment">*</span><span class="comment">          WORK is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment"> =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ONE, ZERO
+      PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, J, K
+      DOUBLE PRECISION   ABSA, SCALE, SUM, VALUE
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DLASSQ.79"></a><a href="dlassq.f.html#DLASSQ.1">DLASSQ</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.82"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.83"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 ) THEN
+         VALUE = ZERO
+      ELSE IF( <a name="LSAME.92"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'M'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find max(abs(A(i,j))).
+</span><span class="comment">*</span><span class="comment">
+</span>         VALUE = ZERO
+         IF( <a name="LSAME.97"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) ) THEN
+            K = 1
+            DO 20 J = 1, N
+               DO 10 I = K, K + J - 1
+                  VALUE = MAX( VALUE, ABS( AP( I ) ) )
+   10          CONTINUE
+               K = K + J
+   20       CONTINUE
+         ELSE
+            K = 1
+            DO 40 J = 1, N
+               DO 30 I = K, K + N - J
+                  VALUE = MAX( VALUE, ABS( AP( I ) ) )
+   30          CONTINUE
+               K = K + N - J + 1
+   40       CONTINUE
+         END IF
+      ELSE IF( ( <a name="LSAME.114"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'I'</span> ) ) .OR. ( <a name="LSAME.114"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'O'</span> ) ) .OR.
+     $         ( NORM.EQ.<span class="string">'1'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find normI(A) ( = norm1(A), since A is symmetric).
+</span><span class="comment">*</span><span class="comment">
+</span>         VALUE = ZERO
+         K = 1
+         IF( <a name="LSAME.121"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) ) THEN
+            DO 60 J = 1, N
+               SUM = ZERO
+               DO 50 I = 1, J - 1
+                  ABSA = ABS( AP( K ) )
+                  SUM = SUM + ABSA
+                  WORK( I ) = WORK( I ) + ABSA
+                  K = K + 1
+   50          CONTINUE
+               WORK( J ) = SUM + ABS( AP( K ) )
+               K = K + 1
+   60       CONTINUE
+            DO 70 I = 1, N
+               VALUE = MAX( VALUE, WORK( I ) )
+   70       CONTINUE
+         ELSE
+            DO 80 I = 1, N
+               WORK( I ) = ZERO
+   80       CONTINUE
+            DO 100 J = 1, N
+               SUM = WORK( J ) + ABS( AP( K ) )
+               K = K + 1
+               DO 90 I = J + 1, N
+                  ABSA = ABS( AP( K ) )
+                  SUM = SUM + ABSA
+                  WORK( I ) = WORK( I ) + ABSA
+                  K = K + 1
+   90          CONTINUE
+               VALUE = MAX( VALUE, SUM )
+  100       CONTINUE
+         END IF
+      ELSE IF( ( <a name="LSAME.152"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'F'</span> ) ) .OR. ( <a name="LSAME.152"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'E'</span> ) ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find normF(A).
+</span><span class="comment">*</span><span class="comment">
+</span>         SCALE = ZERO
+         SUM = ONE
+         K = 2
+         IF( <a name="LSAME.159"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) ) THEN
+            DO 110 J = 2, N
+               CALL <a name="DLASSQ.161"></a><a href="dlassq.f.html#DLASSQ.1">DLASSQ</a>( J-1, AP( K ), 1, SCALE, SUM )
+               K = K + J
+  110       CONTINUE
+         ELSE
+            DO 120 J = 1, N - 1
+               CALL <a name="DLASSQ.166"></a><a href="dlassq.f.html#DLASSQ.1">DLASSQ</a>( N-J, AP( K ), 1, SCALE, SUM )
+               K = K + N - J + 1
+  120       CONTINUE
+         END IF
+         SUM = 2*SUM
+         K = 1
+         DO 130 I = 1, N
+            IF( AP( K ).NE.ZERO ) THEN
+               ABSA = ABS( AP( K ) )
+               IF( SCALE.LT.ABSA ) THEN
+                  SUM = ONE + SUM*( SCALE / ABSA )**2
+                  SCALE = ABSA
+               ELSE
+                  SUM = SUM + ( ABSA / SCALE )**2
+               END IF
+            END IF
+            IF( <a name="LSAME.182"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) ) THEN
+               K = K + I + 1
+            ELSE
+               K = K + N - I + 1
+            END IF
+  130    CONTINUE
+         VALUE = SCALE*SQRT( SUM )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      <a name="DLANSP.191"></a><a href="dlansp.f.html#DLANSP.1">DLANSP</a> = VALUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLANSP.194"></a><a href="dlansp.f.html#DLANSP.1">DLANSP</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

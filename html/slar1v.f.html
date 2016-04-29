@@ -1,0 +1,393 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slar1v.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLAR1V.1"></a><a href="slar1v.f.html#SLAR1V.1">SLAR1V</a>( N, B1, BN, LAMBDA, D, L, LD, LLD,
+     $           PIVMIN, GAPTOL, Z, WANTNC, NEGCNT, ZTZ, MINGMA,
+     $           R, ISUPPZ, NRMINV, RESID, RQCORR, WORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      LOGICAL            WANTNC
+      INTEGER   B1, BN, N, NEGCNT, R
+      REAL               GAPTOL, LAMBDA, MINGMA, NRMINV, PIVMIN, RESID,
+     $                   RQCORR, ZTZ
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            ISUPPZ( * )
+      REAL               D( * ), L( * ), LD( * ), LLD( * ),
+     $                  WORK( * )
+      REAL             Z( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLAR1V.25"></a><a href="slar1v.f.html#SLAR1V.1">SLAR1V</a> computes the (scaled) r-th column of the inverse of
+</span><span class="comment">*</span><span class="comment">  the sumbmatrix in rows B1 through BN of the tridiagonal matrix
+</span><span class="comment">*</span><span class="comment">  L D L^T - sigma I. When sigma is close to an eigenvalue, the
+</span><span class="comment">*</span><span class="comment">  computed vector is an accurate eigenvector. Usually, r corresponds
+</span><span class="comment">*</span><span class="comment">  to the index where the eigenvector is largest in magnitude.
+</span><span class="comment">*</span><span class="comment">  The following steps accomplish this computation :
+</span><span class="comment">*</span><span class="comment">  (a) Stationary qd transform,  L D L^T - sigma I = L(+) D(+) L(+)^T,
+</span><span class="comment">*</span><span class="comment">  (b) Progressive qd transform, L D L^T - sigma I = U(-) D(-) U(-)^T,
+</span><span class="comment">*</span><span class="comment">  (c) Computation of the diagonal elements of the inverse of
+</span><span class="comment">*</span><span class="comment">      L D L^T - sigma I by combining the above transforms, and choosing
+</span><span class="comment">*</span><span class="comment">      r as the index where the diagonal of the inverse is (one of the)
+</span><span class="comment">*</span><span class="comment">      largest in magnitude.
+</span><span class="comment">*</span><span class="comment">  (d) Computation of the (scaled) r-th column of the inverse using the
+</span><span class="comment">*</span><span class="comment">      twisted factorization obtained by combining the top part of the
+</span><span class="comment">*</span><span class="comment">      the stationary and the bottom part of the progressive transform.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N        (input) INTEGER
+</span><span class="comment">*</span><span class="comment">           The order of the matrix L D L^T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B1       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">           First index of the submatrix of L D L^T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BN       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">           Last index of the submatrix of L D L^T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LAMBDA    (input) REAL            
+</span><span class="comment">*</span><span class="comment">           The shift. In order to compute an accurate eigenvector,
+</span><span class="comment">*</span><span class="comment">           LAMBDA should be a good approximation to an eigenvalue
+</span><span class="comment">*</span><span class="comment">           of L D L^T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  L        (input) REAL             array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">           The (n-1) subdiagonal elements of the unit bidiagonal matrix
+</span><span class="comment">*</span><span class="comment">           L, in elements 1 to N-1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D        (input) REAL             array, dimension (N)
+</span><span class="comment">*</span><span class="comment">           The n diagonal elements of the diagonal matrix D.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LD       (input) REAL             array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">           The n-1 elements L(i)*D(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LLD      (input) REAL             array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">           The n-1 elements L(i)*L(i)*D(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  PIVMIN   (input) REAL            
+</span><span class="comment">*</span><span class="comment">           The minimum pivot in the Sturm sequence.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GAPTOL   (input) REAL            
+</span><span class="comment">*</span><span class="comment">           Tolerance that indicates when eigenvector entries are negligible
+</span><span class="comment">*</span><span class="comment">           w.r.t. their contribution to the residual.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z        (input/output) REAL             array, dimension (N)
+</span><span class="comment">*</span><span class="comment">           On input, all entries of Z must be set to 0.
+</span><span class="comment">*</span><span class="comment">           On output, Z contains the (scaled) r-th column of the
+</span><span class="comment">*</span><span class="comment">           inverse. The scaling is such that Z(R) equals 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WANTNC   (input) LOGICAL
+</span><span class="comment">*</span><span class="comment">           Specifies whether NEGCNT has to be computed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NEGCNT   (output) INTEGER
+</span><span class="comment">*</span><span class="comment">           If WANTNC is .TRUE. then NEGCNT = the number of pivots &lt; pivmin
+</span><span class="comment">*</span><span class="comment">           in the  matrix factorization L D L^T, and NEGCNT = -1 otherwise.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ZTZ      (output) REAL            
+</span><span class="comment">*</span><span class="comment">           The square of the 2-norm of Z.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  MINGMA   (output) REAL            
+</span><span class="comment">*</span><span class="comment">           The reciprocal of the largest (in magnitude) diagonal
+</span><span class="comment">*</span><span class="comment">           element of the inverse of L D L^T - sigma I.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  R        (input/output) INTEGER
+</span><span class="comment">*</span><span class="comment">           The twist index for the twisted factorization used to
+</span><span class="comment">*</span><span class="comment">           compute Z.
+</span><span class="comment">*</span><span class="comment">           On input, 0 &lt;= R &lt;= N. If R is input as 0, R is set to
+</span><span class="comment">*</span><span class="comment">           the index where (L D L^T - sigma I)^{-1} is largest
+</span><span class="comment">*</span><span class="comment">           in magnitude. If 1 &lt;= R &lt;= N, R is unchanged.
+</span><span class="comment">*</span><span class="comment">           On output, R contains the twist index used to compute Z.
+</span><span class="comment">*</span><span class="comment">           Ideally, R designates the position of the maximum entry in the
+</span><span class="comment">*</span><span class="comment">           eigenvector.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ISUPPZ   (output) INTEGER array, dimension (2)
+</span><span class="comment">*</span><span class="comment">           The support of the vector in Z, i.e., the vector Z is
+</span><span class="comment">*</span><span class="comment">           nonzero only in elements ISUPPZ(1) through ISUPPZ( 2 ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NRMINV   (output) REAL            
+</span><span class="comment">*</span><span class="comment">           NRMINV = 1/SQRT( ZTZ )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RESID    (output) REAL            
+</span><span class="comment">*</span><span class="comment">           The residual of the FP vector.
+</span><span class="comment">*</span><span class="comment">           RESID = ABS( MINGMA )/SQRT( ZTZ )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RQCORR   (output) REAL            
+</span><span class="comment">*</span><span class="comment">           The Rayleigh Quotient correction to LAMBDA.
+</span><span class="comment">*</span><span class="comment">           RQCORR = MINGMA*TMP
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK     (workspace) REAL             array, dimension (4*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Beresford Parlett, University of California, Berkeley, USA
+</span><span class="comment">*</span><span class="comment">     Jim Demmel, University of California, Berkeley, USA
+</span><span class="comment">*</span><span class="comment">     Inderjit Dhillon, University of Texas, Austin, USA
+</span><span class="comment">*</span><span class="comment">     Osni Marques, LBNL/NERSC, USA
+</span><span class="comment">*</span><span class="comment">     Christof Voemel, University of California, Berkeley, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, ONE
+      PARAMETER          ( ZERO = 0.0E0, ONE = 1.0E0 )
+
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            SAWNAN1, SAWNAN2
+      INTEGER            I, INDLPL, INDP, INDS, INDUMN, NEG1, NEG2, R1,
+     $                   R2
+      REAL               DMINUS, DPLUS, EPS, S, TMP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL <a name="SISNAN.148"></a><a href="sisnan.f.html#SISNAN.1">SISNAN</a>
+      REAL               <a name="SLAMCH.149"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      EXTERNAL           <a name="SISNAN.150"></a><a href="sisnan.f.html#SISNAN.1">SISNAN</a>, <a name="SLAMCH.150"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      EPS = <a name="SLAMCH.157"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Precision'</span> )
+
+
+      IF( R.EQ.0 ) THEN
+         R1 = B1
+         R2 = BN
+      ELSE
+         R1 = R
+         R2 = R
+      END IF
+
+<span class="comment">*</span><span class="comment">     Storage for LPLUS
+</span>      INDLPL = 0
+<span class="comment">*</span><span class="comment">     Storage for UMINUS
+</span>      INDUMN = N
+      INDS = 2*N + 1
+      INDP = 3*N + 1
+
+      IF( B1.EQ.1 ) THEN
+         WORK( INDS ) = ZERO
+      ELSE
+         WORK( INDS+B1-1 ) = LLD( B1-1 )
+      END IF
+
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the stationary transform (using the differential form)
+</span><span class="comment">*</span><span class="comment">     until the index R2.
+</span><span class="comment">*</span><span class="comment">
+</span>      SAWNAN1 = .FALSE.
+      NEG1 = 0
+      S = WORK( INDS+B1-1 ) - LAMBDA
+      DO 50 I = B1, R1 - 1
+         DPLUS = D( I ) + S
+         WORK( INDLPL+I ) = LD( I ) / DPLUS
+         IF(DPLUS.LT.ZERO) NEG1 = NEG1 + 1
+         WORK( INDS+I ) = S*WORK( INDLPL+I )*L( I )
+         S = WORK( INDS+I ) - LAMBDA
+ 50   CONTINUE
+      SAWNAN1 = <a name="SISNAN.195"></a><a href="sisnan.f.html#SISNAN.1">SISNAN</a>( S )
+      IF( SAWNAN1 ) GOTO 60
+      DO 51 I = R1, R2 - 1
+         DPLUS = D( I ) + S
+         WORK( INDLPL+I ) = LD( I ) / DPLUS
+         WORK( INDS+I ) = S*WORK( INDLPL+I )*L( I )
+         S = WORK( INDS+I ) - LAMBDA
+ 51   CONTINUE
+      SAWNAN1 = <a name="SISNAN.203"></a><a href="sisnan.f.html#SISNAN.1">SISNAN</a>( S )
+<span class="comment">*</span><span class="comment">
+</span> 60   CONTINUE
+      IF( SAWNAN1 ) THEN
+<span class="comment">*</span><span class="comment">        Runs a slower version of the above loop if a NaN is detected
+</span>         NEG1 = 0
+         S = WORK( INDS+B1-1 ) - LAMBDA
+         DO 70 I = B1, R1 - 1
+            DPLUS = D( I ) + S
+            IF(ABS(DPLUS).LT.PIVMIN) DPLUS = -PIVMIN
+            WORK( INDLPL+I ) = LD( I ) / DPLUS
+            IF(DPLUS.LT.ZERO) NEG1 = NEG1 + 1
+            WORK( INDS+I ) = S*WORK( INDLPL+I )*L( I )
+            IF( WORK( INDLPL+I ).EQ.ZERO )
+     $                      WORK( INDS+I ) = LLD( I )
+            S = WORK( INDS+I ) - LAMBDA
+ 70      CONTINUE
+         DO 71 I = R1, R2 - 1
+            DPLUS = D( I ) + S
+            IF(ABS(DPLUS).LT.PIVMIN) DPLUS = -PIVMIN
+            WORK( INDLPL+I ) = LD( I ) / DPLUS
+            WORK( INDS+I ) = S*WORK( INDLPL+I )*L( I )
+            IF( WORK( INDLPL+I ).EQ.ZERO )
+     $                      WORK( INDS+I ) = LLD( I )
+            S = WORK( INDS+I ) - LAMBDA
+ 71      CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the progressive transform (using the differential form)
+</span><span class="comment">*</span><span class="comment">     until the index R1
+</span><span class="comment">*</span><span class="comment">
+</span>      SAWNAN2 = .FALSE.
+      NEG2 = 0
+      WORK( INDP+BN-1 ) = D( BN ) - LAMBDA
+      DO 80 I = BN - 1, R1, -1
+         DMINUS = LLD( I ) + WORK( INDP+I )
+         TMP = D( I ) / DMINUS
+         IF(DMINUS.LT.ZERO) NEG2 = NEG2 + 1
+         WORK( INDUMN+I ) = L( I )*TMP
+         WORK( INDP+I-1 ) = WORK( INDP+I )*TMP - LAMBDA
+ 80   CONTINUE
+      TMP = WORK( INDP+R1-1 )
+      SAWNAN2 = <a name="SISNAN.245"></a><a href="sisnan.f.html#SISNAN.1">SISNAN</a>( TMP )
+
+      IF( SAWNAN2 ) THEN
+<span class="comment">*</span><span class="comment">        Runs a slower version of the above loop if a NaN is detected
+</span>         NEG2 = 0
+         DO 100 I = BN-1, R1, -1
+            DMINUS = LLD( I ) + WORK( INDP+I )
+            IF(ABS(DMINUS).LT.PIVMIN) DMINUS = -PIVMIN
+            TMP = D( I ) / DMINUS
+            IF(DMINUS.LT.ZERO) NEG2 = NEG2 + 1
+            WORK( INDUMN+I ) = L( I )*TMP
+            WORK( INDP+I-1 ) = WORK( INDP+I )*TMP - LAMBDA
+            IF( TMP.EQ.ZERO )
+     $          WORK( INDP+I-1 ) = D( I ) - LAMBDA
+ 100     CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Find the index (from R1 to R2) of the largest (in magnitude)
+</span><span class="comment">*</span><span class="comment">     diagonal element of the inverse
+</span><span class="comment">*</span><span class="comment">
+</span>      MINGMA = WORK( INDS+R1-1 ) + WORK( INDP+R1-1 )
+      IF( MINGMA.LT.ZERO ) NEG1 = NEG1 + 1
+      IF( WANTNC ) THEN
+         NEGCNT = NEG1 + NEG2
+      ELSE
+         NEGCNT = -1
+      ENDIF
+      IF( ABS(MINGMA).EQ.ZERO )
+     $   MINGMA = EPS*WORK( INDS+R1-1 )
+      R = R1
+      DO 110 I = R1, R2 - 1
+         TMP = WORK( INDS+I ) + WORK( INDP+I )
+         IF( TMP.EQ.ZERO )
+     $      TMP = EPS*WORK( INDS+I )
+         IF( ABS( TMP ).LE.ABS( MINGMA ) ) THEN
+            MINGMA = TMP
+            R = I + 1
+         END IF
+ 110  CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the FP vector: solve N^T v = e_r
+</span><span class="comment">*</span><span class="comment">
+</span>      ISUPPZ( 1 ) = B1
+      ISUPPZ( 2 ) = BN
+      Z( R ) = ONE
+      ZTZ = ONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the FP vector upwards from R
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( .NOT.SAWNAN1 .AND. .NOT.SAWNAN2 ) THEN
+         DO 210 I = R-1, B1, -1
+            Z( I ) = -( WORK( INDLPL+I )*Z( I+1 ) )
+            IF( (ABS(Z(I))+ABS(Z(I+1)))* ABS(LD(I)).LT.GAPTOL )
+     $           THEN
+               Z( I ) = ZERO
+               ISUPPZ( 1 ) = I + 1
+               GOTO 220
+            ENDIF
+            ZTZ = ZTZ + Z( I )*Z( I )
+ 210     CONTINUE
+ 220     CONTINUE
+      ELSE
+<span class="comment">*</span><span class="comment">        Run slower loop if NaN occurred.
+</span>         DO 230 I = R - 1, B1, -1
+            IF( Z( I+1 ).EQ.ZERO ) THEN
+               Z( I ) = -( LD( I+1 ) / LD( I ) )*Z( I+2 )
+            ELSE
+               Z( I ) = -( WORK( INDLPL+I )*Z( I+1 ) )
+            END IF
+            IF( (ABS(Z(I))+ABS(Z(I+1)))* ABS(LD(I)).LT.GAPTOL )
+     $           THEN
+               Z( I ) = ZERO
+               ISUPPZ( 1 ) = I + 1
+               GO TO 240
+            END IF
+            ZTZ = ZTZ + Z( I )*Z( I )
+ 230     CONTINUE
+ 240     CONTINUE
+      ENDIF
+
+<span class="comment">*</span><span class="comment">     Compute the FP vector downwards from R in blocks of size BLKSIZ
+</span>      IF( .NOT.SAWNAN1 .AND. .NOT.SAWNAN2 ) THEN
+         DO 250 I = R, BN-1
+            Z( I+1 ) = -( WORK( INDUMN+I )*Z( I ) )
+            IF( (ABS(Z(I))+ABS(Z(I+1)))* ABS(LD(I)).LT.GAPTOL )
+     $         THEN
+               Z( I+1 ) = ZERO
+               ISUPPZ( 2 ) = I
+               GO TO 260
+            END IF
+            ZTZ = ZTZ + Z( I+1 )*Z( I+1 )
+ 250     CONTINUE
+ 260     CONTINUE
+      ELSE
+<span class="comment">*</span><span class="comment">        Run slower loop if NaN occurred.
+</span>         DO 270 I = R, BN - 1
+            IF( Z( I ).EQ.ZERO ) THEN
+               Z( I+1 ) = -( LD( I-1 ) / LD( I ) )*Z( I-1 )
+            ELSE
+               Z( I+1 ) = -( WORK( INDUMN+I )*Z( I ) )
+            END IF
+            IF( (ABS(Z(I))+ABS(Z(I+1)))* ABS(LD(I)).LT.GAPTOL )
+     $           THEN
+               Z( I+1 ) = ZERO
+               ISUPPZ( 2 ) = I
+               GO TO 280
+            END IF
+            ZTZ = ZTZ + Z( I+1 )*Z( I+1 )
+ 270     CONTINUE
+ 280     CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute quantities for convergence test
+</span><span class="comment">*</span><span class="comment">
+</span>      TMP = ONE / ZTZ
+      NRMINV = SQRT( TMP )
+      RESID = ABS( MINGMA )*NRMINV
+      RQCORR = MINGMA*TMP
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLAR1V.367"></a><a href="slar1v.f.html#SLAR1V.1">SLAR1V</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

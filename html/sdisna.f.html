@@ -1,0 +1,203 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>sdisna.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SDISNA.1"></a><a href="sdisna.f.html#SDISNA.1">SDISNA</a>( JOB, M, N, D, SEP, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          JOB
+      INTEGER            INFO, M, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               D( * ), SEP( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SDISNA.18"></a><a href="sdisna.f.html#SDISNA.1">SDISNA</a> computes the reciprocal condition numbers for the eigenvectors
+</span><span class="comment">*</span><span class="comment">  of a real symmetric or complex Hermitian matrix or for the left or
+</span><span class="comment">*</span><span class="comment">  right singular vectors of a general m-by-n matrix. The reciprocal
+</span><span class="comment">*</span><span class="comment">  condition number is the 'gap' between the corresponding eigenvalue or
+</span><span class="comment">*</span><span class="comment">  singular value and the nearest other one.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The bound on the error, measured by angle in radians, in the I-th
+</span><span class="comment">*</span><span class="comment">  computed vector is given by
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">         <a name="SLAMCH.27"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( 'E' ) * ( ANORM / SEP( I ) )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where ANORM = 2-norm(A) = max( abs( D(j) ) ).  SEP(I) is not allowed
+</span><span class="comment">*</span><span class="comment">  to be smaller than <a name="SLAMCH.30"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( 'E' )*ANORM in order to limit the size of
+</span><span class="comment">*</span><span class="comment">  the error bound.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SDISNA.33"></a><a href="sdisna.f.html#SDISNA.1">SDISNA</a> may also be used to compute error bounds for eigenvectors of
+</span><span class="comment">*</span><span class="comment">  the generalized symmetric definite eigenproblem.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOB     (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies for which problem the reciprocal condition numbers
+</span><span class="comment">*</span><span class="comment">          should be computed:
+</span><span class="comment">*</span><span class="comment">          = 'E':  the eigenvectors of a symmetric/Hermitian matrix;
+</span><span class="comment">*</span><span class="comment">          = 'L':  the left singular vectors of a general matrix;
+</span><span class="comment">*</span><span class="comment">          = 'R':  the right singular vectors of a general matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix. M &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          If JOB = 'L' or 'R', the number of columns of the matrix,
+</span><span class="comment">*</span><span class="comment">          in which case N &gt;= 0. Ignored if JOB = 'E'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input) REAL array, dimension (M) if JOB = 'E'
+</span><span class="comment">*</span><span class="comment">                              dimension (min(M,N)) if JOB = 'L' or 'R'
+</span><span class="comment">*</span><span class="comment">          The eigenvalues (if JOB = 'E') or singular values (if JOB =
+</span><span class="comment">*</span><span class="comment">          'L' or 'R') of the matrix, in either increasing or decreasing
+</span><span class="comment">*</span><span class="comment">          order. If singular values, they must be non-negative.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SEP     (output) REAL array, dimension (M) if JOB = 'E'
+</span><span class="comment">*</span><span class="comment">                               dimension (min(M,N)) if JOB = 'L' or 'R'
+</span><span class="comment">*</span><span class="comment">          The reciprocal condition numbers of the vectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit.
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO
+      PARAMETER          ( ZERO = 0.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            DECR, EIGEN, INCR, LEFT, RIGHT, SING
+      INTEGER            I, K
+      REAL               ANORM, EPS, NEWGAP, OLDGAP, SAFMIN, THRESH
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.79"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      REAL               <a name="SLAMCH.80"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      EXTERNAL           <a name="LSAME.81"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="SLAMCH.81"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.87"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input arguments
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      EIGEN = <a name="LSAME.94"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'E'</span> )
+      LEFT = <a name="LSAME.95"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'L'</span> )
+      RIGHT = <a name="LSAME.96"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'R'</span> )
+      SING = LEFT .OR. RIGHT
+      IF( EIGEN ) THEN
+         K = M
+      ELSE IF( SING ) THEN
+         K = MIN( M, N )
+      END IF
+      IF( .NOT.EIGEN .AND. .NOT.SING ) THEN
+         INFO = -1
+      ELSE IF( M.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( K.LT.0 ) THEN
+         INFO = -3
+      ELSE
+         INCR = .TRUE.
+         DECR = .TRUE.
+         DO 10 I = 1, K - 1
+            IF( INCR )
+     $         INCR = INCR .AND. D( I ).LE.D( I+1 )
+            IF( DECR )
+     $         DECR = DECR .AND. D( I ).GE.D( I+1 )
+   10    CONTINUE
+         IF( SING .AND. K.GT.0 ) THEN
+            IF( INCR )
+     $         INCR = INCR .AND. ZERO.LE.D( 1 )
+            IF( DECR )
+     $         DECR = DECR .AND. D( K ).GE.ZERO
+         END IF
+         IF( .NOT.( INCR .OR. DECR ) )
+     $      INFO = -4
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.128"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="SDISNA.128"></a><a href="sdisna.f.html#SDISNA.1">SDISNA</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( K.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute reciprocal condition numbers
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( K.EQ.1 ) THEN
+         SEP( 1 ) = <a name="SLAMCH.140"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'O'</span> )
+      ELSE
+         OLDGAP = ABS( D( 2 )-D( 1 ) )
+         SEP( 1 ) = OLDGAP
+         DO 20 I = 2, K - 1
+            NEWGAP = ABS( D( I+1 )-D( I ) )
+            SEP( I ) = MIN( OLDGAP, NEWGAP )
+            OLDGAP = NEWGAP
+   20    CONTINUE
+         SEP( K ) = OLDGAP
+      END IF
+      IF( SING ) THEN
+         IF( ( LEFT .AND. M.GT.N ) .OR. ( RIGHT .AND. M.LT.N ) ) THEN
+            IF( INCR )
+     $         SEP( 1 ) = MIN( SEP( 1 ), D( 1 ) )
+            IF( DECR )
+     $         SEP( K ) = MIN( SEP( K ), D( K ) )
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Ensure that reciprocal condition numbers are not less than
+</span><span class="comment">*</span><span class="comment">     threshold, in order to limit the size of the error bound
+</span><span class="comment">*</span><span class="comment">
+</span>      EPS = <a name="SLAMCH.163"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'E'</span> )
+      SAFMIN = <a name="SLAMCH.164"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'S'</span> )
+      ANORM = MAX( ABS( D( 1 ) ), ABS( D( K ) ) )
+      IF( ANORM.EQ.ZERO ) THEN
+         THRESH = EPS
+      ELSE
+         THRESH = MAX( EPS*ANORM, SAFMIN )
+      END IF
+      DO 30 I = 1, K
+         SEP( I ) = MAX( SEP( I ), THRESH )
+   30 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SDISNA.177"></a><a href="sdisna.f.html#SDISNA.1">SDISNA</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

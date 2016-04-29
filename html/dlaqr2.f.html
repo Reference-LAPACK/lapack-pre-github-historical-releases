@@ -1,0 +1,575 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlaqr2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLAQR2.1"></a><a href="dlaqr2.f.html#DLAQR2.1">DLAQR2</a>( WANTT, WANTZ, N, KTOP, KBOT, NW, H, LDH, ILOZ,
+     $                   IHIZ, Z, LDZ, NS, ND, SR, SI, V, LDV, NH, T,
+     $                   LDT, NV, WV, LDWV, WORK, LWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            IHIZ, ILOZ, KBOT, KTOP, LDH, LDT, LDV, LDWV,
+     $                   LDZ, LWORK, N, ND, NH, NS, NV, NW
+      LOGICAL            WANTT, WANTZ
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   H( LDH, * ), SI( * ), SR( * ), T( LDT, * ),
+     $                   V( LDV, * ), WORK( * ), WV( LDWV, * ),
+     $                   Z( LDZ, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     This subroutine is identical to <a name="DLAQR3.20"></a><a href="dlaqr3.f.html#DLAQR3.1">DLAQR3</a> except that it avoids
+</span><span class="comment">*</span><span class="comment">     recursion by calling <a name="DLAHQR.21"></a><a href="dlahqr.f.html#DLAHQR.1">DLAHQR</a> instead of <a name="DLAQR4.21"></a><a href="dlaqr4.f.html#DLAQR4.1">DLAQR4</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ******************************************************************
+</span><span class="comment">*</span><span class="comment">     Aggressive early deflation:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     This subroutine accepts as input an upper Hessenberg matrix
+</span><span class="comment">*</span><span class="comment">     H and performs an orthogonal similarity transformation
+</span><span class="comment">*</span><span class="comment">     designed to detect and deflate fully converged eigenvalues from
+</span><span class="comment">*</span><span class="comment">     a trailing principal submatrix.  On output H has been over-
+</span><span class="comment">*</span><span class="comment">     written by a new Hessenberg matrix that is a perturbation of
+</span><span class="comment">*</span><span class="comment">     an orthogonal similarity transformation of H.  It is to be
+</span><span class="comment">*</span><span class="comment">     hoped that the final version of H has many zero subdiagonal
+</span><span class="comment">*</span><span class="comment">     entries.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ******************************************************************
+</span><span class="comment">*</span><span class="comment">     WANTT   (input) LOGICAL
+</span><span class="comment">*</span><span class="comment">          If .TRUE., then the Hessenberg matrix H is fully updated
+</span><span class="comment">*</span><span class="comment">          so that the quasi-triangular Schur factor may be
+</span><span class="comment">*</span><span class="comment">          computed (in cooperation with the calling subroutine).
+</span><span class="comment">*</span><span class="comment">          If .FALSE., then only enough of H is updated to preserve
+</span><span class="comment">*</span><span class="comment">          the eigenvalues.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     WANTZ   (input) LOGICAL
+</span><span class="comment">*</span><span class="comment">          If .TRUE., then the orthogonal matrix Z is updated so
+</span><span class="comment">*</span><span class="comment">          so that the orthogonal Schur factor may be computed
+</span><span class="comment">*</span><span class="comment">          (in cooperation with the calling subroutine).
+</span><span class="comment">*</span><span class="comment">          If .FALSE., then Z is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix H and (if WANTZ is .TRUE.) the
+</span><span class="comment">*</span><span class="comment">          order of the orthogonal matrix Z.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     KTOP    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          It is assumed that either KTOP = 1 or H(KTOP,KTOP-1)=0.
+</span><span class="comment">*</span><span class="comment">          KBOT and KTOP together determine an isolated block
+</span><span class="comment">*</span><span class="comment">          along the diagonal of the Hessenberg matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     KBOT    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          It is assumed without a check that either
+</span><span class="comment">*</span><span class="comment">          KBOT = N or H(KBOT+1,KBOT)=0.  KBOT and KTOP together
+</span><span class="comment">*</span><span class="comment">          determine an isolated block along the diagonal of the
+</span><span class="comment">*</span><span class="comment">          Hessenberg matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     NW      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          Deflation window size.  1 .LE. NW .LE. (KBOT-KTOP+1).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     H       (input/output) DOUBLE PRECISION array, dimension (LDH,N)
+</span><span class="comment">*</span><span class="comment">          On input the initial N-by-N section of H stores the
+</span><span class="comment">*</span><span class="comment">          Hessenberg matrix undergoing aggressive early deflation.
+</span><span class="comment">*</span><span class="comment">          On output H has been transformed by an orthogonal
+</span><span class="comment">*</span><span class="comment">          similarity transformation, perturbed, and the returned
+</span><span class="comment">*</span><span class="comment">          to Hessenberg form that (it is to be hoped) has some
+</span><span class="comment">*</span><span class="comment">          zero subdiagonal entries.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     LDH     (input) integer
+</span><span class="comment">*</span><span class="comment">          Leading dimension of H just as declared in the calling
+</span><span class="comment">*</span><span class="comment">          subroutine.  N .LE. LDH
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ILOZ    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">     IHIZ    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          Specify the rows of Z to which transformations must be
+</span><span class="comment">*</span><span class="comment">          applied if WANTZ is .TRUE.. 1 .LE. ILOZ .LE. IHIZ .LE. N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Z       (input/output) DOUBLE PRECISION array, dimension (LDZ,IHI)
+</span><span class="comment">*</span><span class="comment">          IF WANTZ is .TRUE., then on output, the orthogonal
+</span><span class="comment">*</span><span class="comment">          similarity transformation mentioned above has been
+</span><span class="comment">*</span><span class="comment">          accumulated into Z(ILOZ:IHIZ,ILO:IHI) from the right.
+</span><span class="comment">*</span><span class="comment">          If WANTZ is .FALSE., then Z is unreferenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     LDZ     (input) integer
+</span><span class="comment">*</span><span class="comment">          The leading dimension of Z just as declared in the
+</span><span class="comment">*</span><span class="comment">          calling subroutine.  1 .LE. LDZ.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     NS      (output) integer
+</span><span class="comment">*</span><span class="comment">          The number of unconverged (ie approximate) eigenvalues
+</span><span class="comment">*</span><span class="comment">          returned in SR and SI that may be used as shifts by the
+</span><span class="comment">*</span><span class="comment">          calling subroutine.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ND      (output) integer
+</span><span class="comment">*</span><span class="comment">          The number of converged eigenvalues uncovered by this
+</span><span class="comment">*</span><span class="comment">          subroutine.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     SR      (output) DOUBLE PRECISION array, dimension KBOT
+</span><span class="comment">*</span><span class="comment">     SI      (output) DOUBLE PRECISION array, dimension KBOT
+</span><span class="comment">*</span><span class="comment">          On output, the real and imaginary parts of approximate
+</span><span class="comment">*</span><span class="comment">          eigenvalues that may be used for shifts are stored in
+</span><span class="comment">*</span><span class="comment">          SR(KBOT-ND-NS+1) through SR(KBOT-ND) and
+</span><span class="comment">*</span><span class="comment">          SI(KBOT-ND-NS+1) through SI(KBOT-ND), respectively.
+</span><span class="comment">*</span><span class="comment">          The real and imaginary parts of converged eigenvalues
+</span><span class="comment">*</span><span class="comment">          are stored in SR(KBOT-ND+1) through SR(KBOT) and
+</span><span class="comment">*</span><span class="comment">          SI(KBOT-ND+1) through SI(KBOT), respectively.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     V       (workspace) DOUBLE PRECISION array, dimension (LDV,NW)
+</span><span class="comment">*</span><span class="comment">          An NW-by-NW work array.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     LDV     (input) integer scalar
+</span><span class="comment">*</span><span class="comment">          The leading dimension of V just as declared in the
+</span><span class="comment">*</span><span class="comment">          calling subroutine.  NW .LE. LDV
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     NH      (input) integer scalar
+</span><span class="comment">*</span><span class="comment">          The number of columns of T.  NH.GE.NW.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     T       (workspace) DOUBLE PRECISION array, dimension (LDT,NW)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     LDT     (input) integer
+</span><span class="comment">*</span><span class="comment">          The leading dimension of T just as declared in the
+</span><span class="comment">*</span><span class="comment">          calling subroutine.  NW .LE. LDT
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     NV      (input) integer
+</span><span class="comment">*</span><span class="comment">          The number of rows of work array WV available for
+</span><span class="comment">*</span><span class="comment">          workspace.  NV.GE.NW.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     WV      (workspace) DOUBLE PRECISION array, dimension (LDWV,NW)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     LDWV    (input) integer
+</span><span class="comment">*</span><span class="comment">          The leading dimension of W just as declared in the
+</span><span class="comment">*</span><span class="comment">          calling subroutine.  NW .LE. LDV
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     WORK    (workspace) DOUBLE PRECISION array, dimension LWORK.
+</span><span class="comment">*</span><span class="comment">          On exit, WORK(1) is set to an estimate of the optimal value
+</span><span class="comment">*</span><span class="comment">          of LWORK for the given values of N, NW, KTOP and KBOT.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     LWORK   (input) integer
+</span><span class="comment">*</span><span class="comment">          The dimension of the work array WORK.  LWORK = 2*NW
+</span><span class="comment">*</span><span class="comment">          suffices, but greater efficiency may result from larger
+</span><span class="comment">*</span><span class="comment">          values of LWORK.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If LWORK = -1, then a workspace query is assumed; <a name="DLAQR2.149"></a><a href="dlaqr2.f.html#DLAQR2.1">DLAQR2</a>
+</span><span class="comment">*</span><span class="comment">          only estimates the optimal workspace size for the given
+</span><span class="comment">*</span><span class="comment">          values of N, NW, KTOP and KBOT.  The estimate is returned
+</span><span class="comment">*</span><span class="comment">          in WORK(1).  No error message related to LWORK is issued
+</span><span class="comment">*</span><span class="comment">          by <a name="XERBLA.153"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.  Neither H nor Z are accessed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ================================================================
+</span><span class="comment">*</span><span class="comment">     Based on contributions by
+</span><span class="comment">*</span><span class="comment">        Karen Braman and Ralph Byers, Department of Mathematics,
+</span><span class="comment">*</span><span class="comment">        University of Kansas, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ================================================================
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0d0, ONE = 1.0d0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      DOUBLE PRECISION   AA, BB, BETA, CC, CS, DD, EVI, EVK, FOO, S,
+     $                   SAFMAX, SAFMIN, SMLNUM, SN, TAU, ULP
+      INTEGER            I, IFST, ILST, INFO, INFQR, J, JW, K, KCOL,
+     $                   KEND, KLN, KROW, KWTOP, LTOP, LWK1, LWK2,
+     $                   LWKOPT
+      LOGICAL            BULGE, SORTED
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      DOUBLE PRECISION   <a name="DLAMCH.174"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+      EXTERNAL           <a name="DLAMCH.175"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DCOPY, <a name="DGEHRD.178"></a><a href="dgehrd.f.html#DGEHRD.1">DGEHRD</a>, DGEMM, <a name="DLABAD.178"></a><a href="dlabad.f.html#DLABAD.1">DLABAD</a>, <a name="DLACPY.178"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>, <a name="DLAHQR.178"></a><a href="dlahqr.f.html#DLAHQR.1">DLAHQR</a>,
+     $                   <a name="DLANV2.179"></a><a href="dlanv2.f.html#DLANV2.1">DLANV2</a>, <a name="DLARF.179"></a><a href="dlarf.f.html#DLARF.1">DLARF</a>, <a name="DLARFG.179"></a><a href="dlarfg.f.html#DLARFG.1">DLARFG</a>, <a name="DLASET.179"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>, <a name="DORGHR.179"></a><a href="dorghr.f.html#DORGHR.1">DORGHR</a>, <a name="DTREXC.179"></a><a href="dtrexc.f.html#DTREXC.1">DTREXC</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, DBLE, INT, MAX, MIN, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== Estimate optimal workspace. ====
+</span><span class="comment">*</span><span class="comment">
+</span>      JW = MIN( NW, KBOT-KTOP+1 )
+      IF( JW.LE.2 ) THEN
+         LWKOPT = 1
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== Workspace query call to <a name="DGEHRD.193"></a><a href="dgehrd.f.html#DGEHRD.1">DGEHRD</a> ====
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DGEHRD.195"></a><a href="dgehrd.f.html#DGEHRD.1">DGEHRD</a>( JW, 1, JW-1, T, LDT, WORK, WORK, -1, INFO )
+         LWK1 = INT( WORK( 1 ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== Workspace query call to <a name="DORGHR.198"></a><a href="dorghr.f.html#DORGHR.1">DORGHR</a> ====
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DORGHR.200"></a><a href="dorghr.f.html#DORGHR.1">DORGHR</a>( JW, 1, JW-1, T, LDT, WORK, WORK, -1, INFO )
+         LWK2 = INT( WORK( 1 ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== Optimal workspace ====
+</span><span class="comment">*</span><span class="comment">
+</span>         LWKOPT = JW + MAX( LWK1, LWK2 )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== Quick return in case of workspace query. ====
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( LWORK.EQ.-1 ) THEN
+         WORK( 1 ) = DBLE( LWKOPT )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== Nothing to do ...
+</span><span class="comment">*</span><span class="comment">     ... for an empty active block ... ====
+</span>      NS = 0
+      ND = 0
+      IF( KTOP.GT.KBOT )
+     $   RETURN
+<span class="comment">*</span><span class="comment">     ... nor for an empty deflation window. ====
+</span>      IF( NW.LT.1 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== Machine constants ====
+</span><span class="comment">*</span><span class="comment">
+</span>      SAFMIN = <a name="DLAMCH.227"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'SAFE MINIMUM'</span> )
+      SAFMAX = ONE / SAFMIN
+      CALL <a name="DLABAD.229"></a><a href="dlabad.f.html#DLABAD.1">DLABAD</a>( SAFMIN, SAFMAX )
+      ULP = <a name="DLAMCH.230"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'PRECISION'</span> )
+      SMLNUM = SAFMIN*( DBLE( N ) / ULP )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== Setup deflation window ====
+</span><span class="comment">*</span><span class="comment">
+</span>      JW = MIN( NW, KBOT-KTOP+1 )
+      KWTOP = KBOT - JW + 1
+      IF( KWTOP.EQ.KTOP ) THEN
+         S = ZERO
+      ELSE
+         S = H( KWTOP, KWTOP-1 )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( KBOT.EQ.KWTOP ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== 1-by-1 deflation window: not much to do ====
+</span><span class="comment">*</span><span class="comment">
+</span>         SR( KWTOP ) = H( KWTOP, KWTOP )
+         SI( KWTOP ) = ZERO
+         NS = 1
+         ND = 0
+         IF( ABS( S ).LE.MAX( SMLNUM, ULP*ABS( H( KWTOP, KWTOP ) ) ) )
+     $        THEN
+            NS = 0
+            ND = 1
+            IF( KWTOP.GT.KTOP )
+     $         H( KWTOP, KWTOP-1 ) = ZERO
+         END IF
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== Convert to spike-triangular form.  (In case of a
+</span><span class="comment">*</span><span class="comment">     .    rare QR failure, this routine continues to do
+</span><span class="comment">*</span><span class="comment">     .    aggressive early deflation using that part of
+</span><span class="comment">*</span><span class="comment">     .    the deflation window that converged using INFQR
+</span><span class="comment">*</span><span class="comment">     .    here and there to keep track.) ====
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="DLACPY.267"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>( <span class="string">'U'</span>, JW, JW, H( KWTOP, KWTOP ), LDH, T, LDT )
+      CALL DCOPY( JW-1, H( KWTOP+1, KWTOP ), LDH+1, T( 2, 1 ), LDT+1 )
+<span class="comment">*</span><span class="comment">
+</span>      CALL <a name="DLASET.270"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'A'</span>, JW, JW, ZERO, ONE, V, LDV )
+      CALL <a name="DLAHQR.271"></a><a href="dlahqr.f.html#DLAHQR.1">DLAHQR</a>( .true., .true., JW, 1, JW, T, LDT, SR( KWTOP ),
+     $             SI( KWTOP ), 1, JW, V, LDV, INFQR )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== <a name="DTREXC.274"></a><a href="dtrexc.f.html#DTREXC.1">DTREXC</a> needs a clean margin near the diagonal ====
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 10 J = 1, JW - 3
+         T( J+2, J ) = ZERO
+         T( J+3, J ) = ZERO
+   10 CONTINUE
+      IF( JW.GT.2 )
+     $   T( JW, JW-2 ) = ZERO
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== Deflation detection loop ====
+</span><span class="comment">*</span><span class="comment">
+</span>      NS = JW
+      ILST = INFQR + 1
+   20 CONTINUE
+      IF( ILST.LE.NS ) THEN
+         IF( NS.EQ.1 ) THEN
+            BULGE = .FALSE.
+         ELSE
+            BULGE = T( NS, NS-1 ).NE.ZERO
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== Small spike tip test for deflation ====
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( .NOT.BULGE ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           ==== Real eigenvalue ====
+</span><span class="comment">*</span><span class="comment">
+</span>            FOO = ABS( T( NS, NS ) )
+            IF( FOO.EQ.ZERO )
+     $         FOO = ABS( S )
+            IF( ABS( S*V( 1, NS ) ).LE.MAX( SMLNUM, ULP*FOO ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              ==== Deflatable ====
+</span><span class="comment">*</span><span class="comment">
+</span>               NS = NS - 1
+            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              ==== Undeflatable.   Move it up out of the way.
+</span><span class="comment">*</span><span class="comment">              .    (<a name="DTREXC.312"></a><a href="dtrexc.f.html#DTREXC.1">DTREXC</a> can not fail in this case.) ====
+</span><span class="comment">*</span><span class="comment">
+</span>               IFST = NS
+               CALL <a name="DTREXC.315"></a><a href="dtrexc.f.html#DTREXC.1">DTREXC</a>( <span class="string">'V'</span>, JW, T, LDT, V, LDV, IFST, ILST, WORK,
+     $                      INFO )
+               ILST = ILST + 1
+            END IF
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           ==== Complex conjugate pair ====
+</span><span class="comment">*</span><span class="comment">
+</span>            FOO = ABS( T( NS, NS ) ) + SQRT( ABS( T( NS, NS-1 ) ) )*
+     $            SQRT( ABS( T( NS-1, NS ) ) )
+            IF( FOO.EQ.ZERO )
+     $         FOO = ABS( S )
+            IF( MAX( ABS( S*V( 1, NS ) ), ABS( S*V( 1, NS-1 ) ) ).LE.
+     $          MAX( SMLNUM, ULP*FOO ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              ==== Deflatable ====
+</span><span class="comment">*</span><span class="comment">
+</span>               NS = NS - 2
+            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              ==== Undflatable. Move them up out of the way.
+</span><span class="comment">*</span><span class="comment">              .    Fortunately, <a name="DTREXC.336"></a><a href="dtrexc.f.html#DTREXC.1">DTREXC</a> does the right thing with
+</span><span class="comment">*</span><span class="comment">              .    ILST in case of a rare exchange failure. ====
+</span><span class="comment">*</span><span class="comment">
+</span>               IFST = NS
+               CALL <a name="DTREXC.340"></a><a href="dtrexc.f.html#DTREXC.1">DTREXC</a>( <span class="string">'V'</span>, JW, T, LDT, V, LDV, IFST, ILST, WORK,
+     $                      INFO )
+               ILST = ILST + 2
+            END IF
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== End deflation detection loop ====
+</span><span class="comment">*</span><span class="comment">
+</span>         GO TO 20
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== Return to Hessenberg form ====
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( NS.EQ.0 )
+     $   S = ZERO
+<span class="comment">*</span><span class="comment">
+</span>      IF( NS.LT.JW ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== sorting diagonal blocks of T improves accuracy for
+</span><span class="comment">*</span><span class="comment">        .    graded matrices.  Bubble sort deals well with
+</span><span class="comment">*</span><span class="comment">        .    exchange failures. ====
+</span><span class="comment">*</span><span class="comment">
+</span>         SORTED = .false.
+         I = NS + 1
+   30    CONTINUE
+         IF( SORTED )
+     $      GO TO 50
+         SORTED = .true.
+<span class="comment">*</span><span class="comment">
+</span>         KEND = I - 1
+         I = INFQR + 1
+         IF( I.EQ.NS ) THEN
+            K = I + 1
+         ELSE IF( T( I+1, I ).EQ.ZERO ) THEN
+            K = I + 1
+         ELSE
+            K = I + 2
+         END IF
+   40    CONTINUE
+         IF( K.LE.KEND ) THEN
+            IF( K.EQ.I+1 ) THEN
+               EVI = ABS( T( I, I ) )
+            ELSE
+               EVI = ABS( T( I, I ) ) + SQRT( ABS( T( I+1, I ) ) )*
+     $               SQRT( ABS( T( I, I+1 ) ) )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>            IF( K.EQ.KEND ) THEN
+               EVK = ABS( T( K, K ) )
+            ELSE IF( T( K+1, K ).EQ.ZERO ) THEN
+               EVK = ABS( T( K, K ) )
+            ELSE
+               EVK = ABS( T( K, K ) ) + SQRT( ABS( T( K+1, K ) ) )*
+     $               SQRT( ABS( T( K, K+1 ) ) )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>            IF( EVI.GE.EVK ) THEN
+               I = K
+            ELSE
+               SORTED = .false.
+               IFST = I
+               ILST = K
+               CALL <a name="DTREXC.402"></a><a href="dtrexc.f.html#DTREXC.1">DTREXC</a>( <span class="string">'V'</span>, JW, T, LDT, V, LDV, IFST, ILST, WORK,
+     $                      INFO )
+               IF( INFO.EQ.0 ) THEN
+                  I = ILST
+               ELSE
+                  I = K
+               END IF
+            END IF
+            IF( I.EQ.KEND ) THEN
+               K = I + 1
+            ELSE IF( T( I+1, I ).EQ.ZERO ) THEN
+               K = I + 1
+            ELSE
+               K = I + 2
+            END IF
+            GO TO 40
+         END IF
+         GO TO 30
+   50    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== Restore shift/eigenvalue array from T ====
+</span><span class="comment">*</span><span class="comment">
+</span>      I = JW
+   60 CONTINUE
+      IF( I.GE.INFQR+1 ) THEN
+         IF( I.EQ.INFQR+1 ) THEN
+            SR( KWTOP+I-1 ) = T( I, I )
+            SI( KWTOP+I-1 ) = ZERO
+            I = I - 1
+         ELSE IF( T( I, I-1 ).EQ.ZERO ) THEN
+            SR( KWTOP+I-1 ) = T( I, I )
+            SI( KWTOP+I-1 ) = ZERO
+            I = I - 1
+         ELSE
+            AA = T( I-1, I-1 )
+            CC = T( I, I-1 )
+            BB = T( I-1, I )
+            DD = T( I, I )
+            CALL <a name="DLANV2.441"></a><a href="dlanv2.f.html#DLANV2.1">DLANV2</a>( AA, BB, CC, DD, SR( KWTOP+I-2 ),
+     $                   SI( KWTOP+I-2 ), SR( KWTOP+I-1 ),
+     $                   SI( KWTOP+I-1 ), CS, SN )
+            I = I - 2
+         END IF
+         GO TO 60
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( NS.LT.JW .OR. S.EQ.ZERO ) THEN
+         IF( NS.GT.1 .AND. S.NE.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           ==== Reflect spike back into lower triangle ====
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL DCOPY( NS, V, LDV, WORK, 1 )
+            BETA = WORK( 1 )
+            CALL <a name="DLARFG.456"></a><a href="dlarfg.f.html#DLARFG.1">DLARFG</a>( NS, BETA, WORK( 2 ), 1, TAU )
+            WORK( 1 ) = ONE
+<span class="comment">*</span><span class="comment">
+</span>            CALL <a name="DLASET.459"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'L'</span>, JW-2, JW-2, ZERO, ZERO, T( 3, 1 ), LDT )
+<span class="comment">*</span><span class="comment">
+</span>            CALL <a name="DLARF.461"></a><a href="dlarf.f.html#DLARF.1">DLARF</a>( <span class="string">'L'</span>, NS, JW, WORK, 1, TAU, T, LDT,
+     $                  WORK( JW+1 ) )
+            CALL <a name="DLARF.463"></a><a href="dlarf.f.html#DLARF.1">DLARF</a>( <span class="string">'R'</span>, NS, NS, WORK, 1, TAU, T, LDT,
+     $                  WORK( JW+1 ) )
+            CALL <a name="DLARF.465"></a><a href="dlarf.f.html#DLARF.1">DLARF</a>( <span class="string">'R'</span>, JW, NS, WORK, 1, TAU, V, LDV,
+     $                  WORK( JW+1 ) )
+<span class="comment">*</span><span class="comment">
+</span>            CALL <a name="DGEHRD.468"></a><a href="dgehrd.f.html#DGEHRD.1">DGEHRD</a>( JW, 1, NS, T, LDT, WORK, WORK( JW+1 ),
+     $                   LWORK-JW, INFO )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== Copy updated reduced window into place ====
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( KWTOP.GT.1 )
+     $      H( KWTOP, KWTOP-1 ) = S*V( 1, 1 )
+         CALL <a name="DLACPY.476"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>( <span class="string">'U'</span>, JW, JW, T, LDT, H( KWTOP, KWTOP ), LDH )
+         CALL DCOPY( JW-1, T( 2, 1 ), LDT+1, H( KWTOP+1, KWTOP ),
+     $               LDH+1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== Accumulate orthogonal matrix in order update
+</span><span class="comment">*</span><span class="comment">        .    H and Z, if requested.  (A modified version
+</span><span class="comment">*</span><span class="comment">        .    of  <a name="DORGHR.482"></a><a href="dorghr.f.html#DORGHR.1">DORGHR</a> that accumulates block Householder
+</span><span class="comment">*</span><span class="comment">        .    transformations into V directly might be
+</span><span class="comment">*</span><span class="comment">        .    marginally more efficient than the following.) ====
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( NS.GT.1 .AND. S.NE.ZERO ) THEN
+            CALL <a name="DORGHR.487"></a><a href="dorghr.f.html#DORGHR.1">DORGHR</a>( JW, 1, NS, T, LDT, WORK, WORK( JW+1 ),
+     $                   LWORK-JW, INFO )
+            CALL DGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, JW, NS, NS, ONE, V, LDV, T, LDT, ZERO,
+     $                  WV, LDWV )
+            CALL <a name="DLACPY.491"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>( <span class="string">'A'</span>, JW, NS, WV, LDWV, V, LDV )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== Update vertical slab in H ====
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( WANTT ) THEN
+            LTOP = 1
+         ELSE
+            LTOP = KTOP
+         END IF
+         DO 70 KROW = LTOP, KWTOP - 1, NV
+            KLN = MIN( NV, KWTOP-KROW )
+            CALL DGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, KLN, JW, JW, ONE, H( KROW, KWTOP ),
+     $                  LDH, V, LDV, ZERO, WV, LDWV )
+            CALL <a name="DLACPY.505"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>( <span class="string">'A'</span>, KLN, JW, WV, LDWV, H( KROW, KWTOP ), LDH )
+   70    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== Update horizontal slab in H ====
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( WANTT ) THEN
+            DO 80 KCOL = KBOT + 1, N, NH
+               KLN = MIN( NH, N-KCOL+1 )
+               CALL DGEMM( <span class="string">'C'</span>, <span class="string">'N'</span>, JW, KLN, JW, ONE, V, LDV,
+     $                     H( KWTOP, KCOL ), LDH, ZERO, T, LDT )
+               CALL <a name="DLACPY.515"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>( <span class="string">'A'</span>, JW, KLN, T, LDT, H( KWTOP, KCOL ),
+     $                      LDH )
+   80       CONTINUE
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        ==== Update vertical slab in Z ====
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( WANTZ ) THEN
+            DO 90 KROW = ILOZ, IHIZ, NV
+               KLN = MIN( NV, IHIZ-KROW+1 )
+               CALL DGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, KLN, JW, JW, ONE, Z( KROW, KWTOP ),
+     $                     LDZ, V, LDV, ZERO, WV, LDWV )
+               CALL <a name="DLACPY.527"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>( <span class="string">'A'</span>, KLN, JW, WV, LDWV, Z( KROW, KWTOP ),
+     $                      LDZ )
+   90       CONTINUE
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== Return the number of deflations ... ====
+</span><span class="comment">*</span><span class="comment">
+</span>      ND = JW - NS
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== ... and the number of shifts. (Subtracting
+</span><span class="comment">*</span><span class="comment">     .    INFQR from the spike length takes care
+</span><span class="comment">*</span><span class="comment">     .    of the case of a rare QR failure while
+</span><span class="comment">*</span><span class="comment">     .    calculating eigenvalues of the deflation
+</span><span class="comment">*</span><span class="comment">     .    window.)  ====
+</span><span class="comment">*</span><span class="comment">
+</span>      NS = NS - INFQR
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">      ==== Return optimal workspace. ====
+</span><span class="comment">*</span><span class="comment">
+</span>      WORK( 1 ) = DBLE( LWKOPT )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== End of <a name="DLAQR2.549"></a><a href="dlaqr2.f.html#DLAQR2.1">DLAQR2</a> ====
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

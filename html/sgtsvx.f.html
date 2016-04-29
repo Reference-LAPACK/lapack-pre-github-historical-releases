@@ -1,0 +1,315 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>sgtsvx.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SGTSVX.1"></a><a href="sgtsvx.f.html#SGTSVX.1">SGTSVX</a>( FACT, TRANS, N, NRHS, DL, D, DU, DLF, DF, DUF,
+     $                   DU2, IPIV, B, LDB, X, LDX, RCOND, FERR, BERR,
+     $                   WORK, IWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          FACT, TRANS
+      INTEGER            INFO, LDB, LDX, N, NRHS
+      REAL               RCOND
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IPIV( * ), IWORK( * )
+      REAL               B( LDB, * ), BERR( * ), D( * ), DF( * ),
+     $                   DL( * ), DLF( * ), DU( * ), DU2( * ), DUF( * ),
+     $                   FERR( * ), WORK( * ), X( LDX, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SGTSVX.24"></a><a href="sgtsvx.f.html#SGTSVX.1">SGTSVX</a> uses the LU factorization to compute the solution to a real
+</span><span class="comment">*</span><span class="comment">  system of linear equations A * X = B or A**T * X = B,
+</span><span class="comment">*</span><span class="comment">  where A is a tridiagonal matrix of order N and X and B are N-by-NRHS
+</span><span class="comment">*</span><span class="comment">  matrices.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Error bounds on the solution and a condition estimate are also
+</span><span class="comment">*</span><span class="comment">  provided.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Description
+</span><span class="comment">*</span><span class="comment">  ===========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The following steps are performed:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  1. If FACT = 'N', the LU decomposition is used to factor the matrix A
+</span><span class="comment">*</span><span class="comment">     as A = L * U, where L is a product of permutation and unit lower
+</span><span class="comment">*</span><span class="comment">     bidiagonal matrices and U is upper triangular with nonzeros in
+</span><span class="comment">*</span><span class="comment">     only the main diagonal and first two superdiagonals.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  2. If some U(i,i)=0, so that U is exactly singular, then the routine
+</span><span class="comment">*</span><span class="comment">     returns with INFO = i. Otherwise, the factored form of A is used
+</span><span class="comment">*</span><span class="comment">     to estimate the condition number of the matrix A.  If the
+</span><span class="comment">*</span><span class="comment">     reciprocal of the condition number is less than machine precision,
+</span><span class="comment">*</span><span class="comment">     INFO = N+1 is returned as a warning, but the routine still goes on
+</span><span class="comment">*</span><span class="comment">     to solve for X and compute error bounds as described below.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  3. The system of equations is solved for X using the factored form
+</span><span class="comment">*</span><span class="comment">     of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  4. Iterative refinement is applied to improve the computed solution
+</span><span class="comment">*</span><span class="comment">     matrix and calculate error bounds and backward error estimates
+</span><span class="comment">*</span><span class="comment">     for it.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  FACT    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether or not the factored form of A has been
+</span><span class="comment">*</span><span class="comment">          supplied on entry.
+</span><span class="comment">*</span><span class="comment">          = 'F':  DLF, DF, DUF, DU2, and IPIV contain the factored
+</span><span class="comment">*</span><span class="comment">                  form of A; DL, D, DU, DLF, DF, DUF, DU2 and IPIV
+</span><span class="comment">*</span><span class="comment">                  will not be modified.
+</span><span class="comment">*</span><span class="comment">          = 'N':  The matrix will be copied to DLF, DF, and DUF
+</span><span class="comment">*</span><span class="comment">                  and factored.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TRANS   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies the form of the system of equations:
+</span><span class="comment">*</span><span class="comment">          = 'N':  A * X = B     (No transpose)
+</span><span class="comment">*</span><span class="comment">          = 'T':  A**T * X = B  (Transpose)
+</span><span class="comment">*</span><span class="comment">          = 'C':  A**H * X = B  (Conjugate transpose = Transpose)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NRHS    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of right hand sides, i.e., the number of columns
+</span><span class="comment">*</span><span class="comment">          of the matrix B.  NRHS &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DL      (input) REAL array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          The (n-1) subdiagonal elements of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The n diagonal elements of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DU      (input) REAL array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          The (n-1) superdiagonal elements of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DLF     (input or output) REAL array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          If FACT = 'F', then DLF is an input argument and on entry
+</span><span class="comment">*</span><span class="comment">          contains the (n-1) multipliers that define the matrix L from
+</span><span class="comment">*</span><span class="comment">          the LU factorization of A as computed by <a name="SGTTRF.93"></a><a href="sgttrf.f.html#SGTTRF.1">SGTTRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If FACT = 'N', then DLF is an output argument and on exit
+</span><span class="comment">*</span><span class="comment">          contains the (n-1) multipliers that define the matrix L from
+</span><span class="comment">*</span><span class="comment">          the LU factorization of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DF      (input or output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          If FACT = 'F', then DF is an input argument and on entry
+</span><span class="comment">*</span><span class="comment">          contains the n diagonal elements of the upper triangular
+</span><span class="comment">*</span><span class="comment">          matrix U from the LU factorization of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If FACT = 'N', then DF is an output argument and on exit
+</span><span class="comment">*</span><span class="comment">          contains the n diagonal elements of the upper triangular
+</span><span class="comment">*</span><span class="comment">          matrix U from the LU factorization of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DUF     (input or output) REAL array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          If FACT = 'F', then DUF is an input argument and on entry
+</span><span class="comment">*</span><span class="comment">          contains the (n-1) elements of the first superdiagonal of U.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If FACT = 'N', then DUF is an output argument and on exit
+</span><span class="comment">*</span><span class="comment">          contains the (n-1) elements of the first superdiagonal of U.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DU2     (input or output) REAL array, dimension (N-2)
+</span><span class="comment">*</span><span class="comment">          If FACT = 'F', then DU2 is an input argument and on entry
+</span><span class="comment">*</span><span class="comment">          contains the (n-2) elements of the second superdiagonal of
+</span><span class="comment">*</span><span class="comment">          U.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If FACT = 'N', then DU2 is an output argument and on exit
+</span><span class="comment">*</span><span class="comment">          contains the (n-2) elements of the second superdiagonal of
+</span><span class="comment">*</span><span class="comment">          U.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IPIV    (input or output) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          If FACT = 'F', then IPIV is an input argument and on entry
+</span><span class="comment">*</span><span class="comment">          contains the pivot indices from the LU factorization of A as
+</span><span class="comment">*</span><span class="comment">          computed by <a name="SGTTRF.127"></a><a href="sgttrf.f.html#SGTTRF.1">SGTTRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If FACT = 'N', then IPIV is an output argument and on exit
+</span><span class="comment">*</span><span class="comment">          contains the pivot indices from the LU factorization of A;
+</span><span class="comment">*</span><span class="comment">          row i of the matrix was interchanged with row IPIV(i).
+</span><span class="comment">*</span><span class="comment">          IPIV(i) will always be either i or i+1; IPIV(i) = i indicates
+</span><span class="comment">*</span><span class="comment">          a row interchange was not required.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input) REAL array, dimension (LDB,NRHS)
+</span><span class="comment">*</span><span class="comment">          The N-by-NRHS right hand side matrix B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B.  LDB &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X       (output) REAL array, dimension (LDX,NRHS)
+</span><span class="comment">*</span><span class="comment">          If INFO = 0 or INFO = N+1, the N-by-NRHS solution matrix X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDX     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array X.  LDX &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RCOND   (output) REAL
+</span><span class="comment">*</span><span class="comment">          The estimate of the reciprocal condition number of the matrix
+</span><span class="comment">*</span><span class="comment">          A.  If RCOND is less than the machine precision (in
+</span><span class="comment">*</span><span class="comment">          particular, if RCOND = 0), the matrix is singular to working
+</span><span class="comment">*</span><span class="comment">          precision.  This condition is indicated by a return code of
+</span><span class="comment">*</span><span class="comment">          INFO &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  FERR    (output) REAL array, dimension (NRHS)
+</span><span class="comment">*</span><span class="comment">          The estimated forward error bound for each solution vector
+</span><span class="comment">*</span><span class="comment">          X(j) (the j-th column of the solution matrix X).
+</span><span class="comment">*</span><span class="comment">          If XTRUE is the true solution corresponding to X(j), FERR(j)
+</span><span class="comment">*</span><span class="comment">          is an estimated upper bound for the magnitude of the largest
+</span><span class="comment">*</span><span class="comment">          element in (X(j) - XTRUE) divided by the magnitude of the
+</span><span class="comment">*</span><span class="comment">          largest element in X(j).  The estimate is as reliable as
+</span><span class="comment">*</span><span class="comment">          the estimate for RCOND, and is almost always a slight
+</span><span class="comment">*</span><span class="comment">          overestimate of the true error.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BERR    (output) REAL array, dimension (NRHS)
+</span><span class="comment">*</span><span class="comment">          The componentwise relative backward error of each solution
+</span><span class="comment">*</span><span class="comment">          vector X(j) (i.e., the smallest relative change in
+</span><span class="comment">*</span><span class="comment">          any element of A or B that makes X(j) an exact solution).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) REAL array, dimension (3*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK   (workspace) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = i, and i is
+</span><span class="comment">*</span><span class="comment">                &lt;= N:  U(i,i) is exactly zero.  The factorization
+</span><span class="comment">*</span><span class="comment">                       has not been completed unless i = N, but the
+</span><span class="comment">*</span><span class="comment">                       factor U is exactly singular, so the solution
+</span><span class="comment">*</span><span class="comment">                       and error bounds could not be computed.
+</span><span class="comment">*</span><span class="comment">                       RCOND = 0 is returned.
+</span><span class="comment">*</span><span class="comment">                = N+1: U is nonsingular, but RCOND is less than machine
+</span><span class="comment">*</span><span class="comment">                       precision, meaning that the matrix is singular
+</span><span class="comment">*</span><span class="comment">                       to working precision.  Nevertheless, the
+</span><span class="comment">*</span><span class="comment">                       solution and error bounds are computed because
+</span><span class="comment">*</span><span class="comment">                       there are a number of situations where the
+</span><span class="comment">*</span><span class="comment">                       computed solution can be more accurate than the
+</span><span class="comment">*</span><span class="comment">                       value of RCOND would suggest.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO
+      PARAMETER          ( ZERO = 0.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            NOFACT, NOTRAN
+      CHARACTER          NORM
+      REAL               ANORM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.202"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      REAL               <a name="SLAMCH.203"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANGT.203"></a><a href="slangt.f.html#SLANGT.1">SLANGT</a>
+      EXTERNAL           <a name="LSAME.204"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="SLAMCH.204"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLANGT.204"></a><a href="slangt.f.html#SLANGT.1">SLANGT</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           SCOPY, <a name="SGTCON.207"></a><a href="sgtcon.f.html#SGTCON.1">SGTCON</a>, <a name="SGTRFS.207"></a><a href="sgtrfs.f.html#SGTRFS.1">SGTRFS</a>, <a name="SGTTRF.207"></a><a href="sgttrf.f.html#SGTTRF.1">SGTTRF</a>, <a name="SGTTRS.207"></a><a href="sgttrs.f.html#SGTTRS.1">SGTTRS</a>, <a name="SLACPY.207"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>,
+     $                   <a name="XERBLA.208"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      NOFACT = <a name="LSAME.216"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( FACT, <span class="string">'N'</span> )
+      NOTRAN = <a name="LSAME.217"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'N'</span> )
+      IF( .NOT.NOFACT .AND. .NOT.<a name="LSAME.218"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( FACT, <span class="string">'F'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.NOTRAN .AND. .NOT.<a name="LSAME.220"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'T'</span> ) .AND. .NOT.
+     $         <a name="LSAME.221"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'C'</span> ) ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( NRHS.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
+         INFO = -14
+      ELSE IF( LDX.LT.MAX( 1, N ) ) THEN
+         INFO = -16
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.233"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="SGTSVX.233"></a><a href="sgtsvx.f.html#SGTSVX.1">SGTSVX</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( NOFACT ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute the LU factorization of A.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL SCOPY( N, D, 1, DF, 1 )
+         IF( N.GT.1 ) THEN
+            CALL SCOPY( N-1, DL, 1, DLF, 1 )
+            CALL SCOPY( N-1, DU, 1, DUF, 1 )
+         END IF
+         CALL <a name="SGTTRF.246"></a><a href="sgttrf.f.html#SGTTRF.1">SGTTRF</a>( N, DLF, DF, DUF, DU2, IPIV, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Return if INFO is non-zero.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( INFO.GT.0 )THEN
+            RCOND = ZERO
+            RETURN
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the norm of the matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( NOTRAN ) THEN
+         NORM = <span class="string">'1'</span>
+      ELSE
+         NORM = <span class="string">'I'</span>
+      END IF
+      ANORM = <a name="SLANGT.263"></a><a href="slangt.f.html#SLANGT.1">SLANGT</a>( NORM, N, DL, D, DU )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the reciprocal of the condition number of A.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="SGTCON.267"></a><a href="sgtcon.f.html#SGTCON.1">SGTCON</a>( NORM, N, DLF, DF, DUF, DU2, IPIV, ANORM, RCOND, WORK,
+     $             IWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the solution vectors X.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="SLACPY.272"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, N, NRHS, B, LDB, X, LDX )
+      CALL <a name="SGTTRS.273"></a><a href="sgttrs.f.html#SGTTRS.1">SGTTRS</a>( TRANS, N, NRHS, DLF, DF, DUF, DU2, IPIV, X, LDX,
+     $             INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Use iterative refinement to improve the computed solutions and
+</span><span class="comment">*</span><span class="comment">     compute error bounds and backward error estimates for them.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="SGTRFS.279"></a><a href="sgtrfs.f.html#SGTRFS.1">SGTRFS</a>( TRANS, N, NRHS, DL, D, DU, DLF, DF, DUF, DU2, IPIV,
+     $             B, LDB, X, LDX, FERR, BERR, WORK, IWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set INFO = N+1 if the matrix is singular to working precision.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( RCOND.LT.<a name="SLAMCH.284"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Epsilon'</span> ) )
+     $   INFO = N + 1
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SGTSVX.289"></a><a href="sgtsvx.f.html#SGTSVX.1">SGTSVX</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

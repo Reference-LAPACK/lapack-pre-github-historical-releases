@@ -1,0 +1,431 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>ztrsm.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZTRSM.1"></a><a href="ztrsm.f.html#ZTRSM.1">ZTRSM</a>(SIDE,UPLO,TRANSA,DIAG,M,N,ALPHA,A,LDA,B,LDB)
+<span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      DOUBLE COMPLEX ALPHA
+      INTEGER LDA,LDB,M,N
+      CHARACTER DIAG,SIDE,TRANSA,UPLO
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE COMPLEX A(LDA,*),B(LDB,*)
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZTRSM.14"></a><a href="ztrsm.f.html#ZTRSM.1">ZTRSM</a>  solves one of the matrix equations
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     op( A )*X = alpha*B,   or   X*op( A ) = alpha*B,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where alpha is a scalar, X and B are m by n matrices, A is a unit, or
+</span><span class="comment">*</span><span class="comment">  non-unit,  upper or lower triangular matrix  and  op( A )  is one  of
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     op( A ) = A   or   op( A ) = A'   or   op( A ) = conjg( A' ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The matrix X is overwritten on B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  ==========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SIDE   - CHARACTER*1.
+</span><span class="comment">*</span><span class="comment">           On entry, SIDE specifies whether op( A ) appears on the left
+</span><span class="comment">*</span><span class="comment">           or right of X as follows:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              SIDE = 'L' or 'l'   op( A )*X = alpha*B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              SIDE = 'R' or 'r'   X*op( A ) = alpha*B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO   - CHARACTER*1.
+</span><span class="comment">*</span><span class="comment">           On entry, UPLO specifies whether the matrix A is an upper or
+</span><span class="comment">*</span><span class="comment">           lower triangular matrix as follows:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              UPLO = 'U' or 'u'   A is an upper triangular matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              UPLO = 'L' or 'l'   A is a lower triangular matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TRANSA - CHARACTER*1.
+</span><span class="comment">*</span><span class="comment">           On entry, TRANSA specifies the form of op( A ) to be used in
+</span><span class="comment">*</span><span class="comment">           the matrix multiplication as follows:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              TRANSA = 'N' or 'n'   op( A ) = A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              TRANSA = 'T' or 't'   op( A ) = A'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              TRANSA = 'C' or 'c'   op( A ) = conjg( A' ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIAG   - CHARACTER*1.
+</span><span class="comment">*</span><span class="comment">           On entry, DIAG specifies whether or not A is unit triangular
+</span><span class="comment">*</span><span class="comment">           as follows:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              DIAG = 'U' or 'u'   A is assumed to be unit triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              DIAG = 'N' or 'n'   A is not assumed to be unit
+</span><span class="comment">*</span><span class="comment">                                  triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M      - INTEGER.
+</span><span class="comment">*</span><span class="comment">           On entry, M specifies the number of rows of B. M must be at
+</span><span class="comment">*</span><span class="comment">           least zero.
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N      - INTEGER.
+</span><span class="comment">*</span><span class="comment">           On entry, N specifies the number of columns of B.  N must be
+</span><span class="comment">*</span><span class="comment">           at least zero.
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ALPHA  - COMPLEX*16      .
+</span><span class="comment">*</span><span class="comment">           On entry,  ALPHA specifies the scalar  alpha. When  alpha is
+</span><span class="comment">*</span><span class="comment">           zero then  A is not referenced and  B need not be set before
+</span><span class="comment">*</span><span class="comment">           entry.
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A      - COMPLEX*16       array of DIMENSION ( LDA, k ), where k is m
+</span><span class="comment">*</span><span class="comment">           when  SIDE = 'L' or 'l'  and is  n  when  SIDE = 'R' or 'r'.
+</span><span class="comment">*</span><span class="comment">           Before entry  with  UPLO = 'U' or 'u',  the  leading  k by k
+</span><span class="comment">*</span><span class="comment">           upper triangular part of the array  A must contain the upper
+</span><span class="comment">*</span><span class="comment">           triangular matrix  and the strictly lower triangular part of
+</span><span class="comment">*</span><span class="comment">           A is not referenced.
+</span><span class="comment">*</span><span class="comment">           Before entry  with  UPLO = 'L' or 'l',  the  leading  k by k
+</span><span class="comment">*</span><span class="comment">           lower triangular part of the array  A must contain the lower
+</span><span class="comment">*</span><span class="comment">           triangular matrix  and the strictly upper triangular part of
+</span><span class="comment">*</span><span class="comment">           A is not referenced.
+</span><span class="comment">*</span><span class="comment">           Note that when  DIAG = 'U' or 'u',  the diagonal elements of
+</span><span class="comment">*</span><span class="comment">           A  are not referenced either,  but are assumed to be  unity.
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA    - INTEGER.
+</span><span class="comment">*</span><span class="comment">           On entry, LDA specifies the first dimension of A as declared
+</span><span class="comment">*</span><span class="comment">           in the calling (sub) program.  When  SIDE = 'L' or 'l'  then
+</span><span class="comment">*</span><span class="comment">           LDA  must be at least  max( 1, m ),  when  SIDE = 'R' or 'r'
+</span><span class="comment">*</span><span class="comment">           then LDA must be at least max( 1, n ).
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B      - COMPLEX*16       array of DIMENSION ( LDB, n ).
+</span><span class="comment">*</span><span class="comment">           Before entry,  the leading  m by n part of the array  B must
+</span><span class="comment">*</span><span class="comment">           contain  the  right-hand  side  matrix  B,  and  on exit  is
+</span><span class="comment">*</span><span class="comment">           overwritten by the solution matrix  X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB    - INTEGER.
+</span><span class="comment">*</span><span class="comment">           On entry, LDB specifies the first dimension of B as declared
+</span><span class="comment">*</span><span class="comment">           in  the  calling  (sub)  program.   LDB  must  be  at  least
+</span><span class="comment">*</span><span class="comment">           max( 1, m ).
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Level 3 Blas routine.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- Written on 8-February-1989.
+</span><span class="comment">*</span><span class="comment">     Jack Dongarra, Argonne National Laboratory.
+</span><span class="comment">*</span><span class="comment">     Iain Duff, AERE Harwell.
+</span><span class="comment">*</span><span class="comment">     Jeremy Du Croz, Numerical Algorithms Group Ltd.
+</span><span class="comment">*</span><span class="comment">     Sven Hammarling, Numerical Algorithms Group Ltd.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL <a name="LSAME.130"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL <a name="LSAME.131"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL <a name="XERBLA.134"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC DCONJG,MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      DOUBLE COMPLEX TEMP
+      INTEGER I,INFO,J,K,NROWA
+      LOGICAL LSIDE,NOCONJ,NOUNIT,UPPER
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE COMPLEX ONE
+      PARAMETER (ONE= (1.0D+0,0.0D+0))
+      DOUBLE COMPLEX ZERO
+      PARAMETER (ZERO= (0.0D+0,0.0D+0))
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      LSIDE = <a name="LSAME.153"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(SIDE,<span class="string">'L'</span>)
+      IF (LSIDE) THEN
+          NROWA = M
+      ELSE
+          NROWA = N
+      END IF
+      NOCONJ = <a name="LSAME.159"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(TRANSA,<span class="string">'T'</span>)
+      NOUNIT = <a name="LSAME.160"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(DIAG,<span class="string">'N'</span>)
+      UPPER = <a name="LSAME.161"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(UPLO,<span class="string">'U'</span>)
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF ((.NOT.LSIDE) .AND. (.NOT.<a name="LSAME.164"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(SIDE,<span class="string">'R'</span>))) THEN
+          INFO = 1
+      ELSE IF ((.NOT.UPPER) .AND. (.NOT.<a name="LSAME.166"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(UPLO,<span class="string">'L'</span>))) THEN
+          INFO = 2
+      ELSE IF ((.NOT.<a name="LSAME.168"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(TRANSA,<span class="string">'N'</span>)) .AND.
+     +         (.NOT.<a name="LSAME.169"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(TRANSA,<span class="string">'T'</span>)) .AND.
+     +         (.NOT.<a name="LSAME.170"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(TRANSA,<span class="string">'C'</span>))) THEN
+          INFO = 3
+      ELSE IF ((.NOT.<a name="LSAME.172"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(DIAG,<span class="string">'U'</span>)) .AND. (.NOT.<a name="LSAME.172"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(DIAG,<span class="string">'N'</span>))) THEN
+          INFO = 4
+      ELSE IF (M.LT.0) THEN
+          INFO = 5
+      ELSE IF (N.LT.0) THEN
+          INFO = 6
+      ELSE IF (LDA.LT.MAX(1,NROWA)) THEN
+          INFO = 9
+      ELSE IF (LDB.LT.MAX(1,M)) THEN
+          INFO = 11
+      END IF
+      IF (INFO.NE.0) THEN
+          CALL <a name="XERBLA.184"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>(<span class="string">'<a name="ZTRSM.184"></a><a href="ztrsm.f.html#ZTRSM.1">ZTRSM</a> '</span>,INFO)
+          RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF (N.EQ.0) RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     And when  alpha.eq.zero.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF (ALPHA.EQ.ZERO) THEN
+          DO 20 J = 1,N
+              DO 10 I = 1,M
+                  B(I,J) = ZERO
+   10         CONTINUE
+   20     CONTINUE
+          RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Start the operations.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF (LSIDE) THEN
+          IF (<a name="LSAME.206"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(TRANSA,<span class="string">'N'</span>)) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Form  B := alpha*inv( A )*B.
+</span><span class="comment">*</span><span class="comment">
+</span>              IF (UPPER) THEN
+                  DO 60 J = 1,N
+                      IF (ALPHA.NE.ONE) THEN
+                          DO 30 I = 1,M
+                              B(I,J) = ALPHA*B(I,J)
+   30                     CONTINUE
+                      END IF
+                      DO 50 K = M,1,-1
+                          IF (B(K,J).NE.ZERO) THEN
+                              IF (NOUNIT) B(K,J) = B(K,J)/A(K,K)
+                              DO 40 I = 1,K - 1
+                                  B(I,J) = B(I,J) - B(K,J)*A(I,K)
+   40                         CONTINUE
+                          END IF
+   50                 CONTINUE
+   60             CONTINUE
+              ELSE
+                  DO 100 J = 1,N
+                      IF (ALPHA.NE.ONE) THEN
+                          DO 70 I = 1,M
+                              B(I,J) = ALPHA*B(I,J)
+   70                     CONTINUE
+                      END IF
+                      DO 90 K = 1,M
+                          IF (B(K,J).NE.ZERO) THEN
+                              IF (NOUNIT) B(K,J) = B(K,J)/A(K,K)
+                              DO 80 I = K + 1,M
+                                  B(I,J) = B(I,J) - B(K,J)*A(I,K)
+   80                         CONTINUE
+                          END IF
+   90                 CONTINUE
+  100             CONTINUE
+              END IF
+          ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Form  B := alpha*inv( A' )*B
+</span><span class="comment">*</span><span class="comment">           or    B := alpha*inv( conjg( A' ) )*B.
+</span><span class="comment">*</span><span class="comment">
+</span>              IF (UPPER) THEN
+                  DO 140 J = 1,N
+                      DO 130 I = 1,M
+                          TEMP = ALPHA*B(I,J)
+                          IF (NOCONJ) THEN
+                              DO 110 K = 1,I - 1
+                                  TEMP = TEMP - A(K,I)*B(K,J)
+  110                         CONTINUE
+                              IF (NOUNIT) TEMP = TEMP/A(I,I)
+                          ELSE
+                              DO 120 K = 1,I - 1
+                                  TEMP = TEMP - DCONJG(A(K,I))*B(K,J)
+  120                         CONTINUE
+                              IF (NOUNIT) TEMP = TEMP/DCONJG(A(I,I))
+                          END IF
+                          B(I,J) = TEMP
+  130                 CONTINUE
+  140             CONTINUE
+              ELSE
+                  DO 180 J = 1,N
+                      DO 170 I = M,1,-1
+                          TEMP = ALPHA*B(I,J)
+                          IF (NOCONJ) THEN
+                              DO 150 K = I + 1,M
+                                  TEMP = TEMP - A(K,I)*B(K,J)
+  150                         CONTINUE
+                              IF (NOUNIT) TEMP = TEMP/A(I,I)
+                          ELSE
+                              DO 160 K = I + 1,M
+                                  TEMP = TEMP - DCONJG(A(K,I))*B(K,J)
+  160                         CONTINUE
+                              IF (NOUNIT) TEMP = TEMP/DCONJG(A(I,I))
+                          END IF
+                          B(I,J) = TEMP
+  170                 CONTINUE
+  180             CONTINUE
+              END IF
+          END IF
+      ELSE
+          IF (<a name="LSAME.287"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(TRANSA,<span class="string">'N'</span>)) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Form  B := alpha*B*inv( A ).
+</span><span class="comment">*</span><span class="comment">
+</span>              IF (UPPER) THEN
+                  DO 230 J = 1,N
+                      IF (ALPHA.NE.ONE) THEN
+                          DO 190 I = 1,M
+                              B(I,J) = ALPHA*B(I,J)
+  190                     CONTINUE
+                      END IF
+                      DO 210 K = 1,J - 1
+                          IF (A(K,J).NE.ZERO) THEN
+                              DO 200 I = 1,M
+                                  B(I,J) = B(I,J) - A(K,J)*B(I,K)
+  200                         CONTINUE
+                          END IF
+  210                 CONTINUE
+                      IF (NOUNIT) THEN
+                          TEMP = ONE/A(J,J)
+                          DO 220 I = 1,M
+                              B(I,J) = TEMP*B(I,J)
+  220                     CONTINUE
+                      END IF
+  230             CONTINUE
+              ELSE
+                  DO 280 J = N,1,-1
+                      IF (ALPHA.NE.ONE) THEN
+                          DO 240 I = 1,M
+                              B(I,J) = ALPHA*B(I,J)
+  240                     CONTINUE
+                      END IF
+                      DO 260 K = J + 1,N
+                          IF (A(K,J).NE.ZERO) THEN
+                              DO 250 I = 1,M
+                                  B(I,J) = B(I,J) - A(K,J)*B(I,K)
+  250                         CONTINUE
+                          END IF
+  260                 CONTINUE
+                      IF (NOUNIT) THEN
+                          TEMP = ONE/A(J,J)
+                          DO 270 I = 1,M
+                              B(I,J) = TEMP*B(I,J)
+  270                     CONTINUE
+                      END IF
+  280             CONTINUE
+              END IF
+          ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Form  B := alpha*B*inv( A' )
+</span><span class="comment">*</span><span class="comment">           or    B := alpha*B*inv( conjg( A' ) ).
+</span><span class="comment">*</span><span class="comment">
+</span>              IF (UPPER) THEN
+                  DO 330 K = N,1,-1
+                      IF (NOUNIT) THEN
+                          IF (NOCONJ) THEN
+                              TEMP = ONE/A(K,K)
+                          ELSE
+                              TEMP = ONE/DCONJG(A(K,K))
+                          END IF
+                          DO 290 I = 1,M
+                              B(I,K) = TEMP*B(I,K)
+  290                     CONTINUE
+                      END IF
+                      DO 310 J = 1,K - 1
+                          IF (A(J,K).NE.ZERO) THEN
+                              IF (NOCONJ) THEN
+                                  TEMP = A(J,K)
+                              ELSE
+                                  TEMP = DCONJG(A(J,K))
+                              END IF
+                              DO 300 I = 1,M
+                                  B(I,J) = B(I,J) - TEMP*B(I,K)
+  300                         CONTINUE
+                          END IF
+  310                 CONTINUE
+                      IF (ALPHA.NE.ONE) THEN
+                          DO 320 I = 1,M
+                              B(I,K) = ALPHA*B(I,K)
+  320                     CONTINUE
+                      END IF
+  330             CONTINUE
+              ELSE
+                  DO 380 K = 1,N
+                      IF (NOUNIT) THEN
+                          IF (NOCONJ) THEN
+                              TEMP = ONE/A(K,K)
+                          ELSE
+                              TEMP = ONE/DCONJG(A(K,K))
+                          END IF
+                          DO 340 I = 1,M
+                              B(I,K) = TEMP*B(I,K)
+  340                     CONTINUE
+                      END IF
+                      DO 360 J = K + 1,N
+                          IF (A(J,K).NE.ZERO) THEN
+                              IF (NOCONJ) THEN
+                                  TEMP = A(J,K)
+                              ELSE
+                                  TEMP = DCONJG(A(J,K))
+                              END IF
+                              DO 350 I = 1,M
+                                  B(I,J) = B(I,J) - TEMP*B(I,K)
+  350                         CONTINUE
+                          END IF
+  360                 CONTINUE
+                      IF (ALPHA.NE.ONE) THEN
+                          DO 370 I = 1,M
+                              B(I,K) = ALPHA*B(I,K)
+  370                     CONTINUE
+                      END IF
+  380             CONTINUE
+              END IF
+          END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZTRSM.405"></a><a href="ztrsm.f.html#ZTRSM.1">ZTRSM</a> .
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

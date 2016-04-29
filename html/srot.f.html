@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>srot.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SROT.1"></a><a href="srot.f.html#SROT.1">SROT</a>(N,SX,INCX,SY,INCY,C,S)
+<span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      REAL C,S
+      INTEGER INCX,INCY,N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL SX(*),SY(*)
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     applies a plane rotation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     jack dongarra, linpack, 3/11/78.
+</span><span class="comment">*</span><span class="comment">     modified 12/3/93, array(1) declarations changed to array(*)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span>
+<span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      REAL STEMP
+      INTEGER I,IX,IY
+<span class="comment">*</span><span class="comment">     ..
+</span>      IF (N.LE.0) RETURN
+      IF (INCX.EQ.1 .AND. INCY.EQ.1) GO TO 20
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">       code for unequal increments or equal increments not equal
+</span><span class="comment">*</span><span class="comment">         to 1
+</span><span class="comment">*</span><span class="comment">
+</span>      IX = 1
+      IY = 1
+      IF (INCX.LT.0) IX = (-N+1)*INCX + 1
+      IF (INCY.LT.0) IY = (-N+1)*INCY + 1
+      DO 10 I = 1,N
+          STEMP = C*SX(IX) + S*SY(IY)
+          SY(IY) = C*SY(IY) - S*SX(IX)
+          SX(IX) = STEMP
+          IX = IX + INCX
+          IY = IY + INCY
+   10 CONTINUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">       code for both increments equal to 1
+</span><span class="comment">*</span><span class="comment">
+</span>   20 DO 30 I = 1,N
+          STEMP = C*SX(I) + S*SY(I)
+          SY(I) = C*SY(I) - S*SX(I)
+          SX(I) = STEMP
+   30 CONTINUE
+      RETURN
+      END
+
+</pre>
+
+ </body>
+</html>

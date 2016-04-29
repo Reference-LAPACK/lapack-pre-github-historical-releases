@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dzsum1.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      DOUBLE PRECISION FUNCTION <a name="DZSUM1.1"></a><a href="dzsum1.f.html#DZSUM1.1">DZSUM1</a>( N, CX, INCX )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INCX, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX*16         CX( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DZSUM1.17"></a><a href="dzsum1.f.html#DZSUM1.1">DZSUM1</a> takes the sum of the absolute values of a complex
+</span><span class="comment">*</span><span class="comment">  vector and returns a double precision result.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on DZASUM from the Level 1 BLAS.
+</span><span class="comment">*</span><span class="comment">  The change is to use the 'genuine' absolute value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Contributed by Nick Higham for use with <a name="ZLACON.23"></a><a href="zlacon.f.html#ZLACON.1">ZLACON</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of elements in the vector CX.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CX      (input) COMPLEX*16 array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The vector whose elements will be summed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INCX    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The spacing between successive values of CX.  INCX &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, NINCX
+      DOUBLE PRECISION   STEMP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      <a name="DZSUM1.48"></a><a href="dzsum1.f.html#DZSUM1.1">DZSUM1</a> = 0.0D0
+      STEMP = 0.0D0
+      IF( N.LE.0 )
+     $   RETURN
+      IF( INCX.EQ.1 )
+     $   GO TO 20
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     CODE FOR INCREMENT NOT EQUAL TO 1
+</span><span class="comment">*</span><span class="comment">
+</span>      NINCX = N*INCX
+      DO 10 I = 1, NINCX, INCX
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        NEXT LINE MODIFIED.
+</span><span class="comment">*</span><span class="comment">
+</span>         STEMP = STEMP + ABS( CX( I ) )
+   10 CONTINUE
+      <a name="DZSUM1.64"></a><a href="dzsum1.f.html#DZSUM1.1">DZSUM1</a> = STEMP
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     CODE FOR INCREMENT EQUAL TO 1
+</span><span class="comment">*</span><span class="comment">
+</span>   20 CONTINUE
+      DO 30 I = 1, N
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        NEXT LINE MODIFIED.
+</span><span class="comment">*</span><span class="comment">
+</span>         STEMP = STEMP + ABS( CX( I ) )
+   30 CONTINUE
+      <a name="DZSUM1.76"></a><a href="dzsum1.f.html#DZSUM1.1">DZSUM1</a> = STEMP
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DZSUM1.79"></a><a href="dzsum1.f.html#DZSUM1.1">DZSUM1</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

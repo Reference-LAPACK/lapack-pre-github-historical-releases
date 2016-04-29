@@ -1,0 +1,383 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>ctrsen.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CTRSEN.1"></a><a href="ctrsen.f.html#CTRSEN.1">CTRSEN</a>( JOB, COMPQ, SELECT, N, T, LDT, Q, LDQ, W, M, S,
+     $                   SEP, WORK, LWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Modified to call <a name="CLACN2.8"></a><a href="clacn2.f.html#CLACN2.1">CLACN2</a> in place of <a name="CLACON.8"></a><a href="clacon.f.html#CLACON.1">CLACON</a>, 10 Feb 03, SJH.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          COMPQ, JOB
+      INTEGER            INFO, LDQ, LDT, LWORK, M, N
+      REAL               S, SEP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      LOGICAL            SELECT( * )
+      COMPLEX            Q( LDQ, * ), T( LDT, * ), W( * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CTRSEN.23"></a><a href="ctrsen.f.html#CTRSEN.1">CTRSEN</a> reorders the Schur factorization of a complex matrix
+</span><span class="comment">*</span><span class="comment">  A = Q*T*Q**H, so that a selected cluster of eigenvalues appears in
+</span><span class="comment">*</span><span class="comment">  the leading positions on the diagonal of the upper triangular matrix
+</span><span class="comment">*</span><span class="comment">  T, and the leading columns of Q form an orthonormal basis of the
+</span><span class="comment">*</span><span class="comment">  corresponding right invariant subspace.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Optionally the routine computes the reciprocal condition numbers of
+</span><span class="comment">*</span><span class="comment">  the cluster of eigenvalues and/or the invariant subspace.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOB     (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether condition numbers are required for the
+</span><span class="comment">*</span><span class="comment">          cluster of eigenvalues (S) or the invariant subspace (SEP):
+</span><span class="comment">*</span><span class="comment">          = 'N': none;
+</span><span class="comment">*</span><span class="comment">          = 'E': for eigenvalues only (S);
+</span><span class="comment">*</span><span class="comment">          = 'V': for invariant subspace only (SEP);
+</span><span class="comment">*</span><span class="comment">          = 'B': for both eigenvalues and invariant subspace (S and
+</span><span class="comment">*</span><span class="comment">                 SEP).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  COMPQ   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'V': update the matrix Q of Schur vectors;
+</span><span class="comment">*</span><span class="comment">          = 'N': do not update Q.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SELECT  (input) LOGICAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          SELECT specifies the eigenvalues in the selected cluster. To
+</span><span class="comment">*</span><span class="comment">          select the j-th eigenvalue, SELECT(j) must be set to .TRUE..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix T. N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  T       (input/output) COMPLEX array, dimension (LDT,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper triangular matrix T.
+</span><span class="comment">*</span><span class="comment">          On exit, T is overwritten by the reordered matrix T, with the
+</span><span class="comment">*</span><span class="comment">          selected eigenvalues as the leading diagonal elements.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDT     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array T. LDT &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Q       (input/output) COMPLEX array, dimension (LDQ,N)
+</span><span class="comment">*</span><span class="comment">          On entry, if COMPQ = 'V', the matrix Q of Schur vectors.
+</span><span class="comment">*</span><span class="comment">          On exit, if COMPQ = 'V', Q has been postmultiplied by the
+</span><span class="comment">*</span><span class="comment">          unitary transformation matrix which reorders T; the leading M
+</span><span class="comment">*</span><span class="comment">          columns of Q form an orthonormal basis for the specified
+</span><span class="comment">*</span><span class="comment">          invariant subspace.
+</span><span class="comment">*</span><span class="comment">          If COMPQ = 'N', Q is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDQ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Q.
+</span><span class="comment">*</span><span class="comment">          LDQ &gt;= 1; and if COMPQ = 'V', LDQ &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  W       (output) COMPLEX array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The reordered eigenvalues of T, in the same order as they
+</span><span class="comment">*</span><span class="comment">          appear on the diagonal of T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          The dimension of the specified invariant subspace.
+</span><span class="comment">*</span><span class="comment">          0 &lt;= M &lt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  S       (output) REAL
+</span><span class="comment">*</span><span class="comment">          If JOB = 'E' or 'B', S is a lower bound on the reciprocal
+</span><span class="comment">*</span><span class="comment">          condition number for the selected cluster of eigenvalues.
+</span><span class="comment">*</span><span class="comment">          S cannot underestimate the true reciprocal condition number
+</span><span class="comment">*</span><span class="comment">          by more than a factor of sqrt(N). If M = 0 or N, S = 1.
+</span><span class="comment">*</span><span class="comment">          If JOB = 'N' or 'V', S is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SEP     (output) REAL
+</span><span class="comment">*</span><span class="comment">          If JOB = 'V' or 'B', SEP is the estimated reciprocal
+</span><span class="comment">*</span><span class="comment">          condition number of the specified invariant subspace. If
+</span><span class="comment">*</span><span class="comment">          M = 0 or N, SEP = norm(T).
+</span><span class="comment">*</span><span class="comment">          If JOB = 'N' or 'E', SEP is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace/output) COMPLEX array, dimension (MAX(1,LWORK))
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LWORK   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The dimension of the array WORK.
+</span><span class="comment">*</span><span class="comment">          If JOB = 'N', LWORK &gt;= 1;
+</span><span class="comment">*</span><span class="comment">          if JOB = 'E', LWORK = max(1,M*(N-M));
+</span><span class="comment">*</span><span class="comment">          if JOB = 'V' or 'B', LWORK &gt;= max(1,2*M*(N-M)).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If LWORK = -1, then a workspace query is assumed; the routine
+</span><span class="comment">*</span><span class="comment">          only calculates the optimal size of the WORK array, returns
+</span><span class="comment">*</span><span class="comment">          this value as the first entry of the WORK array, and no error
+</span><span class="comment">*</span><span class="comment">          message related to LWORK is issued by <a name="XERBLA.108"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CTRSEN.117"></a><a href="ctrsen.f.html#CTRSEN.1">CTRSEN</a> first collects the selected eigenvalues by computing a unitary
+</span><span class="comment">*</span><span class="comment">  transformation Z to move them to the top left corner of T. In other
+</span><span class="comment">*</span><span class="comment">  words, the selected eigenvalues are the eigenvalues of T11 in:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                Z'*T*Z = ( T11 T12 ) n1
+</span><span class="comment">*</span><span class="comment">                         (  0  T22 ) n2
+</span><span class="comment">*</span><span class="comment">                            n1  n2
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where N = n1+n2 and Z' means the conjugate transpose of Z. The first
+</span><span class="comment">*</span><span class="comment">  n1 columns of Z span the specified invariant subspace of T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If T has been obtained from the Schur factorization of a matrix
+</span><span class="comment">*</span><span class="comment">  A = Q*T*Q', then the reordered Schur factorization of A is given by
+</span><span class="comment">*</span><span class="comment">  A = (Q*Z)*(Z'*T*Z)*(Q*Z)', and the first n1 columns of Q*Z span the
+</span><span class="comment">*</span><span class="comment">  corresponding invariant subspace of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The reciprocal condition number of the average of the eigenvalues of
+</span><span class="comment">*</span><span class="comment">  T11 may be returned in S. S lies between 0 (very badly conditioned)
+</span><span class="comment">*</span><span class="comment">  and 1 (very well conditioned). It is computed as follows. First we
+</span><span class="comment">*</span><span class="comment">  compute R so that
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                         P = ( I  R ) n1
+</span><span class="comment">*</span><span class="comment">                             ( 0  0 ) n2
+</span><span class="comment">*</span><span class="comment">                               n1 n2
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  is the projector on the invariant subspace associated with T11.
+</span><span class="comment">*</span><span class="comment">  R is the solution of the Sylvester equation:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                        T11*R - R*T22 = T12.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Let F-norm(M) denote the Frobenius-norm of M and 2-norm(M) denote
+</span><span class="comment">*</span><span class="comment">  the two-norm of M. Then S is computed as the lower bound
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                      (1 + F-norm(R)**2)**(-1/2)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  on the reciprocal of 2-norm(P), the true reciprocal condition number.
+</span><span class="comment">*</span><span class="comment">  S cannot underestimate 1 / 2-norm(P) by more than a factor of
+</span><span class="comment">*</span><span class="comment">  sqrt(N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  An approximate error bound for the computed average of the
+</span><span class="comment">*</span><span class="comment">  eigenvalues of T11 is
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                         EPS * norm(T) / S
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where EPS is the machine precision.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The reciprocal condition number of the right invariant subspace
+</span><span class="comment">*</span><span class="comment">  spanned by the first n1 columns of Z (or of Q*Z) is returned in SEP.
+</span><span class="comment">*</span><span class="comment">  SEP is defined as the separation of T11 and T22:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                     sep( T11, T22 ) = sigma-min( C )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where sigma-min(C) is the smallest singular value of the
+</span><span class="comment">*</span><span class="comment">  n1*n2-by-n1*n2 matrix
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     C  = kprod( I(n2), T11 ) - kprod( transpose(T22), I(n1) )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  I(m) is an m by m identity matrix, and kprod denotes the Kronecker
+</span><span class="comment">*</span><span class="comment">  product. We estimate sigma-min(C) by the reciprocal of an estimate of
+</span><span class="comment">*</span><span class="comment">  the 1-norm of inverse(C). The true reciprocal 1-norm of inverse(C)
+</span><span class="comment">*</span><span class="comment">  cannot differ from sigma-min(C) by more than a factor of sqrt(n1*n2).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  When SEP is small, small changes in T can cause large changes in
+</span><span class="comment">*</span><span class="comment">  the invariant subspace. An approximate bound on the maximum angular
+</span><span class="comment">*</span><span class="comment">  error in the computed right invariant subspace is
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                      EPS * norm(T) / SEP
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, ONE
+      PARAMETER          ( ZERO = 0.0E+0, ONE = 1.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            LQUERY, WANTBH, WANTQ, WANTS, WANTSP
+      INTEGER            IERR, K, KASE, KS, LWMIN, N1, N2, NN
+      REAL               EST, RNORM, SCALE
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      INTEGER            ISAVE( 3 )
+      REAL               RWORK( 1 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.201"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      REAL               <a name="CLANGE.202"></a><a href="clange.f.html#CLANGE.1">CLANGE</a>
+      EXTERNAL           <a name="LSAME.203"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="CLANGE.203"></a><a href="clange.f.html#CLANGE.1">CLANGE</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="CLACN2.206"></a><a href="clacn2.f.html#CLACN2.1">CLACN2</a>, <a name="CLACPY.206"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>, <a name="CTREXC.206"></a><a href="ctrexc.f.html#CTREXC.1">CTREXC</a>, <a name="CTRSYL.206"></a><a href="ctrsyl.f.html#CTRSYL.1">CTRSYL</a>, <a name="XERBLA.206"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Decode and test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      WANTBH = <a name="LSAME.215"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'B'</span> )
+      WANTS = <a name="LSAME.216"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'E'</span> ) .OR. WANTBH
+      WANTSP = <a name="LSAME.217"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'V'</span> ) .OR. WANTBH
+      WANTQ = <a name="LSAME.218"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( COMPQ, <span class="string">'V'</span> )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set M to the number of selected eigenvalues.
+</span><span class="comment">*</span><span class="comment">
+</span>      M = 0
+      DO 10 K = 1, N
+         IF( SELECT( K ) )
+     $      M = M + 1
+   10 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      N1 = M
+      N2 = N - M
+      NN = N1*N2
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      LQUERY = ( LWORK.EQ.-1 )
+<span class="comment">*</span><span class="comment">
+</span>      IF( WANTSP ) THEN
+         LWMIN = MAX( 1, 2*NN )
+      ELSE IF( <a name="LSAME.237"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'N'</span> ) ) THEN
+         LWMIN = 1
+      ELSE IF( <a name="LSAME.239"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'E'</span> ) ) THEN
+         LWMIN = MAX( 1, NN )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( .NOT.<a name="LSAME.243"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'N'</span> ) .AND. .NOT.WANTS .AND. .NOT.WANTSP )
+     $     THEN
+         INFO = -1
+      ELSE IF( .NOT.<a name="LSAME.246"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( COMPQ, <span class="string">'N'</span> ) .AND. .NOT.WANTQ ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( LDT.LT.MAX( 1, N ) ) THEN
+         INFO = -6
+      ELSE IF( LDQ.LT.1 .OR. ( WANTQ .AND. LDQ.LT.N ) ) THEN
+         INFO = -8
+      ELSE IF( LWORK.LT.LWMIN .AND. .NOT.LQUERY ) THEN
+         INFO = -14
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.EQ.0 ) THEN
+         WORK( 1 ) = LWMIN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.263"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CTRSEN.263"></a><a href="ctrsen.f.html#CTRSEN.1">CTRSEN</a>'</span>, -INFO )
+         RETURN
+      ELSE IF( LQUERY ) THEN
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( M.EQ.N .OR. M.EQ.0 ) THEN
+         IF( WANTS )
+     $      S = ONE
+         IF( WANTSP )
+     $      SEP = <a name="CLANGE.275"></a><a href="clange.f.html#CLANGE.1">CLANGE</a>( <span class="string">'1'</span>, N, N, T, LDT, RWORK )
+         GO TO 40
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Collect the selected eigenvalues at the top left corner of T.
+</span><span class="comment">*</span><span class="comment">
+</span>      KS = 0
+      DO 20 K = 1, N
+         IF( SELECT( K ) ) THEN
+            KS = KS + 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Swap the K-th eigenvalue to position KS.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( K.NE.KS )
+     $         CALL <a name="CTREXC.289"></a><a href="ctrexc.f.html#CTREXC.1">CTREXC</a>( COMPQ, N, T, LDT, Q, LDQ, K, KS, IERR )
+         END IF
+   20 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      IF( WANTS ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve the Sylvester equation for R:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           T11*R - R*T22 = scale*T12
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="CLACPY.299"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>( <span class="string">'F'</span>, N1, N2, T( 1, N1+1 ), LDT, WORK, N1 )
+         CALL <a name="CTRSYL.300"></a><a href="ctrsyl.f.html#CTRSYL.1">CTRSYL</a>( <span class="string">'N'</span>, <span class="string">'N'</span>, -1, N1, N2, T, LDT, T( N1+1, N1+1 ),
+     $                LDT, WORK, N1, SCALE, IERR )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Estimate the reciprocal of the condition number of the cluster
+</span><span class="comment">*</span><span class="comment">        of eigenvalues.
+</span><span class="comment">*</span><span class="comment">
+</span>         RNORM = <a name="CLANGE.306"></a><a href="clange.f.html#CLANGE.1">CLANGE</a>( <span class="string">'F'</span>, N1, N2, WORK, N1, RWORK )
+         IF( RNORM.EQ.ZERO ) THEN
+            S = ONE
+         ELSE
+            S = SCALE / ( SQRT( SCALE*SCALE / RNORM+RNORM )*
+     $          SQRT( RNORM ) )
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( WANTSP ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Estimate sep(T11,T22).
+</span><span class="comment">*</span><span class="comment">
+</span>         EST = ZERO
+         KASE = 0
+   30    CONTINUE
+         CALL <a name="CLACN2.322"></a><a href="clacn2.f.html#CLACN2.1">CLACN2</a>( NN, WORK( NN+1 ), WORK, EST, KASE, ISAVE )
+         IF( KASE.NE.0 ) THEN
+            IF( KASE.EQ.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Solve T11*R - R*T22 = scale*X.
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CTRSYL.328"></a><a href="ctrsyl.f.html#CTRSYL.1">CTRSYL</a>( <span class="string">'N'</span>, <span class="string">'N'</span>, -1, N1, N2, T, LDT,
+     $                      T( N1+1, N1+1 ), LDT, WORK, N1, SCALE,
+     $                      IERR )
+            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Solve T11'*R - R*T22' = scale*X.
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CTRSYL.335"></a><a href="ctrsyl.f.html#CTRSYL.1">CTRSYL</a>( <span class="string">'C'</span>, <span class="string">'C'</span>, -1, N1, N2, T, LDT,
+     $                      T( N1+1, N1+1 ), LDT, WORK, N1, SCALE,
+     $                      IERR )
+            END IF
+            GO TO 30
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         SEP = SCALE / EST
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>   40 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Copy reordered eigenvalues to W.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 50 K = 1, N
+         W( K ) = T( K, K )
+   50 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      WORK( 1 ) = LWMIN
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CTRSEN.357"></a><a href="ctrsen.f.html#CTRSEN.1">CTRSEN</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

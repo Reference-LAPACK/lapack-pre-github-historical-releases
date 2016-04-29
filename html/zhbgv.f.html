@@ -1,0 +1,215 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zhbgv.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZHBGV.1"></a><a href="zhbgv.f.html#ZHBGV.1">ZHBGV</a>( JOBZ, UPLO, N, KA, KB, AB, LDAB, BB, LDBB, W, Z,
+     $                  LDZ, WORK, RWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK driver routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          JOBZ, UPLO
+      INTEGER            INFO, KA, KB, LDAB, LDBB, LDZ, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   RWORK( * ), W( * )
+      COMPLEX*16         AB( LDAB, * ), BB( LDBB, * ), WORK( * ),
+     $                   Z( LDZ, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZHBGV.21"></a><a href="zhbgv.f.html#ZHBGV.1">ZHBGV</a> computes all the eigenvalues, and optionally, the eigenvectors
+</span><span class="comment">*</span><span class="comment">  of a complex generalized Hermitian-definite banded eigenproblem, of
+</span><span class="comment">*</span><span class="comment">  the form A*x=(lambda)*B*x. Here A and B are assumed to be Hermitian
+</span><span class="comment">*</span><span class="comment">  and banded, and B is also positive definite.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOBZ    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'N':  Compute eigenvalues only;
+</span><span class="comment">*</span><span class="comment">          = 'V':  Compute eigenvalues and eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangles of A and B are stored;
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangles of A and B are stored.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrices A and B.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KA      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of superdiagonals of the matrix A if UPLO = 'U',
+</span><span class="comment">*</span><span class="comment">          or the number of subdiagonals if UPLO = 'L'. KA &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KB      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of superdiagonals of the matrix B if UPLO = 'U',
+</span><span class="comment">*</span><span class="comment">          or the number of subdiagonals if UPLO = 'L'. KB &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AB      (input/output) COMPLEX*16 array, dimension (LDAB, N)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper or lower triangle of the Hermitian band
+</span><span class="comment">*</span><span class="comment">          matrix A, stored in the first ka+1 rows of the array.  The
+</span><span class="comment">*</span><span class="comment">          j-th column of A is stored in the j-th column of the array AB
+</span><span class="comment">*</span><span class="comment">          as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', AB(ka+1+i-j,j) = A(i,j) for max(1,j-ka)&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', AB(1+i-j,j)    = A(i,j) for j&lt;=i&lt;=min(n,j+ka).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, the contents of AB are destroyed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDAB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array AB.  LDAB &gt;= KA+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BB      (input/output) COMPLEX*16 array, dimension (LDBB, N)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper or lower triangle of the Hermitian band
+</span><span class="comment">*</span><span class="comment">          matrix B, stored in the first kb+1 rows of the array.  The
+</span><span class="comment">*</span><span class="comment">          j-th column of B is stored in the j-th column of the array BB
+</span><span class="comment">*</span><span class="comment">          as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', BB(kb+1+i-j,j) = B(i,j) for max(1,j-kb)&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', BB(1+i-j,j)    = B(i,j) for j&lt;=i&lt;=min(n,j+kb).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, the factor S from the split Cholesky factorization
+</span><span class="comment">*</span><span class="comment">          B = S**H*S, as returned by <a name="ZPBSTF.70"></a><a href="zpbstf.f.html#ZPBSTF.1">ZPBSTF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDBB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array BB.  LDBB &gt;= KB+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  W       (output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          If INFO = 0, the eigenvalues in ascending order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z       (output) COMPLEX*16 array, dimension (LDZ, N)
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'V', then if INFO = 0, Z contains the matrix Z of
+</span><span class="comment">*</span><span class="comment">          eigenvectors, with the i-th column of Z holding the
+</span><span class="comment">*</span><span class="comment">          eigenvector associated with W(i). The eigenvectors are
+</span><span class="comment">*</span><span class="comment">          normalized so that Z**H*B*Z = I.
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'N', then Z is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDZ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Z.  LDZ &gt;= 1, and if
+</span><span class="comment">*</span><span class="comment">          JOBZ = 'V', LDZ &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) COMPLEX*16 array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RWORK   (workspace) DOUBLE PRECISION array, dimension (3*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = i, and i is:
+</span><span class="comment">*</span><span class="comment">             &lt;= N:  the algorithm failed to converge:
+</span><span class="comment">*</span><span class="comment">                    i off-diagonal elements of an intermediate
+</span><span class="comment">*</span><span class="comment">                    tridiagonal form did not converge to zero;
+</span><span class="comment">*</span><span class="comment">             &gt; N:   if INFO = N + i, for 1 &lt;= i &lt;= N, then <a name="ZPBSTF.100"></a><a href="zpbstf.f.html#ZPBSTF.1">ZPBSTF</a>
+</span><span class="comment">*</span><span class="comment">                    returned INFO = i: B is not positive definite.
+</span><span class="comment">*</span><span class="comment">                    The factorization of B could not be completed and
+</span><span class="comment">*</span><span class="comment">                    no eigenvalues or eigenvectors were computed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            UPPER, WANTZ
+      CHARACTER          VECT
+      INTEGER            IINFO, INDE, INDWRK
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.113"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.114"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DSTERF.117"></a><a href="dsterf.f.html#DSTERF.1">DSTERF</a>, <a name="XERBLA.117"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, <a name="ZHBGST.117"></a><a href="zhbgst.f.html#ZHBGST.1">ZHBGST</a>, <a name="ZHBTRD.117"></a><a href="zhbtrd.f.html#ZHBTRD.1">ZHBTRD</a>, <a name="ZPBSTF.117"></a><a href="zpbstf.f.html#ZPBSTF.1">ZPBSTF</a>, <a name="ZSTEQR.117"></a><a href="zsteqr.f.html#ZSTEQR.1">ZSTEQR</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      WANTZ = <a name="LSAME.123"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBZ, <span class="string">'V'</span> )
+      UPPER = <a name="LSAME.124"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> )
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( .NOT.( WANTZ .OR. <a name="LSAME.127"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBZ, <span class="string">'N'</span> ) ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.( UPPER .OR. <a name="LSAME.129"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( KA.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( KB.LT.0 .OR. KB.GT.KA ) THEN
+         INFO = -5
+      ELSE IF( LDAB.LT.KA+1 ) THEN
+         INFO = -7
+      ELSE IF( LDBB.LT.KB+1 ) THEN
+         INFO = -9
+      ELSE IF( LDZ.LT.1 .OR. ( WANTZ .AND. LDZ.LT.N ) ) THEN
+         INFO = -12
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.145"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZHBGV.145"></a><a href="zhbgv.f.html#ZHBGV.1">ZHBGV</a> '</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Form a split Cholesky factorization of B.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="ZPBSTF.156"></a><a href="zpbstf.f.html#ZPBSTF.1">ZPBSTF</a>( UPLO, N, KB, BB, LDBB, INFO )
+      IF( INFO.NE.0 ) THEN
+         INFO = N + INFO
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Transform problem to standard eigenvalue problem.
+</span><span class="comment">*</span><span class="comment">
+</span>      INDE = 1
+      INDWRK = INDE + N
+      CALL <a name="ZHBGST.166"></a><a href="zhbgst.f.html#ZHBGST.1">ZHBGST</a>( JOBZ, UPLO, N, KA, KB, AB, LDAB, BB, LDBB, Z, LDZ,
+     $             WORK, RWORK( INDWRK ), IINFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Reduce to tridiagonal form.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( WANTZ ) THEN
+         VECT = <span class="string">'U'</span>
+      ELSE
+         VECT = <span class="string">'N'</span>
+      END IF
+      CALL <a name="ZHBTRD.176"></a><a href="zhbtrd.f.html#ZHBTRD.1">ZHBTRD</a>( VECT, UPLO, N, KA, AB, LDAB, W, RWORK( INDE ), Z,
+     $             LDZ, WORK, IINFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     For eigenvalues only, call <a name="DSTERF.179"></a><a href="dsterf.f.html#DSTERF.1">DSTERF</a>.  For eigenvectors, call <a name="ZSTEQR.179"></a><a href="zsteqr.f.html#ZSTEQR.1">ZSTEQR</a>.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( .NOT.WANTZ ) THEN
+         CALL <a name="DSTERF.182"></a><a href="dsterf.f.html#DSTERF.1">DSTERF</a>( N, W, RWORK( INDE ), INFO )
+      ELSE
+         CALL <a name="ZSTEQR.184"></a><a href="zsteqr.f.html#ZSTEQR.1">ZSTEQR</a>( JOBZ, N, W, RWORK( INDE ), Z, LDZ,
+     $                RWORK( INDWRK ), INFO )
+      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZHBGV.189"></a><a href="zhbgv.f.html#ZHBGV.1">ZHBGV</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,531 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slaln2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLALN2.1"></a><a href="slaln2.f.html#SLALN2.1">SLALN2</a>( LTRANS, NA, NW, SMIN, CA, A, LDA, D1, D2, B,
+     $                   LDB, WR, WI, X, LDX, SCALE, XNORM, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      LOGICAL            LTRANS
+      INTEGER            INFO, LDA, LDB, LDX, NA, NW
+      REAL               CA, D1, D2, SCALE, SMIN, WI, WR, XNORM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               A( LDA, * ), B( LDB, * ), X( LDX, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLALN2.20"></a><a href="slaln2.f.html#SLALN2.1">SLALN2</a> solves a system of the form  (ca A - w D ) X = s B
+</span><span class="comment">*</span><span class="comment">  or (ca A' - w D) X = s B   with possible scaling (&quot;s&quot;) and
+</span><span class="comment">*</span><span class="comment">  perturbation of A.  (A' means A-transpose.)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A is an NA x NA real matrix, ca is a real scalar, D is an NA x NA
+</span><span class="comment">*</span><span class="comment">  real diagonal matrix, w is a real or complex value, and X and B are
+</span><span class="comment">*</span><span class="comment">  NA x 1 matrices -- real if w is real, complex if w is complex.  NA
+</span><span class="comment">*</span><span class="comment">  may be 1 or 2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If w is complex, X and B are represented as NA x 2 matrices,
+</span><span class="comment">*</span><span class="comment">  the first column of each being the real part and the second
+</span><span class="comment">*</span><span class="comment">  being the imaginary part.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  &quot;s&quot; is a scaling factor (.LE. 1), computed by <a name="SLALN2.33"></a><a href="slaln2.f.html#SLALN2.1">SLALN2</a>, which is
+</span><span class="comment">*</span><span class="comment">  so chosen that X can be computed without overflow.  X is further
+</span><span class="comment">*</span><span class="comment">  scaled if necessary to assure that norm(ca A - w D)*norm(X) is less
+</span><span class="comment">*</span><span class="comment">  than overflow.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If both singular values of (ca A - w D) are less than SMIN,
+</span><span class="comment">*</span><span class="comment">  SMIN*identity will be used instead of (ca A - w D).  If only one
+</span><span class="comment">*</span><span class="comment">  singular value is less than SMIN, one element of (ca A - w D) will be
+</span><span class="comment">*</span><span class="comment">  perturbed enough to make the smallest singular value roughly SMIN.
+</span><span class="comment">*</span><span class="comment">  If both singular values are at least SMIN, (ca A - w D) will not be
+</span><span class="comment">*</span><span class="comment">  perturbed.  In any case, the perturbation will be at most some small
+</span><span class="comment">*</span><span class="comment">  multiple of max( SMIN, ulp*norm(ca A - w D) ).  The singular values
+</span><span class="comment">*</span><span class="comment">  are computed by infinity-norm approximations, and thus will only be
+</span><span class="comment">*</span><span class="comment">  correct to a factor of 2 or so.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Note: all input quantities are assumed to be smaller than overflow
+</span><span class="comment">*</span><span class="comment">  by a reasonable factor.  (See BIGNUM.)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  ==========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LTRANS  (input) LOGICAL
+</span><span class="comment">*</span><span class="comment">          =.TRUE.:  A-transpose will be used.
+</span><span class="comment">*</span><span class="comment">          =.FALSE.: A will be used (not transposed.)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NA      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The size of the matrix A.  It may (only) be 1 or 2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NW      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          1 if &quot;w&quot; is real, 2 if &quot;w&quot; is complex.  It may only be 1
+</span><span class="comment">*</span><span class="comment">          or 2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SMIN    (input) REAL
+</span><span class="comment">*</span><span class="comment">          The desired lower bound on the singular values of A.  This
+</span><span class="comment">*</span><span class="comment">          should be a safe distance away from underflow or overflow,
+</span><span class="comment">*</span><span class="comment">          say, between (underflow/machine precision) and  (machine
+</span><span class="comment">*</span><span class="comment">          precision * overflow ).  (See BIGNUM and ULP.)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CA      (input) REAL
+</span><span class="comment">*</span><span class="comment">          The coefficient c, which A is multiplied by.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input) REAL array, dimension (LDA,NA)
+</span><span class="comment">*</span><span class="comment">          The NA x NA matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of A.  It must be at least NA.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D1      (input) REAL
+</span><span class="comment">*</span><span class="comment">          The 1,1 element in the diagonal matrix D.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D2      (input) REAL
+</span><span class="comment">*</span><span class="comment">          The 2,2 element in the diagonal matrix D.  Not used if NW=1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input) REAL array, dimension (LDB,NW)
+</span><span class="comment">*</span><span class="comment">          The NA x NW matrix B (right-hand side).  If NW=2 (&quot;w&quot; is
+</span><span class="comment">*</span><span class="comment">          complex), column 1 contains the real part of B and column 2
+</span><span class="comment">*</span><span class="comment">          contains the imaginary part.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of B.  It must be at least NA.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WR      (input) REAL
+</span><span class="comment">*</span><span class="comment">          The real part of the scalar &quot;w&quot;.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WI      (input) REAL
+</span><span class="comment">*</span><span class="comment">          The imaginary part of the scalar &quot;w&quot;.  Not used if NW=1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X       (output) REAL array, dimension (LDX,NW)
+</span><span class="comment">*</span><span class="comment">          The NA x NW matrix X (unknowns), as computed by <a name="SLALN2.101"></a><a href="slaln2.f.html#SLALN2.1">SLALN2</a>.
+</span><span class="comment">*</span><span class="comment">          If NW=2 (&quot;w&quot; is complex), on exit, column 1 will contain
+</span><span class="comment">*</span><span class="comment">          the real part of X and column 2 will contain the imaginary
+</span><span class="comment">*</span><span class="comment">          part.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDX     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of X.  It must be at least NA.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SCALE   (output) REAL
+</span><span class="comment">*</span><span class="comment">          The scale factor that B must be multiplied by to insure
+</span><span class="comment">*</span><span class="comment">          that overflow does not occur when computing X.  Thus,
+</span><span class="comment">*</span><span class="comment">          (ca A - w D) X  will be SCALE*B, not B (ignoring
+</span><span class="comment">*</span><span class="comment">          perturbations of A.)  It will be at most 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  XNORM   (output) REAL
+</span><span class="comment">*</span><span class="comment">          The infinity-norm of X, when X is regarded as an NA x NW
+</span><span class="comment">*</span><span class="comment">          real matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          An error flag.  It will be set to zero if no error occurs,
+</span><span class="comment">*</span><span class="comment">          a negative number if an argument is in error, or a positive
+</span><span class="comment">*</span><span class="comment">          number if  ca A - w D  had to be perturbed.
+</span><span class="comment">*</span><span class="comment">          The possible values are:
+</span><span class="comment">*</span><span class="comment">          = 0: No error occurred, and (ca A - w D) did not have to be
+</span><span class="comment">*</span><span class="comment">                 perturbed.
+</span><span class="comment">*</span><span class="comment">          = 1: (ca A - w D) had to be perturbed to make its smallest
+</span><span class="comment">*</span><span class="comment">               (or only) singular value greater than SMIN.
+</span><span class="comment">*</span><span class="comment">          NOTE: In the interests of speed, this routine does not
+</span><span class="comment">*</span><span class="comment">                check the inputs for errors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment"> =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, ONE
+      PARAMETER          ( ZERO = 0.0E0, ONE = 1.0E0 )
+      REAL               TWO
+      PARAMETER          ( TWO = 2.0E0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            ICMAX, J
+      REAL               BBND, BI1, BI2, BIGNUM, BNORM, BR1, BR2, CI21,
+     $                   CI22, CMAX, CNORM, CR21, CR22, CSI, CSR, LI21,
+     $                   LR21, SMINI, SMLNUM, TEMP, U22ABS, UI11, UI11R,
+     $                   UI12, UI12S, UI22, UR11, UR11R, UR12, UR12S,
+     $                   UR22, XI1, XI2, XR1, XR2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      LOGICAL            CSWAP( 4 ), RSWAP( 4 )
+      INTEGER            IPIVOT( 4, 4 )
+      REAL               CI( 2, 2 ), CIV( 4 ), CR( 2, 2 ), CRV( 4 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      REAL               <a name="SLAMCH.153"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      EXTERNAL           <a name="SLAMCH.154"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="SLADIV.157"></a><a href="sladiv.f.html#SLADIV.1">SLADIV</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Equivalences ..
+</span>      EQUIVALENCE        ( CI( 1, 1 ), CIV( 1 ) ),
+     $                   ( CR( 1, 1 ), CRV( 1 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Data statements ..
+</span>      DATA               CSWAP / .FALSE., .FALSE., .TRUE., .TRUE. /
+      DATA               RSWAP / .FALSE., .TRUE., .FALSE., .TRUE. /
+      DATA               IPIVOT / 1, 2, 3, 4, 2, 1, 4, 3, 3, 4, 1, 2, 4,
+     $                   3, 2, 1 /
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute BIGNUM
+</span><span class="comment">*</span><span class="comment">
+</span>      SMLNUM = TWO*<a name="SLAMCH.176"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Safe minimum'</span> )
+      BIGNUM = ONE / SMLNUM
+      SMINI = MAX( SMIN, SMLNUM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Don't check for input errors
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Standard Initializations
+</span><span class="comment">*</span><span class="comment">
+</span>      SCALE = ONE
+<span class="comment">*</span><span class="comment">
+</span>      IF( NA.EQ.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        1 x 1  (i.e., scalar) system   C X = B
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( NW.EQ.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Real 1x1 system.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           C = ca A - w D
+</span><span class="comment">*</span><span class="comment">
+</span>            CSR = CA*A( 1, 1 ) - WR*D1
+            CNORM = ABS( CSR )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           If | C | &lt; SMINI, use C = SMINI
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( CNORM.LT.SMINI ) THEN
+               CSR = SMINI
+               CNORM = SMINI
+               INFO = 1
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Check scaling for  X = B / C
+</span><span class="comment">*</span><span class="comment">
+</span>            BNORM = ABS( B( 1, 1 ) )
+            IF( CNORM.LT.ONE .AND. BNORM.GT.ONE ) THEN
+               IF( BNORM.GT.BIGNUM*CNORM )
+     $            SCALE = ONE / BNORM
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute X
+</span><span class="comment">*</span><span class="comment">
+</span>            X( 1, 1 ) = ( B( 1, 1 )*SCALE ) / CSR
+            XNORM = ABS( X( 1, 1 ) )
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Complex 1x1 system (w is complex)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           C = ca A - w D
+</span><span class="comment">*</span><span class="comment">
+</span>            CSR = CA*A( 1, 1 ) - WR*D1
+            CSI = -WI*D1
+            CNORM = ABS( CSR ) + ABS( CSI )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           If | C | &lt; SMINI, use C = SMINI
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( CNORM.LT.SMINI ) THEN
+               CSR = SMINI
+               CSI = ZERO
+               CNORM = SMINI
+               INFO = 1
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Check scaling for  X = B / C
+</span><span class="comment">*</span><span class="comment">
+</span>            BNORM = ABS( B( 1, 1 ) ) + ABS( B( 1, 2 ) )
+            IF( CNORM.LT.ONE .AND. BNORM.GT.ONE ) THEN
+               IF( BNORM.GT.BIGNUM*CNORM )
+     $            SCALE = ONE / BNORM
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute X
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="SLADIV.250"></a><a href="sladiv.f.html#SLADIV.1">SLADIV</a>( SCALE*B( 1, 1 ), SCALE*B( 1, 2 ), CSR, CSI,
+     $                   X( 1, 1 ), X( 1, 2 ) )
+            XNORM = ABS( X( 1, 1 ) ) + ABS( X( 1, 2 ) )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        2x2 System
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute the real part of  C = ca A - w D  (or  ca A' - w D )
+</span><span class="comment">*</span><span class="comment">
+</span>         CR( 1, 1 ) = CA*A( 1, 1 ) - WR*D1
+         CR( 2, 2 ) = CA*A( 2, 2 ) - WR*D2
+         IF( LTRANS ) THEN
+            CR( 1, 2 ) = CA*A( 2, 1 )
+            CR( 2, 1 ) = CA*A( 1, 2 )
+         ELSE
+            CR( 2, 1 ) = CA*A( 2, 1 )
+            CR( 1, 2 ) = CA*A( 1, 2 )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( NW.EQ.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Real 2x2 system  (w is real)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Find the largest element in C
+</span><span class="comment">*</span><span class="comment">
+</span>            CMAX = ZERO
+            ICMAX = 0
+<span class="comment">*</span><span class="comment">
+</span>            DO 10 J = 1, 4
+               IF( ABS( CRV( J ) ).GT.CMAX ) THEN
+                  CMAX = ABS( CRV( J ) )
+                  ICMAX = J
+               END IF
+   10       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           If norm(C) &lt; SMINI, use SMINI*identity.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( CMAX.LT.SMINI ) THEN
+               BNORM = MAX( ABS( B( 1, 1 ) ), ABS( B( 2, 1 ) ) )
+               IF( SMINI.LT.ONE .AND. BNORM.GT.ONE ) THEN
+                  IF( BNORM.GT.BIGNUM*SMINI )
+     $               SCALE = ONE / BNORM
+               END IF
+               TEMP = SCALE / SMINI
+               X( 1, 1 ) = TEMP*B( 1, 1 )
+               X( 2, 1 ) = TEMP*B( 2, 1 )
+               XNORM = TEMP*BNORM
+               INFO = 1
+               RETURN
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Gaussian elimination with complete pivoting.
+</span><span class="comment">*</span><span class="comment">
+</span>            UR11 = CRV( ICMAX )
+            CR21 = CRV( IPIVOT( 2, ICMAX ) )
+            UR12 = CRV( IPIVOT( 3, ICMAX ) )
+            CR22 = CRV( IPIVOT( 4, ICMAX ) )
+            UR11R = ONE / UR11
+            LR21 = UR11R*CR21
+            UR22 = CR22 - UR12*LR21
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           If smaller pivot &lt; SMINI, use SMINI
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( ABS( UR22 ).LT.SMINI ) THEN
+               UR22 = SMINI
+               INFO = 1
+            END IF
+            IF( RSWAP( ICMAX ) ) THEN
+               BR1 = B( 2, 1 )
+               BR2 = B( 1, 1 )
+            ELSE
+               BR1 = B( 1, 1 )
+               BR2 = B( 2, 1 )
+            END IF
+            BR2 = BR2 - LR21*BR1
+            BBND = MAX( ABS( BR1*( UR22*UR11R ) ), ABS( BR2 ) )
+            IF( BBND.GT.ONE .AND. ABS( UR22 ).LT.ONE ) THEN
+               IF( BBND.GE.BIGNUM*ABS( UR22 ) )
+     $            SCALE = ONE / BBND
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>            XR2 = ( BR2*SCALE ) / UR22
+            XR1 = ( SCALE*BR1 )*UR11R - XR2*( UR11R*UR12 )
+            IF( CSWAP( ICMAX ) ) THEN
+               X( 1, 1 ) = XR2
+               X( 2, 1 ) = XR1
+            ELSE
+               X( 1, 1 ) = XR1
+               X( 2, 1 ) = XR2
+            END IF
+            XNORM = MAX( ABS( XR1 ), ABS( XR2 ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Further scaling if  norm(A) norm(X) &gt; overflow
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( XNORM.GT.ONE .AND. CMAX.GT.ONE ) THEN
+               IF( XNORM.GT.BIGNUM / CMAX ) THEN
+                  TEMP = CMAX / BIGNUM
+                  X( 1, 1 ) = TEMP*X( 1, 1 )
+                  X( 2, 1 ) = TEMP*X( 2, 1 )
+                  XNORM = TEMP*XNORM
+                  SCALE = TEMP*SCALE
+               END IF
+            END IF
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Complex 2x2 system  (w is complex)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Find the largest element in C
+</span><span class="comment">*</span><span class="comment">
+</span>            CI( 1, 1 ) = -WI*D1
+            CI( 2, 1 ) = ZERO
+            CI( 1, 2 ) = ZERO
+            CI( 2, 2 ) = -WI*D2
+            CMAX = ZERO
+            ICMAX = 0
+<span class="comment">*</span><span class="comment">
+</span>            DO 20 J = 1, 4
+               IF( ABS( CRV( J ) )+ABS( CIV( J ) ).GT.CMAX ) THEN
+                  CMAX = ABS( CRV( J ) ) + ABS( CIV( J ) )
+                  ICMAX = J
+               END IF
+   20       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           If norm(C) &lt; SMINI, use SMINI*identity.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( CMAX.LT.SMINI ) THEN
+               BNORM = MAX( ABS( B( 1, 1 ) )+ABS( B( 1, 2 ) ),
+     $                 ABS( B( 2, 1 ) )+ABS( B( 2, 2 ) ) )
+               IF( SMINI.LT.ONE .AND. BNORM.GT.ONE ) THEN
+                  IF( BNORM.GT.BIGNUM*SMINI )
+     $               SCALE = ONE / BNORM
+               END IF
+               TEMP = SCALE / SMINI
+               X( 1, 1 ) = TEMP*B( 1, 1 )
+               X( 2, 1 ) = TEMP*B( 2, 1 )
+               X( 1, 2 ) = TEMP*B( 1, 2 )
+               X( 2, 2 ) = TEMP*B( 2, 2 )
+               XNORM = TEMP*BNORM
+               INFO = 1
+               RETURN
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Gaussian elimination with complete pivoting.
+</span><span class="comment">*</span><span class="comment">
+</span>            UR11 = CRV( ICMAX )
+            UI11 = CIV( ICMAX )
+            CR21 = CRV( IPIVOT( 2, ICMAX ) )
+            CI21 = CIV( IPIVOT( 2, ICMAX ) )
+            UR12 = CRV( IPIVOT( 3, ICMAX ) )
+            UI12 = CIV( IPIVOT( 3, ICMAX ) )
+            CR22 = CRV( IPIVOT( 4, ICMAX ) )
+            CI22 = CIV( IPIVOT( 4, ICMAX ) )
+            IF( ICMAX.EQ.1 .OR. ICMAX.EQ.4 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Code when off-diagonals of pivoted C are real
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( ABS( UR11 ).GT.ABS( UI11 ) ) THEN
+                  TEMP = UI11 / UR11
+                  UR11R = ONE / ( UR11*( ONE+TEMP**2 ) )
+                  UI11R = -TEMP*UR11R
+               ELSE
+                  TEMP = UR11 / UI11
+                  UI11R = -ONE / ( UI11*( ONE+TEMP**2 ) )
+                  UR11R = -TEMP*UI11R
+               END IF
+               LR21 = CR21*UR11R
+               LI21 = CR21*UI11R
+               UR12S = UR12*UR11R
+               UI12S = UR12*UI11R
+               UR22 = CR22 - UR12*LR21
+               UI22 = CI22 - UR12*LI21
+            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Code when diagonals of pivoted C are real
+</span><span class="comment">*</span><span class="comment">
+</span>               UR11R = ONE / UR11
+               UI11R = ZERO
+               LR21 = CR21*UR11R
+               LI21 = CI21*UR11R
+               UR12S = UR12*UR11R
+               UI12S = UI12*UR11R
+               UR22 = CR22 - UR12*LR21 + UI12*LI21
+               UI22 = -UR12*LI21 - UI12*LR21
+            END IF
+            U22ABS = ABS( UR22 ) + ABS( UI22 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           If smaller pivot &lt; SMINI, use SMINI
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( U22ABS.LT.SMINI ) THEN
+               UR22 = SMINI
+               UI22 = ZERO
+               INFO = 1
+            END IF
+            IF( RSWAP( ICMAX ) ) THEN
+               BR2 = B( 1, 1 )
+               BR1 = B( 2, 1 )
+               BI2 = B( 1, 2 )
+               BI1 = B( 2, 2 )
+            ELSE
+               BR1 = B( 1, 1 )
+               BR2 = B( 2, 1 )
+               BI1 = B( 1, 2 )
+               BI2 = B( 2, 2 )
+            END IF
+            BR2 = BR2 - LR21*BR1 + LI21*BI1
+            BI2 = BI2 - LI21*BR1 - LR21*BI1
+            BBND = MAX( ( ABS( BR1 )+ABS( BI1 ) )*
+     $             ( U22ABS*( ABS( UR11R )+ABS( UI11R ) ) ),
+     $             ABS( BR2 )+ABS( BI2 ) )
+            IF( BBND.GT.ONE .AND. U22ABS.LT.ONE ) THEN
+               IF( BBND.GE.BIGNUM*U22ABS ) THEN
+                  SCALE = ONE / BBND
+                  BR1 = SCALE*BR1
+                  BI1 = SCALE*BI1
+                  BR2 = SCALE*BR2
+                  BI2 = SCALE*BI2
+               END IF
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>            CALL <a name="SLADIV.471"></a><a href="sladiv.f.html#SLADIV.1">SLADIV</a>( BR2, BI2, UR22, UI22, XR2, XI2 )
+            XR1 = UR11R*BR1 - UI11R*BI1 - UR12S*XR2 + UI12S*XI2
+            XI1 = UI11R*BR1 + UR11R*BI1 - UI12S*XR2 - UR12S*XI2
+            IF( CSWAP( ICMAX ) ) THEN
+               X( 1, 1 ) = XR2
+               X( 2, 1 ) = XR1
+               X( 1, 2 ) = XI2
+               X( 2, 2 ) = XI1
+            ELSE
+               X( 1, 1 ) = XR1
+               X( 2, 1 ) = XR2
+               X( 1, 2 ) = XI1
+               X( 2, 2 ) = XI2
+            END IF
+            XNORM = MAX( ABS( XR1 )+ABS( XI1 ), ABS( XR2 )+ABS( XI2 ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Further scaling if  norm(A) norm(X) &gt; overflow
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( XNORM.GT.ONE .AND. CMAX.GT.ONE ) THEN
+               IF( XNORM.GT.BIGNUM / CMAX ) THEN
+                  TEMP = CMAX / BIGNUM
+                  X( 1, 1 ) = TEMP*X( 1, 1 )
+                  X( 2, 1 ) = TEMP*X( 2, 1 )
+                  X( 1, 2 ) = TEMP*X( 1, 2 )
+                  X( 2, 2 ) = TEMP*X( 2, 2 )
+                  XNORM = TEMP*XNORM
+                  SCALE = TEMP*SCALE
+               END IF
+            END IF
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLALN2.505"></a><a href="slaln2.f.html#SLALN2.1">SLALN2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

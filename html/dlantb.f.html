@@ -1,0 +1,308 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlantb.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      DOUBLE PRECISION FUNCTION <a name="DLANTB.1"></a><a href="dlantb.f.html#DLANTB.1">DLANTB</a>( NORM, UPLO, DIAG, N, K, AB,
+     $                 LDAB, WORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          DIAG, NORM, UPLO
+      INTEGER            K, LDAB, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   AB( LDAB, * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLANTB.19"></a><a href="dlantb.f.html#DLANTB.1">DLANTB</a>  returns the value of the one norm,  or the Frobenius norm, or
+</span><span class="comment">*</span><span class="comment">  the  infinity norm,  or the element of  largest absolute value  of an
+</span><span class="comment">*</span><span class="comment">  n by n triangular band matrix A,  with ( k + 1 ) diagonals.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Description
+</span><span class="comment">*</span><span class="comment">  ===========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLANTB.26"></a><a href="dlantb.f.html#DLANTB.1">DLANTB</a> returns the value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     <a name="DLANTB.28"></a><a href="dlantb.f.html#DLANTB.1">DLANTB</a> = ( max(abs(A(i,j))), NORM = 'M' or 'm'
+</span><span class="comment">*</span><span class="comment">              (
+</span><span class="comment">*</span><span class="comment">              ( norm1(A),         NORM = '1', 'O' or 'o'
+</span><span class="comment">*</span><span class="comment">              (
+</span><span class="comment">*</span><span class="comment">              ( normI(A),         NORM = 'I' or 'i'
+</span><span class="comment">*</span><span class="comment">              (
+</span><span class="comment">*</span><span class="comment">              ( normF(A),         NORM = 'F', 'f', 'E' or 'e'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where  norm1  denotes the  one norm of a matrix (maximum column sum),
+</span><span class="comment">*</span><span class="comment">  normI  denotes the  infinity norm  of a matrix  (maximum row sum) and
+</span><span class="comment">*</span><span class="comment">  normF  denotes the  Frobenius norm of a matrix (square root of sum of
+</span><span class="comment">*</span><span class="comment">  squares).  Note that  max(abs(A(i,j)))  is not a consistent matrix norm.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NORM    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies the value to be returned in <a name="DLANTB.45"></a><a href="dlantb.f.html#DLANTB.1">DLANTB</a> as described
+</span><span class="comment">*</span><span class="comment">          above.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether the matrix A is upper or lower triangular.
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangular
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangular
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIAG    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether or not the matrix A is unit triangular.
+</span><span class="comment">*</span><span class="comment">          = 'N':  Non-unit triangular
+</span><span class="comment">*</span><span class="comment">          = 'U':  Unit triangular
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.  When N = 0, <a name="DLANTB.59"></a><a href="dlantb.f.html#DLANTB.1">DLANTB</a> is
+</span><span class="comment">*</span><span class="comment">          set to zero.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  K       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of super-diagonals of the matrix A if UPLO = 'U',
+</span><span class="comment">*</span><span class="comment">          or the number of sub-diagonals of the matrix A if UPLO = 'L'.
+</span><span class="comment">*</span><span class="comment">          K &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AB      (input) DOUBLE PRECISION array, dimension (LDAB,N)
+</span><span class="comment">*</span><span class="comment">          The upper or lower triangular band matrix A, stored in the
+</span><span class="comment">*</span><span class="comment">          first k+1 rows of AB.  The j-th column of A is stored
+</span><span class="comment">*</span><span class="comment">          in the j-th column of the array AB as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', AB(k+1+i-j,j) = A(i,j) for max(1,j-k)&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', AB(1+i-j,j)   = A(i,j) for j&lt;=i&lt;=min(n,j+k).
+</span><span class="comment">*</span><span class="comment">          Note that when DIAG = 'U', the elements of the array AB
+</span><span class="comment">*</span><span class="comment">          corresponding to the diagonal elements of the matrix A are
+</span><span class="comment">*</span><span class="comment">          not referenced, but are assumed to be one.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDAB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array AB.  LDAB &gt;= K+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) DOUBLE PRECISION array, dimension (MAX(1,LWORK)),
+</span><span class="comment">*</span><span class="comment">          where LWORK &gt;= N when NORM = 'I'; otherwise, WORK is not
+</span><span class="comment">*</span><span class="comment">          referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment"> =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ONE, ZERO
+      PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            UDIAG
+      INTEGER            I, J, L
+      DOUBLE PRECISION   SCALE, SUM, VALUE
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DLASSQ.96"></a><a href="dlassq.f.html#DLASSQ.1">DLASSQ</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.99"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.100"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX, MIN, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 ) THEN
+         VALUE = ZERO
+      ELSE IF( <a name="LSAME.109"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'M'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find max(abs(A(i,j))).
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( <a name="LSAME.113"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIAG, <span class="string">'U'</span> ) ) THEN
+            VALUE = ONE
+            IF( <a name="LSAME.115"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) ) THEN
+               DO 20 J = 1, N
+                  DO 10 I = MAX( K+2-J, 1 ), K
+                     VALUE = MAX( VALUE, ABS( AB( I, J ) ) )
+   10             CONTINUE
+   20          CONTINUE
+            ELSE
+               DO 40 J = 1, N
+                  DO 30 I = 2, MIN( N+1-J, K+1 )
+                     VALUE = MAX( VALUE, ABS( AB( I, J ) ) )
+   30             CONTINUE
+   40          CONTINUE
+            END IF
+         ELSE
+            VALUE = ZERO
+            IF( <a name="LSAME.130"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) ) THEN
+               DO 60 J = 1, N
+                  DO 50 I = MAX( K+2-J, 1 ), K + 1
+                     VALUE = MAX( VALUE, ABS( AB( I, J ) ) )
+   50             CONTINUE
+   60          CONTINUE
+            ELSE
+               DO 80 J = 1, N
+                  DO 70 I = 1, MIN( N+1-J, K+1 )
+                     VALUE = MAX( VALUE, ABS( AB( I, J ) ) )
+   70             CONTINUE
+   80          CONTINUE
+            END IF
+         END IF
+      ELSE IF( ( <a name="LSAME.144"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'O'</span> ) ) .OR. ( NORM.EQ.<span class="string">'1'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find norm1(A).
+</span><span class="comment">*</span><span class="comment">
+</span>         VALUE = ZERO
+         UDIAG = <a name="LSAME.149"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIAG, <span class="string">'U'</span> )
+         IF( <a name="LSAME.150"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) ) THEN
+            DO 110 J = 1, N
+               IF( UDIAG ) THEN
+                  SUM = ONE
+                  DO 90 I = MAX( K+2-J, 1 ), K
+                     SUM = SUM + ABS( AB( I, J ) )
+   90             CONTINUE
+               ELSE
+                  SUM = ZERO
+                  DO 100 I = MAX( K+2-J, 1 ), K + 1
+                     SUM = SUM + ABS( AB( I, J ) )
+  100             CONTINUE
+               END IF
+               VALUE = MAX( VALUE, SUM )
+  110       CONTINUE
+         ELSE
+            DO 140 J = 1, N
+               IF( UDIAG ) THEN
+                  SUM = ONE
+                  DO 120 I = 2, MIN( N+1-J, K+1 )
+                     SUM = SUM + ABS( AB( I, J ) )
+  120             CONTINUE
+               ELSE
+                  SUM = ZERO
+                  DO 130 I = 1, MIN( N+1-J, K+1 )
+                     SUM = SUM + ABS( AB( I, J ) )
+  130             CONTINUE
+               END IF
+               VALUE = MAX( VALUE, SUM )
+  140       CONTINUE
+         END IF
+      ELSE IF( <a name="LSAME.181"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'I'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find normI(A).
+</span><span class="comment">*</span><span class="comment">
+</span>         VALUE = ZERO
+         IF( <a name="LSAME.186"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) ) THEN
+            IF( <a name="LSAME.187"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIAG, <span class="string">'U'</span> ) ) THEN
+               DO 150 I = 1, N
+                  WORK( I ) = ONE
+  150          CONTINUE
+               DO 170 J = 1, N
+                  L = K + 1 - J
+                  DO 160 I = MAX( 1, J-K ), J - 1
+                     WORK( I ) = WORK( I ) + ABS( AB( L+I, J ) )
+  160             CONTINUE
+  170          CONTINUE
+            ELSE
+               DO 180 I = 1, N
+                  WORK( I ) = ZERO
+  180          CONTINUE
+               DO 200 J = 1, N
+                  L = K + 1 - J
+                  DO 190 I = MAX( 1, J-K ), J
+                     WORK( I ) = WORK( I ) + ABS( AB( L+I, J ) )
+  190             CONTINUE
+  200          CONTINUE
+            END IF
+         ELSE
+            IF( <a name="LSAME.209"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIAG, <span class="string">'U'</span> ) ) THEN
+               DO 210 I = 1, N
+                  WORK( I ) = ONE
+  210          CONTINUE
+               DO 230 J = 1, N
+                  L = 1 - J
+                  DO 220 I = J + 1, MIN( N, J+K )
+                     WORK( I ) = WORK( I ) + ABS( AB( L+I, J ) )
+  220             CONTINUE
+  230          CONTINUE
+            ELSE
+               DO 240 I = 1, N
+                  WORK( I ) = ZERO
+  240          CONTINUE
+               DO 260 J = 1, N
+                  L = 1 - J
+                  DO 250 I = J, MIN( N, J+K )
+                     WORK( I ) = WORK( I ) + ABS( AB( L+I, J ) )
+  250             CONTINUE
+  260          CONTINUE
+            END IF
+         END IF
+         DO 270 I = 1, N
+            VALUE = MAX( VALUE, WORK( I ) )
+  270    CONTINUE
+      ELSE IF( ( <a name="LSAME.234"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'F'</span> ) ) .OR. ( <a name="LSAME.234"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'E'</span> ) ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find normF(A).
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( <a name="LSAME.238"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> ) ) THEN
+            IF( <a name="LSAME.239"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIAG, <span class="string">'U'</span> ) ) THEN
+               SCALE = ONE
+               SUM = N
+               IF( K.GT.0 ) THEN
+                  DO 280 J = 2, N
+                     CALL <a name="DLASSQ.244"></a><a href="dlassq.f.html#DLASSQ.1">DLASSQ</a>( MIN( J-1, K ),
+     $                            AB( MAX( K+2-J, 1 ), J ), 1, SCALE,
+     $                            SUM )
+  280             CONTINUE
+               END IF
+            ELSE
+               SCALE = ZERO
+               SUM = ONE
+               DO 290 J = 1, N
+                  CALL <a name="DLASSQ.253"></a><a href="dlassq.f.html#DLASSQ.1">DLASSQ</a>( MIN( J, K+1 ), AB( MAX( K+2-J, 1 ), J ),
+     $                         1, SCALE, SUM )
+  290          CONTINUE
+            END IF
+         ELSE
+            IF( <a name="LSAME.258"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIAG, <span class="string">'U'</span> ) ) THEN
+               SCALE = ONE
+               SUM = N
+               IF( K.GT.0 ) THEN
+                  DO 300 J = 1, N - 1
+                     CALL <a name="DLASSQ.263"></a><a href="dlassq.f.html#DLASSQ.1">DLASSQ</a>( MIN( N-J, K ), AB( 2, J ), 1, SCALE,
+     $                            SUM )
+  300             CONTINUE
+               END IF
+            ELSE
+               SCALE = ZERO
+               SUM = ONE
+               DO 310 J = 1, N
+                  CALL <a name="DLASSQ.271"></a><a href="dlassq.f.html#DLASSQ.1">DLASSQ</a>( MIN( N-J+1, K+1 ), AB( 1, J ), 1, SCALE,
+     $                         SUM )
+  310          CONTINUE
+            END IF
+         END IF
+         VALUE = SCALE*SQRT( SUM )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      <a name="DLANTB.279"></a><a href="dlantb.f.html#DLANTB.1">DLANTB</a> = VALUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLANTB.282"></a><a href="dlantb.f.html#DLANTB.1">DLANTB</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

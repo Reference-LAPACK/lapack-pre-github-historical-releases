@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>sptts2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SPTTS2.1"></a><a href="sptts2.f.html#SPTTS2.1">SPTTS2</a>( N, NRHS, D, E, B, LDB )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            LDB, N, NRHS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               B( LDB, * ), D( * ), E( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SPTTS2.17"></a><a href="sptts2.f.html#SPTTS2.1">SPTTS2</a> solves a tridiagonal system of the form
+</span><span class="comment">*</span><span class="comment">     A * X = B
+</span><span class="comment">*</span><span class="comment">  using the L*D*L' factorization of A computed by <a name="SPTTRF.19"></a><a href="spttrf.f.html#SPTTRF.1">SPTTRF</a>.  D is a
+</span><span class="comment">*</span><span class="comment">  diagonal matrix specified in the vector D, L is a unit bidiagonal
+</span><span class="comment">*</span><span class="comment">  matrix whose subdiagonal is specified in the vector E, and X and B
+</span><span class="comment">*</span><span class="comment">  are N by NRHS matrices.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the tridiagonal matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NRHS    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of right hand sides, i.e., the number of columns
+</span><span class="comment">*</span><span class="comment">          of the matrix B.  NRHS &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The n diagonal elements of the diagonal matrix D from the
+</span><span class="comment">*</span><span class="comment">          L*D*L' factorization of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E       (input) REAL array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          The (n-1) subdiagonal elements of the unit bidiagonal factor
+</span><span class="comment">*</span><span class="comment">          L from the L*D*L' factorization of A.  E can also be regarded
+</span><span class="comment">*</span><span class="comment">          as the superdiagonal of the unit bidiagonal factor U from the
+</span><span class="comment">*</span><span class="comment">          factorization A = U'*D*U.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input/output) REAL array, dimension (LDB,NRHS)
+</span><span class="comment">*</span><span class="comment">          On entry, the right hand side vectors B for the system of
+</span><span class="comment">*</span><span class="comment">          linear equations.
+</span><span class="comment">*</span><span class="comment">          On exit, the solution vectors, X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B.  LDB &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, J
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           SSCAL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.LE.1 ) THEN
+         IF( N.EQ.1 )
+     $      CALL SSCAL( NRHS, 1. / D( 1 ), B, LDB )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Solve A * X = B using the factorization A = L*D*L',
+</span><span class="comment">*</span><span class="comment">     overwriting each right hand side vector with its solution.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 30 J = 1, NRHS
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Solve L * x = b.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 10 I = 2, N
+            B( I, J ) = B( I, J ) - B( I-1, J )*E( I-1 )
+   10    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Solve D * L' * x = b.
+</span><span class="comment">*</span><span class="comment">
+</span>         B( N, J ) = B( N, J ) / D( N )
+         DO 20 I = N - 1, 1, -1
+            B( I, J ) = B( I, J ) / D( I ) - B( I+1, J )*E( I )
+   20    CONTINUE
+   30 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SPTTS2.91"></a><a href="sptts2.f.html#SPTTS2.1">SPTTS2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

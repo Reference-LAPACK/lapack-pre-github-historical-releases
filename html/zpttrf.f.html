@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zpttrf.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZPTTRF.1"></a><a href="zpttrf.f.html#ZPTTRF.1">ZPTTRF</a>( N, D, E, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   D( * )
+      COMPLEX*16         E( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZPTTRF.18"></a><a href="zpttrf.f.html#ZPTTRF.1">ZPTTRF</a> computes the L*D*L' factorization of a complex Hermitian
+</span><span class="comment">*</span><span class="comment">  positive definite tridiagonal matrix A.  The factorization may also
+</span><span class="comment">*</span><span class="comment">  be regarded as having the form A = U'*D*U.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input/output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On entry, the n diagonal elements of the tridiagonal matrix
+</span><span class="comment">*</span><span class="comment">          A.  On exit, the n diagonal elements of the diagonal matrix
+</span><span class="comment">*</span><span class="comment">          D from the L*D*L' factorization of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E       (input/output) COMPLEX*16 array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          On entry, the (n-1) subdiagonal elements of the tridiagonal
+</span><span class="comment">*</span><span class="comment">          matrix A.  On exit, the (n-1) subdiagonal elements of the
+</span><span class="comment">*</span><span class="comment">          unit bidiagonal factor L from the L*D*L' factorization of A.
+</span><span class="comment">*</span><span class="comment">          E can also be regarded as the superdiagonal of the unit
+</span><span class="comment">*</span><span class="comment">          bidiagonal factor U from the U'*D*U factorization of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0: successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0: if INFO = -k, the k-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0: if INFO = k, the leading minor of order k is not
+</span><span class="comment">*</span><span class="comment">               positive definite; if k &lt; N, the factorization could not
+</span><span class="comment">*</span><span class="comment">               be completed, while if k = N, the factorization was
+</span><span class="comment">*</span><span class="comment">               completed, but D(N) &lt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO
+      PARAMETER          ( ZERO = 0.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, I4
+      DOUBLE PRECISION   EII, EIR, F, G
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.59"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          DBLE, DCMPLX, DIMAG, MOD
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( N.LT.0 ) THEN
+         INFO = -1
+         CALL <a name="XERBLA.71"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZPTTRF.71"></a><a href="zpttrf.f.html#ZPTTRF.1">ZPTTRF</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the L*D*L' (or U'*D*U) factorization of A.
+</span><span class="comment">*</span><span class="comment">
+</span>      I4 = MOD( N-1, 4 )
+      DO 10 I = 1, I4
+         IF( D( I ).LE.ZERO ) THEN
+            INFO = I
+            GO TO 30
+         END IF
+         EIR = DBLE( E( I ) )
+         EII = DIMAG( E( I ) )
+         F = EIR / D( I )
+         G = EII / D( I )
+         E( I ) = DCMPLX( F, G )
+         D( I+1 ) = D( I+1 ) - F*EIR - G*EII
+   10 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      DO 20 I = I4 + 1, N - 4, 4
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Drop out of the loop if d(i) &lt;= 0: the matrix is not positive
+</span><span class="comment">*</span><span class="comment">        definite.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( D( I ).LE.ZERO ) THEN
+            INFO = I
+            GO TO 30
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve for e(i) and d(i+1).
+</span><span class="comment">*</span><span class="comment">
+</span>         EIR = DBLE( E( I ) )
+         EII = DIMAG( E( I ) )
+         F = EIR / D( I )
+         G = EII / D( I )
+         E( I ) = DCMPLX( F, G )
+         D( I+1 ) = D( I+1 ) - F*EIR - G*EII
+<span class="comment">*</span><span class="comment">
+</span>         IF( D( I+1 ).LE.ZERO ) THEN
+            INFO = I + 1
+            GO TO 30
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve for e(i+1) and d(i+2).
+</span><span class="comment">*</span><span class="comment">
+</span>         EIR = DBLE( E( I+1 ) )
+         EII = DIMAG( E( I+1 ) )
+         F = EIR / D( I+1 )
+         G = EII / D( I+1 )
+         E( I+1 ) = DCMPLX( F, G )
+         D( I+2 ) = D( I+2 ) - F*EIR - G*EII
+<span class="comment">*</span><span class="comment">
+</span>         IF( D( I+2 ).LE.ZERO ) THEN
+            INFO = I + 2
+            GO TO 30
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve for e(i+2) and d(i+3).
+</span><span class="comment">*</span><span class="comment">
+</span>         EIR = DBLE( E( I+2 ) )
+         EII = DIMAG( E( I+2 ) )
+         F = EIR / D( I+2 )
+         G = EII / D( I+2 )
+         E( I+2 ) = DCMPLX( F, G )
+         D( I+3 ) = D( I+3 ) - F*EIR - G*EII
+<span class="comment">*</span><span class="comment">
+</span>         IF( D( I+3 ).LE.ZERO ) THEN
+            INFO = I + 3
+            GO TO 30
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve for e(i+3) and d(i+4).
+</span><span class="comment">*</span><span class="comment">
+</span>         EIR = DBLE( E( I+3 ) )
+         EII = DIMAG( E( I+3 ) )
+         F = EIR / D( I+3 )
+         G = EII / D( I+3 )
+         E( I+3 ) = DCMPLX( F, G )
+         D( I+4 ) = D( I+4 ) - F*EIR - G*EII
+   20 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Check d(n) for positive definiteness.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( D( N ).LE.ZERO )
+     $   INFO = N
+<span class="comment">*</span><span class="comment">
+</span>   30 CONTINUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZPTTRF.166"></a><a href="zpttrf.f.html#ZPTTRF.1">ZPTTRF</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

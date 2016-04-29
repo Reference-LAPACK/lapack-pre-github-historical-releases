@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dgebak.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DGEBAK.1"></a><a href="dgebak.f.html#DGEBAK.1">DGEBAK</a>( JOB, SIDE, N, ILO, IHI, SCALE, M, V, LDV,
+     $                   INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          JOB, SIDE
+      INTEGER            IHI, ILO, INFO, LDV, M, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   SCALE( * ), V( LDV, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DGEBAK.19"></a><a href="dgebak.f.html#DGEBAK.1">DGEBAK</a> forms the right or left eigenvectors of a real general matrix
+</span><span class="comment">*</span><span class="comment">  by backward transformation on the computed eigenvectors of the
+</span><span class="comment">*</span><span class="comment">  balanced matrix output by <a name="DGEBAL.21"></a><a href="dgebal.f.html#DGEBAL.1">DGEBAL</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOB     (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies the type of backward transformation required:
+</span><span class="comment">*</span><span class="comment">          = 'N', do nothing, return immediately;
+</span><span class="comment">*</span><span class="comment">          = 'P', do backward transformation for permutation only;
+</span><span class="comment">*</span><span class="comment">          = 'S', do backward transformation for scaling only;
+</span><span class="comment">*</span><span class="comment">          = 'B', do backward transformations for both permutation and
+</span><span class="comment">*</span><span class="comment">                 scaling.
+</span><span class="comment">*</span><span class="comment">          JOB must be the same as the argument JOB supplied to <a name="DGEBAL.33"></a><a href="dgebal.f.html#DGEBAL.1">DGEBAL</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SIDE    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'R':  V contains right eigenvectors;
+</span><span class="comment">*</span><span class="comment">          = 'L':  V contains left eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix V.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ILO     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">  IHI     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The integers ILO and IHI determined by <a name="DGEBAL.44"></a><a href="dgebal.f.html#DGEBAL.1">DGEBAL</a>.
+</span><span class="comment">*</span><span class="comment">          1 &lt;= ILO &lt;= IHI &lt;= N, if N &gt; 0; ILO=1 and IHI=0, if N=0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SCALE   (input) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          Details of the permutation and scaling factors, as returned
+</span><span class="comment">*</span><span class="comment">          by <a name="DGEBAL.49"></a><a href="dgebal.f.html#DGEBAL.1">DGEBAL</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix V.  M &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  V       (input/output) DOUBLE PRECISION array, dimension (LDV,M)
+</span><span class="comment">*</span><span class="comment">          On entry, the matrix of right or left eigenvectors to be
+</span><span class="comment">*</span><span class="comment">          transformed, as returned by <a name="DHSEIN.56"></a><a href="dhsein.f.html#DHSEIN.1">DHSEIN</a> or <a name="DTREVC.56"></a><a href="dtrevc.f.html#DTREVC.1">DTREVC</a>.
+</span><span class="comment">*</span><span class="comment">          On exit, V is overwritten by the transformed eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDV     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array V. LDV &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ONE
+      PARAMETER          ( ONE = 1.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            LEFTV, RIGHTV
+      INTEGER            I, II, K
+      DOUBLE PRECISION   S
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.78"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.79"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DSCAL, DSWAP, <a name="XERBLA.82"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Decode and Test the input parameters
+</span><span class="comment">*</span><span class="comment">
+</span>      RIGHTV = <a name="LSAME.91"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'R'</span> )
+      LEFTV = <a name="LSAME.92"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'L'</span> )
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( .NOT.<a name="LSAME.95"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'N'</span> ) .AND. .NOT.<a name="LSAME.95"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'P'</span> ) .AND.
+     $    .NOT.<a name="LSAME.96"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'S'</span> ) .AND. .NOT.<a name="LSAME.96"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'B'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.RIGHTV .AND. .NOT.LEFTV ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( ILO.LT.1 .OR. ILO.GT.MAX( 1, N ) ) THEN
+         INFO = -4
+      ELSE IF( IHI.LT.MIN( ILO, N ) .OR. IHI.GT.N ) THEN
+         INFO = -5
+      ELSE IF( M.LT.0 ) THEN
+         INFO = -7
+      ELSE IF( LDV.LT.MAX( 1, N ) ) THEN
+         INFO = -9
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.112"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DGEBAK.112"></a><a href="dgebak.f.html#DGEBAK.1">DGEBAK</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+      IF( M.EQ.0 )
+     $   RETURN
+      IF( <a name="LSAME.122"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'N'</span> ) )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      IF( ILO.EQ.IHI )
+     $   GO TO 30
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Backward balance
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( <a name="LSAME.130"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'S'</span> ) .OR. <a name="LSAME.130"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'B'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span>         IF( RIGHTV ) THEN
+            DO 10 I = ILO, IHI
+               S = SCALE( I )
+               CALL DSCAL( M, S, V( I, 1 ), LDV )
+   10       CONTINUE
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( LEFTV ) THEN
+            DO 20 I = ILO, IHI
+               S = ONE / SCALE( I )
+               CALL DSCAL( M, S, V( I, 1 ), LDV )
+   20       CONTINUE
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Backward permutation
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     For  I = ILO-1 step -1 until 1,
+</span><span class="comment">*</span><span class="comment">              IHI+1 step 1 until N do --
+</span><span class="comment">*</span><span class="comment">
+</span>   30 CONTINUE
+      IF( <a name="LSAME.154"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'P'</span> ) .OR. <a name="LSAME.154"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'B'</span> ) ) THEN
+         IF( RIGHTV ) THEN
+            DO 40 II = 1, N
+               I = II
+               IF( I.GE.ILO .AND. I.LE.IHI )
+     $            GO TO 40
+               IF( I.LT.ILO )
+     $            I = ILO - II
+               K = SCALE( I )
+               IF( K.EQ.I )
+     $            GO TO 40
+               CALL DSWAP( M, V( I, 1 ), LDV, V( K, 1 ), LDV )
+   40       CONTINUE
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( LEFTV ) THEN
+            DO 50 II = 1, N
+               I = II
+               IF( I.GE.ILO .AND. I.LE.IHI )
+     $            GO TO 50
+               IF( I.LT.ILO )
+     $            I = ILO - II
+               K = SCALE( I )
+               IF( K.EQ.I )
+     $            GO TO 50
+               CALL DSWAP( M, V( I, 1 ), LDV, V( K, 1 ), LDV )
+   50       CONTINUE
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DGEBAK.186"></a><a href="dgebak.f.html#DGEBAK.1">DGEBAK</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

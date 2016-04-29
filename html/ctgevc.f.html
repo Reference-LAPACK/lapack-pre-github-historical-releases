@@ -1,0 +1,657 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>ctgevc.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CTGEVC.1"></a><a href="ctgevc.f.html#CTGEVC.1">CTGEVC</a>( SIDE, HOWMNY, SELECT, N, S, LDS, P, LDP, VL,
+     $                   LDVL, VR, LDVR, MM, M, WORK, RWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          HOWMNY, SIDE
+      INTEGER            INFO, LDP, LDS, LDVL, LDVR, M, MM, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      LOGICAL            SELECT( * )
+      REAL               RWORK( * )
+      COMPLEX            P( LDP, * ), S( LDS, * ), VL( LDVL, * ),
+     $                   VR( LDVR, * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CTGEVC.23"></a><a href="ctgevc.f.html#CTGEVC.1">CTGEVC</a> computes some or all of the right and/or left eigenvectors of
+</span><span class="comment">*</span><span class="comment">  a pair of complex matrices (S,P), where S and P are upper triangular.
+</span><span class="comment">*</span><span class="comment">  Matrix pairs of this type are produced by the generalized Schur
+</span><span class="comment">*</span><span class="comment">  factorization of a complex matrix pair (A,B):
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">     A = Q*S*Z**H,  B = Q*P*Z**H
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  as computed by <a name="CGGHRD.30"></a><a href="cgghrd.f.html#CGGHRD.1">CGGHRD</a> + <a name="CHGEQZ.30"></a><a href="chgeqz.f.html#CHGEQZ.1">CHGEQZ</a>.
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  The right eigenvector x and the left eigenvector y of (S,P)
+</span><span class="comment">*</span><span class="comment">  corresponding to an eigenvalue w are defined by:
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">     S*x = w*P*x,  (y**H)*S = w*(y**H)*P,
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  where y**H denotes the conjugate tranpose of y.
+</span><span class="comment">*</span><span class="comment">  The eigenvalues are not input to this routine, but are computed
+</span><span class="comment">*</span><span class="comment">  directly from the diagonal elements of S and P.
+</span><span class="comment">*</span><span class="comment">  
+</span><span class="comment">*</span><span class="comment">  This routine returns the matrices X and/or Y of right and left
+</span><span class="comment">*</span><span class="comment">  eigenvectors of (S,P), or the products Z*X and/or Q*Y,
+</span><span class="comment">*</span><span class="comment">  where Z and Q are input matrices.
+</span><span class="comment">*</span><span class="comment">  If Q and Z are the unitary factors from the generalized Schur
+</span><span class="comment">*</span><span class="comment">  factorization of a matrix pair (A,B), then Z*X and Q*Y
+</span><span class="comment">*</span><span class="comment">  are the matrices of right and left eigenvectors of (A,B).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SIDE    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'R': compute right eigenvectors only;
+</span><span class="comment">*</span><span class="comment">          = 'L': compute left eigenvectors only;
+</span><span class="comment">*</span><span class="comment">          = 'B': compute both right and left eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  HOWMNY  (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'A': compute all right and/or left eigenvectors;
+</span><span class="comment">*</span><span class="comment">          = 'B': compute all right and/or left eigenvectors,
+</span><span class="comment">*</span><span class="comment">                 backtransformed by the matrices in VR and/or VL;
+</span><span class="comment">*</span><span class="comment">          = 'S': compute selected right and/or left eigenvectors,
+</span><span class="comment">*</span><span class="comment">                 specified by the logical array SELECT.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SELECT  (input) LOGICAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          If HOWMNY='S', SELECT specifies the eigenvectors to be
+</span><span class="comment">*</span><span class="comment">          computed.  The eigenvector corresponding to the j-th
+</span><span class="comment">*</span><span class="comment">          eigenvalue is computed if SELECT(j) = .TRUE..
+</span><span class="comment">*</span><span class="comment">          Not referenced if HOWMNY = 'A' or 'B'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrices S and P.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  S       (input) COMPLEX array, dimension (LDS,N)
+</span><span class="comment">*</span><span class="comment">          The upper triangular matrix S from a generalized Schur
+</span><span class="comment">*</span><span class="comment">          factorization, as computed by <a name="CHGEQZ.74"></a><a href="chgeqz.f.html#CHGEQZ.1">CHGEQZ</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDS     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of array S.  LDS &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  P       (input) COMPLEX array, dimension (LDP,N)
+</span><span class="comment">*</span><span class="comment">          The upper triangular matrix P from a generalized Schur
+</span><span class="comment">*</span><span class="comment">          factorization, as computed by <a name="CHGEQZ.81"></a><a href="chgeqz.f.html#CHGEQZ.1">CHGEQZ</a>.  P must have real
+</span><span class="comment">*</span><span class="comment">          diagonal elements.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDP     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of array P.  LDP &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VL      (input/output) COMPLEX array, dimension (LDVL,MM)
+</span><span class="comment">*</span><span class="comment">          On entry, if SIDE = 'L' or 'B' and HOWMNY = 'B', VL must
+</span><span class="comment">*</span><span class="comment">          contain an N-by-N matrix Q (usually the unitary matrix Q
+</span><span class="comment">*</span><span class="comment">          of left Schur vectors returned by <a name="CHGEQZ.90"></a><a href="chgeqz.f.html#CHGEQZ.1">CHGEQZ</a>).
+</span><span class="comment">*</span><span class="comment">          On exit, if SIDE = 'L' or 'B', VL contains:
+</span><span class="comment">*</span><span class="comment">          if HOWMNY = 'A', the matrix Y of left eigenvectors of (S,P);
+</span><span class="comment">*</span><span class="comment">          if HOWMNY = 'B', the matrix Q*Y;
+</span><span class="comment">*</span><span class="comment">          if HOWMNY = 'S', the left eigenvectors of (S,P) specified by
+</span><span class="comment">*</span><span class="comment">                      SELECT, stored consecutively in the columns of
+</span><span class="comment">*</span><span class="comment">                      VL, in the same order as their eigenvalues.
+</span><span class="comment">*</span><span class="comment">          Not referenced if SIDE = 'R'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDVL    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of array VL.  LDVL &gt;= 1, and if
+</span><span class="comment">*</span><span class="comment">          SIDE = 'L' or 'l' or 'B' or 'b', LDVL &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VR      (input/output) COMPLEX array, dimension (LDVR,MM)
+</span><span class="comment">*</span><span class="comment">          On entry, if SIDE = 'R' or 'B' and HOWMNY = 'B', VR must
+</span><span class="comment">*</span><span class="comment">          contain an N-by-N matrix Q (usually the unitary matrix Z
+</span><span class="comment">*</span><span class="comment">          of right Schur vectors returned by <a name="CHGEQZ.106"></a><a href="chgeqz.f.html#CHGEQZ.1">CHGEQZ</a>).
+</span><span class="comment">*</span><span class="comment">          On exit, if SIDE = 'R' or 'B', VR contains:
+</span><span class="comment">*</span><span class="comment">          if HOWMNY = 'A', the matrix X of right eigenvectors of (S,P);
+</span><span class="comment">*</span><span class="comment">          if HOWMNY = 'B', the matrix Z*X;
+</span><span class="comment">*</span><span class="comment">          if HOWMNY = 'S', the right eigenvectors of (S,P) specified by
+</span><span class="comment">*</span><span class="comment">                      SELECT, stored consecutively in the columns of
+</span><span class="comment">*</span><span class="comment">                      VR, in the same order as their eigenvalues.
+</span><span class="comment">*</span><span class="comment">          Not referenced if SIDE = 'L'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDVR    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array VR.  LDVR &gt;= 1, and if
+</span><span class="comment">*</span><span class="comment">          SIDE = 'R' or 'B', LDVR &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  MM      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns in the arrays VL and/or VR. MM &gt;= M.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns in the arrays VL and/or VR actually
+</span><span class="comment">*</span><span class="comment">          used to store the eigenvectors.  If HOWMNY = 'A' or 'B', M
+</span><span class="comment">*</span><span class="comment">          is set to N.  Each selected eigenvector occupies one column.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) COMPLEX array, dimension (2*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RWORK   (workspace) REAL array, dimension (2*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit.
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, ONE
+      PARAMETER          ( ZERO = 0.0E+0, ONE = 1.0E+0 )
+      COMPLEX            CZERO, CONE
+      PARAMETER          ( CZERO = ( 0.0E+0, 0.0E+0 ),
+     $                   CONE = ( 1.0E+0, 0.0E+0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            COMPL, COMPR, ILALL, ILBACK, ILBBAD, ILCOMP,
+     $                   LSA, LSB
+      INTEGER            I, IBEG, IEIG, IEND, IHWMNY, IM, ISIDE, ISRC,
+     $                   J, JE, JR
+      REAL               ACOEFA, ACOEFF, ANORM, ASCALE, BCOEFA, BIG,
+     $                   BIGNUM, BNORM, BSCALE, DMIN, SAFMIN, SBETA,
+     $                   SCALE, SMALL, TEMP, ULP, XMAX
+      COMPLEX            BCOEFF, CA, CB, D, SALPHA, SUM, SUMA, SUMB, X
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.155"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      REAL               <a name="SLAMCH.156"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      COMPLEX            <a name="CLADIV.157"></a><a href="cladiv.f.html#CLADIV.1">CLADIV</a>
+      EXTERNAL           <a name="LSAME.158"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="SLAMCH.158"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="CLADIV.158"></a><a href="cladiv.f.html#CLADIV.1">CLADIV</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           CGEMV, <a name="SLABAD.161"></a><a href="slabad.f.html#SLABAD.1">SLABAD</a>, <a name="XERBLA.161"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, AIMAG, CMPLX, CONJG, MAX, MIN, REAL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Functions ..
+</span>      REAL               ABS1
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Function definitions ..
+</span>      ABS1( X ) = ABS( REAL( X ) ) + ABS( AIMAG( X ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Decode and Test the input parameters
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( <a name="LSAME.176"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( HOWMNY, <span class="string">'A'</span> ) ) THEN
+         IHWMNY = 1
+         ILALL = .TRUE.
+         ILBACK = .FALSE.
+      ELSE IF( <a name="LSAME.180"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( HOWMNY, <span class="string">'S'</span> ) ) THEN
+         IHWMNY = 2
+         ILALL = .FALSE.
+         ILBACK = .FALSE.
+      ELSE IF( <a name="LSAME.184"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( HOWMNY, <span class="string">'B'</span> ) ) THEN
+         IHWMNY = 3
+         ILALL = .TRUE.
+         ILBACK = .TRUE.
+      ELSE
+         IHWMNY = -1
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( <a name="LSAME.192"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'R'</span> ) ) THEN
+         ISIDE = 1
+         COMPL = .FALSE.
+         COMPR = .TRUE.
+      ELSE IF( <a name="LSAME.196"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'L'</span> ) ) THEN
+         ISIDE = 2
+         COMPL = .TRUE.
+         COMPR = .FALSE.
+      ELSE IF( <a name="LSAME.200"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'B'</span> ) ) THEN
+         ISIDE = 3
+         COMPL = .TRUE.
+         COMPR = .TRUE.
+      ELSE
+         ISIDE = -1
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( ISIDE.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( IHWMNY.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( LDS.LT.MAX( 1, N ) ) THEN
+         INFO = -6
+      ELSE IF( LDP.LT.MAX( 1, N ) ) THEN
+         INFO = -8
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.221"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CTGEVC.221"></a><a href="ctgevc.f.html#CTGEVC.1">CTGEVC</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Count the number of eigenvectors
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( .NOT.ILALL ) THEN
+         IM = 0
+         DO 10 J = 1, N
+            IF( SELECT( J ) )
+     $         IM = IM + 1
+   10    CONTINUE
+      ELSE
+         IM = N
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Check diagonal of B
+</span><span class="comment">*</span><span class="comment">
+</span>      ILBBAD = .FALSE.
+      DO 20 J = 1, N
+         IF( AIMAG( P( J, J ) ).NE.ZERO )
+     $      ILBBAD = .TRUE.
+   20 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      IF( ILBBAD ) THEN
+         INFO = -7
+      ELSE IF( COMPL .AND. LDVL.LT.N .OR. LDVL.LT.1 ) THEN
+         INFO = -10
+      ELSE IF( COMPR .AND. LDVR.LT.N .OR. LDVR.LT.1 ) THEN
+         INFO = -12
+      ELSE IF( MM.LT.IM ) THEN
+         INFO = -13
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.255"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CTGEVC.255"></a><a href="ctgevc.f.html#CTGEVC.1">CTGEVC</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      M = IM
+      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Machine Constants
+</span><span class="comment">*</span><span class="comment">
+</span>      SAFMIN = <a name="SLAMCH.267"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Safe minimum'</span> )
+      BIG = ONE / SAFMIN
+      CALL <a name="SLABAD.269"></a><a href="slabad.f.html#SLABAD.1">SLABAD</a>( SAFMIN, BIG )
+      ULP = <a name="SLAMCH.270"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Epsilon'</span> )*<a name="SLAMCH.270"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Base'</span> )
+      SMALL = SAFMIN*N / ULP
+      BIG = ONE / SMALL
+      BIGNUM = ONE / ( SAFMIN*N )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the 1-norm of each column of the strictly upper triangular
+</span><span class="comment">*</span><span class="comment">     part of A and B to check for possible overflow in the triangular
+</span><span class="comment">*</span><span class="comment">     solver.
+</span><span class="comment">*</span><span class="comment">
+</span>      ANORM = ABS1( S( 1, 1 ) )
+      BNORM = ABS1( P( 1, 1 ) )
+      RWORK( 1 ) = ZERO
+      RWORK( N+1 ) = ZERO
+      DO 40 J = 2, N
+         RWORK( J ) = ZERO
+         RWORK( N+J ) = ZERO
+         DO 30 I = 1, J - 1
+            RWORK( J ) = RWORK( J ) + ABS1( S( I, J ) )
+            RWORK( N+J ) = RWORK( N+J ) + ABS1( P( I, J ) )
+   30    CONTINUE
+         ANORM = MAX( ANORM, RWORK( J )+ABS1( S( J, J ) ) )
+         BNORM = MAX( BNORM, RWORK( N+J )+ABS1( P( J, J ) ) )
+   40 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      ASCALE = ONE / MAX( ANORM, SAFMIN )
+      BSCALE = ONE / MAX( BNORM, SAFMIN )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Left eigenvectors
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( COMPL ) THEN
+         IEIG = 0
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Main loop over eigenvalues
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 140 JE = 1, N
+            IF( ILALL ) THEN
+               ILCOMP = .TRUE.
+            ELSE
+               ILCOMP = SELECT( JE )
+            END IF
+            IF( ILCOMP ) THEN
+               IEIG = IEIG + 1
+<span class="comment">*</span><span class="comment">
+</span>               IF( ABS1( S( JE, JE ) ).LE.SAFMIN .AND.
+     $             ABS( REAL( P( JE, JE ) ) ).LE.SAFMIN ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 Singular matrix pencil -- return unit eigenvector
+</span><span class="comment">*</span><span class="comment">
+</span>                  DO 50 JR = 1, N
+                     VL( JR, IEIG ) = CZERO
+   50             CONTINUE
+                  VL( IEIG, IEIG ) = CONE
+                  GO TO 140
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Non-singular eigenvalue:
+</span><span class="comment">*</span><span class="comment">              Compute coefficients  a  and  b  in
+</span><span class="comment">*</span><span class="comment">                   H
+</span><span class="comment">*</span><span class="comment">                 y  ( a A - b B ) = 0
+</span><span class="comment">*</span><span class="comment">
+</span>               TEMP = ONE / MAX( ABS1( S( JE, JE ) )*ASCALE,
+     $                ABS( REAL( P( JE, JE ) ) )*BSCALE, SAFMIN )
+               SALPHA = ( TEMP*S( JE, JE ) )*ASCALE
+               SBETA = ( TEMP*REAL( P( JE, JE ) ) )*BSCALE
+               ACOEFF = SBETA*ASCALE
+               BCOEFF = SALPHA*BSCALE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Scale to avoid underflow
+</span><span class="comment">*</span><span class="comment">
+</span>               LSA = ABS( SBETA ).GE.SAFMIN .AND. ABS( ACOEFF ).LT.SMALL
+               LSB = ABS1( SALPHA ).GE.SAFMIN .AND. ABS1( BCOEFF ).LT.
+     $               SMALL
+<span class="comment">*</span><span class="comment">
+</span>               SCALE = ONE
+               IF( LSA )
+     $            SCALE = ( SMALL / ABS( SBETA ) )*MIN( ANORM, BIG )
+               IF( LSB )
+     $            SCALE = MAX( SCALE, ( SMALL / ABS1( SALPHA ) )*
+     $                    MIN( BNORM, BIG ) )
+               IF( LSA .OR. LSB ) THEN
+                  SCALE = MIN( SCALE, ONE /
+     $                    ( SAFMIN*MAX( ONE, ABS( ACOEFF ),
+     $                    ABS1( BCOEFF ) ) ) )
+                  IF( LSA ) THEN
+                     ACOEFF = ASCALE*( SCALE*SBETA )
+                  ELSE
+                     ACOEFF = SCALE*ACOEFF
+                  END IF
+                  IF( LSB ) THEN
+                     BCOEFF = BSCALE*( SCALE*SALPHA )
+                  ELSE
+                     BCOEFF = SCALE*BCOEFF
+                  END IF
+               END IF
+<span class="comment">*</span><span class="comment">
+</span>               ACOEFA = ABS( ACOEFF )
+               BCOEFA = ABS1( BCOEFF )
+               XMAX = ONE
+               DO 60 JR = 1, N
+                  WORK( JR ) = CZERO
+   60          CONTINUE
+               WORK( JE ) = CONE
+               DMIN = MAX( ULP*ACOEFA*ANORM, ULP*BCOEFA*BNORM, SAFMIN )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                                              H
+</span><span class="comment">*</span><span class="comment">              Triangular solve of  (a A - b B)  y = 0
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                                      H
+</span><span class="comment">*</span><span class="comment">              (rowwise in  (a A - b B) , or columnwise in a A - b B)
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 100 J = JE + 1, N
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 Compute
+</span><span class="comment">*</span><span class="comment">                       j-1
+</span><span class="comment">*</span><span class="comment">                 SUM = sum  conjg( a*S(k,j) - b*P(k,j) )*x(k)
+</span><span class="comment">*</span><span class="comment">                       k=je
+</span><span class="comment">*</span><span class="comment">                 (Scale if necessary)
+</span><span class="comment">*</span><span class="comment">
+</span>                  TEMP = ONE / XMAX
+                  IF( ACOEFA*RWORK( J )+BCOEFA*RWORK( N+J ).GT.BIGNUM*
+     $                TEMP ) THEN
+                     DO 70 JR = JE, J - 1
+                        WORK( JR ) = TEMP*WORK( JR )
+   70                CONTINUE
+                     XMAX = ONE
+                  END IF
+                  SUMA = CZERO
+                  SUMB = CZERO
+<span class="comment">*</span><span class="comment">
+</span>                  DO 80 JR = JE, J - 1
+                     SUMA = SUMA + CONJG( S( JR, J ) )*WORK( JR )
+                     SUMB = SUMB + CONJG( P( JR, J ) )*WORK( JR )
+   80             CONTINUE
+                  SUM = ACOEFF*SUMA - CONJG( BCOEFF )*SUMB
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 Form x(j) = - SUM / conjg( a*S(j,j) - b*P(j,j) )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 with scaling and perturbation of the denominator
+</span><span class="comment">*</span><span class="comment">
+</span>                  D = CONJG( ACOEFF*S( J, J )-BCOEFF*P( J, J ) )
+                  IF( ABS1( D ).LE.DMIN )
+     $               D = CMPLX( DMIN )
+<span class="comment">*</span><span class="comment">
+</span>                  IF( ABS1( D ).LT.ONE ) THEN
+                     IF( ABS1( SUM ).GE.BIGNUM*ABS1( D ) ) THEN
+                        TEMP = ONE / ABS1( SUM )
+                        DO 90 JR = JE, J - 1
+                           WORK( JR ) = TEMP*WORK( JR )
+   90                   CONTINUE
+                        XMAX = TEMP*XMAX
+                        SUM = TEMP*SUM
+                     END IF
+                  END IF
+                  WORK( J ) = <a name="CLADIV.423"></a><a href="cladiv.f.html#CLADIV.1">CLADIV</a>( -SUM, D )
+                  XMAX = MAX( XMAX, ABS1( WORK( J ) ) )
+  100          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Back transform eigenvector if HOWMNY='B'.
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( ILBACK ) THEN
+                  CALL CGEMV( <span class="string">'N'</span>, N, N+1-JE, CONE, VL( 1, JE ), LDVL,
+     $                        WORK( JE ), 1, CZERO, WORK( N+1 ), 1 )
+                  ISRC = 2
+                  IBEG = 1
+               ELSE
+                  ISRC = 1
+                  IBEG = JE
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Copy and scale eigenvector into column of VL
+</span><span class="comment">*</span><span class="comment">
+</span>               XMAX = ZERO
+               DO 110 JR = IBEG, N
+                  XMAX = MAX( XMAX, ABS1( WORK( ( ISRC-1 )*N+JR ) ) )
+  110          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>               IF( XMAX.GT.SAFMIN ) THEN
+                  TEMP = ONE / XMAX
+                  DO 120 JR = IBEG, N
+                     VL( JR, IEIG ) = TEMP*WORK( ( ISRC-1 )*N+JR )
+  120             CONTINUE
+               ELSE
+                  IBEG = N + 1
+               END IF
+<span class="comment">*</span><span class="comment">
+</span>               DO 130 JR = 1, IBEG - 1
+                  VL( JR, IEIG ) = CZERO
+  130          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            END IF
+  140    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Right eigenvectors
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( COMPR ) THEN
+         IEIG = IM + 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Main loop over eigenvalues
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 250 JE = N, 1, -1
+            IF( ILALL ) THEN
+               ILCOMP = .TRUE.
+            ELSE
+               ILCOMP = SELECT( JE )
+            END IF
+            IF( ILCOMP ) THEN
+               IEIG = IEIG - 1
+<span class="comment">*</span><span class="comment">
+</span>               IF( ABS1( S( JE, JE ) ).LE.SAFMIN .AND.
+     $             ABS( REAL( P( JE, JE ) ) ).LE.SAFMIN ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 Singular matrix pencil -- return unit eigenvector
+</span><span class="comment">*</span><span class="comment">
+</span>                  DO 150 JR = 1, N
+                     VR( JR, IEIG ) = CZERO
+  150             CONTINUE
+                  VR( IEIG, IEIG ) = CONE
+                  GO TO 250
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Non-singular eigenvalue:
+</span><span class="comment">*</span><span class="comment">              Compute coefficients  a  and  b  in
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              ( a A - b B ) x  = 0
+</span><span class="comment">*</span><span class="comment">
+</span>               TEMP = ONE / MAX( ABS1( S( JE, JE ) )*ASCALE,
+     $                ABS( REAL( P( JE, JE ) ) )*BSCALE, SAFMIN )
+               SALPHA = ( TEMP*S( JE, JE ) )*ASCALE
+               SBETA = ( TEMP*REAL( P( JE, JE ) ) )*BSCALE
+               ACOEFF = SBETA*ASCALE
+               BCOEFF = SALPHA*BSCALE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Scale to avoid underflow
+</span><span class="comment">*</span><span class="comment">
+</span>               LSA = ABS( SBETA ).GE.SAFMIN .AND. ABS( ACOEFF ).LT.SMALL
+               LSB = ABS1( SALPHA ).GE.SAFMIN .AND. ABS1( BCOEFF ).LT.
+     $               SMALL
+<span class="comment">*</span><span class="comment">
+</span>               SCALE = ONE
+               IF( LSA )
+     $            SCALE = ( SMALL / ABS( SBETA ) )*MIN( ANORM, BIG )
+               IF( LSB )
+     $            SCALE = MAX( SCALE, ( SMALL / ABS1( SALPHA ) )*
+     $                    MIN( BNORM, BIG ) )
+               IF( LSA .OR. LSB ) THEN
+                  SCALE = MIN( SCALE, ONE /
+     $                    ( SAFMIN*MAX( ONE, ABS( ACOEFF ),
+     $                    ABS1( BCOEFF ) ) ) )
+                  IF( LSA ) THEN
+                     ACOEFF = ASCALE*( SCALE*SBETA )
+                  ELSE
+                     ACOEFF = SCALE*ACOEFF
+                  END IF
+                  IF( LSB ) THEN
+                     BCOEFF = BSCALE*( SCALE*SALPHA )
+                  ELSE
+                     BCOEFF = SCALE*BCOEFF
+                  END IF
+               END IF
+<span class="comment">*</span><span class="comment">
+</span>               ACOEFA = ABS( ACOEFF )
+               BCOEFA = ABS1( BCOEFF )
+               XMAX = ONE
+               DO 160 JR = 1, N
+                  WORK( JR ) = CZERO
+  160          CONTINUE
+               WORK( JE ) = CONE
+               DMIN = MAX( ULP*ACOEFA*ANORM, ULP*BCOEFA*BNORM, SAFMIN )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Triangular solve of  (a A - b B) x = 0  (columnwise)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              WORK(1:j-1) contains sums w,
+</span><span class="comment">*</span><span class="comment">              WORK(j+1:JE) contains x
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 170 JR = 1, JE - 1
+                  WORK( JR ) = ACOEFF*S( JR, JE ) - BCOEFF*P( JR, JE )
+  170          CONTINUE
+               WORK( JE ) = CONE
+<span class="comment">*</span><span class="comment">
+</span>               DO 210 J = JE - 1, 1, -1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 Form x(j) := - w(j) / d
+</span><span class="comment">*</span><span class="comment">                 with scaling and perturbation of the denominator
+</span><span class="comment">*</span><span class="comment">
+</span>                  D = ACOEFF*S( J, J ) - BCOEFF*P( J, J )
+                  IF( ABS1( D ).LE.DMIN )
+     $               D = CMPLX( DMIN )
+<span class="comment">*</span><span class="comment">
+</span>                  IF( ABS1( D ).LT.ONE ) THEN
+                     IF( ABS1( WORK( J ) ).GE.BIGNUM*ABS1( D ) ) THEN
+                        TEMP = ONE / ABS1( WORK( J ) )
+                        DO 180 JR = 1, JE
+                           WORK( JR ) = TEMP*WORK( JR )
+  180                   CONTINUE
+                     END IF
+                  END IF
+<span class="comment">*</span><span class="comment">
+</span>                  WORK( J ) = <a name="CLADIV.568"></a><a href="cladiv.f.html#CLADIV.1">CLADIV</a>( -WORK( J ), D )
+<span class="comment">*</span><span class="comment">
+</span>                  IF( J.GT.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    w = w + x(j)*(a S(*,j) - b P(*,j) ) with scaling
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( ABS1( WORK( J ) ).GT.ONE ) THEN
+                        TEMP = ONE / ABS1( WORK( J ) )
+                        IF( ACOEFA*RWORK( J )+BCOEFA*RWORK( N+J ).GE.
+     $                      BIGNUM*TEMP ) THEN
+                           DO 190 JR = 1, JE
+                              WORK( JR ) = TEMP*WORK( JR )
+  190                      CONTINUE
+                        END IF
+                     END IF
+<span class="comment">*</span><span class="comment">
+</span>                     CA = ACOEFF*WORK( J )
+                     CB = BCOEFF*WORK( J )
+                     DO 200 JR = 1, J - 1
+                        WORK( JR ) = WORK( JR ) + CA*S( JR, J ) -
+     $                               CB*P( JR, J )
+  200                CONTINUE
+                  END IF
+  210          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Back transform eigenvector if HOWMNY='B'.
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( ILBACK ) THEN
+                  CALL CGEMV( <span class="string">'N'</span>, N, JE, CONE, VR, LDVR, WORK, 1,
+     $                        CZERO, WORK( N+1 ), 1 )
+                  ISRC = 2
+                  IEND = N
+               ELSE
+                  ISRC = 1
+                  IEND = JE
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Copy and scale eigenvector into column of VR
+</span><span class="comment">*</span><span class="comment">
+</span>               XMAX = ZERO
+               DO 220 JR = 1, IEND
+                  XMAX = MAX( XMAX, ABS1( WORK( ( ISRC-1 )*N+JR ) ) )
+  220          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>               IF( XMAX.GT.SAFMIN ) THEN
+                  TEMP = ONE / XMAX
+                  DO 230 JR = 1, IEND
+                     VR( JR, IEIG ) = TEMP*WORK( ( ISRC-1 )*N+JR )
+  230             CONTINUE
+               ELSE
+                  IEND = 0
+               END IF
+<span class="comment">*</span><span class="comment">
+</span>               DO 240 JR = IEND + 1, N
+                  VR( JR, IEIG ) = CZERO
+  240          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            END IF
+  250    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CTGEVC.631"></a><a href="ctgevc.f.html#CTGEVC.1">CTGEVC</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlarft.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLARFT.1"></a><a href="dlarft.f.html#DLARFT.1">DLARFT</a>( DIRECT, STOREV, N, K, V, LDV, TAU, T, LDT )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          DIRECT, STOREV
+      INTEGER            K, LDT, LDV, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   T( LDT, * ), TAU( * ), V( LDV, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLARFT.18"></a><a href="dlarft.f.html#DLARFT.1">DLARFT</a> forms the triangular factor T of a real block reflector H
+</span><span class="comment">*</span><span class="comment">  of order n, which is defined as a product of k elementary reflectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If DIRECT = 'F', H = H(1) H(2) . . . H(k) and T is upper triangular;
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If DIRECT = 'B', H = H(k) . . . H(2) H(1) and T is lower triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If STOREV = 'C', the vector which defines the elementary reflector
+</span><span class="comment">*</span><span class="comment">  H(i) is stored in the i-th column of the array V, and
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     H  =  I - V * T * V'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If STOREV = 'R', the vector which defines the elementary reflector
+</span><span class="comment">*</span><span class="comment">  H(i) is stored in the i-th row of the array V, and
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     H  =  I - V' * T * V
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIRECT  (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies the order in which the elementary reflectors are
+</span><span class="comment">*</span><span class="comment">          multiplied to form the block reflector:
+</span><span class="comment">*</span><span class="comment">          = 'F': H = H(1) H(2) . . . H(k) (Forward)
+</span><span class="comment">*</span><span class="comment">          = 'B': H = H(k) . . . H(2) H(1) (Backward)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  STOREV  (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies how the vectors which define the elementary
+</span><span class="comment">*</span><span class="comment">          reflectors are stored (see also Further Details):
+</span><span class="comment">*</span><span class="comment">          = 'C': columnwise
+</span><span class="comment">*</span><span class="comment">          = 'R': rowwise
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the block reflector H. N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  K       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the triangular factor T (= the number of
+</span><span class="comment">*</span><span class="comment">          elementary reflectors). K &gt;= 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  V       (input/output) DOUBLE PRECISION array, dimension
+</span><span class="comment">*</span><span class="comment">                               (LDV,K) if STOREV = 'C'
+</span><span class="comment">*</span><span class="comment">                               (LDV,N) if STOREV = 'R'
+</span><span class="comment">*</span><span class="comment">          The matrix V. See further details.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDV     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array V.
+</span><span class="comment">*</span><span class="comment">          If STOREV = 'C', LDV &gt;= max(1,N); if STOREV = 'R', LDV &gt;= K.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TAU     (input) DOUBLE PRECISION array, dimension (K)
+</span><span class="comment">*</span><span class="comment">          TAU(i) must contain the scalar factor of the elementary
+</span><span class="comment">*</span><span class="comment">          reflector H(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  T       (output) DOUBLE PRECISION array, dimension (LDT,K)
+</span><span class="comment">*</span><span class="comment">          The k by k triangular factor T of the block reflector.
+</span><span class="comment">*</span><span class="comment">          If DIRECT = 'F', T is upper triangular; if DIRECT = 'B', T is
+</span><span class="comment">*</span><span class="comment">          lower triangular. The rest of the array is not used.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDT     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array T. LDT &gt;= K.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The shape of the matrix V and the storage of the vectors which define
+</span><span class="comment">*</span><span class="comment">  the H(i) is best illustrated by the following example with n = 5 and
+</span><span class="comment">*</span><span class="comment">  k = 3. The elements equal to 1 are not stored; the corresponding
+</span><span class="comment">*</span><span class="comment">  array elements are modified but restored on exit. The rest of the
+</span><span class="comment">*</span><span class="comment">  array is not used.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIRECT = 'F' and STOREV = 'C':         DIRECT = 'F' and STOREV = 'R':
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">               V = (  1       )                 V = (  1 v1 v1 v1 v1 )
+</span><span class="comment">*</span><span class="comment">                   ( v1  1    )                     (     1 v2 v2 v2 )
+</span><span class="comment">*</span><span class="comment">                   ( v1 v2  1 )                     (        1 v3 v3 )
+</span><span class="comment">*</span><span class="comment">                   ( v1 v2 v3 )
+</span><span class="comment">*</span><span class="comment">                   ( v1 v2 v3 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIRECT = 'B' and STOREV = 'C':         DIRECT = 'B' and STOREV = 'R':
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">               V = ( v1 v2 v3 )                 V = ( v1 v1  1       )
+</span><span class="comment">*</span><span class="comment">                   ( v1 v2 v3 )                     ( v2 v2 v2  1    )
+</span><span class="comment">*</span><span class="comment">                   (  1 v2 v3 )                     ( v3 v3 v3 v3  1 )
+</span><span class="comment">*</span><span class="comment">                   (     1 v3 )
+</span><span class="comment">*</span><span class="comment">                   (        1 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ONE, ZERO
+      PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, J
+      DOUBLE PRECISION   VII
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DGEMV, DTRMV
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.117"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.118"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      IF( <a name="LSAME.127"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIRECT, <span class="string">'F'</span> ) ) THEN
+         DO 20 I = 1, K
+            IF( TAU( I ).EQ.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              H(i)  =  I
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 10 J = 1, I
+                  T( J, I ) = ZERO
+   10          CONTINUE
+            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              general case
+</span><span class="comment">*</span><span class="comment">
+</span>               VII = V( I, I )
+               V( I, I ) = ONE
+               IF( <a name="LSAME.142"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( STOREV, <span class="string">'C'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 T(1:i-1,i) := - tau(i) * V(i:n,1:i-1)' * V(i:n,i)
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL DGEMV( <span class="string">'Transpose'</span>, N-I+1, I-1, -TAU( I ),
+     $                        V( I, 1 ), LDV, V( I, I ), 1, ZERO,
+     $                        T( 1, I ), 1 )
+               ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 T(1:i-1,i) := - tau(i) * V(1:i-1,i:n) * V(i,i:n)'
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL DGEMV( <span class="string">'No transpose'</span>, I-1, N-I+1, -TAU( I ),
+     $                        V( 1, I ), LDV, V( I, I ), LDV, ZERO,
+     $                        T( 1, I ), 1 )
+               END IF
+               V( I, I ) = VII
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              T(1:i-1,i) := T(1:i-1,1:i-1) * T(1:i-1,i)
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL DTRMV( <span class="string">'Upper'</span>, <span class="string">'No transpose'</span>, <span class="string">'Non-unit'</span>, I-1, T,
+     $                     LDT, T( 1, I ), 1 )
+               T( I, I ) = TAU( I )
+            END IF
+   20    CONTINUE
+      ELSE
+         DO 40 I = K, 1, -1
+            IF( TAU( I ).EQ.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              H(i)  =  I
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 30 J = I, K
+                  T( J, I ) = ZERO
+   30          CONTINUE
+            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              general case
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( I.LT.K ) THEN
+                  IF( <a name="LSAME.180"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( STOREV, <span class="string">'C'</span> ) ) THEN
+                     VII = V( N-K+I, I )
+                     V( N-K+I, I ) = ONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    T(i+1:k,i) :=
+</span><span class="comment">*</span><span class="comment">                            - tau(i) * V(1:n-k+i,i+1:k)' * V(1:n-k+i,i)
+</span><span class="comment">*</span><span class="comment">
+</span>                     CALL DGEMV( <span class="string">'Transpose'</span>, N-K+I, K-I, -TAU( I ),
+     $                           V( 1, I+1 ), LDV, V( 1, I ), 1, ZERO,
+     $                           T( I+1, I ), 1 )
+                     V( N-K+I, I ) = VII
+                  ELSE
+                     VII = V( I, N-K+I )
+                     V( I, N-K+I ) = ONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    T(i+1:k,i) :=
+</span><span class="comment">*</span><span class="comment">                            - tau(i) * V(i+1:k,1:n-k+i) * V(i,1:n-k+i)'
+</span><span class="comment">*</span><span class="comment">
+</span>                     CALL DGEMV( <span class="string">'No transpose'</span>, K-I, N-K+I, -TAU( I ),
+     $                           V( I+1, 1 ), LDV, V( I, 1 ), LDV, ZERO,
+     $                           T( I+1, I ), 1 )
+                     V( I, N-K+I ) = VII
+                  END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 T(i+1:k,i) := T(i+1:k,i+1:k) * T(i+1:k,i)
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL DTRMV( <span class="string">'Lower'</span>, <span class="string">'No transpose'</span>, <span class="string">'Non-unit'</span>, K-I,
+     $                        T( I+1, I+1 ), LDT, T( I+1, I ), 1 )
+               END IF
+               T( I, I ) = TAU( I )
+            END IF
+   40    CONTINUE
+      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLARFT.215"></a><a href="dlarft.f.html#DLARFT.1">DLARFT</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

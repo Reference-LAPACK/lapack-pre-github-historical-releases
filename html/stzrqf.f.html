@@ -1,0 +1,188 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>stzrqf.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="STZRQF.1"></a><a href="stzrqf.f.html#STZRQF.1">STZRQF</a>( M, N, A, LDA, TAU, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, LDA, M, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               A( LDA, * ), TAU( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This routine is deprecated and has been replaced by routine <a name="STZRZF.17"></a><a href="stzrzf.f.html#STZRZF.1">STZRZF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="STZRQF.19"></a><a href="stzrqf.f.html#STZRQF.1">STZRQF</a> reduces the M-by-N ( M&lt;=N ) real upper trapezoidal matrix A
+</span><span class="comment">*</span><span class="comment">  to upper triangular form by means of orthogonal transformations.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The upper trapezoidal matrix A is factored as
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     A = ( R  0 ) * Z,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where Z is an N-by-N orthogonal matrix and R is an M-by-M upper
+</span><span class="comment">*</span><span class="comment">  triangular matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix A.  M &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix A.  N &gt;= M.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) REAL array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the leading M-by-N upper trapezoidal part of the
+</span><span class="comment">*</span><span class="comment">          array A must contain the matrix to be factorized.
+</span><span class="comment">*</span><span class="comment">          On exit, the leading M-by-M upper triangular part of A
+</span><span class="comment">*</span><span class="comment">          contains the upper triangular matrix R, and elements M+1 to
+</span><span class="comment">*</span><span class="comment">          N of the first M rows of A, with the array TAU, represent the
+</span><span class="comment">*</span><span class="comment">          orthogonal matrix Z as a product of M elementary reflectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TAU     (output) REAL array, dimension (M)
+</span><span class="comment">*</span><span class="comment">          The scalar factors of the elementary reflectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The factorization is obtained by Householder's method.  The kth
+</span><span class="comment">*</span><span class="comment">  transformation matrix, Z( k ), which is used to introduce zeros into
+</span><span class="comment">*</span><span class="comment">  the ( m - k + 1 )th row of A, is given in the form
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Z( k ) = ( I     0   ),
+</span><span class="comment">*</span><span class="comment">              ( 0  T( k ) )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     T( k ) = I - tau*u( k )*u( k )',   u( k ) = (   1    ),
+</span><span class="comment">*</span><span class="comment">                                                 (   0    )
+</span><span class="comment">*</span><span class="comment">                                                 ( z( k ) )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  tau is a scalar and z( k ) is an ( n - m ) element vector.
+</span><span class="comment">*</span><span class="comment">  tau and z( k ) are chosen to annihilate the elements of the kth row
+</span><span class="comment">*</span><span class="comment">  of X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The scalar tau is returned in the kth element of TAU and the vector
+</span><span class="comment">*</span><span class="comment">  u( k ) in the kth row of A, such that the elements of z( k ) are
+</span><span class="comment">*</span><span class="comment">  in  a( k, m + 1 ), ..., a( k, n ). The elements of R are returned in
+</span><span class="comment">*</span><span class="comment">  the upper triangular part of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z is given by
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Z =  Z( 1 ) * Z( 2 ) * ... * Z( m ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ONE, ZERO
+      PARAMETER          ( ONE = 1.0E+0, ZERO = 0.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, K, M1
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           SAXPY, SCOPY, SGEMV, SGER, <a name="SLARFG.98"></a><a href="slarfg.f.html#SLARFG.1">SLARFG</a>, <a name="XERBLA.98"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( M.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( N.LT.M ) THEN
+         INFO = -2
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -4
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.113"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="STZRQF.113"></a><a href="stzrqf.f.html#STZRQF.1">STZRQF</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Perform the factorization.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( M.EQ.0 )
+     $   RETURN
+      IF( M.EQ.N ) THEN
+         DO 10 I = 1, N
+            TAU( I ) = ZERO
+   10    CONTINUE
+      ELSE
+         M1 = MIN( M+1, N )
+         DO 20 K = M, 1, -1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Use a Householder reflection to zero the kth row of A.
+</span><span class="comment">*</span><span class="comment">           First set up the reflection.
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="SLARFG.132"></a><a href="slarfg.f.html#SLARFG.1">SLARFG</a>( N-M+1, A( K, K ), A( K, M1 ), LDA, TAU( K ) )
+<span class="comment">*</span><span class="comment">
+</span>            IF( ( TAU( K ).NE.ZERO ) .AND. ( K.GT.1 ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              We now perform the operation  A := A*P( k ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Use the first ( k - 1 ) elements of TAU to store  a( k ),
+</span><span class="comment">*</span><span class="comment">              where  a( k ) consists of the first ( k - 1 ) elements of
+</span><span class="comment">*</span><span class="comment">              the  kth column  of  A.  Also  let  B  denote  the  first
+</span><span class="comment">*</span><span class="comment">              ( k - 1 ) rows of the last ( n - m ) columns of A.
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL SCOPY( K-1, A( 1, K ), 1, TAU, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Form   w = a( k ) + B*z( k )  in TAU.
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL SGEMV( <span class="string">'No transpose'</span>, K-1, N-M, ONE, A( 1, M1 ),
+     $                     LDA, A( K, M1 ), LDA, ONE, TAU, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Now form  a( k ) := a( k ) - tau*w
+</span><span class="comment">*</span><span class="comment">              and       B      := B      - tau*w*z( k )'.
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL SAXPY( K-1, -TAU( K ), TAU, 1, A( 1, K ), 1 )
+               CALL SGER( K-1, N-M, -TAU( K ), TAU, 1, A( K, M1 ), LDA,
+     $                    A( 1, M1 ), LDA )
+            END IF
+   20    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="STZRQF.162"></a><a href="stzrqf.f.html#STZRQF.1">STZRQF</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

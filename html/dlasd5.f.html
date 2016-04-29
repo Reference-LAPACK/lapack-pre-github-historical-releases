@@ -1,0 +1,185 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlasd5.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLASD5.1"></a><a href="dlasd5.f.html#DLASD5.1">DLASD5</a>( I, D, Z, DELTA, RHO, DSIGMA, WORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            I
+      DOUBLE PRECISION   DSIGMA, RHO
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   D( 2 ), DELTA( 2 ), WORK( 2 ), Z( 2 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This subroutine computes the square root of the I-th eigenvalue
+</span><span class="comment">*</span><span class="comment">  of a positive symmetric rank-one modification of a 2-by-2 diagonal
+</span><span class="comment">*</span><span class="comment">  matrix
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">             diag( D ) * diag( D ) +  RHO *  Z * transpose(Z) .
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The diagonal entries in the array D are assumed to satisfy
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">             0 &lt;= D(i) &lt; D(j)  for  i &lt; j .
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  We also assume RHO &gt; 0 and that the Euclidean norm of the vector
+</span><span class="comment">*</span><span class="comment">  Z is one.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  I      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The index of the eigenvalue to be computed.  I = 1 or I = 2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D      (input) DOUBLE PRECISION array, dimension ( 2 )
+</span><span class="comment">*</span><span class="comment">         The original eigenvalues.  We assume 0 &lt;= D(1) &lt; D(2).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z      (input) DOUBLE PRECISION array, dimension ( 2 )
+</span><span class="comment">*</span><span class="comment">         The components of the updating vector.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DELTA  (output) DOUBLE PRECISION array, dimension ( 2 )
+</span><span class="comment">*</span><span class="comment">         Contains (D(j) - sigma_I) in its  j-th component.
+</span><span class="comment">*</span><span class="comment">         The vector DELTA contains the information necessary
+</span><span class="comment">*</span><span class="comment">         to construct the eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RHO    (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">         The scalar in the symmetric updating formula.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DSIGMA (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">         The computed sigma_I, the I-th updated eigenvalue.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK   (workspace) DOUBLE PRECISION array, dimension ( 2 )
+</span><span class="comment">*</span><span class="comment">         WORK contains (D(j) + sigma_I) in its  j-th component.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Ren-Cang Li, Computer Science Division, University of California
+</span><span class="comment">*</span><span class="comment">     at Berkeley, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE, TWO, THREE, FOUR
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0, TWO = 2.0D+0,
+     $                   THREE = 3.0D+0, FOUR = 4.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      DOUBLE PRECISION   B, C, DEL, DELSQ, TAU, W
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      DEL = D( 2 ) - D( 1 )
+      DELSQ = DEL*( D( 2 )+D( 1 ) )
+      IF( I.EQ.1 ) THEN
+         W = ONE + FOUR*RHO*( Z( 2 )*Z( 2 ) / ( D( 1 )+THREE*D( 2 ) )-
+     $       Z( 1 )*Z( 1 ) / ( THREE*D( 1 )+D( 2 ) ) ) / DEL
+         IF( W.GT.ZERO ) THEN
+            B = DELSQ + RHO*( Z( 1 )*Z( 1 )+Z( 2 )*Z( 2 ) )
+            C = RHO*Z( 1 )*Z( 1 )*DELSQ
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           B &gt; ZERO, always
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           The following TAU is DSIGMA * DSIGMA - D( 1 ) * D( 1 )
+</span><span class="comment">*</span><span class="comment">
+</span>            TAU = TWO*C / ( B+SQRT( ABS( B*B-FOUR*C ) ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           The following TAU is DSIGMA - D( 1 )
+</span><span class="comment">*</span><span class="comment">
+</span>            TAU = TAU / ( D( 1 )+SQRT( D( 1 )*D( 1 )+TAU ) )
+            DSIGMA = D( 1 ) + TAU
+            DELTA( 1 ) = -TAU
+            DELTA( 2 ) = DEL - TAU
+            WORK( 1 ) = TWO*D( 1 ) + TAU
+            WORK( 2 ) = ( D( 1 )+TAU ) + D( 2 )
+<span class="comment">*</span><span class="comment">           DELTA( 1 ) = -Z( 1 ) / TAU
+</span><span class="comment">*</span><span class="comment">           DELTA( 2 ) = Z( 2 ) / ( DEL-TAU )
+</span>         ELSE
+            B = -DELSQ + RHO*( Z( 1 )*Z( 1 )+Z( 2 )*Z( 2 ) )
+            C = RHO*Z( 2 )*Z( 2 )*DELSQ
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           The following TAU is DSIGMA * DSIGMA - D( 2 ) * D( 2 )
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( B.GT.ZERO ) THEN
+               TAU = -TWO*C / ( B+SQRT( B*B+FOUR*C ) )
+            ELSE
+               TAU = ( B-SQRT( B*B+FOUR*C ) ) / TWO
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           The following TAU is DSIGMA - D( 2 )
+</span><span class="comment">*</span><span class="comment">
+</span>            TAU = TAU / ( D( 2 )+SQRT( ABS( D( 2 )*D( 2 )+TAU ) ) )
+            DSIGMA = D( 2 ) + TAU
+            DELTA( 1 ) = -( DEL+TAU )
+            DELTA( 2 ) = -TAU
+            WORK( 1 ) = D( 1 ) + TAU + D( 2 )
+            WORK( 2 ) = TWO*D( 2 ) + TAU
+<span class="comment">*</span><span class="comment">           DELTA( 1 ) = -Z( 1 ) / ( DEL+TAU )
+</span><span class="comment">*</span><span class="comment">           DELTA( 2 ) = -Z( 2 ) / TAU
+</span>         END IF
+<span class="comment">*</span><span class="comment">        TEMP = SQRT( DELTA( 1 )*DELTA( 1 )+DELTA( 2 )*DELTA( 2 ) )
+</span><span class="comment">*</span><span class="comment">        DELTA( 1 ) = DELTA( 1 ) / TEMP
+</span><span class="comment">*</span><span class="comment">        DELTA( 2 ) = DELTA( 2 ) / TEMP
+</span>      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Now I=2
+</span><span class="comment">*</span><span class="comment">
+</span>         B = -DELSQ + RHO*( Z( 1 )*Z( 1 )+Z( 2 )*Z( 2 ) )
+         C = RHO*Z( 2 )*Z( 2 )*DELSQ
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        The following TAU is DSIGMA * DSIGMA - D( 2 ) * D( 2 )
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( B.GT.ZERO ) THEN
+            TAU = ( B+SQRT( B*B+FOUR*C ) ) / TWO
+         ELSE
+            TAU = TWO*C / ( -B+SQRT( B*B+FOUR*C ) )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        The following TAU is DSIGMA - D( 2 )
+</span><span class="comment">*</span><span class="comment">
+</span>         TAU = TAU / ( D( 2 )+SQRT( D( 2 )*D( 2 )+TAU ) )
+         DSIGMA = D( 2 ) + TAU
+         DELTA( 1 ) = -( DEL+TAU )
+         DELTA( 2 ) = -TAU
+         WORK( 1 ) = D( 1 ) + TAU + D( 2 )
+         WORK( 2 ) = TWO*D( 2 ) + TAU
+<span class="comment">*</span><span class="comment">        DELTA( 1 ) = -Z( 1 ) / ( DEL+TAU )
+</span><span class="comment">*</span><span class="comment">        DELTA( 2 ) = -Z( 2 ) / TAU
+</span><span class="comment">*</span><span class="comment">        TEMP = SQRT( DELTA( 1 )*DELTA( 1 )+DELTA( 2 )*DELTA( 2 ) )
+</span><span class="comment">*</span><span class="comment">        DELTA( 1 ) = DELTA( 1 ) / TEMP
+</span><span class="comment">*</span><span class="comment">        DELTA( 2 ) = DELTA( 2 ) / TEMP
+</span>      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLASD5.161"></a><a href="dlasd5.f.html#DLASD5.1">DLASD5</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,239 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zhpgst.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZHPGST.1"></a><a href="zhpgst.f.html#ZHPGST.1">ZHPGST</a>( ITYPE, UPLO, N, AP, BP, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          UPLO
+      INTEGER            INFO, ITYPE, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX*16         AP( * ), BP( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZHPGST.18"></a><a href="zhpgst.f.html#ZHPGST.1">ZHPGST</a> reduces a complex Hermitian-definite generalized
+</span><span class="comment">*</span><span class="comment">  eigenproblem to standard form, using packed storage.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If ITYPE = 1, the problem is A*x = lambda*B*x,
+</span><span class="comment">*</span><span class="comment">  and A is overwritten by inv(U**H)*A*inv(U) or inv(L)*A*inv(L**H)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If ITYPE = 2 or 3, the problem is A*B*x = lambda*x or
+</span><span class="comment">*</span><span class="comment">  B*A*x = lambda*x, and A is overwritten by U*A*U**H or L**H*A*L.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B must have been previously factorized as U**H*U or L*L**H by <a name="ZPPTRF.27"></a><a href="zpptrf.f.html#ZPPTRF.1">ZPPTRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ITYPE   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 1: compute inv(U**H)*A*inv(U) or inv(L)*A*inv(L**H);
+</span><span class="comment">*</span><span class="comment">          = 2 or 3: compute U*A*U**H or L**H*A*L.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangle of A is stored and B is factored as
+</span><span class="comment">*</span><span class="comment">                  U**H*U;
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangle of A is stored and B is factored as
+</span><span class="comment">*</span><span class="comment">                  L*L**H.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrices A and B.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AP      (input/output) COMPLEX*16 array, dimension (N*(N+1)/2)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper or lower triangle of the Hermitian matrix
+</span><span class="comment">*</span><span class="comment">          A, packed columnwise in a linear array.  The j-th column of A
+</span><span class="comment">*</span><span class="comment">          is stored in the array AP as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', AP(i + (j-1)*j/2) = A(i,j) for 1&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', AP(i + (j-1)*(2n-j)/2) = A(i,j) for j&lt;=i&lt;=n.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, the transformed matrix, stored in the
+</span><span class="comment">*</span><span class="comment">          same format as A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BP      (input) COMPLEX*16 array, dimension (N*(N+1)/2)
+</span><span class="comment">*</span><span class="comment">          The triangular factor from the Cholesky factorization of B,
+</span><span class="comment">*</span><span class="comment">          stored in the same format as A, as returned by <a name="ZPPTRF.57"></a><a href="zpptrf.f.html#ZPPTRF.1">ZPPTRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ONE, HALF
+      PARAMETER          ( ONE = 1.0D+0, HALF = 0.5D+0 )
+      COMPLEX*16         CONE
+      PARAMETER          ( CONE = ( 1.0D+0, 0.0D+0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            UPPER
+      INTEGER            J, J1, J1J1, JJ, K, K1, K1K1, KK
+      DOUBLE PRECISION   AJJ, AKK, BJJ, BKK
+      COMPLEX*16         CT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.78"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, ZAXPY, ZDSCAL, ZHPMV, ZHPR2, ZTPMV,
+     $                   ZTPSV
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          DBLE
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.85"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      COMPLEX*16         ZDOTC
+      EXTERNAL           <a name="LSAME.87"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, ZDOTC
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      UPPER = <a name="LSAME.94"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> )
+      IF( ITYPE.LT.1 .OR. ITYPE.GT.3 ) THEN
+         INFO = -1
+      ELSE IF( .NOT.UPPER .AND. .NOT.<a name="LSAME.97"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -3
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.103"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZHPGST.103"></a><a href="zhpgst.f.html#ZHPGST.1">ZHPGST</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( ITYPE.EQ.1 ) THEN
+         IF( UPPER ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute inv(U')*A*inv(U)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           J1 and JJ are the indices of A(1,j) and A(j,j)
+</span><span class="comment">*</span><span class="comment">
+</span>            JJ = 0
+            DO 10 J = 1, N
+               J1 = JJ + 1
+               JJ = JJ + J
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Compute the j-th column of the upper triangle of A
+</span><span class="comment">*</span><span class="comment">
+</span>               AP( JJ ) = DBLE( AP( JJ ) )
+               BJJ = BP( JJ )
+               CALL ZTPSV( UPLO, <span class="string">'Conjugate transpose'</span>, <span class="string">'Non-unit'</span>, J,
+     $                     BP, AP( J1 ), 1 )
+               CALL ZHPMV( UPLO, J-1, -CONE, AP, BP( J1 ), 1, CONE,
+     $                     AP( J1 ), 1 )
+               CALL ZDSCAL( J-1, ONE / BJJ, AP( J1 ), 1 )
+               AP( JJ ) = ( AP( JJ )-ZDOTC( J-1, AP( J1 ), 1, BP( J1 ),
+     $                    1 ) ) / BJJ
+   10       CONTINUE
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute inv(L)*A*inv(L')
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           KK and K1K1 are the indices of A(k,k) and A(k+1,k+1)
+</span><span class="comment">*</span><span class="comment">
+</span>            KK = 1
+            DO 20 K = 1, N
+               K1K1 = KK + N - K + 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Update the lower triangle of A(k:n,k:n)
+</span><span class="comment">*</span><span class="comment">
+</span>               AKK = AP( KK )
+               BKK = BP( KK )
+               AKK = AKK / BKK**2
+               AP( KK ) = AKK
+               IF( K.LT.N ) THEN
+                  CALL ZDSCAL( N-K, ONE / BKK, AP( KK+1 ), 1 )
+                  CT = -HALF*AKK
+                  CALL ZAXPY( N-K, CT, BP( KK+1 ), 1, AP( KK+1 ), 1 )
+                  CALL ZHPR2( UPLO, N-K, -CONE, AP( KK+1 ), 1,
+     $                        BP( KK+1 ), 1, AP( K1K1 ) )
+                  CALL ZAXPY( N-K, CT, BP( KK+1 ), 1, AP( KK+1 ), 1 )
+                  CALL ZTPSV( UPLO, <span class="string">'No transpose'</span>, <span class="string">'Non-unit'</span>, N-K,
+     $                        BP( K1K1 ), AP( KK+1 ), 1 )
+               END IF
+               KK = K1K1
+   20       CONTINUE
+         END IF
+      ELSE
+         IF( UPPER ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute U*A*U'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           K1 and KK are the indices of A(1,k) and A(k,k)
+</span><span class="comment">*</span><span class="comment">
+</span>            KK = 0
+            DO 30 K = 1, N
+               K1 = KK + 1
+               KK = KK + K
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Update the upper triangle of A(1:k,1:k)
+</span><span class="comment">*</span><span class="comment">
+</span>               AKK = AP( KK )
+               BKK = BP( KK )
+               CALL ZTPMV( UPLO, <span class="string">'No transpose'</span>, <span class="string">'Non-unit'</span>, K-1, BP,
+     $                     AP( K1 ), 1 )
+               CT = HALF*AKK
+               CALL ZAXPY( K-1, CT, BP( K1 ), 1, AP( K1 ), 1 )
+               CALL ZHPR2( UPLO, K-1, CONE, AP( K1 ), 1, BP( K1 ), 1,
+     $                     AP )
+               CALL ZAXPY( K-1, CT, BP( K1 ), 1, AP( K1 ), 1 )
+               CALL ZDSCAL( K-1, BKK, AP( K1 ), 1 )
+               AP( KK ) = AKK*BKK**2
+   30       CONTINUE
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute L'*A*L
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           JJ and J1J1 are the indices of A(j,j) and A(j+1,j+1)
+</span><span class="comment">*</span><span class="comment">
+</span>            JJ = 1
+            DO 40 J = 1, N
+               J1J1 = JJ + N - J + 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Compute the j-th column of the lower triangle of A
+</span><span class="comment">*</span><span class="comment">
+</span>               AJJ = AP( JJ )
+               BJJ = BP( JJ )
+               AP( JJ ) = AJJ*BJJ + ZDOTC( N-J, AP( JJ+1 ), 1,
+     $                    BP( JJ+1 ), 1 )
+               CALL ZDSCAL( N-J, BJJ, AP( JJ+1 ), 1 )
+               CALL ZHPMV( UPLO, N-J, CONE, AP( J1J1 ), BP( JJ+1 ), 1,
+     $                     CONE, AP( JJ+1 ), 1 )
+               CALL ZTPMV( UPLO, <span class="string">'Conjugate transpose'</span>, <span class="string">'Non-unit'</span>,
+     $                     N-J+1, BP( JJ ), AP( JJ ), 1 )
+               JJ = J1J1
+   40       CONTINUE
+         END IF
+      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZHPGST.213"></a><a href="zhpgst.f.html#ZHPGST.1">ZHPGST</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

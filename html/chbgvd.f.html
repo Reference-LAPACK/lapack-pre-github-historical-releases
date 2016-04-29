@@ -1,0 +1,321 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>chbgvd.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CHBGVD.1"></a><a href="chbgvd.f.html#CHBGVD.1">CHBGVD</a>( JOBZ, UPLO, N, KA, KB, AB, LDAB, BB, LDBB, W,
+     $                   Z, LDZ, WORK, LWORK, RWORK, LRWORK, IWORK,
+     $                   LIWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK driver routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          JOBZ, UPLO
+      INTEGER            INFO, KA, KB, LDAB, LDBB, LDZ, LIWORK, LRWORK,
+     $                   LWORK, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IWORK( * )
+      REAL               RWORK( * ), W( * )
+      COMPLEX            AB( LDAB, * ), BB( LDBB, * ), WORK( * ),
+     $                   Z( LDZ, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CHBGVD.24"></a><a href="chbgvd.f.html#CHBGVD.1">CHBGVD</a> computes all the eigenvalues, and optionally, the eigenvectors
+</span><span class="comment">*</span><span class="comment">  of a complex generalized Hermitian-definite banded eigenproblem, of
+</span><span class="comment">*</span><span class="comment">  the form A*x=(lambda)*B*x. Here A and B are assumed to be Hermitian
+</span><span class="comment">*</span><span class="comment">  and banded, and B is also positive definite.  If eigenvectors are
+</span><span class="comment">*</span><span class="comment">  desired, it uses a divide and conquer algorithm.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The divide and conquer algorithm makes very mild assumptions about
+</span><span class="comment">*</span><span class="comment">  floating point arithmetic. It will work on machines with a guard
+</span><span class="comment">*</span><span class="comment">  digit in add/subtract, or on those binary machines without guard
+</span><span class="comment">*</span><span class="comment">  digits which subtract like the Cray X-MP, Cray Y-MP, Cray C-90, or
+</span><span class="comment">*</span><span class="comment">  Cray-2. It could conceivably fail on hexadecimal or decimal machines
+</span><span class="comment">*</span><span class="comment">  without guard digits, but we know of none.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOBZ    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'N':  Compute eigenvalues only;
+</span><span class="comment">*</span><span class="comment">          = 'V':  Compute eigenvalues and eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangles of A and B are stored;
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangles of A and B are stored.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrices A and B.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KA      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of superdiagonals of the matrix A if UPLO = 'U',
+</span><span class="comment">*</span><span class="comment">          or the number of subdiagonals if UPLO = 'L'. KA &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KB      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of superdiagonals of the matrix B if UPLO = 'U',
+</span><span class="comment">*</span><span class="comment">          or the number of subdiagonals if UPLO = 'L'. KB &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AB      (input/output) COMPLEX array, dimension (LDAB, N)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper or lower triangle of the Hermitian band
+</span><span class="comment">*</span><span class="comment">          matrix A, stored in the first ka+1 rows of the array.  The
+</span><span class="comment">*</span><span class="comment">          j-th column of A is stored in the j-th column of the array AB
+</span><span class="comment">*</span><span class="comment">          as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', AB(ka+1+i-j,j) = A(i,j) for max(1,j-ka)&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', AB(1+i-j,j)    = A(i,j) for j&lt;=i&lt;=min(n,j+ka).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, the contents of AB are destroyed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDAB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array AB.  LDAB &gt;= KA+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BB      (input/output) COMPLEX array, dimension (LDBB, N)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper or lower triangle of the Hermitian band
+</span><span class="comment">*</span><span class="comment">          matrix B, stored in the first kb+1 rows of the array.  The
+</span><span class="comment">*</span><span class="comment">          j-th column of B is stored in the j-th column of the array BB
+</span><span class="comment">*</span><span class="comment">          as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', BB(kb+1+i-j,j) = B(i,j) for max(1,j-kb)&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', BB(1+i-j,j)    = B(i,j) for j&lt;=i&lt;=min(n,j+kb).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, the factor S from the split Cholesky factorization
+</span><span class="comment">*</span><span class="comment">          B = S**H*S, as returned by <a name="CPBSTF.81"></a><a href="cpbstf.f.html#CPBSTF.1">CPBSTF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDBB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array BB.  LDBB &gt;= KB+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  W       (output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          If INFO = 0, the eigenvalues in ascending order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z       (output) COMPLEX array, dimension (LDZ, N)
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'V', then if INFO = 0, Z contains the matrix Z of
+</span><span class="comment">*</span><span class="comment">          eigenvectors, with the i-th column of Z holding the
+</span><span class="comment">*</span><span class="comment">          eigenvector associated with W(i). The eigenvectors are
+</span><span class="comment">*</span><span class="comment">          normalized so that Z**H*B*Z = I.
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'N', then Z is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDZ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Z.  LDZ &gt;= 1, and if
+</span><span class="comment">*</span><span class="comment">          JOBZ = 'V', LDZ &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace/output) COMPLEX array, dimension (MAX(1,LWORK))
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO=0, WORK(1) returns the optimal LWORK.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LWORK   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The dimension of the array WORK.
+</span><span class="comment">*</span><span class="comment">          If N &lt;= 1,               LWORK &gt;= 1.
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'N' and N &gt; 1, LWORK &gt;= N.
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'V' and N &gt; 1, LWORK &gt;= 2*N**2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If LWORK = -1, then a workspace query is assumed; the routine
+</span><span class="comment">*</span><span class="comment">          only calculates the optimal sizes of the WORK, RWORK and
+</span><span class="comment">*</span><span class="comment">          IWORK arrays, returns these values as the first entries of
+</span><span class="comment">*</span><span class="comment">          the WORK, RWORK and IWORK arrays, and no error message
+</span><span class="comment">*</span><span class="comment">          related to LWORK or LRWORK or LIWORK is issued by <a name="XERBLA.113"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RWORK   (workspace/output) REAL array, dimension (MAX(1,LRWORK))
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO=0, RWORK(1) returns the optimal LRWORK.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LRWORK  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The dimension of array RWORK.
+</span><span class="comment">*</span><span class="comment">          If N &lt;= 1,               LRWORK &gt;= 1.
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'N' and N &gt; 1, LRWORK &gt;= N.
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'V' and N &gt; 1, LRWORK &gt;= 1 + 5*N + 2*N**2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If LRWORK = -1, then a workspace query is assumed; the
+</span><span class="comment">*</span><span class="comment">          routine only calculates the optimal sizes of the WORK, RWORK
+</span><span class="comment">*</span><span class="comment">          and IWORK arrays, returns these values as the first entries
+</span><span class="comment">*</span><span class="comment">          of the WORK, RWORK and IWORK arrays, and no error message
+</span><span class="comment">*</span><span class="comment">          related to LWORK or LRWORK or LIWORK is issued by <a name="XERBLA.128"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK   (workspace/output) INTEGER array, dimension (MAX(1,LIWORK))
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO=0, IWORK(1) returns the optimal LIWORK.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LIWORK  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The dimension of array IWORK.
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'N' or N &lt;= 1, LIWORK &gt;= 1.
+</span><span class="comment">*</span><span class="comment">          If JOBZ = 'V' and N &gt; 1, LIWORK &gt;= 3 + 5*N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If LIWORK = -1, then a workspace query is assumed; the
+</span><span class="comment">*</span><span class="comment">          routine only calculates the optimal sizes of the WORK, RWORK
+</span><span class="comment">*</span><span class="comment">          and IWORK arrays, returns these values as the first entries
+</span><span class="comment">*</span><span class="comment">          of the WORK, RWORK and IWORK arrays, and no error message
+</span><span class="comment">*</span><span class="comment">          related to LWORK or LRWORK or LIWORK is issued by <a name="XERBLA.142"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = i, and i is:
+</span><span class="comment">*</span><span class="comment">             &lt;= N:  the algorithm failed to converge:
+</span><span class="comment">*</span><span class="comment">                    i off-diagonal elements of an intermediate
+</span><span class="comment">*</span><span class="comment">                    tridiagonal form did not converge to zero;
+</span><span class="comment">*</span><span class="comment">             &gt; N:   if INFO = N + i, for 1 &lt;= i &lt;= N, then <a name="CPBSTF.151"></a><a href="cpbstf.f.html#CPBSTF.1">CPBSTF</a>
+</span><span class="comment">*</span><span class="comment">                    returned INFO = i: B is not positive definite.
+</span><span class="comment">*</span><span class="comment">                    The factorization of B could not be completed and
+</span><span class="comment">*</span><span class="comment">                    no eigenvalues or eigenvectors were computed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Mark Fahey, Department of Mathematics, Univ. of Kentucky, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      COMPLEX            CONE, CZERO
+      PARAMETER          ( CONE = ( 1.0E+0, 0.0E+0 ),
+     $                   CZERO = ( 0.0E+0, 0.0E+0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            LQUERY, UPPER, WANTZ
+      CHARACTER          VECT
+      INTEGER            IINFO, INDE, INDWK2, INDWRK, LIWMIN, LLRWK,
+     $                   LLWK2, LRWMIN, LWMIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.176"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.177"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           CGEMM, <a name="CHBGST.180"></a><a href="chbgst.f.html#CHBGST.1">CHBGST</a>, <a name="CHBTRD.180"></a><a href="chbtrd.f.html#CHBTRD.1">CHBTRD</a>, <a name="CLACPY.180"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>, <a name="CPBSTF.180"></a><a href="cpbstf.f.html#CPBSTF.1">CPBSTF</a>, <a name="CSTEDC.180"></a><a href="cstedc.f.html#CSTEDC.1">CSTEDC</a>,
+     $                   <a name="SSTERF.181"></a><a href="ssterf.f.html#SSTERF.1">SSTERF</a>, <a name="XERBLA.181"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      WANTZ = <a name="LSAME.187"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBZ, <span class="string">'V'</span> )
+      UPPER = <a name="LSAME.188"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> )
+      LQUERY = ( LWORK.EQ.-1 .OR. LRWORK.EQ.-1 .OR. LIWORK.EQ.-1 )
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( N.LE.1 ) THEN
+         LWMIN = 1
+         LRWMIN = 1
+         LIWMIN = 1
+      ELSE IF( WANTZ ) THEN
+         LWMIN = 2*N**2
+         LRWMIN = 1 + 5*N + 2*N**2
+         LIWMIN = 3 + 5*N
+      ELSE
+         LWMIN = N
+         LRWMIN = N
+         LIWMIN = 1
+      END IF
+      IF( .NOT.( WANTZ .OR. <a name="LSAME.205"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBZ, <span class="string">'N'</span> ) ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.( UPPER .OR. <a name="LSAME.207"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( KA.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( KB.LT.0 .OR. KB.GT.KA ) THEN
+         INFO = -5
+      ELSE IF( LDAB.LT.KA+1 ) THEN
+         INFO = -7
+      ELSE IF( LDBB.LT.KB+1 ) THEN
+         INFO = -9
+      ELSE IF( LDZ.LT.1 .OR. ( WANTZ .AND. LDZ.LT.N ) ) THEN
+         INFO = -12
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.EQ.0 ) THEN
+         WORK( 1 ) = LWMIN
+         RWORK( 1 ) = LRWMIN
+         IWORK( 1 ) = LIWMIN
+<span class="comment">*</span><span class="comment">
+</span>         IF( LWORK.LT.LWMIN .AND. .NOT.LQUERY ) THEN
+            INFO = -14
+         ELSE IF( LRWORK.LT.LRWMIN .AND. .NOT.LQUERY ) THEN
+            INFO = -16
+         ELSE IF( LIWORK.LT.LIWMIN .AND. .NOT.LQUERY ) THEN
+            INFO = -18
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.238"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CHBGVD.238"></a><a href="chbgvd.f.html#CHBGVD.1">CHBGVD</a>'</span>, -INFO )
+         RETURN
+      ELSE IF( LQUERY ) THEN
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Form a split Cholesky factorization of B.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="CPBSTF.251"></a><a href="cpbstf.f.html#CPBSTF.1">CPBSTF</a>( UPLO, N, KB, BB, LDBB, INFO )
+      IF( INFO.NE.0 ) THEN
+         INFO = N + INFO
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Transform problem to standard eigenvalue problem.
+</span><span class="comment">*</span><span class="comment">
+</span>      INDE = 1
+      INDWRK = INDE + N
+      INDWK2 = 1 + N*N
+      LLWK2 = LWORK - INDWK2 + 2
+      LLRWK = LRWORK - INDWRK + 2
+      CALL <a name="CHBGST.264"></a><a href="chbgst.f.html#CHBGST.1">CHBGST</a>( JOBZ, UPLO, N, KA, KB, AB, LDAB, BB, LDBB, Z, LDZ,
+     $             WORK, RWORK( INDWRK ), IINFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Reduce Hermitian band matrix to tridiagonal form.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( WANTZ ) THEN
+         VECT = <span class="string">'U'</span>
+      ELSE
+         VECT = <span class="string">'N'</span>
+      END IF
+      CALL <a name="CHBTRD.274"></a><a href="chbtrd.f.html#CHBTRD.1">CHBTRD</a>( VECT, UPLO, N, KA, AB, LDAB, W, RWORK( INDE ), Z,
+     $             LDZ, WORK, IINFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     For eigenvalues only, call <a name="SSTERF.277"></a><a href="ssterf.f.html#SSTERF.1">SSTERF</a>.  For eigenvectors, call <a name="CSTEDC.277"></a><a href="cstedc.f.html#CSTEDC.1">CSTEDC</a>.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( .NOT.WANTZ ) THEN
+         CALL <a name="SSTERF.280"></a><a href="ssterf.f.html#SSTERF.1">SSTERF</a>( N, W, RWORK( INDE ), INFO )
+      ELSE
+         CALL <a name="CSTEDC.282"></a><a href="cstedc.f.html#CSTEDC.1">CSTEDC</a>( <span class="string">'I'</span>, N, W, RWORK( INDE ), WORK, N, WORK( INDWK2 ),
+     $                LLWK2, RWORK( INDWRK ), LLRWK, IWORK, LIWORK,
+     $                INFO )
+         CALL CGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, N, N, N, CONE, Z, LDZ, WORK, N, CZERO,
+     $               WORK( INDWK2 ), N )
+         CALL <a name="CLACPY.287"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>( <span class="string">'A'</span>, N, N, WORK( INDWK2 ), N, Z, LDZ )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      WORK( 1 ) = LWMIN
+      RWORK( 1 ) = LRWMIN
+      IWORK( 1 ) = LIWMIN
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CHBGVD.295"></a><a href="chbgvd.f.html#CHBGVD.1">CHBGVD</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

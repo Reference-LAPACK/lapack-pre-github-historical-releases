@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlartg.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLARTG.1"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( F, G, CS, SN, R )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      DOUBLE PRECISION   CS, F, G, R, SN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLARTG.14"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a> generate a plane rotation so that
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     [  CS  SN  ]  .  [ F ]  =  [ R ]   where CS**2 + SN**2 = 1.
+</span><span class="comment">*</span><span class="comment">     [ -SN  CS  ]     [ G ]     [ 0 ]
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This is a slower, more accurate version of the BLAS1 routine DROTG,
+</span><span class="comment">*</span><span class="comment">  with the following other differences:
+</span><span class="comment">*</span><span class="comment">     F and G are unchanged on return.
+</span><span class="comment">*</span><span class="comment">     If G=0, then CS=1 and SN=0.
+</span><span class="comment">*</span><span class="comment">     If F=0 and (G .ne. 0), then CS=0 and SN=1 without doing any
+</span><span class="comment">*</span><span class="comment">        floating point operations (saves work in <a name="DBDSQR.24"></a><a href="dbdsqr.f.html#DBDSQR.1">DBDSQR</a> when
+</span><span class="comment">*</span><span class="comment">        there are zeros on the diagonal).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If F exceeds G in magnitude, CS will be positive.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  F       (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The first component of vector to be rotated.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  G       (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The second component of vector to be rotated.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CS      (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The cosine of the rotation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SN      (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The sine of the rotation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  R       (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The nonzero component of the rotated vector.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This version has a few statements commented out for thread safety
+</span><span class="comment">*</span><span class="comment">  (machine parameters are computed on each entry). 10 feb 03, SJH.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO
+      PARAMETER          ( ZERO = 0.0D0 )
+      DOUBLE PRECISION   ONE
+      PARAMETER          ( ONE = 1.0D0 )
+      DOUBLE PRECISION   TWO
+      PARAMETER          ( TWO = 2.0D0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span><span class="comment">*</span><span class="comment">     LOGICAL            FIRST
+</span>      INTEGER            COUNT, I
+      DOUBLE PRECISION   EPS, F1, G1, SAFMIN, SAFMN2, SAFMX2, SCALE
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      DOUBLE PRECISION   <a name="DLAMCH.66"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+      EXTERNAL           <a name="DLAMCH.67"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, INT, LOG, MAX, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Save statement ..
+</span><span class="comment">*</span><span class="comment">     SAVE               FIRST, SAFMX2, SAFMIN, SAFMN2
+</span><span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Data statements ..
+</span><span class="comment">*</span><span class="comment">     DATA               FIRST / .TRUE. /
+</span><span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     IF( FIRST ) THEN
+</span>         SAFMIN = <a name="DLAMCH.81"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'S'</span> )
+         EPS = <a name="DLAMCH.82"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'E'</span> )
+         SAFMN2 = <a name="DLAMCH.83"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'B'</span> )**INT( LOG( SAFMIN / EPS ) /
+     $            LOG( <a name="DLAMCH.84"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'B'</span> ) ) / TWO )
+         SAFMX2 = ONE / SAFMN2
+<span class="comment">*</span><span class="comment">        FIRST = .FALSE.
+</span><span class="comment">*</span><span class="comment">     END IF
+</span>      IF( G.EQ.ZERO ) THEN
+         CS = ONE
+         SN = ZERO
+         R = F
+      ELSE IF( F.EQ.ZERO ) THEN
+         CS = ZERO
+         SN = ONE
+         R = G
+      ELSE
+         F1 = F
+         G1 = G
+         SCALE = MAX( ABS( F1 ), ABS( G1 ) )
+         IF( SCALE.GE.SAFMX2 ) THEN
+            COUNT = 0
+   10       CONTINUE
+            COUNT = COUNT + 1
+            F1 = F1*SAFMN2
+            G1 = G1*SAFMN2
+            SCALE = MAX( ABS( F1 ), ABS( G1 ) )
+            IF( SCALE.GE.SAFMX2 )
+     $         GO TO 10
+            R = SQRT( F1**2+G1**2 )
+            CS = F1 / R
+            SN = G1 / R
+            DO 20 I = 1, COUNT
+               R = R*SAFMX2
+   20       CONTINUE
+         ELSE IF( SCALE.LE.SAFMN2 ) THEN
+            COUNT = 0
+   30       CONTINUE
+            COUNT = COUNT + 1
+            F1 = F1*SAFMX2
+            G1 = G1*SAFMX2
+            SCALE = MAX( ABS( F1 ), ABS( G1 ) )
+            IF( SCALE.LE.SAFMN2 )
+     $         GO TO 30
+            R = SQRT( F1**2+G1**2 )
+            CS = F1 / R
+            SN = G1 / R
+            DO 40 I = 1, COUNT
+               R = R*SAFMN2
+   40       CONTINUE
+         ELSE
+            R = SQRT( F1**2+G1**2 )
+            CS = F1 / R
+            SN = G1 / R
+         END IF
+         IF( ABS( F ).GT.ABS( G ) .AND. CS.LT.ZERO ) THEN
+            CS = -CS
+            SN = -SN
+            R = -R
+         END IF
+      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLARTG.143"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zlaqp2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZLAQP2.1"></a><a href="zlaqp2.f.html#ZLAQP2.1">ZLAQP2</a>( M, N, OFFSET, A, LDA, JPVT, TAU, VN1, VN2,
+     $                   WORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            LDA, M, N, OFFSET
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            JPVT( * )
+      DOUBLE PRECISION   VN1( * ), VN2( * )
+      COMPLEX*16         A( LDA, * ), TAU( * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZLAQP2.20"></a><a href="zlaqp2.f.html#ZLAQP2.1">ZLAQP2</a> computes a QR factorization with column pivoting of
+</span><span class="comment">*</span><span class="comment">  the block A(OFFSET+1:M,1:N).
+</span><span class="comment">*</span><span class="comment">  The block A(1:OFFSET,1:N) is accordingly pivoted, but not factorized.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix A. M &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix A. N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  OFFSET  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix A that must be pivoted
+</span><span class="comment">*</span><span class="comment">          but no factorized. OFFSET &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) COMPLEX*16 array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the M-by-N matrix A.
+</span><span class="comment">*</span><span class="comment">          On exit, the upper triangle of block A(OFFSET+1:M,1:N) is
+</span><span class="comment">*</span><span class="comment">          the triangular factor obtained; the elements in block
+</span><span class="comment">*</span><span class="comment">          A(OFFSET+1:M,1:N) below the diagonal, together with the
+</span><span class="comment">*</span><span class="comment">          array TAU, represent the orthogonal matrix Q as a product of
+</span><span class="comment">*</span><span class="comment">          elementary reflectors. Block A(1:OFFSET,1:N) has been
+</span><span class="comment">*</span><span class="comment">          accordingly pivoted, but no factorized.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A. LDA &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JPVT    (input/output) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On entry, if JPVT(i) .ne. 0, the i-th column of A is permuted
+</span><span class="comment">*</span><span class="comment">          to the front of A*P (a leading column); if JPVT(i) = 0,
+</span><span class="comment">*</span><span class="comment">          the i-th column of A is a free column.
+</span><span class="comment">*</span><span class="comment">          On exit, if JPVT(i) = k, then the i-th column of A*P
+</span><span class="comment">*</span><span class="comment">          was the k-th column of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TAU     (output) COMPLEX*16 array, dimension (min(M,N))
+</span><span class="comment">*</span><span class="comment">          The scalar factors of the elementary reflectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VN1     (input/output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The vector with the partial column norms.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VN2     (input/output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The vector with the exact column norms.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) COMPLEX*16 array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">    G. Quintana-Orti, Depto. de Informatica, Universidad Jaime I, Spain
+</span><span class="comment">*</span><span class="comment">    X. Sun, Computer Science Dept., Duke University, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Partial column norm updating strategy modified by
+</span><span class="comment">*</span><span class="comment">    Z. Drmac and Z. Bujanovic, Dept. of Mathematics,
+</span><span class="comment">*</span><span class="comment">    University of Zagreb, Croatia.
+</span><span class="comment">*</span><span class="comment">    June 2006.
+</span><span class="comment">*</span><span class="comment">  For more details see LAPACK Working Note 176.
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE
+      COMPLEX*16         CONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0,
+     $                   CONE = ( 1.0D+0, 0.0D+0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, ITEMP, J, MN, OFFPI, PVT
+      DOUBLE PRECISION   TEMP, TEMP2, TOL3Z
+      COMPLEX*16         AII
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="ZLARF.93"></a><a href="zlarf.f.html#ZLARF.1">ZLARF</a>, <a name="ZLARFG.93"></a><a href="zlarfg.f.html#ZLARFG.1">ZLARFG</a>, ZSWAP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, DCONJG, MAX, MIN, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      INTEGER            IDAMAX
+      DOUBLE PRECISION   <a name="DLAMCH.100"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, DZNRM2
+      EXTERNAL           IDAMAX, <a name="DLAMCH.101"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, DZNRM2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      MN = MIN( M-OFFSET, N )
+      TOL3Z = SQRT(<a name="DLAMCH.106"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>(<span class="string">'Epsilon'</span>))
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute factorization.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 20 I = 1, MN
+<span class="comment">*</span><span class="comment">
+</span>         OFFPI = OFFSET + I
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Determine ith pivot column and swap if necessary.
+</span><span class="comment">*</span><span class="comment">
+</span>         PVT = ( I-1 ) + IDAMAX( N-I+1, VN1( I ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>         IF( PVT.NE.I ) THEN
+            CALL ZSWAP( M, A( 1, PVT ), 1, A( 1, I ), 1 )
+            ITEMP = JPVT( PVT )
+            JPVT( PVT ) = JPVT( I )
+            JPVT( I ) = ITEMP
+            VN1( PVT ) = VN1( I )
+            VN2( PVT ) = VN2( I )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Generate elementary reflector H(i).
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( OFFPI.LT.M ) THEN
+            CALL <a name="ZLARFG.130"></a><a href="zlarfg.f.html#ZLARFG.1">ZLARFG</a>( M-OFFPI+1, A( OFFPI, I ), A( OFFPI+1, I ), 1,
+     $                   TAU( I ) )
+         ELSE
+            CALL <a name="ZLARFG.133"></a><a href="zlarfg.f.html#ZLARFG.1">ZLARFG</a>( 1, A( M, I ), A( M, I ), 1, TAU( I ) )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( I.LT.N ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Apply H(i)' to A(offset+i:m,i+1:n) from the left.
+</span><span class="comment">*</span><span class="comment">
+</span>            AII = A( OFFPI, I )
+            A( OFFPI, I ) = CONE
+            CALL <a name="ZLARF.142"></a><a href="zlarf.f.html#ZLARF.1">ZLARF</a>( <span class="string">'Left'</span>, M-OFFPI+1, N-I, A( OFFPI, I ), 1,
+     $                  DCONJG( TAU( I ) ), A( OFFPI, I+1 ), LDA,
+     $                  WORK( 1 ) )
+            A( OFFPI, I ) = AII
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Update partial column norms.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 10 J = I + 1, N
+            IF( VN1( J ).NE.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              NOTE: The following 4 lines follow from the analysis in
+</span><span class="comment">*</span><span class="comment">              Lapack Working Note 176.
+</span><span class="comment">*</span><span class="comment">
+</span>               TEMP = ONE - ( ABS( A( OFFPI, J ) ) / VN1( J ) )**2
+               TEMP = MAX( TEMP, ZERO )
+               TEMP2 = TEMP*( VN1( J ) / VN2( J ) )**2
+               IF( TEMP2 .LE. TOL3Z ) THEN
+                  IF( OFFPI.LT.M ) THEN
+                     VN1( J ) = DZNRM2( M-OFFPI, A( OFFPI+1, J ), 1 )
+                     VN2( J ) = VN1( J )
+                  ELSE
+                     VN1( J ) = ZERO
+                     VN2( J ) = ZERO
+                  END IF
+               ELSE
+                  VN1( J ) = VN1( J )*SQRT( TEMP )
+               END IF
+            END IF
+   10    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>   20 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZLAQP2.177"></a><a href="zlaqp2.f.html#ZLAQP2.1">ZLAQP2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

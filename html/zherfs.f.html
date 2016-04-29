@@ -1,0 +1,367 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zherfs.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZHERFS.1"></a><a href="zherfs.f.html#ZHERFS.1">ZHERFS</a>( UPLO, N, NRHS, A, LDA, AF, LDAF, IPIV, B, LDB,
+     $                   X, LDX, FERR, BERR, WORK, RWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Modified to call <a name="ZLACN2.8"></a><a href="zlacn2.f.html#ZLACN2.1">ZLACN2</a> in place of <a name="ZLACON.8"></a><a href="zlacon.f.html#ZLACON.1">ZLACON</a>, 10 Feb 03, SJH.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          UPLO
+      INTEGER            INFO, LDA, LDAF, LDB, LDX, N, NRHS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IPIV( * )
+      DOUBLE PRECISION   BERR( * ), FERR( * ), RWORK( * )
+      COMPLEX*16         A( LDA, * ), AF( LDAF, * ), B( LDB, * ),
+     $                   WORK( * ), X( LDX, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZHERFS.24"></a><a href="zherfs.f.html#ZHERFS.1">ZHERFS</a> improves the computed solution to a system of linear
+</span><span class="comment">*</span><span class="comment">  equations when the coefficient matrix is Hermitian indefinite, and
+</span><span class="comment">*</span><span class="comment">  provides error bounds and backward error estimates for the solution.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangle of A is stored;
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangle of A is stored.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NRHS    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of right hand sides, i.e., the number of columns
+</span><span class="comment">*</span><span class="comment">          of the matrices B and X.  NRHS &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input) COMPLEX*16 array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          The Hermitian matrix A.  If UPLO = 'U', the leading N-by-N
+</span><span class="comment">*</span><span class="comment">          upper triangular part of A contains the upper triangular part
+</span><span class="comment">*</span><span class="comment">          of the matrix A, and the strictly lower triangular part of A
+</span><span class="comment">*</span><span class="comment">          is not referenced.  If UPLO = 'L', the leading N-by-N lower
+</span><span class="comment">*</span><span class="comment">          triangular part of A contains the lower triangular part of
+</span><span class="comment">*</span><span class="comment">          the matrix A, and the strictly upper triangular part of A is
+</span><span class="comment">*</span><span class="comment">          not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AF      (input) COMPLEX*16 array, dimension (LDAF,N)
+</span><span class="comment">*</span><span class="comment">          The factored form of the matrix A.  AF contains the block
+</span><span class="comment">*</span><span class="comment">          diagonal matrix D and the multipliers used to obtain the
+</span><span class="comment">*</span><span class="comment">          factor U or L from the factorization A = U*D*U**H or
+</span><span class="comment">*</span><span class="comment">          A = L*D*L**H as computed by <a name="ZHETRF.58"></a><a href="zhetrf.f.html#ZHETRF.1">ZHETRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDAF    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array AF.  LDAF &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IPIV    (input) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          Details of the interchanges and the block structure of D
+</span><span class="comment">*</span><span class="comment">          as determined by <a name="ZHETRF.65"></a><a href="zhetrf.f.html#ZHETRF.1">ZHETRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input) COMPLEX*16 array, dimension (LDB,NRHS)
+</span><span class="comment">*</span><span class="comment">          The right hand side matrix B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B.  LDB &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X       (input/output) COMPLEX*16 array, dimension (LDX,NRHS)
+</span><span class="comment">*</span><span class="comment">          On entry, the solution matrix X, as computed by <a name="ZHETRS.74"></a><a href="zhetrs.f.html#ZHETRS.1">ZHETRS</a>.
+</span><span class="comment">*</span><span class="comment">          On exit, the improved solution matrix X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDX     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array X.  LDX &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  FERR    (output) DOUBLE PRECISION array, dimension (NRHS)
+</span><span class="comment">*</span><span class="comment">          The estimated forward error bound for each solution vector
+</span><span class="comment">*</span><span class="comment">          X(j) (the j-th column of the solution matrix X).
+</span><span class="comment">*</span><span class="comment">          If XTRUE is the true solution corresponding to X(j), FERR(j)
+</span><span class="comment">*</span><span class="comment">          is an estimated upper bound for the magnitude of the largest
+</span><span class="comment">*</span><span class="comment">          element in (X(j) - XTRUE) divided by the magnitude of the
+</span><span class="comment">*</span><span class="comment">          largest element in X(j).  The estimate is as reliable as
+</span><span class="comment">*</span><span class="comment">          the estimate for RCOND, and is almost always a slight
+</span><span class="comment">*</span><span class="comment">          overestimate of the true error.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BERR    (output) DOUBLE PRECISION array, dimension (NRHS)
+</span><span class="comment">*</span><span class="comment">          The componentwise relative backward error of each solution
+</span><span class="comment">*</span><span class="comment">          vector X(j) (i.e., the smallest relative change in
+</span><span class="comment">*</span><span class="comment">          any element of A or B that makes X(j) an exact solution).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) COMPLEX*16 array, dimension (2*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RWORK   (workspace) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Internal Parameters
+</span><span class="comment">*</span><span class="comment">  ===================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ITMAX is the maximum number of steps of iterative refinement.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      INTEGER            ITMAX
+      PARAMETER          ( ITMAX = 5 )
+      DOUBLE PRECISION   ZERO
+      PARAMETER          ( ZERO = 0.0D+0 )
+      COMPLEX*16         ONE
+      PARAMETER          ( ONE = ( 1.0D+0, 0.0D+0 ) )
+      DOUBLE PRECISION   TWO
+      PARAMETER          ( TWO = 2.0D+0 )
+      DOUBLE PRECISION   THREE
+      PARAMETER          ( THREE = 3.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            UPPER
+      INTEGER            COUNT, I, J, K, KASE, NZ
+      DOUBLE PRECISION   EPS, LSTRES, S, SAFE1, SAFE2, SAFMIN, XK
+      COMPLEX*16         ZDUM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      INTEGER            ISAVE( 3 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.132"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, ZAXPY, ZCOPY, ZHEMV, <a name="ZHETRS.132"></a><a href="zhetrs.f.html#ZHETRS.1">ZHETRS</a>, <a name="ZLACN2.132"></a><a href="zlacn2.f.html#ZLACN2.1">ZLACN2</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, DBLE, DIMAG, MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.138"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      DOUBLE PRECISION   <a name="DLAMCH.139"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+      EXTERNAL           <a name="LSAME.140"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="DLAMCH.140"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Functions ..
+</span>      DOUBLE PRECISION   CABS1
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Function definitions ..
+</span>      CABS1( ZDUM ) = ABS( DBLE( ZDUM ) ) + ABS( DIMAG( ZDUM ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      UPPER = <a name="LSAME.153"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> )
+      IF( .NOT.UPPER .AND. .NOT.<a name="LSAME.154"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( NRHS.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+         INFO = -5
+      ELSE IF( LDAF.LT.MAX( 1, N ) ) THEN
+         INFO = -7
+      ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
+         INFO = -10
+      ELSE IF( LDX.LT.MAX( 1, N ) ) THEN
+         INFO = -12
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.170"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZHERFS.170"></a><a href="zherfs.f.html#ZHERFS.1">ZHERFS</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 .OR. NRHS.EQ.0 ) THEN
+         DO 10 J = 1, NRHS
+            FERR( J ) = ZERO
+            BERR( J ) = ZERO
+   10    CONTINUE
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     NZ = maximum number of nonzero elements in each row of A, plus 1
+</span><span class="comment">*</span><span class="comment">
+</span>      NZ = N + 1
+      EPS = <a name="DLAMCH.187"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Epsilon'</span> )
+      SAFMIN = <a name="DLAMCH.188"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Safe minimum'</span> )
+      SAFE1 = NZ*SAFMIN
+      SAFE2 = SAFE1 / EPS
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Do for each right hand side
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 140 J = 1, NRHS
+<span class="comment">*</span><span class="comment">
+</span>         COUNT = 1
+         LSTRES = THREE
+   20    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Loop until stopping criterion is satisfied.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute residual R = B - A * X
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL ZCOPY( N, B( 1, J ), 1, WORK, 1 )
+         CALL ZHEMV( UPLO, N, -ONE, A, LDA, X( 1, J ), 1, ONE, WORK, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute componentwise relative backward error from formula
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        max(i) ( abs(R(i)) / ( abs(A)*abs(X) + abs(B) )(i) )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        where abs(Z) is the componentwise absolute value of the matrix
+</span><span class="comment">*</span><span class="comment">        or vector Z.  If the i-th component of the denominator is less
+</span><span class="comment">*</span><span class="comment">        than SAFE2, then SAFE1 is added to the i-th components of the
+</span><span class="comment">*</span><span class="comment">        numerator and denominator before dividing.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 30 I = 1, N
+            RWORK( I ) = CABS1( B( I, J ) )
+   30    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute abs(A)*abs(X) + abs(B).
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( UPPER ) THEN
+            DO 50 K = 1, N
+               S = ZERO
+               XK = CABS1( X( K, J ) )
+               DO 40 I = 1, K - 1
+                  RWORK( I ) = RWORK( I ) + CABS1( A( I, K ) )*XK
+                  S = S + CABS1( A( I, K ) )*CABS1( X( I, J ) )
+   40          CONTINUE
+               RWORK( K ) = RWORK( K ) + ABS( DBLE( A( K, K ) ) )*XK + S
+   50       CONTINUE
+         ELSE
+            DO 70 K = 1, N
+               S = ZERO
+               XK = CABS1( X( K, J ) )
+               RWORK( K ) = RWORK( K ) + ABS( DBLE( A( K, K ) ) )*XK
+               DO 60 I = K + 1, N
+                  RWORK( I ) = RWORK( I ) + CABS1( A( I, K ) )*XK
+                  S = S + CABS1( A( I, K ) )*CABS1( X( I, J ) )
+   60          CONTINUE
+               RWORK( K ) = RWORK( K ) + S
+   70       CONTINUE
+         END IF
+         S = ZERO
+         DO 80 I = 1, N
+            IF( RWORK( I ).GT.SAFE2 ) THEN
+               S = MAX( S, CABS1( WORK( I ) ) / RWORK( I ) )
+            ELSE
+               S = MAX( S, ( CABS1( WORK( I ) )+SAFE1 ) /
+     $             ( RWORK( I )+SAFE1 ) )
+            END IF
+   80    CONTINUE
+         BERR( J ) = S
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Test stopping criterion. Continue iterating if
+</span><span class="comment">*</span><span class="comment">           1) The residual BERR(J) is larger than machine epsilon, and
+</span><span class="comment">*</span><span class="comment">           2) BERR(J) decreased by at least a factor of 2 during the
+</span><span class="comment">*</span><span class="comment">              last iteration, and
+</span><span class="comment">*</span><span class="comment">           3) At most ITMAX iterations tried.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( BERR( J ).GT.EPS .AND. TWO*BERR( J ).LE.LSTRES .AND.
+     $       COUNT.LE.ITMAX ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Update solution and try again.
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="ZHETRS.266"></a><a href="zhetrs.f.html#ZHETRS.1">ZHETRS</a>( UPLO, N, 1, AF, LDAF, IPIV, WORK, N, INFO )
+            CALL ZAXPY( N, ONE, WORK, 1, X( 1, J ), 1 )
+            LSTRES = BERR( J )
+            COUNT = COUNT + 1
+            GO TO 20
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Bound error from formula
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        norm(X - XTRUE) / norm(X) .le. FERR =
+</span><span class="comment">*</span><span class="comment">        norm( abs(inv(A))*
+</span><span class="comment">*</span><span class="comment">           ( abs(R) + NZ*EPS*( abs(A)*abs(X)+abs(B) ))) / norm(X)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        where
+</span><span class="comment">*</span><span class="comment">          norm(Z) is the magnitude of the largest component of Z
+</span><span class="comment">*</span><span class="comment">          inv(A) is the inverse of A
+</span><span class="comment">*</span><span class="comment">          abs(Z) is the componentwise absolute value of the matrix or
+</span><span class="comment">*</span><span class="comment">             vector Z
+</span><span class="comment">*</span><span class="comment">          NZ is the maximum number of nonzeros in any row of A, plus 1
+</span><span class="comment">*</span><span class="comment">          EPS is machine epsilon
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        The i-th component of abs(R)+NZ*EPS*(abs(A)*abs(X)+abs(B))
+</span><span class="comment">*</span><span class="comment">        is incremented by SAFE1 if the i-th component of
+</span><span class="comment">*</span><span class="comment">        abs(A)*abs(X) + abs(B) is less than SAFE2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Use <a name="ZLACN2.291"></a><a href="zlacn2.f.html#ZLACN2.1">ZLACN2</a> to estimate the infinity-norm of the matrix
+</span><span class="comment">*</span><span class="comment">           inv(A) * diag(W),
+</span><span class="comment">*</span><span class="comment">        where W = abs(R) + NZ*EPS*( abs(A)*abs(X)+abs(B) )))
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 90 I = 1, N
+            IF( RWORK( I ).GT.SAFE2 ) THEN
+               RWORK( I ) = CABS1( WORK( I ) ) + NZ*EPS*RWORK( I )
+            ELSE
+               RWORK( I ) = CABS1( WORK( I ) ) + NZ*EPS*RWORK( I ) +
+     $                      SAFE1
+            END IF
+   90    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         KASE = 0
+  100    CONTINUE
+         CALL <a name="ZLACN2.306"></a><a href="zlacn2.f.html#ZLACN2.1">ZLACN2</a>( N, WORK( N+1 ), WORK, FERR( J ), KASE, ISAVE )
+         IF( KASE.NE.0 ) THEN
+            IF( KASE.EQ.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Multiply by diag(W)*inv(A').
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="ZHETRS.312"></a><a href="zhetrs.f.html#ZHETRS.1">ZHETRS</a>( UPLO, N, 1, AF, LDAF, IPIV, WORK, N, INFO )
+               DO 110 I = 1, N
+                  WORK( I ) = RWORK( I )*WORK( I )
+  110          CONTINUE
+            ELSE IF( KASE.EQ.2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Multiply by inv(A)*diag(W).
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 120 I = 1, N
+                  WORK( I ) = RWORK( I )*WORK( I )
+  120          CONTINUE
+               CALL <a name="ZHETRS.323"></a><a href="zhetrs.f.html#ZHETRS.1">ZHETRS</a>( UPLO, N, 1, AF, LDAF, IPIV, WORK, N, INFO )
+            END IF
+            GO TO 100
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Normalize error.
+</span><span class="comment">*</span><span class="comment">
+</span>         LSTRES = ZERO
+         DO 130 I = 1, N
+            LSTRES = MAX( LSTRES, CABS1( X( I, J ) ) )
+  130    CONTINUE
+         IF( LSTRES.NE.ZERO )
+     $      FERR( J ) = FERR( J ) / LSTRES
+<span class="comment">*</span><span class="comment">
+</span>  140 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZHERFS.341"></a><a href="zherfs.f.html#ZHERFS.1">ZHERFS</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

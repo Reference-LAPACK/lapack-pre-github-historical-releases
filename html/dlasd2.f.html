@@ -1,0 +1,536 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlasd2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLASD2.1"></a><a href="dlasd2.f.html#DLASD2.1">DLASD2</a>( NL, NR, SQRE, K, D, Z, ALPHA, BETA, U, LDU, VT,
+     $                   LDVT, DSIGMA, U2, LDU2, VT2, LDVT2, IDXP, IDX,
+     $                   IDXC, IDXQ, COLTYP, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, K, LDU, LDU2, LDVT, LDVT2, NL, NR, SQRE
+      DOUBLE PRECISION   ALPHA, BETA
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            COLTYP( * ), IDX( * ), IDXC( * ), IDXP( * ),
+     $                   IDXQ( * )
+      DOUBLE PRECISION   D( * ), DSIGMA( * ), U( LDU, * ),
+     $                   U2( LDU2, * ), VT( LDVT, * ), VT2( LDVT2, * ),
+     $                   Z( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLASD2.24"></a><a href="dlasd2.f.html#DLASD2.1">DLASD2</a> merges the two sets of singular values together into a single
+</span><span class="comment">*</span><span class="comment">  sorted set.  Then it tries to deflate the size of the problem.
+</span><span class="comment">*</span><span class="comment">  There are two ways in which deflation can occur:  when two or more
+</span><span class="comment">*</span><span class="comment">  singular values are close together or if there is a tiny entry in the
+</span><span class="comment">*</span><span class="comment">  Z vector.  For each such occurrence the order of the related secular
+</span><span class="comment">*</span><span class="comment">  equation problem is reduced by one.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLASD2.31"></a><a href="dlasd2.f.html#DLASD2.1">DLASD2</a> is called from <a name="DLASD1.31"></a><a href="dlasd1.f.html#DLASD1.1">DLASD1</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NL     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The row dimension of the upper block.  NL &gt;= 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NR     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The row dimension of the lower block.  NR &gt;= 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SQRE   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         = 0: the lower block is an NR-by-NR square matrix.
+</span><span class="comment">*</span><span class="comment">         = 1: the lower block is an NR-by-(NR+1) rectangular matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">         The bidiagonal matrix has N = NL + NR + 1 rows and
+</span><span class="comment">*</span><span class="comment">         M = N + SQRE &gt;= N columns.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  K      (output) INTEGER
+</span><span class="comment">*</span><span class="comment">         Contains the dimension of the non-deflated matrix,
+</span><span class="comment">*</span><span class="comment">         This is the order of the related secular equation. 1 &lt;= K &lt;=N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D      (input/output) DOUBLE PRECISION array, dimension(N)
+</span><span class="comment">*</span><span class="comment">         On entry D contains the singular values of the two submatrices
+</span><span class="comment">*</span><span class="comment">         to be combined.  On exit D contains the trailing (N-K) updated
+</span><span class="comment">*</span><span class="comment">         singular values (those which were deflated) sorted into
+</span><span class="comment">*</span><span class="comment">         increasing order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z      (output) DOUBLE PRECISION array, dimension(N)
+</span><span class="comment">*</span><span class="comment">         On exit Z contains the updating row vector in the secular
+</span><span class="comment">*</span><span class="comment">         equation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ALPHA  (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">         Contains the diagonal element associated with the added row.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BETA   (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">         Contains the off-diagonal element associated with the added
+</span><span class="comment">*</span><span class="comment">         row.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  U      (input/output) DOUBLE PRECISION array, dimension(LDU,N)
+</span><span class="comment">*</span><span class="comment">         On entry U contains the left singular vectors of two
+</span><span class="comment">*</span><span class="comment">         submatrices in the two square blocks with corners at (1,1),
+</span><span class="comment">*</span><span class="comment">         (NL, NL), and (NL+2, NL+2), (N,N).
+</span><span class="comment">*</span><span class="comment">         On exit U contains the trailing (N-K) updated left singular
+</span><span class="comment">*</span><span class="comment">         vectors (those which were deflated) in its last N-K columns.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDU    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of the array U.  LDU &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VT     (input/output) DOUBLE PRECISION array, dimension(LDVT,M)
+</span><span class="comment">*</span><span class="comment">         On entry VT' contains the right singular vectors of two
+</span><span class="comment">*</span><span class="comment">         submatrices in the two square blocks with corners at (1,1),
+</span><span class="comment">*</span><span class="comment">         (NL+1, NL+1), and (NL+2, NL+2), (M,M).
+</span><span class="comment">*</span><span class="comment">         On exit VT' contains the trailing (N-K) updated right singular
+</span><span class="comment">*</span><span class="comment">         vectors (those which were deflated) in its last N-K columns.
+</span><span class="comment">*</span><span class="comment">         In case SQRE =1, the last row of VT spans the right null
+</span><span class="comment">*</span><span class="comment">         space.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDVT   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of the array VT.  LDVT &gt;= M.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DSIGMA (output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         Contains a copy of the diagonal elements (K-1 singular values
+</span><span class="comment">*</span><span class="comment">         and one zero) in the secular equation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  U2     (output) DOUBLE PRECISION array, dimension(LDU2,N)
+</span><span class="comment">*</span><span class="comment">         Contains a copy of the first K-1 left singular vectors which
+</span><span class="comment">*</span><span class="comment">         will be used by <a name="DLASD3.98"></a><a href="dlasd3.f.html#DLASD3.1">DLASD3</a> in a matrix multiply (DGEMM) to solve
+</span><span class="comment">*</span><span class="comment">         for the new left singular vectors. U2 is arranged into four
+</span><span class="comment">*</span><span class="comment">         blocks. The first block contains a column with 1 at NL+1 and
+</span><span class="comment">*</span><span class="comment">         zero everywhere else; the second block contains non-zero
+</span><span class="comment">*</span><span class="comment">         entries only at and above NL; the third contains non-zero
+</span><span class="comment">*</span><span class="comment">         entries only below NL+1; and the fourth is dense.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDU2   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of the array U2.  LDU2 &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VT2    (output) DOUBLE PRECISION array, dimension(LDVT2,N)
+</span><span class="comment">*</span><span class="comment">         VT2' contains a copy of the first K right singular vectors
+</span><span class="comment">*</span><span class="comment">         which will be used by <a name="DLASD3.110"></a><a href="dlasd3.f.html#DLASD3.1">DLASD3</a> in a matrix multiply (DGEMM) to
+</span><span class="comment">*</span><span class="comment">         solve for the new right singular vectors. VT2 is arranged into
+</span><span class="comment">*</span><span class="comment">         three blocks. The first block contains a row that corresponds
+</span><span class="comment">*</span><span class="comment">         to the special 0 diagonal element in SIGMA; the second block
+</span><span class="comment">*</span><span class="comment">         contains non-zeros only at and before NL +1; the third block
+</span><span class="comment">*</span><span class="comment">         contains non-zeros only at and after  NL +2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDVT2  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of the array VT2.  LDVT2 &gt;= M.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IDXP   (workspace) INTEGER array dimension(N)
+</span><span class="comment">*</span><span class="comment">         This will contain the permutation used to place deflated
+</span><span class="comment">*</span><span class="comment">         values of D at the end of the array. On output IDXP(2:K)
+</span><span class="comment">*</span><span class="comment">         points to the nondeflated D-values and IDXP(K+1:N)
+</span><span class="comment">*</span><span class="comment">         points to the deflated singular values.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IDX    (workspace) INTEGER array dimension(N)
+</span><span class="comment">*</span><span class="comment">         This will contain the permutation used to sort the contents of
+</span><span class="comment">*</span><span class="comment">         D into ascending order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IDXC   (output) INTEGER array dimension(N)
+</span><span class="comment">*</span><span class="comment">         This will contain the permutation used to arrange the columns
+</span><span class="comment">*</span><span class="comment">         of the deflated U matrix into three groups:  the first group
+</span><span class="comment">*</span><span class="comment">         contains non-zero entries only at and above NL, the second
+</span><span class="comment">*</span><span class="comment">         contains non-zero entries only below NL+2, and the third is
+</span><span class="comment">*</span><span class="comment">         dense.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IDXQ   (input/output) INTEGER array dimension(N)
+</span><span class="comment">*</span><span class="comment">         This contains the permutation which separately sorts the two
+</span><span class="comment">*</span><span class="comment">         sub-problems in D into ascending order.  Note that entries in
+</span><span class="comment">*</span><span class="comment">         the first hlaf of this permutation must first be moved one
+</span><span class="comment">*</span><span class="comment">         position backward; and entries in the second half
+</span><span class="comment">*</span><span class="comment">         must first have NL+1 added to their values.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  COLTYP (workspace/output) INTEGER array dimension(N)
+</span><span class="comment">*</span><span class="comment">         As workspace, this will contain a label which will indicate
+</span><span class="comment">*</span><span class="comment">         which of the following types a column in the U2 matrix or a
+</span><span class="comment">*</span><span class="comment">         row in the VT2 matrix is:
+</span><span class="comment">*</span><span class="comment">         1 : non-zero in the upper half only
+</span><span class="comment">*</span><span class="comment">         2 : non-zero in the lower half only
+</span><span class="comment">*</span><span class="comment">         3 : dense
+</span><span class="comment">*</span><span class="comment">         4 : deflated
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">         On exit, it is an array of dimension 4, with COLTYP(I) being
+</span><span class="comment">*</span><span class="comment">         the dimension of the I-th type columns.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO   (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit.
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Ming Gu and Huan Ren, Computer Science Division, University of
+</span><span class="comment">*</span><span class="comment">     California at Berkeley, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE, TWO, EIGHT
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0, TWO = 2.0D+0,
+     $                   EIGHT = 8.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      INTEGER            CTOT( 4 ), PSM( 4 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            CT, I, IDXI, IDXJ, IDXJP, J, JP, JPREV, K2, M,
+     $                   N, NLP1, NLP2
+      DOUBLE PRECISION   C, EPS, HLFTOL, S, TAU, TOL, Z1
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      DOUBLE PRECISION   <a name="DLAMCH.183"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLAPY2.183"></a><a href="dlapy2.f.html#DLAPY2.1">DLAPY2</a>
+      EXTERNAL           <a name="DLAMCH.184"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="DLAPY2.184"></a><a href="dlapy2.f.html#DLAPY2.1">DLAPY2</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DCOPY, <a name="DLACPY.187"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>, <a name="DLAMRG.187"></a><a href="dlamrg.f.html#DLAMRG.1">DLAMRG</a>, <a name="DLASET.187"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>, DROT, <a name="XERBLA.187"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+<span class="comment">*</span><span class="comment">
+</span>      IF( NL.LT.1 ) THEN
+         INFO = -1
+      ELSE IF( NR.LT.1 ) THEN
+         INFO = -2
+      ELSE IF( ( SQRE.NE.1 ) .AND. ( SQRE.NE.0 ) ) THEN
+         INFO = -3
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      N = NL + NR + 1
+      M = N + SQRE
+<span class="comment">*</span><span class="comment">
+</span>      IF( LDU.LT.N ) THEN
+         INFO = -10
+      ELSE IF( LDVT.LT.M ) THEN
+         INFO = -12
+      ELSE IF( LDU2.LT.N ) THEN
+         INFO = -15
+      ELSE IF( LDVT2.LT.M ) THEN
+         INFO = -17
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.219"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DLASD2.219"></a><a href="dlasd2.f.html#DLASD2.1">DLASD2</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      NLP1 = NL + 1
+      NLP2 = NL + 2
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Generate the first part of the vector Z; and move the singular
+</span><span class="comment">*</span><span class="comment">     values in the first part of D one position backward.
+</span><span class="comment">*</span><span class="comment">
+</span>      Z1 = ALPHA*VT( NLP1, NLP1 )
+      Z( 1 ) = Z1
+      DO 10 I = NL, 1, -1
+         Z( I+1 ) = ALPHA*VT( I, NLP1 )
+         D( I+1 ) = D( I )
+         IDXQ( I+1 ) = IDXQ( I ) + 1
+   10 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Generate the second part of the vector Z.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 20 I = NLP2, M
+         Z( I ) = BETA*VT( I, NLP2 )
+   20 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Initialize some reference arrays.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 30 I = 2, NLP1
+         COLTYP( I ) = 1
+   30 CONTINUE
+      DO 40 I = NLP2, N
+         COLTYP( I ) = 2
+   40 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Sort the singular values into increasing order
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 50 I = NLP2, N
+         IDXQ( I ) = IDXQ( I ) + NLP1
+   50 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     DSIGMA, IDXC, IDXC, and the first column of U2
+</span><span class="comment">*</span><span class="comment">     are used as storage space.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 60 I = 2, N
+         DSIGMA( I ) = D( IDXQ( I ) )
+         U2( I, 1 ) = Z( IDXQ( I ) )
+         IDXC( I ) = COLTYP( IDXQ( I ) )
+   60 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      CALL <a name="DLAMRG.267"></a><a href="dlamrg.f.html#DLAMRG.1">DLAMRG</a>( NL, NR, DSIGMA( 2 ), 1, 1, IDX( 2 ) )
+<span class="comment">*</span><span class="comment">
+</span>      DO 70 I = 2, N
+         IDXI = 1 + IDX( I )
+         D( I ) = DSIGMA( IDXI )
+         Z( I ) = U2( IDXI, 1 )
+         COLTYP( I ) = IDXC( IDXI )
+   70 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Calculate the allowable deflation tolerance
+</span><span class="comment">*</span><span class="comment">
+</span>      EPS = <a name="DLAMCH.278"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Epsilon'</span> )
+      TOL = MAX( ABS( ALPHA ), ABS( BETA ) )
+      TOL = EIGHT*EPS*MAX( ABS( D( N ) ), TOL )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     There are 2 kinds of deflation -- first a value in the z-vector
+</span><span class="comment">*</span><span class="comment">     is small, second two (or more) singular values are very close
+</span><span class="comment">*</span><span class="comment">     together (their difference is small).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If the value in the z-vector is small, we simply permute the
+</span><span class="comment">*</span><span class="comment">     array so that the corresponding singular value is moved to the
+</span><span class="comment">*</span><span class="comment">     end.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If two values in the D-vector are close, we perform a two-sided
+</span><span class="comment">*</span><span class="comment">     rotation designed to make one of the corresponding z-vector
+</span><span class="comment">*</span><span class="comment">     entries zero, and then permute the array so that the deflated
+</span><span class="comment">*</span><span class="comment">     singular value is moved to the end.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If there are multiple singular values then the problem deflates.
+</span><span class="comment">*</span><span class="comment">     Here the number of equal singular values are found.  As each equal
+</span><span class="comment">*</span><span class="comment">     singular value is found, an elementary reflector is computed to
+</span><span class="comment">*</span><span class="comment">     rotate the corresponding singular subspace so that the
+</span><span class="comment">*</span><span class="comment">     corresponding components of Z are zero in this new basis.
+</span><span class="comment">*</span><span class="comment">
+</span>      K = 1
+      K2 = N + 1
+      DO 80 J = 2, N
+         IF( ABS( Z( J ) ).LE.TOL ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Deflate due to small z component.
+</span><span class="comment">*</span><span class="comment">
+</span>            K2 = K2 - 1
+            IDXP( K2 ) = J
+            COLTYP( J ) = 4
+            IF( J.EQ.N )
+     $         GO TO 120
+         ELSE
+            JPREV = J
+            GO TO 90
+         END IF
+   80 CONTINUE
+   90 CONTINUE
+      J = JPREV
+  100 CONTINUE
+      J = J + 1
+      IF( J.GT.N )
+     $   GO TO 110
+      IF( ABS( Z( J ) ).LE.TOL ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Deflate due to small z component.
+</span><span class="comment">*</span><span class="comment">
+</span>         K2 = K2 - 1
+         IDXP( K2 ) = J
+         COLTYP( J ) = 4
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Check if singular values are close enough to allow deflation.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( ABS( D( J )-D( JPREV ) ).LE.TOL ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Deflation is possible.
+</span><span class="comment">*</span><span class="comment">
+</span>            S = Z( JPREV )
+            C = Z( J )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Find sqrt(a**2+b**2) without overflow or
+</span><span class="comment">*</span><span class="comment">           destructive underflow.
+</span><span class="comment">*</span><span class="comment">
+</span>            TAU = <a name="DLAPY2.345"></a><a href="dlapy2.f.html#DLAPY2.1">DLAPY2</a>( C, S )
+            C = C / TAU
+            S = -S / TAU
+            Z( J ) = TAU
+            Z( JPREV ) = ZERO
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Apply back the Givens rotation to the left and right
+</span><span class="comment">*</span><span class="comment">           singular vector matrices.
+</span><span class="comment">*</span><span class="comment">
+</span>            IDXJP = IDXQ( IDX( JPREV )+1 )
+            IDXJ = IDXQ( IDX( J )+1 )
+            IF( IDXJP.LE.NLP1 ) THEN
+               IDXJP = IDXJP - 1
+            END IF
+            IF( IDXJ.LE.NLP1 ) THEN
+               IDXJ = IDXJ - 1
+            END IF
+            CALL DROT( N, U( 1, IDXJP ), 1, U( 1, IDXJ ), 1, C, S )
+            CALL DROT( M, VT( IDXJP, 1 ), LDVT, VT( IDXJ, 1 ), LDVT, C,
+     $                 S )
+            IF( COLTYP( J ).NE.COLTYP( JPREV ) ) THEN
+               COLTYP( J ) = 3
+            END IF
+            COLTYP( JPREV ) = 4
+            K2 = K2 - 1
+            IDXP( K2 ) = JPREV
+            JPREV = J
+         ELSE
+            K = K + 1
+            U2( K, 1 ) = Z( JPREV )
+            DSIGMA( K ) = D( JPREV )
+            IDXP( K ) = JPREV
+            JPREV = J
+         END IF
+      END IF
+      GO TO 100
+  110 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Record the last singular value.
+</span><span class="comment">*</span><span class="comment">
+</span>      K = K + 1
+      U2( K, 1 ) = Z( JPREV )
+      DSIGMA( K ) = D( JPREV )
+      IDXP( K ) = JPREV
+<span class="comment">*</span><span class="comment">
+</span>  120 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Count up the total number of the various types of columns, then
+</span><span class="comment">*</span><span class="comment">     form a permutation which positions the four column types into
+</span><span class="comment">*</span><span class="comment">     four groups of uniform structure (although one or more of these
+</span><span class="comment">*</span><span class="comment">     groups may be empty).
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 130 J = 1, 4
+         CTOT( J ) = 0
+  130 CONTINUE
+      DO 140 J = 2, N
+         CT = COLTYP( J )
+         CTOT( CT ) = CTOT( CT ) + 1
+  140 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     PSM(*) = Position in SubMatrix (of types 1 through 4)
+</span><span class="comment">*</span><span class="comment">
+</span>      PSM( 1 ) = 2
+      PSM( 2 ) = 2 + CTOT( 1 )
+      PSM( 3 ) = PSM( 2 ) + CTOT( 2 )
+      PSM( 4 ) = PSM( 3 ) + CTOT( 3 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Fill out the IDXC array so that the permutation which it induces
+</span><span class="comment">*</span><span class="comment">     will place all type-1 columns first, all type-2 columns next,
+</span><span class="comment">*</span><span class="comment">     then all type-3's, and finally all type-4's, starting from the
+</span><span class="comment">*</span><span class="comment">     second column. This applies similarly to the rows of VT.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 150 J = 2, N
+         JP = IDXP( J )
+         CT = COLTYP( JP )
+         IDXC( PSM( CT ) ) = J
+         PSM( CT ) = PSM( CT ) + 1
+  150 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Sort the singular values and corresponding singular vectors into
+</span><span class="comment">*</span><span class="comment">     DSIGMA, U2, and VT2 respectively.  The singular values/vectors
+</span><span class="comment">*</span><span class="comment">     which were not deflated go into the first K slots of DSIGMA, U2,
+</span><span class="comment">*</span><span class="comment">     and VT2 respectively, while those which were deflated go into the
+</span><span class="comment">*</span><span class="comment">     last N - K slots, except that the first column/row will be treated
+</span><span class="comment">*</span><span class="comment">     separately.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 160 J = 2, N
+         JP = IDXP( J )
+         DSIGMA( J ) = D( JP )
+         IDXJ = IDXQ( IDX( IDXP( IDXC( J ) ) )+1 )
+         IF( IDXJ.LE.NLP1 ) THEN
+            IDXJ = IDXJ - 1
+         END IF
+         CALL DCOPY( N, U( 1, IDXJ ), 1, U2( 1, J ), 1 )
+         CALL DCOPY( M, VT( IDXJ, 1 ), LDVT, VT2( J, 1 ), LDVT2 )
+  160 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Determine DSIGMA(1), DSIGMA(2) and Z(1)
+</span><span class="comment">*</span><span class="comment">
+</span>      DSIGMA( 1 ) = ZERO
+      HLFTOL = TOL / TWO
+      IF( ABS( DSIGMA( 2 ) ).LE.HLFTOL )
+     $   DSIGMA( 2 ) = HLFTOL
+      IF( M.GT.N ) THEN
+         Z( 1 ) = <a name="DLAPY2.449"></a><a href="dlapy2.f.html#DLAPY2.1">DLAPY2</a>( Z1, Z( M ) )
+         IF( Z( 1 ).LE.TOL ) THEN
+            C = ONE
+            S = ZERO
+            Z( 1 ) = TOL
+         ELSE
+            C = Z1 / Z( 1 )
+            S = Z( M ) / Z( 1 )
+         END IF
+      ELSE
+         IF( ABS( Z1 ).LE.TOL ) THEN
+            Z( 1 ) = TOL
+         ELSE
+            Z( 1 ) = Z1
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Move the rest of the updating row to Z.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL DCOPY( K-1, U2( 2, 1 ), 1, Z( 2 ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Determine the first column of U2, the first row of VT2 and the
+</span><span class="comment">*</span><span class="comment">     last row of VT.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="DLASET.473"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'A'</span>, N, 1, ZERO, ZERO, U2, LDU2 )
+      U2( NLP1, 1 ) = ONE
+      IF( M.GT.N ) THEN
+         DO 170 I = 1, NLP1
+            VT( M, I ) = -S*VT( NLP1, I )
+            VT2( 1, I ) = C*VT( NLP1, I )
+  170    CONTINUE
+         DO 180 I = NLP2, M
+            VT2( 1, I ) = S*VT( M, I )
+            VT( M, I ) = C*VT( M, I )
+  180    CONTINUE
+      ELSE
+         CALL DCOPY( M, VT( NLP1, 1 ), LDVT, VT2( 1, 1 ), LDVT2 )
+      END IF
+      IF( M.GT.N ) THEN
+         CALL DCOPY( M, VT( M, 1 ), LDVT, VT2( M, 1 ), LDVT2 )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The deflated singular values and their corresponding vectors go
+</span><span class="comment">*</span><span class="comment">     into the back of D, U, and V respectively.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.GT.K ) THEN
+         CALL DCOPY( N-K, DSIGMA( K+1 ), 1, D( K+1 ), 1 )
+         CALL <a name="DLACPY.496"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>( <span class="string">'A'</span>, N, N-K, U2( 1, K+1 ), LDU2, U( 1, K+1 ),
+     $                LDU )
+         CALL <a name="DLACPY.498"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>( <span class="string">'A'</span>, N-K, M, VT2( K+1, 1 ), LDVT2, VT( K+1, 1 ),
+     $                LDVT )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Copy CTOT into COLTYP for referencing in <a name="DLASD3.502"></a><a href="dlasd3.f.html#DLASD3.1">DLASD3</a>.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 190 J = 1, 4
+         COLTYP( J ) = CTOT( J )
+  190 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLASD2.510"></a><a href="dlasd2.f.html#DLASD2.1">DLASD2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,877 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slamch.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      REAL             FUNCTION <a name="SLAMCH.1"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( CMACH )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          CMACH
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLAMCH.14"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a> determines single precision machine parameters.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CMACH   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies the value to be returned by <a name="SLAMCH.20"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>:
+</span><span class="comment">*</span><span class="comment">          = 'E' or 'e',   <a name="SLAMCH.21"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a> := eps
+</span><span class="comment">*</span><span class="comment">          = 'S' or 's ,   <a name="SLAMCH.22"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a> := sfmin
+</span><span class="comment">*</span><span class="comment">          = 'B' or 'b',   <a name="SLAMCH.23"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a> := base
+</span><span class="comment">*</span><span class="comment">          = 'P' or 'p',   <a name="SLAMCH.24"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a> := eps*base
+</span><span class="comment">*</span><span class="comment">          = 'N' or 'n',   <a name="SLAMCH.25"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a> := t
+</span><span class="comment">*</span><span class="comment">          = 'R' or 'r',   <a name="SLAMCH.26"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a> := rnd
+</span><span class="comment">*</span><span class="comment">          = 'M' or 'm',   <a name="SLAMCH.27"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a> := emin
+</span><span class="comment">*</span><span class="comment">          = 'U' or 'u',   <a name="SLAMCH.28"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a> := rmin
+</span><span class="comment">*</span><span class="comment">          = 'L' or 'l',   <a name="SLAMCH.29"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a> := emax
+</span><span class="comment">*</span><span class="comment">          = 'O' or 'o',   <a name="SLAMCH.30"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a> := rmax
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          where
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          eps   = relative machine precision
+</span><span class="comment">*</span><span class="comment">          sfmin = safe minimum, such that 1/sfmin does not overflow
+</span><span class="comment">*</span><span class="comment">          base  = base of the machine
+</span><span class="comment">*</span><span class="comment">          prec  = eps*base
+</span><span class="comment">*</span><span class="comment">          t     = number of (base) digits in the mantissa
+</span><span class="comment">*</span><span class="comment">          rnd   = 1.0 when rounding occurs in addition, 0.0 otherwise
+</span><span class="comment">*</span><span class="comment">          emin  = minimum exponent before (gradual) underflow
+</span><span class="comment">*</span><span class="comment">          rmin  = underflow threshold - base**(emin-1)
+</span><span class="comment">*</span><span class="comment">          emax  = largest exponent before overflow
+</span><span class="comment">*</span><span class="comment">          rmax  = overflow threshold  - (base**emax)*(1-eps)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment"> =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ONE, ZERO
+      PARAMETER          ( ONE = 1.0E+0, ZERO = 0.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            FIRST, LRND
+      INTEGER            BETA, IMAX, IMIN, IT
+      REAL               BASE, EMAX, EMIN, EPS, PREC, RMACH, RMAX, RMIN,
+     $                   RND, SFMIN, SMALL, T
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.58"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.59"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="SLAMC2.62"></a><a href="slamch.f.html#SLAMC2.316">SLAMC2</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Save statement ..
+</span>      SAVE               FIRST, EPS, SFMIN, BASE, T, RND, EMIN, RMIN,
+     $                   EMAX, RMAX, PREC
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Data statements ..
+</span>      DATA               FIRST / .TRUE. /
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( FIRST ) THEN
+         CALL <a name="SLAMC2.74"></a><a href="slamch.f.html#SLAMC2.316">SLAMC2</a>( BETA, IT, LRND, EPS, IMIN, RMIN, IMAX, RMAX )
+         BASE = BETA
+         T = IT
+         IF( LRND ) THEN
+            RND = ONE
+            EPS = ( BASE**( 1-IT ) ) / 2
+         ELSE
+            RND = ZERO
+            EPS = BASE**( 1-IT )
+         END IF
+         PREC = EPS*BASE
+         EMIN = IMIN
+         EMAX = IMAX
+         SFMIN = RMIN
+         SMALL = ONE / RMAX
+         IF( SMALL.GE.SFMIN ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Use SMALL plus a bit, to avoid the possibility of rounding
+</span><span class="comment">*</span><span class="comment">           causing overflow when computing  1/sfmin.
+</span><span class="comment">*</span><span class="comment">
+</span>            SFMIN = SMALL*( ONE+EPS )
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( <a name="LSAME.98"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( CMACH, <span class="string">'E'</span> ) ) THEN
+         RMACH = EPS
+      ELSE IF( <a name="LSAME.100"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( CMACH, <span class="string">'S'</span> ) ) THEN
+         RMACH = SFMIN
+      ELSE IF( <a name="LSAME.102"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( CMACH, <span class="string">'B'</span> ) ) THEN
+         RMACH = BASE
+      ELSE IF( <a name="LSAME.104"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( CMACH, <span class="string">'P'</span> ) ) THEN
+         RMACH = PREC
+      ELSE IF( <a name="LSAME.106"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( CMACH, <span class="string">'N'</span> ) ) THEN
+         RMACH = T
+      ELSE IF( <a name="LSAME.108"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( CMACH, <span class="string">'R'</span> ) ) THEN
+         RMACH = RND
+      ELSE IF( <a name="LSAME.110"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( CMACH, <span class="string">'M'</span> ) ) THEN
+         RMACH = EMIN
+      ELSE IF( <a name="LSAME.112"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( CMACH, <span class="string">'U'</span> ) ) THEN
+         RMACH = RMIN
+      ELSE IF( <a name="LSAME.114"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( CMACH, <span class="string">'L'</span> ) ) THEN
+         RMACH = EMAX
+      ELSE IF( <a name="LSAME.116"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( CMACH, <span class="string">'O'</span> ) ) THEN
+         RMACH = RMAX
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      <a name="SLAMCH.120"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a> = RMACH
+      FIRST  = .FALSE.
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLAMCH.124"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">***********************************************************************
+</span><span class="comment">*</span><span class="comment">
+</span><a name="SLAMC1.130"></a>      SUBROUTINE <a name="SLAMC1.130"></a><a href="slamch.f.html#SLAMC1.130">SLAMC1</a>( BETA, T, RND, IEEE1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      LOGICAL            IEEE1, RND
+      INTEGER            BETA, T
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLAMC1.144"></a><a href="slamch.f.html#SLAMC1.130">SLAMC1</a> determines the machine parameters given by BETA, T, RND, and
+</span><span class="comment">*</span><span class="comment">  IEEE1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BETA    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          The base of the machine.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  T       (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of ( BETA ) digits in the mantissa.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RND     (output) LOGICAL
+</span><span class="comment">*</span><span class="comment">          Specifies whether proper rounding  ( RND = .TRUE. )  or
+</span><span class="comment">*</span><span class="comment">          chopping  ( RND = .FALSE. )  occurs in addition. This may not
+</span><span class="comment">*</span><span class="comment">          be a reliable guide to the way in which the machine performs
+</span><span class="comment">*</span><span class="comment">          its arithmetic.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IEEE1   (output) LOGICAL
+</span><span class="comment">*</span><span class="comment">          Specifies whether rounding appears to be done in the IEEE
+</span><span class="comment">*</span><span class="comment">          'round to nearest' style.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The routine is based on the routine  ENVRON  by Malcolm and
+</span><span class="comment">*</span><span class="comment">  incorporates suggestions by Gentleman and Marovich. See
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Malcolm M. A. (1972) Algorithms to reveal properties of
+</span><span class="comment">*</span><span class="comment">        floating-point arithmetic. Comms. of the ACM, 15, 949-951.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Gentleman W. M. and Marovich S. B. (1974) More on algorithms
+</span><span class="comment">*</span><span class="comment">        that reveal properties of floating point arithmetic units.
+</span><span class="comment">*</span><span class="comment">        Comms. of the ACM, 17, 276-277.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment"> =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            FIRST, LIEEE1, LRND
+      INTEGER            LBETA, LT
+      REAL               A, B, C, F, ONE, QTR, SAVEC, T1, T2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      REAL               <a name="SLAMC3.187"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>
+      EXTERNAL           <a name="SLAMC3.188"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Save statement ..
+</span>      SAVE               FIRST, LIEEE1, LBETA, LRND, LT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Data statements ..
+</span>      DATA               FIRST / .TRUE. /
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( FIRST ) THEN
+         ONE = 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        LBETA,  LIEEE1,  LT and  LRND  are the  local values  of  BETA,
+</span><span class="comment">*</span><span class="comment">        IEEE1, T and RND.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Throughout this routine  we use the function  <a name="SLAMC3.204"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>  to ensure
+</span><span class="comment">*</span><span class="comment">        that relevant values are  stored and not held in registers,  or
+</span><span class="comment">*</span><span class="comment">        are not affected by optimizers.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute  a = 2.0**m  with the  smallest positive integer m such
+</span><span class="comment">*</span><span class="comment">        that
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           fl( a + 1.0 ) = a.
+</span><span class="comment">*</span><span class="comment">
+</span>         A = 1
+         C = 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">+       WHILE( C.EQ.ONE )LOOP
+</span>   10    CONTINUE
+         IF( C.EQ.ONE ) THEN
+            A = 2*A
+            C = <a name="SLAMC3.220"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( A, ONE )
+            C = <a name="SLAMC3.221"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( C, -A )
+            GO TO 10
+         END IF
+<span class="comment">*</span><span class="comment">+       END WHILE
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Now compute  b = 2.0**m  with the smallest positive integer m
+</span><span class="comment">*</span><span class="comment">        such that
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           fl( a + b ) .gt. a.
+</span><span class="comment">*</span><span class="comment">
+</span>         B = 1
+         C = <a name="SLAMC3.232"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( A, B )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">+       WHILE( C.EQ.A )LOOP
+</span>   20    CONTINUE
+         IF( C.EQ.A ) THEN
+            B = 2*B
+            C = <a name="SLAMC3.238"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( A, B )
+            GO TO 20
+         END IF
+<span class="comment">*</span><span class="comment">+       END WHILE
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Now compute the base.  a and c  are neighbouring floating point
+</span><span class="comment">*</span><span class="comment">        numbers  in the  interval  ( beta**t, beta**( t + 1 ) )  and so
+</span><span class="comment">*</span><span class="comment">        their difference is beta. Adding 0.25 to c is to ensure that it
+</span><span class="comment">*</span><span class="comment">        is truncated to beta and not ( beta - 1 ).
+</span><span class="comment">*</span><span class="comment">
+</span>         QTR = ONE / 4
+         SAVEC = C
+         C = <a name="SLAMC3.250"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( C, -A )
+         LBETA = C + QTR
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Now determine whether rounding or chopping occurs,  by adding a
+</span><span class="comment">*</span><span class="comment">        bit  less  than  beta/2  and a  bit  more  than  beta/2  to  a.
+</span><span class="comment">*</span><span class="comment">
+</span>         B = LBETA
+         F = <a name="SLAMC3.257"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( B / 2, -B / 100 )
+         C = <a name="SLAMC3.258"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( F, A )
+         IF( C.EQ.A ) THEN
+            LRND = .TRUE.
+         ELSE
+            LRND = .FALSE.
+         END IF
+         F = <a name="SLAMC3.264"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( B / 2, B / 100 )
+         C = <a name="SLAMC3.265"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( F, A )
+         IF( ( LRND ) .AND. ( C.EQ.A ) )
+     $      LRND = .FALSE.
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Try and decide whether rounding is done in the  IEEE  'round to
+</span><span class="comment">*</span><span class="comment">        nearest' style. B/2 is half a unit in the last place of the two
+</span><span class="comment">*</span><span class="comment">        numbers A and SAVEC. Furthermore, A is even, i.e. has last  bit
+</span><span class="comment">*</span><span class="comment">        zero, and SAVEC is odd. Thus adding B/2 to A should not  change
+</span><span class="comment">*</span><span class="comment">        A, but adding B/2 to SAVEC should change SAVEC.
+</span><span class="comment">*</span><span class="comment">
+</span>         T1 = <a name="SLAMC3.275"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( B / 2, A )
+         T2 = <a name="SLAMC3.276"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( B / 2, SAVEC )
+         LIEEE1 = ( T1.EQ.A ) .AND. ( T2.GT.SAVEC ) .AND. LRND
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Now find  the  mantissa, t.  It should  be the  integer part of
+</span><span class="comment">*</span><span class="comment">        log to the base beta of a,  however it is safer to determine  t
+</span><span class="comment">*</span><span class="comment">        by powering.  So we find t as the smallest positive integer for
+</span><span class="comment">*</span><span class="comment">        which
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           fl( beta**t + 1.0 ) = 1.0.
+</span><span class="comment">*</span><span class="comment">
+</span>         LT = 0
+         A = 1
+         C = 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">+       WHILE( C.EQ.ONE )LOOP
+</span>   30    CONTINUE
+         IF( C.EQ.ONE ) THEN
+            LT = LT + 1
+            A = A*LBETA
+            C = <a name="SLAMC3.295"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( A, ONE )
+            C = <a name="SLAMC3.296"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( C, -A )
+            GO TO 30
+         END IF
+<span class="comment">*</span><span class="comment">+       END WHILE
+</span><span class="comment">*</span><span class="comment">
+</span>      END IF
+<span class="comment">*</span><span class="comment">
+</span>      BETA = LBETA
+      T = LT
+      RND = LRND
+      IEEE1 = LIEEE1
+      FIRST = .FALSE.
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLAMC1.310"></a><a href="slamch.f.html#SLAMC1.130">SLAMC1</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">***********************************************************************
+</span><span class="comment">*</span><span class="comment">
+</span><a name="SLAMC2.316"></a>      SUBROUTINE <a name="SLAMC2.316"></a><a href="slamch.f.html#SLAMC2.316">SLAMC2</a>( BETA, T, RND, EPS, EMIN, RMIN, EMAX, RMAX )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      LOGICAL            RND
+      INTEGER            BETA, EMAX, EMIN, T
+      REAL               EPS, RMAX, RMIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLAMC2.331"></a><a href="slamch.f.html#SLAMC2.316">SLAMC2</a> determines the machine parameters specified in its argument
+</span><span class="comment">*</span><span class="comment">  list.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BETA    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          The base of the machine.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  T       (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of ( BETA ) digits in the mantissa.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RND     (output) LOGICAL
+</span><span class="comment">*</span><span class="comment">          Specifies whether proper rounding  ( RND = .TRUE. )  or
+</span><span class="comment">*</span><span class="comment">          chopping  ( RND = .FALSE. )  occurs in addition. This may not
+</span><span class="comment">*</span><span class="comment">          be a reliable guide to the way in which the machine performs
+</span><span class="comment">*</span><span class="comment">          its arithmetic.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  EPS     (output) REAL
+</span><span class="comment">*</span><span class="comment">          The smallest positive number such that
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">             fl( 1.0 - EPS ) .LT. 1.0,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          where fl denotes the computed value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  EMIN    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          The minimum exponent before (gradual) underflow occurs.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RMIN    (output) REAL
+</span><span class="comment">*</span><span class="comment">          The smallest normalized number for the machine, given by
+</span><span class="comment">*</span><span class="comment">          BASE**( EMIN - 1 ), where  BASE  is the floating point value
+</span><span class="comment">*</span><span class="comment">          of BETA.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  EMAX    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          The maximum exponent before overflow occurs.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RMAX    (output) REAL
+</span><span class="comment">*</span><span class="comment">          The largest positive number for the machine, given by
+</span><span class="comment">*</span><span class="comment">          BASE**EMAX * ( 1 - EPS ), where  BASE  is the floating point
+</span><span class="comment">*</span><span class="comment">          value of BETA.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The computation of  EPS  is based on a routine PARANOIA by
+</span><span class="comment">*</span><span class="comment">  W. Kahan of the University of California at Berkeley.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment"> =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            FIRST, IEEE, IWARN, LIEEE1, LRND
+      INTEGER            GNMIN, GPMIN, I, LBETA, LEMAX, LEMIN, LT,
+     $                   NGNMIN, NGPMIN
+      REAL               A, B, C, HALF, LEPS, LRMAX, LRMIN, ONE, RBASE,
+     $                   SIXTH, SMALL, THIRD, TWO, ZERO
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      REAL               <a name="SLAMC3.388"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>
+      EXTERNAL           <a name="SLAMC3.389"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="SLAMC1.392"></a><a href="slamch.f.html#SLAMC1.130">SLAMC1</a>, <a name="SLAMC4.392"></a><a href="slamch.f.html#SLAMC4.612">SLAMC4</a>, <a name="SLAMC5.392"></a><a href="slamch.f.html#SLAMC5.696">SLAMC5</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Save statement ..
+</span>      SAVE               FIRST, IWARN, LBETA, LEMAX, LEMIN, LEPS, LRMAX,
+     $                   LRMIN, LT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Data statements ..
+</span>      DATA               FIRST / .TRUE. / , IWARN / .FALSE. /
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( FIRST ) THEN
+         ZERO = 0
+         ONE = 1
+         TWO = 2
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        LBETA, LT, LRND, LEPS, LEMIN and LRMIN  are the local values of
+</span><span class="comment">*</span><span class="comment">        BETA, T, RND, EPS, EMIN and RMIN.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Throughout this routine  we use the function  <a name="SLAMC3.414"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>  to ensure
+</span><span class="comment">*</span><span class="comment">        that relevant values are stored  and not held in registers,  or
+</span><span class="comment">*</span><span class="comment">        are not affected by optimizers.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        <a name="SLAMC1.418"></a><a href="slamch.f.html#SLAMC1.130">SLAMC1</a> returns the parameters  LBETA, LT, LRND and LIEEE1.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="SLAMC1.420"></a><a href="slamch.f.html#SLAMC1.130">SLAMC1</a>( LBETA, LT, LRND, LIEEE1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Start to find EPS.
+</span><span class="comment">*</span><span class="comment">
+</span>         B = LBETA
+         A = B**( -LT )
+         LEPS = A
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Try some tricks to see whether or not this is the correct  EPS.
+</span><span class="comment">*</span><span class="comment">
+</span>         B = TWO / 3
+         HALF = ONE / 2
+         SIXTH = <a name="SLAMC3.432"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( B, -HALF )
+         THIRD = <a name="SLAMC3.433"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( SIXTH, SIXTH )
+         B = <a name="SLAMC3.434"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( THIRD, -HALF )
+         B = <a name="SLAMC3.435"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( B, SIXTH )
+         B = ABS( B )
+         IF( B.LT.LEPS )
+     $      B = LEPS
+<span class="comment">*</span><span class="comment">
+</span>         LEPS = 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">+       WHILE( ( LEPS.GT.B ).AND.( B.GT.ZERO ) )LOOP
+</span>   10    CONTINUE
+         IF( ( LEPS.GT.B ) .AND. ( B.GT.ZERO ) ) THEN
+            LEPS = B
+            C = <a name="SLAMC3.446"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( HALF*LEPS, ( TWO**5 )*( LEPS**2 ) )
+            C = <a name="SLAMC3.447"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( HALF, -C )
+            B = <a name="SLAMC3.448"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( HALF, C )
+            C = <a name="SLAMC3.449"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( HALF, -B )
+            B = <a name="SLAMC3.450"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( HALF, C )
+            GO TO 10
+         END IF
+<span class="comment">*</span><span class="comment">+       END WHILE
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( A.LT.LEPS )
+     $      LEPS = A
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Computation of EPS complete.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Now find  EMIN.  Let A = + or - 1, and + or - (1 + BASE**(-3)).
+</span><span class="comment">*</span><span class="comment">        Keep dividing  A by BETA until (gradual) underflow occurs. This
+</span><span class="comment">*</span><span class="comment">        is detected when we cannot recover the previous A.
+</span><span class="comment">*</span><span class="comment">
+</span>         RBASE = ONE / LBETA
+         SMALL = ONE
+         DO 20 I = 1, 3
+            SMALL = <a name="SLAMC3.467"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( SMALL*RBASE, ZERO )
+   20    CONTINUE
+         A = <a name="SLAMC3.469"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( ONE, SMALL )
+         CALL <a name="SLAMC4.470"></a><a href="slamch.f.html#SLAMC4.612">SLAMC4</a>( NGPMIN, ONE, LBETA )
+         CALL <a name="SLAMC4.471"></a><a href="slamch.f.html#SLAMC4.612">SLAMC4</a>( NGNMIN, -ONE, LBETA )
+         CALL <a name="SLAMC4.472"></a><a href="slamch.f.html#SLAMC4.612">SLAMC4</a>( GPMIN, A, LBETA )
+         CALL <a name="SLAMC4.473"></a><a href="slamch.f.html#SLAMC4.612">SLAMC4</a>( GNMIN, -A, LBETA )
+         IEEE = .FALSE.
+<span class="comment">*</span><span class="comment">
+</span>         IF( ( NGPMIN.EQ.NGNMIN ) .AND. ( GPMIN.EQ.GNMIN ) ) THEN
+            IF( NGPMIN.EQ.GPMIN ) THEN
+               LEMIN = NGPMIN
+<span class="comment">*</span><span class="comment">            ( Non twos-complement machines, no gradual underflow;
+</span><span class="comment">*</span><span class="comment">              e.g.,  VAX )
+</span>            ELSE IF( ( GPMIN-NGPMIN ).EQ.3 ) THEN
+               LEMIN = NGPMIN - 1 + LT
+               IEEE = .TRUE.
+<span class="comment">*</span><span class="comment">            ( Non twos-complement machines, with gradual underflow;
+</span><span class="comment">*</span><span class="comment">              e.g., IEEE standard followers )
+</span>            ELSE
+               LEMIN = MIN( NGPMIN, GPMIN )
+<span class="comment">*</span><span class="comment">            ( A guess; no known machine )
+</span>               IWARN = .TRUE.
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>         ELSE IF( ( NGPMIN.EQ.GPMIN ) .AND. ( NGNMIN.EQ.GNMIN ) ) THEN
+            IF( ABS( NGPMIN-NGNMIN ).EQ.1 ) THEN
+               LEMIN = MAX( NGPMIN, NGNMIN )
+<span class="comment">*</span><span class="comment">            ( Twos-complement machines, no gradual underflow;
+</span><span class="comment">*</span><span class="comment">              e.g., CYBER 205 )
+</span>            ELSE
+               LEMIN = MIN( NGPMIN, NGNMIN )
+<span class="comment">*</span><span class="comment">            ( A guess; no known machine )
+</span>               IWARN = .TRUE.
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>         ELSE IF( ( ABS( NGPMIN-NGNMIN ).EQ.1 ) .AND.
+     $            ( GPMIN.EQ.GNMIN ) ) THEN
+            IF( ( GPMIN-MIN( NGPMIN, NGNMIN ) ).EQ.3 ) THEN
+               LEMIN = MAX( NGPMIN, NGNMIN ) - 1 + LT
+<span class="comment">*</span><span class="comment">            ( Twos-complement machines with gradual underflow;
+</span><span class="comment">*</span><span class="comment">              no known machine )
+</span>            ELSE
+               LEMIN = MIN( NGPMIN, NGNMIN )
+<span class="comment">*</span><span class="comment">            ( A guess; no known machine )
+</span>               IWARN = .TRUE.
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>         ELSE
+            LEMIN = MIN( NGPMIN, NGNMIN, GPMIN, GNMIN )
+<span class="comment">*</span><span class="comment">         ( A guess; no known machine )
+</span>            IWARN = .TRUE.
+         END IF
+         FIRST = .FALSE.
+<span class="comment">*</span><span class="comment">**
+</span><span class="comment">*</span><span class="comment"> Comment out this if block if EMIN is ok
+</span>         IF( IWARN ) THEN
+            FIRST = .TRUE.
+            WRITE( 6, FMT = 9999 )LEMIN
+         END IF
+<span class="comment">*</span><span class="comment">**
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Assume IEEE arithmetic if we found denormalised  numbers above,
+</span><span class="comment">*</span><span class="comment">        or if arithmetic seems to round in the  IEEE style,  determined
+</span><span class="comment">*</span><span class="comment">        in routine <a name="SLAMC1.531"></a><a href="slamch.f.html#SLAMC1.130">SLAMC1</a>. A true IEEE machine should have both  things
+</span><span class="comment">*</span><span class="comment">        true; however, faulty machines may have one or the other.
+</span><span class="comment">*</span><span class="comment">
+</span>         IEEE = IEEE .OR. LIEEE1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute  RMIN by successive division by  BETA. We could compute
+</span><span class="comment">*</span><span class="comment">        RMIN as BASE**( EMIN - 1 ),  but some machines underflow during
+</span><span class="comment">*</span><span class="comment">        this computation.
+</span><span class="comment">*</span><span class="comment">
+</span>         LRMIN = 1
+         DO 30 I = 1, 1 - LEMIN
+            LRMIN = <a name="SLAMC3.542"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( LRMIN*RBASE, ZERO )
+   30    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Finally, call <a name="SLAMC5.545"></a><a href="slamch.f.html#SLAMC5.696">SLAMC5</a> to compute EMAX and RMAX.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="SLAMC5.547"></a><a href="slamch.f.html#SLAMC5.696">SLAMC5</a>( LBETA, LT, LEMIN, IEEE, LEMAX, LRMAX )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      BETA = LBETA
+      T = LT
+      RND = LRND
+      EPS = LEPS
+      EMIN = LEMIN
+      RMIN = LRMIN
+      EMAX = LEMAX
+      RMAX = LRMAX
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span> 9999 FORMAT( / / <span class="string">' WARNING. The value EMIN may be incorrect:-'</span>,
+     $      <span class="string">'  EMIN = '</span>, I8, /
+     $      <span class="string">' If, after inspection, the value EMIN looks'</span>,
+     $      <span class="string">' acceptable please comment out '</span>,
+     $      / <span class="string">' the IF block as marked within the code of routine'</span>,
+     $      <span class="string">' <a name="SLAMC2.566"></a><a href="slamch.f.html#SLAMC2.316">SLAMC2</a>,'</span>, / <span class="string">' otherwise supply EMIN explicitly.'</span>, / )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLAMC2.568"></a><a href="slamch.f.html#SLAMC2.316">SLAMC2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">***********************************************************************
+</span><span class="comment">*</span><span class="comment">
+</span><a name="SLAMC3.574"></a>      REAL             FUNCTION <a name="SLAMC3.574"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( A, B )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      REAL               A, B
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLAMC3.587"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>  is intended to force  A  and  B  to be stored prior to doing
+</span><span class="comment">*</span><span class="comment">  the addition of  A  and  B ,  for use in situations where optimizers
+</span><span class="comment">*</span><span class="comment">  might hold one of these in a register.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input) REAL
+</span><span class="comment">*</span><span class="comment">  B       (input) REAL
+</span><span class="comment">*</span><span class="comment">          The values A and B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment"> =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      <a name="SLAMC3.602"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a> = A + B
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLAMC3.606"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">***********************************************************************
+</span><span class="comment">*</span><span class="comment">
+</span><a name="SLAMC4.612"></a>      SUBROUTINE <a name="SLAMC4.612"></a><a href="slamch.f.html#SLAMC4.612">SLAMC4</a>( EMIN, START, BASE )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            BASE
+      INTEGER            EMIN
+      REAL               START
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLAMC4.627"></a><a href="slamch.f.html#SLAMC4.612">SLAMC4</a> is a service routine for <a name="SLAMC2.627"></a><a href="slamch.f.html#SLAMC2.316">SLAMC2</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  EMIN    (output) INTEGER 
+</span><span class="comment">*</span><span class="comment">          The minimum exponent before (gradual) underflow, computed by
+</span><span class="comment">*</span><span class="comment">          setting A = START and dividing by BASE until the previous A
+</span><span class="comment">*</span><span class="comment">          can not be recovered.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  START   (input) REAL
+</span><span class="comment">*</span><span class="comment">          The starting point for determining EMIN.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BASE    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The base of the machine.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment"> =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I
+      REAL               A, B1, B2, C1, C2, D1, D2, ONE, RBASE, ZERO
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      REAL               <a name="SLAMC3.650"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>
+      EXTERNAL           <a name="SLAMC3.651"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      A = START
+      ONE = 1
+      RBASE = ONE / BASE
+      ZERO = 0
+      EMIN = 1
+      B1 = <a name="SLAMC3.660"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( A*RBASE, ZERO )
+      C1 = A
+      C2 = A
+      D1 = A
+      D2 = A
+<span class="comment">*</span><span class="comment">+    WHILE( ( C1.EQ.A ).AND.( C2.EQ.A ).AND.
+</span><span class="comment">*</span><span class="comment">    $       ( D1.EQ.A ).AND.( D2.EQ.A )      )LOOP
+</span>   10 CONTINUE
+      IF( ( C1.EQ.A ) .AND. ( C2.EQ.A ) .AND. ( D1.EQ.A ) .AND.
+     $    ( D2.EQ.A ) ) THEN
+         EMIN = EMIN - 1
+         A = B1
+         B1 = <a name="SLAMC3.672"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( A / BASE, ZERO )
+         C1 = <a name="SLAMC3.673"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( B1*BASE, ZERO )
+         D1 = ZERO
+         DO 20 I = 1, BASE
+            D1 = D1 + B1
+   20    CONTINUE
+         B2 = <a name="SLAMC3.678"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( A*RBASE, ZERO )
+         C2 = <a name="SLAMC3.679"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( B2 / RBASE, ZERO )
+         D2 = ZERO
+         DO 30 I = 1, BASE
+            D2 = D2 + B2
+   30    CONTINUE
+         GO TO 10
+      END IF
+<span class="comment">*</span><span class="comment">+    END WHILE
+</span><span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLAMC4.690"></a><a href="slamch.f.html#SLAMC4.612">SLAMC4</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">***********************************************************************
+</span><span class="comment">*</span><span class="comment">
+</span><a name="SLAMC5.696"></a>      SUBROUTINE <a name="SLAMC5.696"></a><a href="slamch.f.html#SLAMC5.696">SLAMC5</a>( BETA, P, EMIN, IEEE, EMAX, RMAX )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      LOGICAL            IEEE
+      INTEGER            BETA, EMAX, EMIN, P
+      REAL               RMAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLAMC5.711"></a><a href="slamch.f.html#SLAMC5.696">SLAMC5</a> attempts to compute RMAX, the largest machine floating-point
+</span><span class="comment">*</span><span class="comment">  number, without overflow.  It assumes that EMAX + abs(EMIN) sum
+</span><span class="comment">*</span><span class="comment">  approximately to a power of 2.  It will fail on machines where this
+</span><span class="comment">*</span><span class="comment">  assumption does not hold, for example, the Cyber 205 (EMIN = -28625,
+</span><span class="comment">*</span><span class="comment">  EMAX = 28718).  It will also fail if the value supplied for EMIN is
+</span><span class="comment">*</span><span class="comment">  too large (i.e. too close to zero), probably with overflow.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BETA    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The base of floating-point arithmetic.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  P       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of base BETA digits in the mantissa of a
+</span><span class="comment">*</span><span class="comment">          floating-point value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  EMIN    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The minimum exponent before (gradual) underflow.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IEEE    (input) LOGICAL
+</span><span class="comment">*</span><span class="comment">          A logical flag specifying whether or not the arithmetic
+</span><span class="comment">*</span><span class="comment">          system is thought to comply with the IEEE standard.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  EMAX    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          The largest exponent before overflow
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RMAX    (output) REAL
+</span><span class="comment">*</span><span class="comment">          The largest machine floating-point number.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment"> =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, ONE
+      PARAMETER          ( ZERO = 0.0E0, ONE = 1.0E0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            EXBITS, EXPSUM, I, LEXP, NBITS, TRY, UEXP
+      REAL               OLDY, RECBAS, Y, Z
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      REAL               <a name="SLAMC3.752"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>
+      EXTERNAL           <a name="SLAMC3.753"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MOD
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     First compute LEXP and UEXP, two powers of 2 that bound
+</span><span class="comment">*</span><span class="comment">     abs(EMIN). We then assume that EMAX + abs(EMIN) will sum
+</span><span class="comment">*</span><span class="comment">     approximately to the bound that is closest to abs(EMIN).
+</span><span class="comment">*</span><span class="comment">     (EMAX is the exponent of the required number RMAX).
+</span><span class="comment">*</span><span class="comment">
+</span>      LEXP = 1
+      EXBITS = 1
+   10 CONTINUE
+      TRY = LEXP*2
+      IF( TRY.LE.( -EMIN ) ) THEN
+         LEXP = TRY
+         EXBITS = EXBITS + 1
+         GO TO 10
+      END IF
+      IF( LEXP.EQ.-EMIN ) THEN
+         UEXP = LEXP
+      ELSE
+         UEXP = TRY
+         EXBITS = EXBITS + 1
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Now -LEXP is less than or equal to EMIN, and -UEXP is greater
+</span><span class="comment">*</span><span class="comment">     than or equal to EMIN. EXBITS is the number of bits needed to
+</span><span class="comment">*</span><span class="comment">     store the exponent.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ( UEXP+EMIN ).GT.( -LEXP-EMIN ) ) THEN
+         EXPSUM = 2*LEXP
+      ELSE
+         EXPSUM = 2*UEXP
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     EXPSUM is the exponent range, approximately equal to
+</span><span class="comment">*</span><span class="comment">     EMAX - EMIN + 1 .
+</span><span class="comment">*</span><span class="comment">
+</span>      EMAX = EXPSUM + EMIN - 1
+      NBITS = 1 + EXBITS + P
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     NBITS is the total number of bits needed to store a
+</span><span class="comment">*</span><span class="comment">     floating-point number.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ( MOD( NBITS, 2 ).EQ.1 ) .AND. ( BETA.EQ.2 ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Either there are an odd number of bits used to store a
+</span><span class="comment">*</span><span class="comment">        floating-point number, which is unlikely, or some bits are
+</span><span class="comment">*</span><span class="comment">        not used in the representation of numbers, which is possible,
+</span><span class="comment">*</span><span class="comment">        (e.g. Cray machines) or the mantissa has an implicit bit,
+</span><span class="comment">*</span><span class="comment">        (e.g. IEEE machines, Dec Vax machines), which is perhaps the
+</span><span class="comment">*</span><span class="comment">        most likely. We have to assume the last alternative.
+</span><span class="comment">*</span><span class="comment">        If this is true, then we need to reduce EMAX by one because
+</span><span class="comment">*</span><span class="comment">        there must be some way of representing zero in an implicit-bit
+</span><span class="comment">*</span><span class="comment">        system. On machines like Cray, we are reducing EMAX by one
+</span><span class="comment">*</span><span class="comment">        unnecessarily.
+</span><span class="comment">*</span><span class="comment">
+</span>         EMAX = EMAX - 1
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( IEEE ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Assume we are on an IEEE machine which reserves one exponent
+</span><span class="comment">*</span><span class="comment">        for infinity and NaN.
+</span><span class="comment">*</span><span class="comment">
+</span>         EMAX = EMAX - 1
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Now create RMAX, the largest machine number, which should
+</span><span class="comment">*</span><span class="comment">     be equal to (1.0 - BETA**(-P)) * BETA**EMAX .
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     First compute 1.0 - BETA**(-P), being careful that the
+</span><span class="comment">*</span><span class="comment">     result is less than 1.0 .
+</span><span class="comment">*</span><span class="comment">
+</span>      RECBAS = ONE / BETA
+      Z = BETA - ONE
+      Y = ZERO
+      DO 20 I = 1, P
+         Z = Z*RECBAS
+         IF( Y.LT.ONE )
+     $      OLDY = Y
+         Y = <a name="SLAMC3.837"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( Y, Z )
+   20 CONTINUE
+      IF( Y.GE.ONE )
+     $   Y = OLDY
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Now multiply by BETA**EMAX to get RMAX.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 30 I = 1, EMAX
+         Y = <a name="SLAMC3.845"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( Y*BETA, ZERO )
+   30 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      RMAX = Y
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLAMC5.851"></a><a href="slamch.f.html#SLAMC5.696">SLAMC5</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,932 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zlatbs.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZLATBS.1"></a><a href="zlatbs.f.html#ZLATBS.1">ZLATBS</a>( UPLO, TRANS, DIAG, NORMIN, N, KD, AB, LDAB, X,
+     $                   SCALE, CNORM, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          DIAG, NORMIN, TRANS, UPLO
+      INTEGER            INFO, KD, LDAB, N
+      DOUBLE PRECISION   SCALE
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   CNORM( * )
+      COMPLEX*16         AB( LDAB, * ), X( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZLATBS.21"></a><a href="zlatbs.f.html#ZLATBS.1">ZLATBS</a> solves one of the triangular systems
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     A * x = s*b,  A**T * x = s*b,  or  A**H * x = s*b,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  with scaling to prevent overflow, where A is an upper or lower
+</span><span class="comment">*</span><span class="comment">  triangular band matrix.  Here A' denotes the transpose of A, x and b
+</span><span class="comment">*</span><span class="comment">  are n-element vectors, and s is a scaling factor, usually less than
+</span><span class="comment">*</span><span class="comment">  or equal to 1, chosen so that the components of x will be less than
+</span><span class="comment">*</span><span class="comment">  the overflow threshold.  If the unscaled problem will not cause
+</span><span class="comment">*</span><span class="comment">  overflow, the Level 2 BLAS routine ZTBSV is called.  If the matrix A
+</span><span class="comment">*</span><span class="comment">  is singular (A(j,j) = 0 for some j), then s is set to 0 and a
+</span><span class="comment">*</span><span class="comment">  non-trivial solution to A*x = 0 is returned.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether the matrix A is upper or lower triangular.
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangular
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangular
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TRANS   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies the operation applied to A.
+</span><span class="comment">*</span><span class="comment">          = 'N':  Solve A * x = s*b     (No transpose)
+</span><span class="comment">*</span><span class="comment">          = 'T':  Solve A**T * x = s*b  (Transpose)
+</span><span class="comment">*</span><span class="comment">          = 'C':  Solve A**H * x = s*b  (Conjugate transpose)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIAG    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether or not the matrix A is unit triangular.
+</span><span class="comment">*</span><span class="comment">          = 'N':  Non-unit triangular
+</span><span class="comment">*</span><span class="comment">          = 'U':  Unit triangular
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NORMIN  (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether CNORM has been set or not.
+</span><span class="comment">*</span><span class="comment">          = 'Y':  CNORM contains the column norms on entry
+</span><span class="comment">*</span><span class="comment">          = 'N':  CNORM is not set on entry.  On exit, the norms will
+</span><span class="comment">*</span><span class="comment">                  be computed and stored in CNORM.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KD      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of subdiagonals or superdiagonals in the
+</span><span class="comment">*</span><span class="comment">          triangular matrix A.  KD &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AB      (input) COMPLEX*16 array, dimension (LDAB,N)
+</span><span class="comment">*</span><span class="comment">          The upper or lower triangular band matrix A, stored in the
+</span><span class="comment">*</span><span class="comment">          first KD+1 rows of the array. The j-th column of A is stored
+</span><span class="comment">*</span><span class="comment">          in the j-th column of the array AB as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', AB(kd+1+i-j,j) = A(i,j) for max(1,j-kd)&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', AB(1+i-j,j)    = A(i,j) for j&lt;=i&lt;=min(n,j+kd).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDAB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array AB.  LDAB &gt;= KD+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X       (input/output) COMPLEX*16 array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On entry, the right hand side b of the triangular system.
+</span><span class="comment">*</span><span class="comment">          On exit, X is overwritten by the solution vector x.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SCALE   (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The scaling factor s for the triangular system
+</span><span class="comment">*</span><span class="comment">             A * x = s*b,  A**T * x = s*b,  or  A**H * x = s*b.
+</span><span class="comment">*</span><span class="comment">          If SCALE = 0, the matrix A is singular or badly scaled, and
+</span><span class="comment">*</span><span class="comment">          the vector x is an exact or approximate solution to A*x = 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CNORM   (input or output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If NORMIN = 'Y', CNORM is an input argument and CNORM(j)
+</span><span class="comment">*</span><span class="comment">          contains the norm of the off-diagonal part of the j-th column
+</span><span class="comment">*</span><span class="comment">          of A.  If TRANS = 'N', CNORM(j) must be greater than or equal
+</span><span class="comment">*</span><span class="comment">          to the infinity-norm, and if TRANS = 'T' or 'C', CNORM(j)
+</span><span class="comment">*</span><span class="comment">          must be greater than or equal to the 1-norm.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If NORMIN = 'N', CNORM is an output argument and CNORM(j)
+</span><span class="comment">*</span><span class="comment">          returns the 1-norm of the offdiagonal part of the j-th column
+</span><span class="comment">*</span><span class="comment">          of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -k, the k-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ======= =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A rough bound on x is computed; if that is less than overflow, ZTBSV
+</span><span class="comment">*</span><span class="comment">  is called, otherwise, specific code is used which checks for possible
+</span><span class="comment">*</span><span class="comment">  overflow or divide-by-zero at every operation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A columnwise scheme is used for solving A*x = b.  The basic algorithm
+</span><span class="comment">*</span><span class="comment">  if A is lower triangular is
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">       x[1:n] := b[1:n]
+</span><span class="comment">*</span><span class="comment">       for j = 1, ..., n
+</span><span class="comment">*</span><span class="comment">            x(j) := x(j) / A(j,j)
+</span><span class="comment">*</span><span class="comment">            x[j+1:n] := x[j+1:n] - x(j) * A[j+1:n,j]
+</span><span class="comment">*</span><span class="comment">       end
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Define bounds on the components of x after j iterations of the loop:
+</span><span class="comment">*</span><span class="comment">     M(j) = bound on x[1:j]
+</span><span class="comment">*</span><span class="comment">     G(j) = bound on x[j+1:n]
+</span><span class="comment">*</span><span class="comment">  Initially, let M(0) = 0 and G(0) = max{x(i), i=1,...,n}.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Then for iteration j+1 we have
+</span><span class="comment">*</span><span class="comment">     M(j+1) &lt;= G(j) / | A(j+1,j+1) |
+</span><span class="comment">*</span><span class="comment">     G(j+1) &lt;= G(j) + M(j+1) * | A[j+2:n,j+1] |
+</span><span class="comment">*</span><span class="comment">            &lt;= G(j) ( 1 + CNORM(j+1) / | A(j+1,j+1) | )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where CNORM(j+1) is greater than or equal to the infinity-norm of
+</span><span class="comment">*</span><span class="comment">  column j+1 of A, not counting the diagonal.  Hence
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     G(j) &lt;= G(0) product ( 1 + CNORM(i) / | A(i,i) | )
+</span><span class="comment">*</span><span class="comment">                  1&lt;=i&lt;=j
+</span><span class="comment">*</span><span class="comment">  and
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     |x(j)| &lt;= ( G(0) / |A(j,j)| ) product ( 1 + CNORM(i) / |A(i,i)| )
+</span><span class="comment">*</span><span class="comment">                                   1&lt;=i&lt; j
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Since |x(j)| &lt;= M(j), we use the Level 2 BLAS routine ZTBSV if the
+</span><span class="comment">*</span><span class="comment">  reciprocal of the largest M(j), j=1,..,n, is larger than
+</span><span class="comment">*</span><span class="comment">  max(underflow, 1/overflow).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The bound on x(j) is also used to determine when a step in the
+</span><span class="comment">*</span><span class="comment">  columnwise method can be performed without fear of overflow.  If
+</span><span class="comment">*</span><span class="comment">  the computed bound is greater than a large constant, x is scaled to
+</span><span class="comment">*</span><span class="comment">  prevent overflow, but if the bound overflows, x is set to 0, x(j) to
+</span><span class="comment">*</span><span class="comment">  1, and scale to 0, and a non-trivial solution to A*x = 0 is found.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Similarly, a row-wise scheme is used to solve A**T *x = b  or
+</span><span class="comment">*</span><span class="comment">  A**H *x = b.  The basic algorithm for A upper triangular is
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">       for j = 1, ..., n
+</span><span class="comment">*</span><span class="comment">            x(j) := ( b(j) - A[1:j-1,j]' * x[1:j-1] ) / A(j,j)
+</span><span class="comment">*</span><span class="comment">       end
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  We simultaneously compute two bounds
+</span><span class="comment">*</span><span class="comment">       G(j) = bound on ( b(i) - A[1:i-1,i]' * x[1:i-1] ), 1&lt;=i&lt;=j
+</span><span class="comment">*</span><span class="comment">       M(j) = bound on x(i), 1&lt;=i&lt;=j
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The initial values are G(0) = 0, M(0) = max{b(i), i=1,..,n}, and we
+</span><span class="comment">*</span><span class="comment">  add the constraint G(j) &gt;= G(j-1) and M(j) &gt;= M(j-1) for j &gt;= 1.
+</span><span class="comment">*</span><span class="comment">  Then the bound on x(j) is
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">       M(j) &lt;= M(j-1) * ( 1 + CNORM(j) ) / | A(j,j) |
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">            &lt;= M(0) * product ( ( 1 + CNORM(i) ) / |A(i,i)| )
+</span><span class="comment">*</span><span class="comment">                      1&lt;=i&lt;=j
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  and we can safely call ZTBSV if 1/M(n) and 1/G(n) are both greater
+</span><span class="comment">*</span><span class="comment">  than max(underflow, 1/overflow).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, HALF, ONE, TWO
+      PARAMETER          ( ZERO = 0.0D+0, HALF = 0.5D+0, ONE = 1.0D+0,
+     $                   TWO = 2.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            NOTRAN, NOUNIT, UPPER
+      INTEGER            I, IMAX, J, JFIRST, JINC, JLAST, JLEN, MAIND
+      DOUBLE PRECISION   BIGNUM, GROW, REC, SMLNUM, TJJ, TMAX, TSCAL,
+     $                   XBND, XJ, XMAX
+      COMPLEX*16         CSUMJ, TJJS, USCAL, ZDUM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.186"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      INTEGER            IDAMAX, IZAMAX
+      DOUBLE PRECISION   <a name="DLAMCH.188"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, DZASUM
+      COMPLEX*16         ZDOTC, ZDOTU, <a name="ZLADIV.189"></a><a href="zladiv.f.html#ZLADIV.1">ZLADIV</a>
+      EXTERNAL           <a name="LSAME.190"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, IDAMAX, IZAMAX, <a name="DLAMCH.190"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, DZASUM, ZDOTC,
+     $                   ZDOTU, <a name="ZLADIV.191"></a><a href="zladiv.f.html#ZLADIV.1">ZLADIV</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DSCAL, <a name="XERBLA.194"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, ZAXPY, ZDSCAL, ZTBSV
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, DBLE, DCMPLX, DCONJG, DIMAG, MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Functions ..
+</span>      DOUBLE PRECISION   CABS1, CABS2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Function definitions ..
+</span>      CABS1( ZDUM ) = ABS( DBLE( ZDUM ) ) + ABS( DIMAG( ZDUM ) )
+      CABS2( ZDUM ) = ABS( DBLE( ZDUM ) / 2.D0 ) +
+     $                ABS( DIMAG( ZDUM ) / 2.D0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      UPPER = <a name="LSAME.210"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> )
+      NOTRAN = <a name="LSAME.211"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'N'</span> )
+      NOUNIT = <a name="LSAME.212"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIAG, <span class="string">'N'</span> )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( .NOT.UPPER .AND. .NOT.<a name="LSAME.216"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.NOTRAN .AND. .NOT.<a name="LSAME.218"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'T'</span> ) .AND. .NOT.
+     $         <a name="LSAME.219"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'C'</span> ) ) THEN
+         INFO = -2
+      ELSE IF( .NOT.NOUNIT .AND. .NOT.<a name="LSAME.221"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIAG, <span class="string">'U'</span> ) ) THEN
+         INFO = -3
+      ELSE IF( .NOT.<a name="LSAME.223"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORMIN, <span class="string">'Y'</span> ) .AND. .NOT.
+     $         <a name="LSAME.224"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORMIN, <span class="string">'N'</span> ) ) THEN
+         INFO = -4
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -5
+      ELSE IF( KD.LT.0 ) THEN
+         INFO = -6
+      ELSE IF( LDAB.LT.KD+1 ) THEN
+         INFO = -8
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.234"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZLATBS.234"></a><a href="zlatbs.f.html#ZLATBS.1">ZLATBS</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Determine machine dependent parameters to control overflow.
+</span><span class="comment">*</span><span class="comment">
+</span>      SMLNUM = <a name="DLAMCH.245"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Safe minimum'</span> )
+      BIGNUM = ONE / SMLNUM
+      CALL <a name="DLABAD.247"></a><a href="dlabad.f.html#DLABAD.1">DLABAD</a>( SMLNUM, BIGNUM )
+      SMLNUM = SMLNUM / <a name="DLAMCH.248"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Precision'</span> )
+      BIGNUM = ONE / SMLNUM
+      SCALE = ONE
+<span class="comment">*</span><span class="comment">
+</span>      IF( <a name="LSAME.252"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORMIN, <span class="string">'N'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute the 1-norm of each column, not including the diagonal.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( UPPER ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           A is upper triangular.
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 10 J = 1, N
+               JLEN = MIN( KD, J-1 )
+               CNORM( J ) = DZASUM( JLEN, AB( KD+1-JLEN, J ), 1 )
+   10       CONTINUE
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           A is lower triangular.
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 20 J = 1, N
+               JLEN = MIN( KD, N-J )
+               IF( JLEN.GT.0 ) THEN
+                  CNORM( J ) = DZASUM( JLEN, AB( 2, J ), 1 )
+               ELSE
+                  CNORM( J ) = ZERO
+               END IF
+   20       CONTINUE
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Scale the column norms by TSCAL if the maximum element in CNORM is
+</span><span class="comment">*</span><span class="comment">     greater than BIGNUM/2.
+</span><span class="comment">*</span><span class="comment">
+</span>      IMAX = IDAMAX( N, CNORM, 1 )
+      TMAX = CNORM( IMAX )
+      IF( TMAX.LE.BIGNUM*HALF ) THEN
+         TSCAL = ONE
+      ELSE
+         TSCAL = HALF / ( SMLNUM*TMAX )
+         CALL DSCAL( N, TSCAL, CNORM, 1 )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute a bound on the computed solution vector to see if the
+</span><span class="comment">*</span><span class="comment">     Level 2 BLAS routine ZTBSV can be used.
+</span><span class="comment">*</span><span class="comment">
+</span>      XMAX = ZERO
+      DO 30 J = 1, N
+         XMAX = MAX( XMAX, CABS2( X( J ) ) )
+   30 CONTINUE
+      XBND = XMAX
+      IF( NOTRAN ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute the growth in A * x = b.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( UPPER ) THEN
+            JFIRST = N
+            JLAST = 1
+            JINC = -1
+            MAIND = KD + 1
+         ELSE
+            JFIRST = 1
+            JLAST = N
+            JINC = 1
+            MAIND = 1
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( TSCAL.NE.ONE ) THEN
+            GROW = ZERO
+            GO TO 60
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( NOUNIT ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           A is non-unit triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute GROW = 1/G(j) and XBND = 1/M(j).
+</span><span class="comment">*</span><span class="comment">           Initially, G(0) = max{x(i), i=1,...,n}.
+</span><span class="comment">*</span><span class="comment">
+</span>            GROW = HALF / MAX( XBND, SMLNUM )
+            XBND = GROW
+            DO 40 J = JFIRST, JLAST, JINC
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Exit the loop if the growth factor is too small.
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( GROW.LE.SMLNUM )
+     $            GO TO 60
+<span class="comment">*</span><span class="comment">
+</span>               TJJS = AB( MAIND, J )
+               TJJ = CABS1( TJJS )
+<span class="comment">*</span><span class="comment">
+</span>               IF( TJJ.GE.SMLNUM ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 M(j) = G(j-1) / abs(A(j,j))
+</span><span class="comment">*</span><span class="comment">
+</span>                  XBND = MIN( XBND, MIN( ONE, TJJ )*GROW )
+               ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 M(j) could overflow, set XBND to 0.
+</span><span class="comment">*</span><span class="comment">
+</span>                  XBND = ZERO
+               END IF
+<span class="comment">*</span><span class="comment">
+</span>               IF( TJJ+CNORM( J ).GE.SMLNUM ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 G(j) = G(j-1)*( 1 + CNORM(j) / abs(A(j,j)) )
+</span><span class="comment">*</span><span class="comment">
+</span>                  GROW = GROW*( TJJ / ( TJJ+CNORM( J ) ) )
+               ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 G(j) could overflow, set GROW to 0.
+</span><span class="comment">*</span><span class="comment">
+</span>                  GROW = ZERO
+               END IF
+   40       CONTINUE
+            GROW = XBND
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           A is unit triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute GROW = 1/G(j), where G(0) = max{x(i), i=1,...,n}.
+</span><span class="comment">*</span><span class="comment">
+</span>            GROW = MIN( ONE, HALF / MAX( XBND, SMLNUM ) )
+            DO 50 J = JFIRST, JLAST, JINC
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Exit the loop if the growth factor is too small.
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( GROW.LE.SMLNUM )
+     $            GO TO 60
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              G(j) = G(j-1)*( 1 + CNORM(j) )
+</span><span class="comment">*</span><span class="comment">
+</span>               GROW = GROW*( ONE / ( ONE+CNORM( J ) ) )
+   50       CONTINUE
+         END IF
+   60    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute the growth in A**T * x = b  or  A**H * x = b.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( UPPER ) THEN
+            JFIRST = 1
+            JLAST = N
+            JINC = 1
+            MAIND = KD + 1
+         ELSE
+            JFIRST = N
+            JLAST = 1
+            JINC = -1
+            MAIND = 1
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( TSCAL.NE.ONE ) THEN
+            GROW = ZERO
+            GO TO 90
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( NOUNIT ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           A is non-unit triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute GROW = 1/G(j) and XBND = 1/M(j).
+</span><span class="comment">*</span><span class="comment">           Initially, M(0) = max{x(i), i=1,...,n}.
+</span><span class="comment">*</span><span class="comment">
+</span>            GROW = HALF / MAX( XBND, SMLNUM )
+            XBND = GROW
+            DO 70 J = JFIRST, JLAST, JINC
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Exit the loop if the growth factor is too small.
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( GROW.LE.SMLNUM )
+     $            GO TO 90
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              G(j) = max( G(j-1), M(j-1)*( 1 + CNORM(j) ) )
+</span><span class="comment">*</span><span class="comment">
+</span>               XJ = ONE + CNORM( J )
+               GROW = MIN( GROW, XBND / XJ )
+<span class="comment">*</span><span class="comment">
+</span>               TJJS = AB( MAIND, J )
+               TJJ = CABS1( TJJS )
+<span class="comment">*</span><span class="comment">
+</span>               IF( TJJ.GE.SMLNUM ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 M(j) = M(j-1)*( 1 + CNORM(j) ) / abs(A(j,j))
+</span><span class="comment">*</span><span class="comment">
+</span>                  IF( XJ.GT.TJJ )
+     $               XBND = XBND*( TJJ / XJ )
+               ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 M(j) could overflow, set XBND to 0.
+</span><span class="comment">*</span><span class="comment">
+</span>                  XBND = ZERO
+               END IF
+   70       CONTINUE
+            GROW = MIN( GROW, XBND )
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           A is unit triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute GROW = 1/G(j), where G(0) = max{x(i), i=1,...,n}.
+</span><span class="comment">*</span><span class="comment">
+</span>            GROW = MIN( ONE, HALF / MAX( XBND, SMLNUM ) )
+            DO 80 J = JFIRST, JLAST, JINC
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Exit the loop if the growth factor is too small.
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( GROW.LE.SMLNUM )
+     $            GO TO 90
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              G(j) = ( 1 + CNORM(j) )*G(j-1)
+</span><span class="comment">*</span><span class="comment">
+</span>               XJ = ONE + CNORM( J )
+               GROW = GROW / XJ
+   80       CONTINUE
+         END IF
+   90    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( ( GROW*TSCAL ).GT.SMLNUM ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Use the Level 2 BLAS solve if the reciprocal of the bound on
+</span><span class="comment">*</span><span class="comment">        elements of X is not too small.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL ZTBSV( UPLO, TRANS, DIAG, N, KD, AB, LDAB, X, 1 )
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Use a Level 1 BLAS solve, scaling intermediate results.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( XMAX.GT.BIGNUM*HALF ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Scale X so that its components are less than or equal to
+</span><span class="comment">*</span><span class="comment">           BIGNUM in absolute value.
+</span><span class="comment">*</span><span class="comment">
+</span>            SCALE = ( BIGNUM*HALF ) / XMAX
+            CALL ZDSCAL( N, SCALE, X, 1 )
+            XMAX = BIGNUM
+         ELSE
+            XMAX = XMAX*TWO
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( NOTRAN ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Solve A * x = b
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 120 J = JFIRST, JLAST, JINC
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Compute x(j) = b(j) / A(j,j), scaling x if necessary.
+</span><span class="comment">*</span><span class="comment">
+</span>               XJ = CABS1( X( J ) )
+               IF( NOUNIT ) THEN
+                  TJJS = AB( MAIND, J )*TSCAL
+               ELSE
+                  TJJS = TSCAL
+                  IF( TSCAL.EQ.ONE )
+     $               GO TO 110
+               END IF
+               TJJ = CABS1( TJJS )
+               IF( TJJ.GT.SMLNUM ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    abs(A(j,j)) &gt; SMLNUM:
+</span><span class="comment">*</span><span class="comment">
+</span>                  IF( TJJ.LT.ONE ) THEN
+                     IF( XJ.GT.TJJ*BIGNUM ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                          Scale x by 1/b(j).
+</span><span class="comment">*</span><span class="comment">
+</span>                        REC = ONE / XJ
+                        CALL ZDSCAL( N, REC, X, 1 )
+                        SCALE = SCALE*REC
+                        XMAX = XMAX*REC
+                     END IF
+                  END IF
+                  X( J ) = <a name="ZLADIV.521"></a><a href="zladiv.f.html#ZLADIV.1">ZLADIV</a>( X( J ), TJJS )
+                  XJ = CABS1( X( J ) )
+               ELSE IF( TJJ.GT.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    0 &lt; abs(A(j,j)) &lt;= SMLNUM:
+</span><span class="comment">*</span><span class="comment">
+</span>                  IF( XJ.GT.TJJ*BIGNUM ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                       Scale x by (1/abs(x(j)))*abs(A(j,j))*BIGNUM
+</span><span class="comment">*</span><span class="comment">                       to avoid overflow when dividing by A(j,j).
+</span><span class="comment">*</span><span class="comment">
+</span>                     REC = ( TJJ*BIGNUM ) / XJ
+                     IF( CNORM( J ).GT.ONE ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                          Scale by 1/CNORM(j) to avoid overflow when
+</span><span class="comment">*</span><span class="comment">                          multiplying x(j) times column j.
+</span><span class="comment">*</span><span class="comment">
+</span>                        REC = REC / CNORM( J )
+                     END IF
+                     CALL ZDSCAL( N, REC, X, 1 )
+                     SCALE = SCALE*REC
+                     XMAX = XMAX*REC
+                  END IF
+                  X( J ) = <a name="ZLADIV.544"></a><a href="zladiv.f.html#ZLADIV.1">ZLADIV</a>( X( J ), TJJS )
+                  XJ = CABS1( X( J ) )
+               ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    A(j,j) = 0:  Set x(1:n) = 0, x(j) = 1, and
+</span><span class="comment">*</span><span class="comment">                    scale = 0, and compute a solution to A*x = 0.
+</span><span class="comment">*</span><span class="comment">
+</span>                  DO 100 I = 1, N
+                     X( I ) = ZERO
+  100             CONTINUE
+                  X( J ) = ONE
+                  XJ = ONE
+                  SCALE = ZERO
+                  XMAX = ZERO
+               END IF
+  110          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Scale x if necessary to avoid overflow when adding a
+</span><span class="comment">*</span><span class="comment">              multiple of column j of A.
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( XJ.GT.ONE ) THEN
+                  REC = ONE / XJ
+                  IF( CNORM( J ).GT.( BIGNUM-XMAX )*REC ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Scale x by 1/(2*abs(x(j))).
+</span><span class="comment">*</span><span class="comment">
+</span>                     REC = REC*HALF
+                     CALL ZDSCAL( N, REC, X, 1 )
+                     SCALE = SCALE*REC
+                  END IF
+               ELSE IF( XJ*CNORM( J ).GT.( BIGNUM-XMAX ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 Scale x by 1/2.
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL ZDSCAL( N, HALF, X, 1 )
+                  SCALE = SCALE*HALF
+               END IF
+<span class="comment">*</span><span class="comment">
+</span>               IF( UPPER ) THEN
+                  IF( J.GT.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Compute the update
+</span><span class="comment">*</span><span class="comment">                       x(max(1,j-kd):j-1) := x(max(1,j-kd):j-1) -
+</span><span class="comment">*</span><span class="comment">                                             x(j)* A(max(1,j-kd):j-1,j)
+</span><span class="comment">*</span><span class="comment">
+</span>                     JLEN = MIN( KD, J-1 )
+                     CALL ZAXPY( JLEN, -X( J )*TSCAL,
+     $                           AB( KD+1-JLEN, J ), 1, X( J-JLEN ), 1 )
+                     I = IZAMAX( J-1, X, 1 )
+                     XMAX = CABS1( X( I ) )
+                  END IF
+               ELSE IF( J.LT.N ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 Compute the update
+</span><span class="comment">*</span><span class="comment">                    x(j+1:min(j+kd,n)) := x(j+1:min(j+kd,n)) -
+</span><span class="comment">*</span><span class="comment">                                          x(j) * A(j+1:min(j+kd,n),j)
+</span><span class="comment">*</span><span class="comment">
+</span>                  JLEN = MIN( KD, N-J )
+                  IF( JLEN.GT.0 )
+     $               CALL ZAXPY( JLEN, -X( J )*TSCAL, AB( 2, J ), 1,
+     $                           X( J+1 ), 1 )
+                  I = J + IZAMAX( N-J, X( J+1 ), 1 )
+                  XMAX = CABS1( X( I ) )
+               END IF
+  120       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         ELSE IF( <a name="LSAME.610"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'T'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Solve A**T * x = b
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 170 J = JFIRST, JLAST, JINC
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Compute x(j) = b(j) - sum A(k,j)*x(k).
+</span><span class="comment">*</span><span class="comment">                                    k&lt;&gt;j
+</span><span class="comment">*</span><span class="comment">
+</span>               XJ = CABS1( X( J ) )
+               USCAL = TSCAL
+               REC = ONE / MAX( XMAX, ONE )
+               IF( CNORM( J ).GT.( BIGNUM-XJ )*REC ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 If x(j) could overflow, scale x by 1/(2*XMAX).
+</span><span class="comment">*</span><span class="comment">
+</span>                  REC = REC*HALF
+                  IF( NOUNIT ) THEN
+                     TJJS = AB( MAIND, J )*TSCAL
+                  ELSE
+                     TJJS = TSCAL
+                  END IF
+                  TJJ = CABS1( TJJS )
+                  IF( TJJ.GT.ONE ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                       Divide by A(j,j) when scaling x if A(j,j) &gt; 1.
+</span><span class="comment">*</span><span class="comment">
+</span>                     REC = MIN( ONE, REC*TJJ )
+                     USCAL = <a name="ZLADIV.638"></a><a href="zladiv.f.html#ZLADIV.1">ZLADIV</a>( USCAL, TJJS )
+                  END IF
+                  IF( REC.LT.ONE ) THEN
+                     CALL ZDSCAL( N, REC, X, 1 )
+                     SCALE = SCALE*REC
+                     XMAX = XMAX*REC
+                  END IF
+               END IF
+<span class="comment">*</span><span class="comment">
+</span>               CSUMJ = ZERO
+               IF( USCAL.EQ.DCMPLX( ONE ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 If the scaling needed for A in the dot product is 1,
+</span><span class="comment">*</span><span class="comment">                 call ZDOTU to perform the dot product.
+</span><span class="comment">*</span><span class="comment">
+</span>                  IF( UPPER ) THEN
+                     JLEN = MIN( KD, J-1 )
+                     CSUMJ = ZDOTU( JLEN, AB( KD+1-JLEN, J ), 1,
+     $                       X( J-JLEN ), 1 )
+                  ELSE
+                     JLEN = MIN( KD, N-J )
+                     IF( JLEN.GT.1 )
+     $                  CSUMJ = ZDOTU( JLEN, AB( 2, J ), 1, X( J+1 ),
+     $                          1 )
+                  END IF
+               ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 Otherwise, use in-line code for the dot product.
+</span><span class="comment">*</span><span class="comment">
+</span>                  IF( UPPER ) THEN
+                     JLEN = MIN( KD, J-1 )
+                     DO 130 I = 1, JLEN
+                        CSUMJ = CSUMJ + ( AB( KD+I-JLEN, J )*USCAL )*
+     $                          X( J-JLEN-1+I )
+  130                CONTINUE
+                  ELSE
+                     JLEN = MIN( KD, N-J )
+                     DO 140 I = 1, JLEN
+                        CSUMJ = CSUMJ + ( AB( I+1, J )*USCAL )*X( J+I )
+  140                CONTINUE
+                  END IF
+               END IF
+<span class="comment">*</span><span class="comment">
+</span>               IF( USCAL.EQ.DCMPLX( TSCAL ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 Compute x(j) := ( x(j) - CSUMJ ) / A(j,j) if 1/A(j,j)
+</span><span class="comment">*</span><span class="comment">                 was not used to scale the dotproduct.
+</span><span class="comment">*</span><span class="comment">
+</span>                  X( J ) = X( J ) - CSUMJ
+                  XJ = CABS1( X( J ) )
+                  IF( NOUNIT ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Compute x(j) = x(j) / A(j,j), scaling if necessary.
+</span><span class="comment">*</span><span class="comment">
+</span>                     TJJS = AB( MAIND, J )*TSCAL
+                  ELSE
+                     TJJS = TSCAL
+                     IF( TSCAL.EQ.ONE )
+     $                  GO TO 160
+                  END IF
+                  TJJ = CABS1( TJJS )
+                  IF( TJJ.GT.SMLNUM ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                       abs(A(j,j)) &gt; SMLNUM:
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( TJJ.LT.ONE ) THEN
+                        IF( XJ.GT.TJJ*BIGNUM ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                             Scale X by 1/abs(x(j)).
+</span><span class="comment">*</span><span class="comment">
+</span>                           REC = ONE / XJ
+                           CALL ZDSCAL( N, REC, X, 1 )
+                           SCALE = SCALE*REC
+                           XMAX = XMAX*REC
+                        END IF
+                     END IF
+                     X( J ) = <a name="ZLADIV.714"></a><a href="zladiv.f.html#ZLADIV.1">ZLADIV</a>( X( J ), TJJS )
+                  ELSE IF( TJJ.GT.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                       0 &lt; abs(A(j,j)) &lt;= SMLNUM:
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( XJ.GT.TJJ*BIGNUM ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                          Scale x by (1/abs(x(j)))*abs(A(j,j))*BIGNUM.
+</span><span class="comment">*</span><span class="comment">
+</span>                        REC = ( TJJ*BIGNUM ) / XJ
+                        CALL ZDSCAL( N, REC, X, 1 )
+                        SCALE = SCALE*REC
+                        XMAX = XMAX*REC
+                     END IF
+                     X( J ) = <a name="ZLADIV.728"></a><a href="zladiv.f.html#ZLADIV.1">ZLADIV</a>( X( J ), TJJS )
+                  ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                       A(j,j) = 0:  Set x(1:n) = 0, x(j) = 1, and
+</span><span class="comment">*</span><span class="comment">                       scale = 0 and compute a solution to A**T *x = 0.
+</span><span class="comment">*</span><span class="comment">
+</span>                     DO 150 I = 1, N
+                        X( I ) = ZERO
+  150                CONTINUE
+                     X( J ) = ONE
+                     SCALE = ZERO
+                     XMAX = ZERO
+                  END IF
+  160             CONTINUE
+               ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 Compute x(j) := x(j) / A(j,j) - CSUMJ if the dot
+</span><span class="comment">*</span><span class="comment">                 product has already been divided by 1/A(j,j).
+</span><span class="comment">*</span><span class="comment">
+</span>                  X( J ) = <a name="ZLADIV.747"></a><a href="zladiv.f.html#ZLADIV.1">ZLADIV</a>( X( J ), TJJS ) - CSUMJ
+               END IF
+               XMAX = MAX( XMAX, CABS1( X( J ) ) )
+  170       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Solve A**H * x = b
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 220 J = JFIRST, JLAST, JINC
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Compute x(j) = b(j) - sum A(k,j)*x(k).
+</span><span class="comment">*</span><span class="comment">                                    k&lt;&gt;j
+</span><span class="comment">*</span><span class="comment">
+</span>               XJ = CABS1( X( J ) )
+               USCAL = TSCAL
+               REC = ONE / MAX( XMAX, ONE )
+               IF( CNORM( J ).GT.( BIGNUM-XJ )*REC ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 If x(j) could overflow, scale x by 1/(2*XMAX).
+</span><span class="comment">*</span><span class="comment">
+</span>                  REC = REC*HALF
+                  IF( NOUNIT ) THEN
+                     TJJS = DCONJG( AB( MAIND, J ) )*TSCAL
+                  ELSE
+                     TJJS = TSCAL
+                  END IF
+                  TJJ = CABS1( TJJS )
+                  IF( TJJ.GT.ONE ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                       Divide by A(j,j) when scaling x if A(j,j) &gt; 1.
+</span><span class="comment">*</span><span class="comment">
+</span>                     REC = MIN( ONE, REC*TJJ )
+                     USCAL = <a name="ZLADIV.780"></a><a href="zladiv.f.html#ZLADIV.1">ZLADIV</a>( USCAL, TJJS )
+                  END IF
+                  IF( REC.LT.ONE ) THEN
+                     CALL ZDSCAL( N, REC, X, 1 )
+                     SCALE = SCALE*REC
+                     XMAX = XMAX*REC
+                  END IF
+               END IF
+<span class="comment">*</span><span class="comment">
+</span>               CSUMJ = ZERO
+               IF( USCAL.EQ.DCMPLX( ONE ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 If the scaling needed for A in the dot product is 1,
+</span><span class="comment">*</span><span class="comment">                 call ZDOTC to perform the dot product.
+</span><span class="comment">*</span><span class="comment">
+</span>                  IF( UPPER ) THEN
+                     JLEN = MIN( KD, J-1 )
+                     CSUMJ = ZDOTC( JLEN, AB( KD+1-JLEN, J ), 1,
+     $                       X( J-JLEN ), 1 )
+                  ELSE
+                     JLEN = MIN( KD, N-J )
+                     IF( JLEN.GT.1 )
+     $                  CSUMJ = ZDOTC( JLEN, AB( 2, J ), 1, X( J+1 ),
+     $                          1 )
+                  END IF
+               ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 Otherwise, use in-line code for the dot product.
+</span><span class="comment">*</span><span class="comment">
+</span>                  IF( UPPER ) THEN
+                     JLEN = MIN( KD, J-1 )
+                     DO 180 I = 1, JLEN
+                        CSUMJ = CSUMJ + ( DCONJG( AB( KD+I-JLEN, J ) )*
+     $                          USCAL )*X( J-JLEN-1+I )
+  180                CONTINUE
+                  ELSE
+                     JLEN = MIN( KD, N-J )
+                     DO 190 I = 1, JLEN
+                        CSUMJ = CSUMJ + ( DCONJG( AB( I+1, J ) )*USCAL )
+     $                          *X( J+I )
+  190                CONTINUE
+                  END IF
+               END IF
+<span class="comment">*</span><span class="comment">
+</span>               IF( USCAL.EQ.DCMPLX( TSCAL ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 Compute x(j) := ( x(j) - CSUMJ ) / A(j,j) if 1/A(j,j)
+</span><span class="comment">*</span><span class="comment">                 was not used to scale the dotproduct.
+</span><span class="comment">*</span><span class="comment">
+</span>                  X( J ) = X( J ) - CSUMJ
+                  XJ = CABS1( X( J ) )
+                  IF( NOUNIT ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Compute x(j) = x(j) / A(j,j), scaling if necessary.
+</span><span class="comment">*</span><span class="comment">
+</span>                     TJJS = DCONJG( AB( MAIND, J ) )*TSCAL
+                  ELSE
+                     TJJS = TSCAL
+                     IF( TSCAL.EQ.ONE )
+     $                  GO TO 210
+                  END IF
+                  TJJ = CABS1( TJJS )
+                  IF( TJJ.GT.SMLNUM ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                       abs(A(j,j)) &gt; SMLNUM:
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( TJJ.LT.ONE ) THEN
+                        IF( XJ.GT.TJJ*BIGNUM ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                             Scale X by 1/abs(x(j)).
+</span><span class="comment">*</span><span class="comment">
+</span>                           REC = ONE / XJ
+                           CALL ZDSCAL( N, REC, X, 1 )
+                           SCALE = SCALE*REC
+                           XMAX = XMAX*REC
+                        END IF
+                     END IF
+                     X( J ) = <a name="ZLADIV.857"></a><a href="zladiv.f.html#ZLADIV.1">ZLADIV</a>( X( J ), TJJS )
+                  ELSE IF( TJJ.GT.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                       0 &lt; abs(A(j,j)) &lt;= SMLNUM:
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( XJ.GT.TJJ*BIGNUM ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                          Scale x by (1/abs(x(j)))*abs(A(j,j))*BIGNUM.
+</span><span class="comment">*</span><span class="comment">
+</span>                        REC = ( TJJ*BIGNUM ) / XJ
+                        CALL ZDSCAL( N, REC, X, 1 )
+                        SCALE = SCALE*REC
+                        XMAX = XMAX*REC
+                     END IF
+                     X( J ) = <a name="ZLADIV.871"></a><a href="zladiv.f.html#ZLADIV.1">ZLADIV</a>( X( J ), TJJS )
+                  ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                       A(j,j) = 0:  Set x(1:n) = 0, x(j) = 1, and
+</span><span class="comment">*</span><span class="comment">                       scale = 0 and compute a solution to A**H *x = 0.
+</span><span class="comment">*</span><span class="comment">
+</span>                     DO 200 I = 1, N
+                        X( I ) = ZERO
+  200                CONTINUE
+                     X( J ) = ONE
+                     SCALE = ZERO
+                     XMAX = ZERO
+                  END IF
+  210             CONTINUE
+               ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 Compute x(j) := x(j) / A(j,j) - CSUMJ if the dot
+</span><span class="comment">*</span><span class="comment">                 product has already been divided by 1/A(j,j).
+</span><span class="comment">*</span><span class="comment">
+</span>                  X( J ) = <a name="ZLADIV.890"></a><a href="zladiv.f.html#ZLADIV.1">ZLADIV</a>( X( J ), TJJS ) - CSUMJ
+               END IF
+               XMAX = MAX( XMAX, CABS1( X( J ) ) )
+  220       CONTINUE
+         END IF
+         SCALE = SCALE / TSCAL
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Scale the column norms by 1/TSCAL for return.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( TSCAL.NE.ONE ) THEN
+         CALL DSCAL( N, ONE / TSCAL, CNORM, 1 )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZLATBS.906"></a><a href="zlatbs.f.html#ZLATBS.1">ZLATBS</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

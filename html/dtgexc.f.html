@@ -1,0 +1,464 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dtgexc.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DTGEXC.1"></a><a href="dtgexc.f.html#DTGEXC.1">DTGEXC</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ, Z,
+     $                   LDZ, IFST, ILST, WORK, LWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      LOGICAL            WANTQ, WANTZ
+      INTEGER            IFST, ILST, INFO, LDA, LDB, LDQ, LDZ, LWORK, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), Q( LDQ, * ),
+     $                   WORK( * ), Z( LDZ, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DTGEXC.20"></a><a href="dtgexc.f.html#DTGEXC.1">DTGEXC</a> reorders the generalized real Schur decomposition of a real
+</span><span class="comment">*</span><span class="comment">  matrix pair (A,B) using an orthogonal equivalence transformation
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 (A, B) = Q * (A, B) * Z',
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  so that the diagonal block of (A, B) with row index IFST is moved
+</span><span class="comment">*</span><span class="comment">  to row ILST.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  (A, B) must be in generalized real Schur canonical form (as returned
+</span><span class="comment">*</span><span class="comment">  by <a name="DGGES.29"></a><a href="dgges.f.html#DGGES.1">DGGES</a>), i.e. A is block upper triangular with 1-by-1 and 2-by-2
+</span><span class="comment">*</span><span class="comment">  diagonal blocks. B is upper triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Optionally, the matrices Q and Z of generalized Schur vectors are
+</span><span class="comment">*</span><span class="comment">  updated.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">         Q(in) * A(in) * Z(in)' = Q(out) * A(out) * Z(out)'
+</span><span class="comment">*</span><span class="comment">         Q(in) * B(in) * Z(in)' = Q(out) * B(out) * Z(out)'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WANTQ   (input) LOGICAL
+</span><span class="comment">*</span><span class="comment">          .TRUE. : update the left transformation matrix Q;
+</span><span class="comment">*</span><span class="comment">          .FALSE.: do not update Q.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WANTZ   (input) LOGICAL
+</span><span class="comment">*</span><span class="comment">          .TRUE. : update the right transformation matrix Z;
+</span><span class="comment">*</span><span class="comment">          .FALSE.: do not update Z.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrices A and B. N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) DOUBLE PRECISION array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the matrix A in generalized real Schur canonical
+</span><span class="comment">*</span><span class="comment">          form.
+</span><span class="comment">*</span><span class="comment">          On exit, the updated matrix A, again in generalized
+</span><span class="comment">*</span><span class="comment">          real Schur canonical form.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input)  INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A. LDA &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input/output) DOUBLE PRECISION array, dimension (LDB,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the matrix B in generalized real Schur canonical
+</span><span class="comment">*</span><span class="comment">          form (A,B).
+</span><span class="comment">*</span><span class="comment">          On exit, the updated matrix B, again in generalized
+</span><span class="comment">*</span><span class="comment">          real Schur canonical form (A,B).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input)  INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B. LDB &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Q       (input/output) DOUBLE PRECISION array, dimension (LDZ,N)
+</span><span class="comment">*</span><span class="comment">          On entry, if WANTQ = .TRUE., the orthogonal matrix Q.
+</span><span class="comment">*</span><span class="comment">          On exit, the updated matrix Q.
+</span><span class="comment">*</span><span class="comment">          If WANTQ = .FALSE., Q is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDQ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Q. LDQ &gt;= 1.
+</span><span class="comment">*</span><span class="comment">          If WANTQ = .TRUE., LDQ &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z       (input/output) DOUBLE PRECISION array, dimension (LDZ,N)
+</span><span class="comment">*</span><span class="comment">          On entry, if WANTZ = .TRUE., the orthogonal matrix Z.
+</span><span class="comment">*</span><span class="comment">          On exit, the updated matrix Z.
+</span><span class="comment">*</span><span class="comment">          If WANTZ = .FALSE., Z is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDZ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Z. LDZ &gt;= 1.
+</span><span class="comment">*</span><span class="comment">          If WANTZ = .TRUE., LDZ &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IFST    (input/output) INTEGER
+</span><span class="comment">*</span><span class="comment">  ILST    (input/output) INTEGER
+</span><span class="comment">*</span><span class="comment">          Specify the reordering of the diagonal blocks of (A, B).
+</span><span class="comment">*</span><span class="comment">          The block with row index IFST is moved to row ILST, by a
+</span><span class="comment">*</span><span class="comment">          sequence of swapping between adjacent blocks.
+</span><span class="comment">*</span><span class="comment">          On exit, if IFST pointed on entry to the second row of
+</span><span class="comment">*</span><span class="comment">          a 2-by-2 block, it is changed to point to the first row;
+</span><span class="comment">*</span><span class="comment">          ILST always points to the first row of the block in its
+</span><span class="comment">*</span><span class="comment">          final position (which may differ from its input value by
+</span><span class="comment">*</span><span class="comment">          +1 or -1). 1 &lt;= IFST, ILST &lt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace/output) DOUBLE PRECISION array, dimension (MAX(1,LWORK))
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LWORK   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The dimension of the array WORK.
+</span><span class="comment">*</span><span class="comment">          LWORK &gt;= 1 when N &lt;= 1, otherwise LWORK &gt;= 4*N + 16.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If LWORK = -1, then a workspace query is assumed; the routine
+</span><span class="comment">*</span><span class="comment">          only calculates the optimal size of the WORK array, returns
+</span><span class="comment">*</span><span class="comment">          this value as the first entry of the WORK array, and no error
+</span><span class="comment">*</span><span class="comment">          message related to LWORK is issued by <a name="XERBLA.110"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">           =0:  successful exit.
+</span><span class="comment">*</span><span class="comment">           &lt;0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">           =1:  The transformed matrix pair (A, B) would be too far
+</span><span class="comment">*</span><span class="comment">                from generalized Schur form; the problem is ill-
+</span><span class="comment">*</span><span class="comment">                conditioned. (A, B) may have been partially reordered,
+</span><span class="comment">*</span><span class="comment">                and ILST points to the first row of the current
+</span><span class="comment">*</span><span class="comment">                position of the block being moved.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Bo Kagstrom and Peter Poromaa, Department of Computing Science,
+</span><span class="comment">*</span><span class="comment">     Umea University, S-901 87 Umea, Sweden.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  [1] B. Kagstrom; A Direct Method for Reordering Eigenvalues in the
+</span><span class="comment">*</span><span class="comment">      Generalized Real Schur Form of a Regular Matrix Pair (A, B), in
+</span><span class="comment">*</span><span class="comment">      M.S. Moonen et al (eds), Linear Algebra for Large Scale and
+</span><span class="comment">*</span><span class="comment">      Real-Time Applications, Kluwer Academic Publ. 1993, pp 195-218.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO
+      PARAMETER          ( ZERO = 0.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            LQUERY
+      INTEGER            HERE, LWMIN, NBF, NBL, NBNEXT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DTGEX2.144"></a><a href="dtgex2.f.html#DTGEX2.1">DTGEX2</a>, <a name="XERBLA.144"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Decode and test input arguments.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      LQUERY = ( LWORK.EQ.-1 )
+      IF( N.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+         INFO = -5
+      ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
+         INFO = -7
+      ELSE IF( LDQ.LT.1 .OR. WANTQ .AND. ( LDQ.LT.MAX( 1, N ) ) ) THEN
+         INFO = -9
+      ELSE IF( LDZ.LT.1 .OR. WANTZ .AND. ( LDZ.LT.MAX( 1, N ) ) ) THEN
+         INFO = -11
+      ELSE IF( IFST.LT.1 .OR. IFST.GT.N ) THEN
+         INFO = -12
+      ELSE IF( ILST.LT.1 .OR. ILST.GT.N ) THEN
+         INFO = -13
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.EQ.0 ) THEN
+         IF( N.LE.1 ) THEN
+            LWMIN = 1
+         ELSE
+            LWMIN = 4*N + 16
+         END IF
+         WORK(1) = LWMIN
+<span class="comment">*</span><span class="comment">
+</span>         IF (LWORK.LT.LWMIN .AND. .NOT.LQUERY) THEN
+            INFO = -15
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.185"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DTGEXC.185"></a><a href="dtgexc.f.html#DTGEXC.1">DTGEXC</a>'</span>, -INFO )
+         RETURN
+      ELSE IF( LQUERY ) THEN
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.LE.1 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Determine the first row of the specified block and find out
+</span><span class="comment">*</span><span class="comment">     if it is 1-by-1 or 2-by-2.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( IFST.GT.1 ) THEN
+         IF( A( IFST, IFST-1 ).NE.ZERO )
+     $      IFST = IFST - 1
+      END IF
+      NBF = 1
+      IF( IFST.LT.N ) THEN
+         IF( A( IFST+1, IFST ).NE.ZERO )
+     $      NBF = 2
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Determine the first row of the final block
+</span><span class="comment">*</span><span class="comment">     and find out if it is 1-by-1 or 2-by-2.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ILST.GT.1 ) THEN
+         IF( A( ILST, ILST-1 ).NE.ZERO )
+     $      ILST = ILST - 1
+      END IF
+      NBL = 1
+      IF( ILST.LT.N ) THEN
+         IF( A( ILST+1, ILST ).NE.ZERO )
+     $      NBL = 2
+      END IF
+      IF( IFST.EQ.ILST )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      IF( IFST.LT.ILST ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Update ILST.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( NBF.EQ.2 .AND. NBL.EQ.1 )
+     $      ILST = ILST - 1
+         IF( NBF.EQ.1 .AND. NBL.EQ.2 )
+     $      ILST = ILST + 1
+<span class="comment">*</span><span class="comment">
+</span>         HERE = IFST
+<span class="comment">*</span><span class="comment">
+</span>   10    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Swap with next one below.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( NBF.EQ.1 .OR. NBF.EQ.2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Current block either 1-by-1 or 2-by-2.
+</span><span class="comment">*</span><span class="comment">
+</span>            NBNEXT = 1
+            IF( HERE+NBF+1.LE.N ) THEN
+               IF( A( HERE+NBF+1, HERE+NBF ).NE.ZERO )
+     $            NBNEXT = 2
+            END IF
+            CALL <a name="DTGEX2.248"></a><a href="dtgex2.f.html#DTGEX2.1">DTGEX2</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ, Z,
+     $                   LDZ, HERE, NBF, NBNEXT, WORK, LWORK, INFO )
+            IF( INFO.NE.0 ) THEN
+               ILST = HERE
+               RETURN
+            END IF
+            HERE = HERE + NBNEXT
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Test if 2-by-2 block breaks into two 1-by-1 blocks.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( NBF.EQ.2 ) THEN
+               IF( A( HERE+1, HERE ).EQ.ZERO )
+     $            NBF = 3
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Current block consists of two 1-by-1 blocks, each of which
+</span><span class="comment">*</span><span class="comment">           must be swapped individually.
+</span><span class="comment">*</span><span class="comment">
+</span>            NBNEXT = 1
+            IF( HERE+3.LE.N ) THEN
+               IF( A( HERE+3, HERE+2 ).NE.ZERO )
+     $            NBNEXT = 2
+            END IF
+            CALL <a name="DTGEX2.273"></a><a href="dtgex2.f.html#DTGEX2.1">DTGEX2</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ, Z,
+     $                   LDZ, HERE+1, 1, NBNEXT, WORK, LWORK, INFO )
+            IF( INFO.NE.0 ) THEN
+               ILST = HERE
+               RETURN
+            END IF
+            IF( NBNEXT.EQ.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Swap two 1-by-1 blocks.
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="DTGEX2.283"></a><a href="dtgex2.f.html#DTGEX2.1">DTGEX2</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ, Z,
+     $                      LDZ, HERE, 1, 1, WORK, LWORK, INFO )
+               IF( INFO.NE.0 ) THEN
+                  ILST = HERE
+                  RETURN
+               END IF
+               HERE = HERE + 1
+<span class="comment">*</span><span class="comment">
+</span>            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Recompute NBNEXT in case of 2-by-2 split.
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( A( HERE+2, HERE+1 ).EQ.ZERO )
+     $            NBNEXT = 1
+               IF( NBNEXT.EQ.2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 2-by-2 block did not split.
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL <a name="DTGEX2.301"></a><a href="dtgex2.f.html#DTGEX2.1">DTGEX2</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ,
+     $                         Z, LDZ, HERE, 1, NBNEXT, WORK, LWORK,
+     $                         INFO )
+                  IF( INFO.NE.0 ) THEN
+                     ILST = HERE
+                     RETURN
+                  END IF
+                  HERE = HERE + 2
+               ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 2-by-2 block did split.
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL <a name="DTGEX2.313"></a><a href="dtgex2.f.html#DTGEX2.1">DTGEX2</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ,
+     $                         Z, LDZ, HERE, 1, 1, WORK, LWORK, INFO )
+                  IF( INFO.NE.0 ) THEN
+                     ILST = HERE
+                     RETURN
+                  END IF
+                  HERE = HERE + 1
+                  CALL <a name="DTGEX2.320"></a><a href="dtgex2.f.html#DTGEX2.1">DTGEX2</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ,
+     $                         Z, LDZ, HERE, 1, 1, WORK, LWORK, INFO )
+                  IF( INFO.NE.0 ) THEN
+                     ILST = HERE
+                     RETURN
+                  END IF
+                  HERE = HERE + 1
+               END IF
+<span class="comment">*</span><span class="comment">
+</span>            END IF
+         END IF
+         IF( HERE.LT.ILST )
+     $      GO TO 10
+      ELSE
+         HERE = IFST
+<span class="comment">*</span><span class="comment">
+</span>   20    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Swap with next one below.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( NBF.EQ.1 .OR. NBF.EQ.2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Current block either 1-by-1 or 2-by-2.
+</span><span class="comment">*</span><span class="comment">
+</span>            NBNEXT = 1
+            IF( HERE.GE.3 ) THEN
+               IF( A( HERE-1, HERE-2 ).NE.ZERO )
+     $            NBNEXT = 2
+            END IF
+            CALL <a name="DTGEX2.349"></a><a href="dtgex2.f.html#DTGEX2.1">DTGEX2</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ, Z,
+     $                   LDZ, HERE-NBNEXT, NBNEXT, NBF, WORK, LWORK,
+     $                   INFO )
+            IF( INFO.NE.0 ) THEN
+               ILST = HERE
+               RETURN
+            END IF
+            HERE = HERE - NBNEXT
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Test if 2-by-2 block breaks into two 1-by-1 blocks.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( NBF.EQ.2 ) THEN
+               IF( A( HERE+1, HERE ).EQ.ZERO )
+     $            NBF = 3
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Current block consists of two 1-by-1 blocks, each of which
+</span><span class="comment">*</span><span class="comment">           must be swapped individually.
+</span><span class="comment">*</span><span class="comment">
+</span>            NBNEXT = 1
+            IF( HERE.GE.3 ) THEN
+               IF( A( HERE-1, HERE-2 ).NE.ZERO )
+     $            NBNEXT = 2
+            END IF
+            CALL <a name="DTGEX2.375"></a><a href="dtgex2.f.html#DTGEX2.1">DTGEX2</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ, Z,
+     $                   LDZ, HERE-NBNEXT, NBNEXT, 1, WORK, LWORK,
+     $                   INFO )
+            IF( INFO.NE.0 ) THEN
+               ILST = HERE
+               RETURN
+            END IF
+            IF( NBNEXT.EQ.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Swap two 1-by-1 blocks.
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="DTGEX2.386"></a><a href="dtgex2.f.html#DTGEX2.1">DTGEX2</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ, Z,
+     $                      LDZ, HERE, NBNEXT, 1, WORK, LWORK, INFO )
+               IF( INFO.NE.0 ) THEN
+                  ILST = HERE
+                  RETURN
+               END IF
+               HERE = HERE - 1
+            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">             Recompute NBNEXT in case of 2-by-2 split.
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( A( HERE, HERE-1 ).EQ.ZERO )
+     $            NBNEXT = 1
+               IF( NBNEXT.EQ.2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 2-by-2 block did not split.
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL <a name="DTGEX2.403"></a><a href="dtgex2.f.html#DTGEX2.1">DTGEX2</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ,
+     $                         Z, LDZ, HERE-1, 2, 1, WORK, LWORK, INFO )
+                  IF( INFO.NE.0 ) THEN
+                     ILST = HERE
+                     RETURN
+                  END IF
+                  HERE = HERE - 2
+               ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 2-by-2 block did split.
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL <a name="DTGEX2.414"></a><a href="dtgex2.f.html#DTGEX2.1">DTGEX2</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ,
+     $                         Z, LDZ, HERE, 1, 1, WORK, LWORK, INFO )
+                  IF( INFO.NE.0 ) THEN
+                     ILST = HERE
+                     RETURN
+                  END IF
+                  HERE = HERE - 1
+                  CALL <a name="DTGEX2.421"></a><a href="dtgex2.f.html#DTGEX2.1">DTGEX2</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ,
+     $                         Z, LDZ, HERE, 1, 1, WORK, LWORK, INFO )
+                  IF( INFO.NE.0 ) THEN
+                     ILST = HERE
+                     RETURN
+                  END IF
+                  HERE = HERE - 1
+               END IF
+            END IF
+         END IF
+         IF( HERE.GT.ILST )
+     $      GO TO 20
+      END IF
+      ILST = HERE
+      WORK( 1 ) = LWMIN
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DTGEXC.438"></a><a href="dtgexc.f.html#DTGEXC.1">DTGEXC</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,493 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>clahqr.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CLAHQR.1"></a><a href="clahqr.f.html#CLAHQR.1">CLAHQR</a>( WANTT, WANTZ, N, ILO, IHI, H, LDH, W, ILOZ,
+     $                   IHIZ, Z, LDZ, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            IHI, IHIZ, ILO, ILOZ, INFO, LDH, LDZ, N
+      LOGICAL            WANTT, WANTZ
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX            H( LDH, * ), W( * ), Z( LDZ, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Purpose
+</span><span class="comment">*</span><span class="comment">     =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     <a name="CLAHQR.19"></a><a href="clahqr.f.html#CLAHQR.1">CLAHQR</a> is an auxiliary routine called by <a name="CHSEQR.19"></a><a href="chseqr.f.html#CHSEQR.1">CHSEQR</a> to update the
+</span><span class="comment">*</span><span class="comment">     eigenvalues and Schur decomposition already computed by <a name="CHSEQR.20"></a><a href="chseqr.f.html#CHSEQR.1">CHSEQR</a>, by
+</span><span class="comment">*</span><span class="comment">     dealing with the Hessenberg submatrix in rows and columns ILO to
+</span><span class="comment">*</span><span class="comment">     IHI.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Arguments
+</span><span class="comment">*</span><span class="comment">     =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     WANTT   (input) LOGICAL
+</span><span class="comment">*</span><span class="comment">          = .TRUE. : the full Schur form T is required;
+</span><span class="comment">*</span><span class="comment">          = .FALSE.: only eigenvalues are required.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     WANTZ   (input) LOGICAL
+</span><span class="comment">*</span><span class="comment">          = .TRUE. : the matrix of Schur vectors Z is required;
+</span><span class="comment">*</span><span class="comment">          = .FALSE.: Schur vectors are not required.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix H.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ILO     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">     IHI     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          It is assumed that H is already upper triangular in rows and
+</span><span class="comment">*</span><span class="comment">          columns IHI+1:N, and that H(ILO,ILO-1) = 0 (unless ILO = 1).
+</span><span class="comment">*</span><span class="comment">          <a name="CLAHQR.42"></a><a href="clahqr.f.html#CLAHQR.1">CLAHQR</a> works primarily with the Hessenberg submatrix in rows
+</span><span class="comment">*</span><span class="comment">          and columns ILO to IHI, but applies transformations to all of
+</span><span class="comment">*</span><span class="comment">          H if WANTT is .TRUE..
+</span><span class="comment">*</span><span class="comment">          1 &lt;= ILO &lt;= max(1,IHI); IHI &lt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     H       (input/output) COMPLEX array, dimension (LDH,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper Hessenberg matrix H.
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO is zero and if WANTT is .TRUE., then H
+</span><span class="comment">*</span><span class="comment">          is upper triangular in rows and columns ILO:IHI.  If INFO
+</span><span class="comment">*</span><span class="comment">          is zero and if WANTT is .FALSE., then the contents of H
+</span><span class="comment">*</span><span class="comment">          are unspecified on exit.  The output state of H in case
+</span><span class="comment">*</span><span class="comment">          INF is positive is below under the description of INFO.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     LDH     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array H. LDH &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     W       (output) COMPLEX array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The computed eigenvalues ILO to IHI are stored in the
+</span><span class="comment">*</span><span class="comment">          corresponding elements of W. If WANTT is .TRUE., the
+</span><span class="comment">*</span><span class="comment">          eigenvalues are stored in the same order as on the diagonal
+</span><span class="comment">*</span><span class="comment">          of the Schur form returned in H, with W(i) = H(i,i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ILOZ    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">     IHIZ    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          Specify the rows of Z to which transformations must be
+</span><span class="comment">*</span><span class="comment">          applied if WANTZ is .TRUE..
+</span><span class="comment">*</span><span class="comment">          1 &lt;= ILOZ &lt;= ILO; IHI &lt;= IHIZ &lt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Z       (input/output) COMPLEX array, dimension (LDZ,N)
+</span><span class="comment">*</span><span class="comment">          If WANTZ is .TRUE., on entry Z must contain the current
+</span><span class="comment">*</span><span class="comment">          matrix Z of transformations accumulated by <a name="CHSEQR.72"></a><a href="chseqr.f.html#CHSEQR.1">CHSEQR</a>, and on
+</span><span class="comment">*</span><span class="comment">          exit Z has been updated; transformations are applied only to
+</span><span class="comment">*</span><span class="comment">          the submatrix Z(ILOZ:IHIZ,ILO:IHI).
+</span><span class="comment">*</span><span class="comment">          If WANTZ is .FALSE., Z is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     LDZ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Z. LDZ &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">           =   0: successful exit
+</span><span class="comment">*</span><span class="comment">          .GT. 0: if INFO = i, <a name="CLAHQR.82"></a><a href="clahqr.f.html#CLAHQR.1">CLAHQR</a> failed to compute all the
+</span><span class="comment">*</span><span class="comment">                  eigenvalues ILO to IHI in a total of 30 iterations
+</span><span class="comment">*</span><span class="comment">                  per eigenvalue; elements i+1:ihi of W contain
+</span><span class="comment">*</span><span class="comment">                  those eigenvalues which have been successfully
+</span><span class="comment">*</span><span class="comment">                  computed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                  If INFO .GT. 0 and WANTT is .FALSE., then on exit,
+</span><span class="comment">*</span><span class="comment">                  the remaining unconverged eigenvalues are the
+</span><span class="comment">*</span><span class="comment">                  eigenvalues of the upper Hessenberg matrix
+</span><span class="comment">*</span><span class="comment">                  rows and columns ILO thorugh INFO of the final,
+</span><span class="comment">*</span><span class="comment">                  output value of H.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                  If INFO .GT. 0 and WANTT is .TRUE., then on exit
+</span><span class="comment">*</span><span class="comment">          (*)       (initial value of H)*U  = U*(final value of H)
+</span><span class="comment">*</span><span class="comment">                  where U is an orthognal matrix.    The final
+</span><span class="comment">*</span><span class="comment">                  value of H is upper Hessenberg and triangular in
+</span><span class="comment">*</span><span class="comment">                  rows and columns INFO+1 through IHI.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                  If INFO .GT. 0 and WANTZ is .TRUE., then on exit
+</span><span class="comment">*</span><span class="comment">                      (final value of Z)  = (initial value of Z)*U
+</span><span class="comment">*</span><span class="comment">                  where U is the orthogonal matrix in (*)
+</span><span class="comment">*</span><span class="comment">                  (regardless of the value of WANTT.)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Further Details
+</span><span class="comment">*</span><span class="comment">     ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     02-96 Based on modifications by
+</span><span class="comment">*</span><span class="comment">     David Day, Sandia National Laboratory, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     12-04 Further modifications by
+</span><span class="comment">*</span><span class="comment">     Ralph Byers, University of Kansas, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">       This is a modified version of <a name="CLAHQR.114"></a><a href="clahqr.f.html#CLAHQR.1">CLAHQR</a> from LAPACK version 3.0.
+</span><span class="comment">*</span><span class="comment">       It is (1) more robust against overflow and underflow and
+</span><span class="comment">*</span><span class="comment">       (2) adopts the more conservative Ahues &amp; Tisseur stopping
+</span><span class="comment">*</span><span class="comment">       criterion (LAWN 122, 1997).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     =========================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      INTEGER            ITMAX
+      PARAMETER          ( ITMAX = 30 )
+      COMPLEX            ZERO, ONE
+      PARAMETER          ( ZERO = ( 0.0e0, 0.0e0 ),
+     $                   ONE = ( 1.0e0, 0.0e0 ) )
+      REAL               RZERO, RONE, HALF
+      PARAMETER          ( RZERO = 0.0e0, RONE = 1.0e0, HALF = 0.5e0 )
+      REAL               DAT1
+      PARAMETER          ( DAT1 = 3.0e0 / 4.0e0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      COMPLEX            CDUM, H11, H11S, H22, SC, SUM, T, T1, TEMP, U,
+     $                   V2, X, Y
+      REAL               AA, AB, BA, BB, H10, H21, RTEMP, S, SAFMAX,
+     $                   SAFMIN, SMLNUM, SX, T2, TST, ULP
+      INTEGER            I, I1, I2, ITS, J, JHI, JLO, K, L, M, NH, NZ
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      COMPLEX            V( 2 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      COMPLEX            <a name="CLADIV.143"></a><a href="cladiv.f.html#CLADIV.1">CLADIV</a>
+      REAL               <a name="SLAMCH.144"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      EXTERNAL           <a name="CLADIV.145"></a><a href="cladiv.f.html#CLADIV.1">CLADIV</a>, <a name="SLAMCH.145"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           CCOPY, <a name="CLARFG.148"></a><a href="clarfg.f.html#CLARFG.1">CLARFG</a>, CSCAL, <a name="SLABAD.148"></a><a href="slabad.f.html#SLABAD.1">SLABAD</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Functions ..
+</span>      REAL               CABS1
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, AIMAG, CONJG, MAX, MIN, REAL, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Function definitions ..
+</span>      CABS1( CDUM ) = ABS( REAL( CDUM ) ) + ABS( AIMAG( CDUM ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+      IF( ILO.EQ.IHI ) THEN
+         W( ILO ) = H( ILO, ILO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ==== clear out the trash ====
+</span>      DO 10 J = ILO, IHI - 3
+         H( J+2, J ) = ZERO
+         H( J+3, J ) = ZERO
+   10 CONTINUE
+      IF( ILO.LE.IHI-2 )
+     $   H( IHI, IHI-2 ) = ZERO
+<span class="comment">*</span><span class="comment">     ==== ensure that subdiagonal entries are real ====
+</span>      DO 20 I = ILO + 1, IHI
+         IF( AIMAG( H( I, I-1 ) ).NE.RZERO ) THEN
+<span class="comment">*</span><span class="comment">           ==== The following redundant normalization
+</span><span class="comment">*</span><span class="comment">           .    avoids problems with both gradual and
+</span><span class="comment">*</span><span class="comment">           .    sudden underflow in ABS(H(I,I-1)) ====
+</span>            SC = H( I, I-1 ) / CABS1( H( I, I-1 ) )
+            SC = CONJG( SC ) / ABS( SC )
+            H( I, I-1 ) = ABS( H( I, I-1 ) )
+            IF( WANTT ) THEN
+               JLO = 1
+               JHI = N
+            ELSE
+               JLO = ILO
+               JHI = IHI
+            END IF
+            CALL CSCAL( JHI-I+1, SC, H( I, I ), LDH )
+            CALL CSCAL( MIN( JHI, I+1 )-JLO+1, CONJG( SC ), H( JLO, I ),
+     $                  1 )
+            IF( WANTZ )
+     $         CALL CSCAL( IHIZ-ILOZ+1, CONJG( SC ), Z( ILOZ, I ), 1 )
+         END IF
+   20 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      NH = IHI - ILO + 1
+      NZ = IHIZ - ILOZ + 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set machine-dependent constants for the stopping criterion.
+</span><span class="comment">*</span><span class="comment">
+</span>      SAFMIN = <a name="SLAMCH.208"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'SAFE MINIMUM'</span> )
+      SAFMAX = RONE / SAFMIN
+      CALL <a name="SLABAD.210"></a><a href="slabad.f.html#SLABAD.1">SLABAD</a>( SAFMIN, SAFMAX )
+      ULP = <a name="SLAMCH.211"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'PRECISION'</span> )
+      SMLNUM = SAFMIN*( REAL( NH ) / ULP )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     I1 and I2 are the indices of the first row and last column of H
+</span><span class="comment">*</span><span class="comment">     to which transformations must be applied. If eigenvalues only are
+</span><span class="comment">*</span><span class="comment">     being computed, I1 and I2 are set inside the main loop.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( WANTT ) THEN
+         I1 = 1
+         I2 = N
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The main loop begins here. I is the loop index and decreases from
+</span><span class="comment">*</span><span class="comment">     IHI to ILO in steps of 1. Each iteration of the loop works
+</span><span class="comment">*</span><span class="comment">     with the active submatrix in rows and columns L to I.
+</span><span class="comment">*</span><span class="comment">     Eigenvalues I+1 to IHI have already converged. Either L = ILO, or
+</span><span class="comment">*</span><span class="comment">     H(L,L-1) is negligible so that the matrix splits.
+</span><span class="comment">*</span><span class="comment">
+</span>      I = IHI
+   30 CONTINUE
+      IF( I.LT.ILO )
+     $   GO TO 150
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Perform QR iterations on rows and columns ILO to I until a
+</span><span class="comment">*</span><span class="comment">     submatrix of order 1 splits off at the bottom because a
+</span><span class="comment">*</span><span class="comment">     subdiagonal element has become negligible.
+</span><span class="comment">*</span><span class="comment">
+</span>      L = ILO
+      DO 130 ITS = 0, ITMAX
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Look for a single small subdiagonal element.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 40 K = I, L + 1, -1
+            IF( CABS1( H( K, K-1 ) ).LE.SMLNUM )
+     $         GO TO 50
+            TST = CABS1( H( K-1, K-1 ) ) + CABS1( H( K, K ) )
+            IF( TST.EQ.ZERO ) THEN
+               IF( K-2.GE.ILO )
+     $            TST = TST + ABS( REAL( H( K-1, K-2 ) ) )
+               IF( K+1.LE.IHI )
+     $            TST = TST + ABS( REAL( H( K+1, K ) ) )
+            END IF
+<span class="comment">*</span><span class="comment">           ==== The following is a conservative small subdiagonal
+</span><span class="comment">*</span><span class="comment">           .    deflation criterion due to Ahues &amp; Tisseur (LAWN 122,
+</span><span class="comment">*</span><span class="comment">           .    1997). It has better mathematical foundation and
+</span><span class="comment">*</span><span class="comment">           .    improves accuracy in some examples.  ====
+</span>            IF( ABS( REAL( H( K, K-1 ) ) ).LE.ULP*TST ) THEN
+               AB = MAX( CABS1( H( K, K-1 ) ), CABS1( H( K-1, K ) ) )
+               BA = MIN( CABS1( H( K, K-1 ) ), CABS1( H( K-1, K ) ) )
+               AA = MAX( CABS1( H( K, K ) ),
+     $              CABS1( H( K-1, K-1 )-H( K, K ) ) )
+               BB = MIN( CABS1( H( K, K ) ),
+     $              CABS1( H( K-1, K-1 )-H( K, K ) ) )
+               S = AA + AB
+               IF( BA*( AB / S ).LE.MAX( SMLNUM,
+     $             ULP*( BB*( AA / S ) ) ) )GO TO 50
+            END IF
+   40    CONTINUE
+   50    CONTINUE
+         L = K
+         IF( L.GT.ILO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           H(L,L-1) is negligible
+</span><span class="comment">*</span><span class="comment">
+</span>            H( L, L-1 ) = ZERO
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Exit from loop if a submatrix of order 1 has split off.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( L.GE.I )
+     $      GO TO 140
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Now the active submatrix is in rows and columns L to I. If
+</span><span class="comment">*</span><span class="comment">        eigenvalues only are being computed, only the active submatrix
+</span><span class="comment">*</span><span class="comment">        need be transformed.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( .NOT.WANTT ) THEN
+            I1 = L
+            I2 = I
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( ITS.EQ.10 .OR. ITS.EQ.20 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Exceptional shift.
+</span><span class="comment">*</span><span class="comment">
+</span>            S = DAT1*ABS( REAL( H( I, I-1 ) ) )
+            T = S + H( I, I )
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Wilkinson's shift.
+</span><span class="comment">*</span><span class="comment">
+</span>            T = H( I, I )
+            U = SQRT( H( I-1, I ) )*SQRT( H( I, I-1 ) )
+            S = CABS1( U )
+            IF( S.NE.RZERO ) THEN
+               X = HALF*( H( I-1, I-1 )-T )
+               SX = CABS1( X )
+               S = MAX( S, CABS1( X ) )
+               Y = S*SQRT( ( X / S )**2+( U / S )**2 )
+               IF( SX.GT.RZERO ) THEN
+                  IF( REAL( X / SX )*REAL( Y )+AIMAG( X / SX )*
+     $                AIMAG( Y ).LT.RZERO )Y = -Y
+               END IF
+               T = T - U*<a name="CLADIV.314"></a><a href="cladiv.f.html#CLADIV.1">CLADIV</a>( U, ( X+Y ) )
+            END IF
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Look for two consecutive small subdiagonal elements.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 60 M = I - 1, L + 1, -1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Determine the effect of starting the single-shift QR
+</span><span class="comment">*</span><span class="comment">           iteration at row M, and see if this would make H(M,M-1)
+</span><span class="comment">*</span><span class="comment">           negligible.
+</span><span class="comment">*</span><span class="comment">
+</span>            H11 = H( M, M )
+            H22 = H( M+1, M+1 )
+            H11S = H11 - T
+            H21 = H( M+1, M )
+            S = CABS1( H11S ) + ABS( H21 )
+            H11S = H11S / S
+            H21 = H21 / S
+            V( 1 ) = H11S
+            V( 2 ) = H21
+            H10 = H( M, M-1 )
+            IF( ABS( H10 )*ABS( H21 ).LE.ULP*
+     $          ( CABS1( H11S )*( CABS1( H11 )+CABS1( H22 ) ) ) )
+     $          GO TO 70
+   60    CONTINUE
+         H11 = H( L, L )
+         H22 = H( L+1, L+1 )
+         H11S = H11 - T
+         H21 = H( L+1, L )
+         S = CABS1( H11S ) + ABS( H21 )
+         H11S = H11S / S
+         H21 = H21 / S
+         V( 1 ) = H11S
+         V( 2 ) = H21
+   70    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Single-shift QR step
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 120 K = M, I - 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           The first iteration of this loop determines a reflection G
+</span><span class="comment">*</span><span class="comment">           from the vector V and applies it from left and right to H,
+</span><span class="comment">*</span><span class="comment">           thus creating a nonzero bulge below the subdiagonal.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Each subsequent iteration determines a reflection G to
+</span><span class="comment">*</span><span class="comment">           restore the Hessenberg form in the (K-1)th column, and thus
+</span><span class="comment">*</span><span class="comment">           chases the bulge one step toward the bottom of the active
+</span><span class="comment">*</span><span class="comment">           submatrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           V(2) is always real before the call to <a name="CLARFG.364"></a><a href="clarfg.f.html#CLARFG.1">CLARFG</a>, and hence
+</span><span class="comment">*</span><span class="comment">           after the call T2 ( = T1*V(2) ) is also real.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( K.GT.M )
+     $         CALL CCOPY( 2, H( K, K-1 ), 1, V, 1 )
+            CALL <a name="CLARFG.369"></a><a href="clarfg.f.html#CLARFG.1">CLARFG</a>( 2, V( 1 ), V( 2 ), 1, T1 )
+            IF( K.GT.M ) THEN
+               H( K, K-1 ) = V( 1 )
+               H( K+1, K-1 ) = ZERO
+            END IF
+            V2 = V( 2 )
+            T2 = REAL( T1*V2 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Apply G from the left to transform the rows of the matrix
+</span><span class="comment">*</span><span class="comment">           in columns K to I2.
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 80 J = K, I2
+               SUM = CONJG( T1 )*H( K, J ) + T2*H( K+1, J )
+               H( K, J ) = H( K, J ) - SUM
+               H( K+1, J ) = H( K+1, J ) - SUM*V2
+   80       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Apply G from the right to transform the columns of the
+</span><span class="comment">*</span><span class="comment">           matrix in rows I1 to min(K+2,I).
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 90 J = I1, MIN( K+2, I )
+               SUM = T1*H( J, K ) + T2*H( J, K+1 )
+               H( J, K ) = H( J, K ) - SUM
+               H( J, K+1 ) = H( J, K+1 ) - SUM*CONJG( V2 )
+   90       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            IF( WANTZ ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Accumulate transformations in the matrix Z
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 100 J = ILOZ, IHIZ
+                  SUM = T1*Z( J, K ) + T2*Z( J, K+1 )
+                  Z( J, K ) = Z( J, K ) - SUM
+                  Z( J, K+1 ) = Z( J, K+1 ) - SUM*CONJG( V2 )
+  100          CONTINUE
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>            IF( K.EQ.M .AND. M.GT.L ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              If the QR step was started at row M &gt; L because two
+</span><span class="comment">*</span><span class="comment">              consecutive small subdiagonals were found, then extra
+</span><span class="comment">*</span><span class="comment">              scaling must be performed to ensure that H(M,M-1) remains
+</span><span class="comment">*</span><span class="comment">              real.
+</span><span class="comment">*</span><span class="comment">
+</span>               TEMP = ONE - T1
+               TEMP = TEMP / ABS( TEMP )
+               H( M+1, M ) = H( M+1, M )*CONJG( TEMP )
+               IF( M+2.LE.I )
+     $            H( M+2, M+1 ) = H( M+2, M+1 )*TEMP
+               DO 110 J = M, I
+                  IF( J.NE.M+1 ) THEN
+                     IF( I2.GT.J )
+     $                  CALL CSCAL( I2-J, TEMP, H( J, J+1 ), LDH )
+                     CALL CSCAL( J-I1, CONJG( TEMP ), H( I1, J ), 1 )
+                     IF( WANTZ ) THEN
+                        CALL CSCAL( NZ, CONJG( TEMP ), Z( ILOZ, J ), 1 )
+                     END IF
+                  END IF
+  110          CONTINUE
+            END IF
+  120    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Ensure that H(I,I-1) is real.
+</span><span class="comment">*</span><span class="comment">
+</span>         TEMP = H( I, I-1 )
+         IF( AIMAG( TEMP ).NE.RZERO ) THEN
+            RTEMP = ABS( TEMP )
+            H( I, I-1 ) = RTEMP
+            TEMP = TEMP / RTEMP
+            IF( I2.GT.I )
+     $         CALL CSCAL( I2-I, CONJG( TEMP ), H( I, I+1 ), LDH )
+            CALL CSCAL( I-I1, TEMP, H( I1, I ), 1 )
+            IF( WANTZ ) THEN
+               CALL CSCAL( NZ, TEMP, Z( ILOZ, I ), 1 )
+            END IF
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>  130 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Failure to converge in remaining number of iterations
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = I
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span>  140 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     H(I,I-1) is negligible: one eigenvalue has converged.
+</span><span class="comment">*</span><span class="comment">
+</span>      W( I ) = H( I, I )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     return to start of the main loop with new value of I.
+</span><span class="comment">*</span><span class="comment">
+</span>      I = L - 1
+      GO TO 30
+<span class="comment">*</span><span class="comment">
+</span>  150 CONTINUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CLAHQR.467"></a><a href="clahqr.f.html#CLAHQR.1">CLAHQR</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

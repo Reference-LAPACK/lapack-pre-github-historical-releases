@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slasdt.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLASDT.1"></a><a href="slasdt.f.html#SLASDT.1">SLASDT</a>( N, LVL, ND, INODE, NDIML, NDIMR, MSUB )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            LVL, MSUB, N, ND
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            INODE( * ), NDIML( * ), NDIMR( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLASDT.17"></a><a href="slasdt.f.html#SLASDT.1">SLASDT</a> creates a tree of subproblems for bidiagonal divide and
+</span><span class="comment">*</span><span class="comment">  conquer.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">   N      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          On entry, the number of diagonal elements of the
+</span><span class="comment">*</span><span class="comment">          bidiagonal matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">   LVL    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          On exit, the number of levels on the computation tree.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">   ND     (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          On exit, the number of nodes on the tree.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">   INODE  (output) INTEGER array, dimension ( N )
+</span><span class="comment">*</span><span class="comment">          On exit, centers of subproblems.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">   NDIML  (output) INTEGER array, dimension ( N )
+</span><span class="comment">*</span><span class="comment">          On exit, row dimensions of left children.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">   NDIMR  (output) INTEGER array, dimension ( N )
+</span><span class="comment">*</span><span class="comment">          On exit, row dimensions of right children.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">   MSUB   (input) INTEGER.
+</span><span class="comment">*</span><span class="comment">          On entry, the maximum row dimension each subproblem at the
+</span><span class="comment">*</span><span class="comment">          bottom of the tree can be of.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Ming Gu and Huan Ren, Computer Science Division, University of
+</span><span class="comment">*</span><span class="comment">     California at Berkeley, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               TWO
+      PARAMETER          ( TWO = 2.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, IL, IR, LLST, MAXN, NCRNT, NLVL
+      REAL               TEMP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          INT, LOG, MAX, REAL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Find the number of levels on the tree.
+</span><span class="comment">*</span><span class="comment">
+</span>      MAXN = MAX( 1, N )
+      TEMP = LOG( REAL( MAXN ) / REAL( MSUB+1 ) ) / LOG( TWO )
+      LVL = INT( TEMP ) + 1
+<span class="comment">*</span><span class="comment">
+</span>      I = N / 2
+      INODE( 1 ) = I + 1
+      NDIML( 1 ) = I
+      NDIMR( 1 ) = N - I - 1
+      IL = 0
+      IR = 1
+      LLST = 1
+      DO 20 NLVL = 1, LVL - 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Constructing the tree at (NLVL+1)-st level. The number of
+</span><span class="comment">*</span><span class="comment">        nodes created on this level is LLST * 2.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 10 I = 0, LLST - 1
+            IL = IL + 2
+            IR = IR + 2
+            NCRNT = LLST + I
+            NDIML( IL ) = NDIML( NCRNT ) / 2
+            NDIMR( IL ) = NDIML( NCRNT ) - NDIML( IL ) - 1
+            INODE( IL ) = INODE( NCRNT ) - NDIMR( IL ) - 1
+            NDIML( IR ) = NDIMR( NCRNT ) / 2
+            NDIMR( IR ) = NDIMR( NCRNT ) - NDIML( IR ) - 1
+            INODE( IR ) = INODE( NCRNT ) + NDIML( IR ) + 1
+   10    CONTINUE
+         LLST = LLST*2
+   20 CONTINUE
+      ND = LLST*2 - 1
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLASDT.103"></a><a href="slasdt.f.html#SLASDT.1">SLASDT</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

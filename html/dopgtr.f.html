@@ -1,0 +1,184 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dopgtr.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DOPGTR.1"></a><a href="dopgtr.f.html#DOPGTR.1">DOPGTR</a>( UPLO, N, AP, TAU, Q, LDQ, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          UPLO
+      INTEGER            INFO, LDQ, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   AP( * ), Q( LDQ, * ), TAU( * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DOPGTR.18"></a><a href="dopgtr.f.html#DOPGTR.1">DOPGTR</a> generates a real orthogonal matrix Q which is defined as the
+</span><span class="comment">*</span><span class="comment">  product of n-1 elementary reflectors H(i) of order n, as returned by
+</span><span class="comment">*</span><span class="comment">  <a name="DSPTRD.20"></a><a href="dsptrd.f.html#DSPTRD.1">DSPTRD</a> using packed storage:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  if UPLO = 'U', Q = H(n-1) . . . H(2) H(1),
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  if UPLO = 'L', Q = H(1) H(2) . . . H(n-1).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U': Upper triangular packed storage used in previous
+</span><span class="comment">*</span><span class="comment">                 call to <a name="DSPTRD.31"></a><a href="dsptrd.f.html#DSPTRD.1">DSPTRD</a>;
+</span><span class="comment">*</span><span class="comment">          = 'L': Lower triangular packed storage used in previous
+</span><span class="comment">*</span><span class="comment">                 call to <a name="DSPTRD.33"></a><a href="dsptrd.f.html#DSPTRD.1">DSPTRD</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix Q. N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AP      (input) DOUBLE PRECISION array, dimension (N*(N+1)/2)
+</span><span class="comment">*</span><span class="comment">          The vectors which define the elementary reflectors, as
+</span><span class="comment">*</span><span class="comment">          returned by <a name="DSPTRD.40"></a><a href="dsptrd.f.html#DSPTRD.1">DSPTRD</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TAU     (input) DOUBLE PRECISION array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          TAU(i) must contain the scalar factor of the elementary
+</span><span class="comment">*</span><span class="comment">          reflector H(i), as returned by <a name="DSPTRD.44"></a><a href="dsptrd.f.html#DSPTRD.1">DSPTRD</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Q       (output) DOUBLE PRECISION array, dimension (LDQ,N)
+</span><span class="comment">*</span><span class="comment">          The N-by-N orthogonal matrix Q.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDQ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Q. LDQ &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) DOUBLE PRECISION array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            UPPER
+      INTEGER            I, IINFO, IJ, J
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.69"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.70"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DORG2L.73"></a><a href="dorg2l.f.html#DORG2L.1">DORG2L</a>, <a name="DORG2R.73"></a><a href="dorg2r.f.html#DORG2R.1">DORG2R</a>, <a name="XERBLA.73"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input arguments
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      UPPER = <a name="LSAME.83"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> )
+      IF( .NOT.UPPER .AND. .NOT.<a name="LSAME.84"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDQ.LT.MAX( 1, N ) ) THEN
+         INFO = -6
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.92"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DOPGTR.92"></a><a href="dopgtr.f.html#DOPGTR.1">DOPGTR</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      IF( UPPER ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Q was determined by a call to <a name="DSPTRD.103"></a><a href="dsptrd.f.html#DSPTRD.1">DSPTRD</a> with UPLO = 'U'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Unpack the vectors which define the elementary reflectors and
+</span><span class="comment">*</span><span class="comment">        set the last row and column of Q equal to those of the unit
+</span><span class="comment">*</span><span class="comment">        matrix
+</span><span class="comment">*</span><span class="comment">
+</span>         IJ = 2
+         DO 20 J = 1, N - 1
+            DO 10 I = 1, J - 1
+               Q( I, J ) = AP( IJ )
+               IJ = IJ + 1
+   10       CONTINUE
+            IJ = IJ + 2
+            Q( N, J ) = ZERO
+   20    CONTINUE
+         DO 30 I = 1, N - 1
+            Q( I, N ) = ZERO
+   30    CONTINUE
+         Q( N, N ) = ONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Generate Q(1:n-1,1:n-1)
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DORG2L.125"></a><a href="dorg2l.f.html#DORG2L.1">DORG2L</a>( N-1, N-1, N-1, Q, LDQ, TAU, WORK, IINFO )
+<span class="comment">*</span><span class="comment">
+</span>      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Q was determined by a call to <a name="DSPTRD.129"></a><a href="dsptrd.f.html#DSPTRD.1">DSPTRD</a> with UPLO = 'L'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Unpack the vectors which define the elementary reflectors and
+</span><span class="comment">*</span><span class="comment">        set the first row and column of Q equal to those of the unit
+</span><span class="comment">*</span><span class="comment">        matrix
+</span><span class="comment">*</span><span class="comment">
+</span>         Q( 1, 1 ) = ONE
+         DO 40 I = 2, N
+            Q( I, 1 ) = ZERO
+   40    CONTINUE
+         IJ = 3
+         DO 60 J = 2, N
+            Q( 1, J ) = ZERO
+            DO 50 I = J + 1, N
+               Q( I, J ) = AP( IJ )
+               IJ = IJ + 1
+   50       CONTINUE
+            IJ = IJ + 2
+   60    CONTINUE
+         IF( N.GT.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Generate Q(2:n,2:n)
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="DORG2R.152"></a><a href="dorg2r.f.html#DORG2R.1">DORG2R</a>( N-1, N-1, N-1, Q( 2, 2 ), LDQ, TAU, WORK,
+     $                   IINFO )
+         END IF
+      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DOPGTR.158"></a><a href="dopgtr.f.html#DOPGTR.1">DOPGTR</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

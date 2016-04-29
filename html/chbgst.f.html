@@ -1,0 +1,1400 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>chbgst.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CHBGST.1"></a><a href="chbgst.f.html#CHBGST.1">CHBGST</a>( VECT, UPLO, N, KA, KB, AB, LDAB, BB, LDBB, X,
+     $                   LDX, WORK, RWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          UPLO, VECT
+      INTEGER            INFO, KA, KB, LDAB, LDBB, LDX, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               RWORK( * )
+      COMPLEX            AB( LDAB, * ), BB( LDBB, * ), WORK( * ),
+     $                   X( LDX, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CHBGST.21"></a><a href="chbgst.f.html#CHBGST.1">CHBGST</a> reduces a complex Hermitian-definite banded generalized
+</span><span class="comment">*</span><span class="comment">  eigenproblem  A*x = lambda*B*x  to standard form  C*y = lambda*y,
+</span><span class="comment">*</span><span class="comment">  such that C has the same bandwidth as A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B must have been previously factorized as S**H*S by <a name="CPBSTF.25"></a><a href="cpbstf.f.html#CPBSTF.1">CPBSTF</a>, using a
+</span><span class="comment">*</span><span class="comment">  split Cholesky factorization. A is overwritten by C = X**H*A*X, where
+</span><span class="comment">*</span><span class="comment">  X = S**(-1)*Q and Q is a unitary matrix chosen to preserve the
+</span><span class="comment">*</span><span class="comment">  bandwidth of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VECT    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'N':  do not form the transformation matrix X;
+</span><span class="comment">*</span><span class="comment">          = 'V':  form X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangle of A is stored;
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangle of A is stored.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrices A and B.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KA      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of superdiagonals of the matrix A if UPLO = 'U',
+</span><span class="comment">*</span><span class="comment">          or the number of subdiagonals if UPLO = 'L'.  KA &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KB      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of superdiagonals of the matrix B if UPLO = 'U',
+</span><span class="comment">*</span><span class="comment">          or the number of subdiagonals if UPLO = 'L'.  KA &gt;= KB &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AB      (input/output) COMPLEX array, dimension (LDAB,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper or lower triangle of the Hermitian band
+</span><span class="comment">*</span><span class="comment">          matrix A, stored in the first ka+1 rows of the array.  The
+</span><span class="comment">*</span><span class="comment">          j-th column of A is stored in the j-th column of the array AB
+</span><span class="comment">*</span><span class="comment">          as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', AB(ka+1+i-j,j) = A(i,j) for max(1,j-ka)&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', AB(1+i-j,j)    = A(i,j) for j&lt;=i&lt;=min(n,j+ka).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, the transformed matrix X**H*A*X, stored in the same
+</span><span class="comment">*</span><span class="comment">          format as A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDAB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array AB.  LDAB &gt;= KA+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BB      (input) COMPLEX array, dimension (LDBB,N)
+</span><span class="comment">*</span><span class="comment">          The banded factor S from the split Cholesky factorization of
+</span><span class="comment">*</span><span class="comment">          B, as returned by <a name="CPBSTF.68"></a><a href="cpbstf.f.html#CPBSTF.1">CPBSTF</a>, stored in the first kb+1 rows of
+</span><span class="comment">*</span><span class="comment">          the array.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDBB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array BB.  LDBB &gt;= KB+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X       (output) COMPLEX array, dimension (LDX,N)
+</span><span class="comment">*</span><span class="comment">          If VECT = 'V', the n-by-n matrix X.
+</span><span class="comment">*</span><span class="comment">          If VECT = 'N', the array X is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDX     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array X.
+</span><span class="comment">*</span><span class="comment">          LDX &gt;= max(1,N) if VECT = 'V'; LDX &gt;= 1 otherwise.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) COMPLEX array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RWORK   (workspace) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      COMPLEX            CZERO, CONE
+      REAL               ONE
+      PARAMETER          ( CZERO = ( 0.0E+0, 0.0E+0 ),
+     $                   CONE = ( 1.0E+0, 0.0E+0 ), ONE = 1.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            UPDATE, UPPER, WANTX
+      INTEGER            I, I0, I1, I2, INCA, J, J1, J1T, J2, J2T, K,
+     $                   KA1, KB1, KBT, L, M, NR, NRT, NX
+      REAL               BII
+      COMPLEX            RA, RA1, T
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.106"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.107"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           CGERC, CGERU, <a name="CLACGV.110"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>, <a name="CLAR2V.110"></a><a href="clar2v.f.html#CLAR2V.1">CLAR2V</a>, <a name="CLARGV.110"></a><a href="clargv.f.html#CLARGV.1">CLARGV</a>, <a name="CLARTG.110"></a><a href="clartg.f.html#CLARTG.1">CLARTG</a>,
+     $                   <a name="CLARTV.111"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>, <a name="CLASET.111"></a><a href="claset.f.html#CLASET.1">CLASET</a>, <a name="CROT.111"></a><a href="crot.f.html#CROT.1">CROT</a>, CSSCAL, <a name="XERBLA.111"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          CONJG, MAX, MIN, REAL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters
+</span><span class="comment">*</span><span class="comment">
+</span>      WANTX = <a name="LSAME.120"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( VECT, <span class="string">'V'</span> )
+      UPPER = <a name="LSAME.121"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> )
+      KA1 = KA + 1
+      KB1 = KB + 1
+      INFO = 0
+      IF( .NOT.WANTX .AND. .NOT.<a name="LSAME.125"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( VECT, <span class="string">'N'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.UPPER .AND. .NOT.<a name="LSAME.127"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( KA.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( KB.LT.0 .OR. KB.GT.KA ) THEN
+         INFO = -5
+      ELSE IF( LDAB.LT.KA+1 ) THEN
+         INFO = -7
+      ELSE IF( LDBB.LT.KB+1 ) THEN
+         INFO = -9
+      ELSE IF( LDX.LT.1 .OR. WANTX .AND. LDX.LT.MAX( 1, N ) ) THEN
+         INFO = -11
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.143"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CHBGST.143"></a><a href="chbgst.f.html#CHBGST.1">CHBGST</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      INCA = LDAB*KA1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Initialize X to the unit matrix, if needed
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( WANTX )
+     $   CALL <a name="CLASET.157"></a><a href="claset.f.html#CLASET.1">CLASET</a>( <span class="string">'Full'</span>, N, N, CZERO, CONE, X, LDX )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set M to the splitting point m. It must be the same value as is
+</span><span class="comment">*</span><span class="comment">     used in <a name="CPBSTF.160"></a><a href="cpbstf.f.html#CPBSTF.1">CPBSTF</a>. The chosen value allows the arrays WORK and RWORK
+</span><span class="comment">*</span><span class="comment">     to be of dimension (N).
+</span><span class="comment">*</span><span class="comment">
+</span>      M = ( N+KB ) / 2
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The routine works in two phases, corresponding to the two halves
+</span><span class="comment">*</span><span class="comment">     of the split Cholesky factorization of B as S**H*S where
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     S = ( U    )
+</span><span class="comment">*</span><span class="comment">         ( M  L )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     with U upper triangular of order m, and L lower triangular of
+</span><span class="comment">*</span><span class="comment">     order n-m. S has the same bandwidth as B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     S is treated as a product of elementary matrices:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     S = S(m)*S(m-1)*...*S(2)*S(1)*S(m+1)*S(m+2)*...*S(n-1)*S(n)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     where S(i) is determined by the i-th row of S.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     In phase 1, the index i takes the values n, n-1, ... , m+1;
+</span><span class="comment">*</span><span class="comment">     in phase 2, it takes the values 1, 2, ... , m.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     For each value of i, the current matrix A is updated by forming
+</span><span class="comment">*</span><span class="comment">     inv(S(i))**H*A*inv(S(i)). This creates a triangular bulge outside
+</span><span class="comment">*</span><span class="comment">     the band of A. The bulge is then pushed down toward the bottom of
+</span><span class="comment">*</span><span class="comment">     A in phase 1, and up toward the top of A in phase 2, by applying
+</span><span class="comment">*</span><span class="comment">     plane rotations.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     There are kb*(kb+1)/2 elements in the bulge, but at most 2*kb-1
+</span><span class="comment">*</span><span class="comment">     of them are linearly independent, so annihilating a bulge requires
+</span><span class="comment">*</span><span class="comment">     only 2*kb-1 plane rotations. The rotations are divided into a 1st
+</span><span class="comment">*</span><span class="comment">     set of kb-1 rotations, and a 2nd set of kb rotations.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Wherever possible, rotations are generated and applied in vector
+</span><span class="comment">*</span><span class="comment">     operations of length NR between the indices J1 and J2 (sometimes
+</span><span class="comment">*</span><span class="comment">     replaced by modified values NRT, J1T or J2T).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The real cosines and complex sines of the rotations are stored in
+</span><span class="comment">*</span><span class="comment">     the arrays RWORK and WORK, those of the 1st set in elements
+</span><span class="comment">*</span><span class="comment">     2:m-kb-1, and those of the 2nd set in elements m-kb+1:n.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The bulges are not formed explicitly; nonzero elements outside the
+</span><span class="comment">*</span><span class="comment">     band are created only when they are required for generating new
+</span><span class="comment">*</span><span class="comment">     rotations; they are stored in the array WORK, in positions where
+</span><span class="comment">*</span><span class="comment">     they are later overwritten by the sines of the rotations which
+</span><span class="comment">*</span><span class="comment">     annihilate them.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     **************************** Phase 1 *****************************
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The logical structure of this phase is:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     UPDATE = .TRUE.
+</span><span class="comment">*</span><span class="comment">     DO I = N, M + 1, -1
+</span><span class="comment">*</span><span class="comment">        use S(i) to update A and create a new bulge
+</span><span class="comment">*</span><span class="comment">        apply rotations to push all bulges KA positions downward
+</span><span class="comment">*</span><span class="comment">     END DO
+</span><span class="comment">*</span><span class="comment">     UPDATE = .FALSE.
+</span><span class="comment">*</span><span class="comment">     DO I = M + KA + 1, N - 1
+</span><span class="comment">*</span><span class="comment">        apply rotations to push all bulges KA positions downward
+</span><span class="comment">*</span><span class="comment">     END DO
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     To avoid duplicating code, the two loops are merged.
+</span><span class="comment">*</span><span class="comment">
+</span>      UPDATE = .TRUE.
+      I = N + 1
+   10 CONTINUE
+      IF( UPDATE ) THEN
+         I = I - 1
+         KBT = MIN( KB, I-1 )
+         I0 = I - 1
+         I1 = MIN( N, I+KA )
+         I2 = I - KBT + KA1
+         IF( I.LT.M+1 ) THEN
+            UPDATE = .FALSE.
+            I = I + 1
+            I0 = M
+            IF( KA.EQ.0 )
+     $         GO TO 480
+            GO TO 10
+         END IF
+      ELSE
+         I = I + KA
+         IF( I.GT.N-1 )
+     $      GO TO 480
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( UPPER ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Transform A, working with the upper triangle
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( UPDATE ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Form  inv(S(i))**H * A * inv(S(i))
+</span><span class="comment">*</span><span class="comment">
+</span>            BII = REAL( BB( KB1, I ) )
+            AB( KA1, I ) = ( REAL( AB( KA1, I ) ) / BII ) / BII
+            DO 20 J = I + 1, I1
+               AB( I-J+KA1, J ) = AB( I-J+KA1, J ) / BII
+   20       CONTINUE
+            DO 30 J = MAX( 1, I-KA ), I - 1
+               AB( J-I+KA1, I ) = AB( J-I+KA1, I ) / BII
+   30       CONTINUE
+            DO 60 K = I - KBT, I - 1
+               DO 40 J = I - KBT, K
+                  AB( J-K+KA1, K ) = AB( J-K+KA1, K ) -
+     $                               BB( J-I+KB1, I )*
+     $                               CONJG( AB( K-I+KA1, I ) ) -
+     $                               CONJG( BB( K-I+KB1, I ) )*
+     $                               AB( J-I+KA1, I ) +
+     $                               REAL( AB( KA1, I ) )*
+     $                               BB( J-I+KB1, I )*
+     $                               CONJG( BB( K-I+KB1, I ) )
+   40          CONTINUE
+               DO 50 J = MAX( 1, I-KA ), I - KBT - 1
+                  AB( J-K+KA1, K ) = AB( J-K+KA1, K ) -
+     $                               CONJG( BB( K-I+KB1, I ) )*
+     $                               AB( J-I+KA1, I )
+   50          CONTINUE
+   60       CONTINUE
+            DO 80 J = I, I1
+               DO 70 K = MAX( J-KA, I-KBT ), I - 1
+                  AB( K-J+KA1, J ) = AB( K-J+KA1, J ) -
+     $                               BB( K-I+KB1, I )*AB( I-J+KA1, J )
+   70          CONTINUE
+   80       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            IF( WANTX ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              post-multiply X by inv(S(i))
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CSSCAL( N-M, ONE / BII, X( M+1, I ), 1 )
+               IF( KBT.GT.0 )
+     $            CALL CGERC( N-M, KBT, -CONE, X( M+1, I ), 1,
+     $                        BB( KB1-KBT, I ), 1, X( M+1, I-KBT ),
+     $                        LDX )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           store a(i,i1) in RA1 for use in next loop over K
+</span><span class="comment">*</span><span class="comment">
+</span>            RA1 = AB( I-I1+KA1, I1 )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Generate and apply vectors of rotations to chase all the
+</span><span class="comment">*</span><span class="comment">        existing bulges KA positions down toward the bottom of the
+</span><span class="comment">*</span><span class="comment">        band
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 130 K = 1, KB - 1
+            IF( UPDATE ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Determine the rotations which would annihilate the bulge
+</span><span class="comment">*</span><span class="comment">              which has in theory just been created
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( I-K+KA.LT.N .AND. I-K.GT.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 generate rotation to annihilate a(i,i-k+ka+1)
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL <a name="CLARTG.317"></a><a href="clartg.f.html#CLARTG.1">CLARTG</a>( AB( K+1, I-K+KA ), RA1,
+     $                         RWORK( I-K+KA-M ), WORK( I-K+KA-M ), RA )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 create nonzero element a(i-k,i-k+ka+1) outside the
+</span><span class="comment">*</span><span class="comment">                 band and store it in WORK(i-k)
+</span><span class="comment">*</span><span class="comment">
+</span>                  T = -BB( KB1-K, I )*RA1
+                  WORK( I-K ) = RWORK( I-K+KA-M )*T -
+     $                          CONJG( WORK( I-K+KA-M ) )*
+     $                          AB( 1, I-K+KA )
+                  AB( 1, I-K+KA ) = WORK( I-K+KA-M )*T +
+     $                              RWORK( I-K+KA-M )*AB( 1, I-K+KA )
+                  RA1 = RA
+               END IF
+            END IF
+            J2 = I - K - 1 + MAX( 1, K-I0+2 )*KA1
+            NR = ( N-J2+KA ) / KA1
+            J1 = J2 + ( NR-1 )*KA1
+            IF( UPDATE ) THEN
+               J2T = MAX( J2, I+2*KA-K+1 )
+            ELSE
+               J2T = J2
+            END IF
+            NRT = ( N-J2T+KA ) / KA1
+            DO 90 J = J2T, J1, KA1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              create nonzero element a(j-ka,j+1) outside the band
+</span><span class="comment">*</span><span class="comment">              and store it in WORK(j-m)
+</span><span class="comment">*</span><span class="comment">
+</span>               WORK( J-M ) = WORK( J-M )*AB( 1, J+1 )
+               AB( 1, J+1 ) = RWORK( J-M )*AB( 1, J+1 )
+   90       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           generate rotations in 1st set to annihilate elements which
+</span><span class="comment">*</span><span class="comment">           have been created outside the band
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( NRT.GT.0 )
+     $         CALL <a name="CLARGV.354"></a><a href="clargv.f.html#CLARGV.1">CLARGV</a>( NRT, AB( 1, J2T ), INCA, WORK( J2T-M ), KA1,
+     $                      RWORK( J2T-M ), KA1 )
+            IF( NR.GT.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              apply rotations in 1st set from the right
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 100 L = 1, KA - 1
+                  CALL <a name="CLARTV.361"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NR, AB( KA1-L, J2 ), INCA,
+     $                         AB( KA-L, J2+1 ), INCA, RWORK( J2-M ),
+     $                         WORK( J2-M ), KA1 )
+  100          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              apply rotations in 1st set from both sides to diagonal
+</span><span class="comment">*</span><span class="comment">              blocks
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CLAR2V.369"></a><a href="clar2v.f.html#CLAR2V.1">CLAR2V</a>( NR, AB( KA1, J2 ), AB( KA1, J2+1 ),
+     $                      AB( KA, J2+1 ), INCA, RWORK( J2-M ),
+     $                      WORK( J2-M ), KA1 )
+<span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CLACGV.373"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( NR, WORK( J2-M ), KA1 )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           start applying rotations in 1st set from the left
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 110 L = KA - 1, KB - K + 1, -1
+               NRT = ( N-J2+L ) / KA1
+               IF( NRT.GT.0 )
+     $            CALL <a name="CLARTV.381"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NRT, AB( L, J2+KA1-L ), INCA,
+     $                         AB( L+1, J2+KA1-L ), INCA, RWORK( J2-M ),
+     $                         WORK( J2-M ), KA1 )
+  110       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            IF( WANTX ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              post-multiply X by product of rotations in 1st set
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 120 J = J2, J1, KA1
+                  CALL <a name="CROT.391"></a><a href="crot.f.html#CROT.1">CROT</a>( N-M, X( M+1, J ), 1, X( M+1, J+1 ), 1,
+     $                       RWORK( J-M ), CONJG( WORK( J-M ) ) )
+  120          CONTINUE
+            END IF
+  130    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         IF( UPDATE ) THEN
+            IF( I2.LE.N .AND. KBT.GT.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              create nonzero element a(i-kbt,i-kbt+ka+1) outside the
+</span><span class="comment">*</span><span class="comment">              band and store it in WORK(i-kbt)
+</span><span class="comment">*</span><span class="comment">
+</span>               WORK( I-KBT ) = -BB( KB1-KBT, I )*RA1
+            END IF
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         DO 170 K = KB, 1, -1
+            IF( UPDATE ) THEN
+               J2 = I - K - 1 + MAX( 2, K-I0+1 )*KA1
+            ELSE
+               J2 = I - K - 1 + MAX( 1, K-I0+1 )*KA1
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           finish applying rotations in 2nd set from the left
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 140 L = KB - K, 1, -1
+               NRT = ( N-J2+KA+L ) / KA1
+               IF( NRT.GT.0 )
+     $            CALL <a name="CLARTV.419"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NRT, AB( L, J2-L+1 ), INCA,
+     $                         AB( L+1, J2-L+1 ), INCA, RWORK( J2-KA ),
+     $                         WORK( J2-KA ), KA1 )
+  140       CONTINUE
+            NR = ( N-J2+KA ) / KA1
+            J1 = J2 + ( NR-1 )*KA1
+            DO 150 J = J1, J2, -KA1
+               WORK( J ) = WORK( J-KA )
+               RWORK( J ) = RWORK( J-KA )
+  150       CONTINUE
+            DO 160 J = J2, J1, KA1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              create nonzero element a(j-ka,j+1) outside the band
+</span><span class="comment">*</span><span class="comment">              and store it in WORK(j)
+</span><span class="comment">*</span><span class="comment">
+</span>               WORK( J ) = WORK( J )*AB( 1, J+1 )
+               AB( 1, J+1 ) = RWORK( J )*AB( 1, J+1 )
+  160       CONTINUE
+            IF( UPDATE ) THEN
+               IF( I-K.LT.N-KA .AND. K.LE.KBT )
+     $            WORK( I-K+KA ) = WORK( I-K )
+            END IF
+  170    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         DO 210 K = KB, 1, -1
+            J2 = I - K - 1 + MAX( 1, K-I0+1 )*KA1
+            NR = ( N-J2+KA ) / KA1
+            J1 = J2 + ( NR-1 )*KA1
+            IF( NR.GT.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              generate rotations in 2nd set to annihilate elements
+</span><span class="comment">*</span><span class="comment">              which have been created outside the band
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CLARGV.452"></a><a href="clargv.f.html#CLARGV.1">CLARGV</a>( NR, AB( 1, J2 ), INCA, WORK( J2 ), KA1,
+     $                      RWORK( J2 ), KA1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              apply rotations in 2nd set from the right
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 180 L = 1, KA - 1
+                  CALL <a name="CLARTV.458"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NR, AB( KA1-L, J2 ), INCA,
+     $                         AB( KA-L, J2+1 ), INCA, RWORK( J2 ),
+     $                         WORK( J2 ), KA1 )
+  180          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              apply rotations in 2nd set from both sides to diagonal
+</span><span class="comment">*</span><span class="comment">              blocks
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CLAR2V.466"></a><a href="clar2v.f.html#CLAR2V.1">CLAR2V</a>( NR, AB( KA1, J2 ), AB( KA1, J2+1 ),
+     $                      AB( KA, J2+1 ), INCA, RWORK( J2 ),
+     $                      WORK( J2 ), KA1 )
+<span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CLACGV.470"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( NR, WORK( J2 ), KA1 )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           start applying rotations in 2nd set from the left
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 190 L = KA - 1, KB - K + 1, -1
+               NRT = ( N-J2+L ) / KA1
+               IF( NRT.GT.0 )
+     $            CALL <a name="CLARTV.478"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NRT, AB( L, J2+KA1-L ), INCA,
+     $                         AB( L+1, J2+KA1-L ), INCA, RWORK( J2 ),
+     $                         WORK( J2 ), KA1 )
+  190       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            IF( WANTX ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              post-multiply X by product of rotations in 2nd set
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 200 J = J2, J1, KA1
+                  CALL <a name="CROT.488"></a><a href="crot.f.html#CROT.1">CROT</a>( N-M, X( M+1, J ), 1, X( M+1, J+1 ), 1,
+     $                       RWORK( J ), CONJG( WORK( J ) ) )
+  200          CONTINUE
+            END IF
+  210    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         DO 230 K = 1, KB - 1
+            J2 = I - K - 1 + MAX( 1, K-I0+2 )*KA1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           finish applying rotations in 1st set from the left
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 220 L = KB - K, 1, -1
+               NRT = ( N-J2+L ) / KA1
+               IF( NRT.GT.0 )
+     $            CALL <a name="CLARTV.502"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NRT, AB( L, J2+KA1-L ), INCA,
+     $                         AB( L+1, J2+KA1-L ), INCA, RWORK( J2-M ),
+     $                         WORK( J2-M ), KA1 )
+  220       CONTINUE
+  230    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         IF( KB.GT.1 ) THEN
+            DO 240 J = N - 1, I2 + KA, -1
+               RWORK( J-M ) = RWORK( J-KA-M )
+               WORK( J-M ) = WORK( J-KA-M )
+  240       CONTINUE
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Transform A, working with the lower triangle
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( UPDATE ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Form  inv(S(i))**H * A * inv(S(i))
+</span><span class="comment">*</span><span class="comment">
+</span>            BII = REAL( BB( 1, I ) )
+            AB( 1, I ) = ( REAL( AB( 1, I ) ) / BII ) / BII
+            DO 250 J = I + 1, I1
+               AB( J-I+1, I ) = AB( J-I+1, I ) / BII
+  250       CONTINUE
+            DO 260 J = MAX( 1, I-KA ), I - 1
+               AB( I-J+1, J ) = AB( I-J+1, J ) / BII
+  260       CONTINUE
+            DO 290 K = I - KBT, I - 1
+               DO 270 J = I - KBT, K
+                  AB( K-J+1, J ) = AB( K-J+1, J ) -
+     $                             BB( I-J+1, J )*CONJG( AB( I-K+1,
+     $                             K ) ) - CONJG( BB( I-K+1, K ) )*
+     $                             AB( I-J+1, J ) + REAL( AB( 1, I ) )*
+     $                             BB( I-J+1, J )*CONJG( BB( I-K+1,
+     $                             K ) )
+  270          CONTINUE
+               DO 280 J = MAX( 1, I-KA ), I - KBT - 1
+                  AB( K-J+1, J ) = AB( K-J+1, J ) -
+     $                             CONJG( BB( I-K+1, K ) )*
+     $                             AB( I-J+1, J )
+  280          CONTINUE
+  290       CONTINUE
+            DO 310 J = I, I1
+               DO 300 K = MAX( J-KA, I-KBT ), I - 1
+                  AB( J-K+1, K ) = AB( J-K+1, K ) -
+     $                             BB( I-K+1, K )*AB( J-I+1, I )
+  300          CONTINUE
+  310       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            IF( WANTX ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              post-multiply X by inv(S(i))
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CSSCAL( N-M, ONE / BII, X( M+1, I ), 1 )
+               IF( KBT.GT.0 )
+     $            CALL CGERU( N-M, KBT, -CONE, X( M+1, I ), 1,
+     $                        BB( KBT+1, I-KBT ), LDBB-1,
+     $                        X( M+1, I-KBT ), LDX )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           store a(i1,i) in RA1 for use in next loop over K
+</span><span class="comment">*</span><span class="comment">
+</span>            RA1 = AB( I1-I+1, I )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Generate and apply vectors of rotations to chase all the
+</span><span class="comment">*</span><span class="comment">        existing bulges KA positions down toward the bottom of the
+</span><span class="comment">*</span><span class="comment">        band
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 360 K = 1, KB - 1
+            IF( UPDATE ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Determine the rotations which would annihilate the bulge
+</span><span class="comment">*</span><span class="comment">              which has in theory just been created
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( I-K+KA.LT.N .AND. I-K.GT.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 generate rotation to annihilate a(i-k+ka+1,i)
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL <a name="CLARTG.583"></a><a href="clartg.f.html#CLARTG.1">CLARTG</a>( AB( KA1-K, I ), RA1, RWORK( I-K+KA-M ),
+     $                         WORK( I-K+KA-M ), RA )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 create nonzero element a(i-k+ka+1,i-k) outside the
+</span><span class="comment">*</span><span class="comment">                 band and store it in WORK(i-k)
+</span><span class="comment">*</span><span class="comment">
+</span>                  T = -BB( K+1, I-K )*RA1
+                  WORK( I-K ) = RWORK( I-K+KA-M )*T -
+     $                          CONJG( WORK( I-K+KA-M ) )*AB( KA1, I-K )
+                  AB( KA1, I-K ) = WORK( I-K+KA-M )*T +
+     $                             RWORK( I-K+KA-M )*AB( KA1, I-K )
+                  RA1 = RA
+               END IF
+            END IF
+            J2 = I - K - 1 + MAX( 1, K-I0+2 )*KA1
+            NR = ( N-J2+KA ) / KA1
+            J1 = J2 + ( NR-1 )*KA1
+            IF( UPDATE ) THEN
+               J2T = MAX( J2, I+2*KA-K+1 )
+            ELSE
+               J2T = J2
+            END IF
+            NRT = ( N-J2T+KA ) / KA1
+            DO 320 J = J2T, J1, KA1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              create nonzero element a(j+1,j-ka) outside the band
+</span><span class="comment">*</span><span class="comment">              and store it in WORK(j-m)
+</span><span class="comment">*</span><span class="comment">
+</span>               WORK( J-M ) = WORK( J-M )*AB( KA1, J-KA+1 )
+               AB( KA1, J-KA+1 ) = RWORK( J-M )*AB( KA1, J-KA+1 )
+  320       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           generate rotations in 1st set to annihilate elements which
+</span><span class="comment">*</span><span class="comment">           have been created outside the band
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( NRT.GT.0 )
+     $         CALL <a name="CLARGV.619"></a><a href="clargv.f.html#CLARGV.1">CLARGV</a>( NRT, AB( KA1, J2T-KA ), INCA, WORK( J2T-M ),
+     $                      KA1, RWORK( J2T-M ), KA1 )
+            IF( NR.GT.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              apply rotations in 1st set from the left
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 330 L = 1, KA - 1
+                  CALL <a name="CLARTV.626"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NR, AB( L+1, J2-L ), INCA,
+     $                         AB( L+2, J2-L ), INCA, RWORK( J2-M ),
+     $                         WORK( J2-M ), KA1 )
+  330          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              apply rotations in 1st set from both sides to diagonal
+</span><span class="comment">*</span><span class="comment">              blocks
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CLAR2V.634"></a><a href="clar2v.f.html#CLAR2V.1">CLAR2V</a>( NR, AB( 1, J2 ), AB( 1, J2+1 ), AB( 2, J2 ),
+     $                      INCA, RWORK( J2-M ), WORK( J2-M ), KA1 )
+<span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CLACGV.637"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( NR, WORK( J2-M ), KA1 )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           start applying rotations in 1st set from the right
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 340 L = KA - 1, KB - K + 1, -1
+               NRT = ( N-J2+L ) / KA1
+               IF( NRT.GT.0 )
+     $            CALL <a name="CLARTV.645"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NRT, AB( KA1-L+1, J2 ), INCA,
+     $                         AB( KA1-L, J2+1 ), INCA, RWORK( J2-M ),
+     $                         WORK( J2-M ), KA1 )
+  340       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            IF( WANTX ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              post-multiply X by product of rotations in 1st set
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 350 J = J2, J1, KA1
+                  CALL <a name="CROT.655"></a><a href="crot.f.html#CROT.1">CROT</a>( N-M, X( M+1, J ), 1, X( M+1, J+1 ), 1,
+     $                       RWORK( J-M ), WORK( J-M ) )
+  350          CONTINUE
+            END IF
+  360    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         IF( UPDATE ) THEN
+            IF( I2.LE.N .AND. KBT.GT.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              create nonzero element a(i-kbt+ka+1,i-kbt) outside the
+</span><span class="comment">*</span><span class="comment">              band and store it in WORK(i-kbt)
+</span><span class="comment">*</span><span class="comment">
+</span>               WORK( I-KBT ) = -BB( KBT+1, I-KBT )*RA1
+            END IF
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         DO 400 K = KB, 1, -1
+            IF( UPDATE ) THEN
+               J2 = I - K - 1 + MAX( 2, K-I0+1 )*KA1
+            ELSE
+               J2 = I - K - 1 + MAX( 1, K-I0+1 )*KA1
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           finish applying rotations in 2nd set from the right
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 370 L = KB - K, 1, -1
+               NRT = ( N-J2+KA+L ) / KA1
+               IF( NRT.GT.0 )
+     $            CALL <a name="CLARTV.683"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NRT, AB( KA1-L+1, J2-KA ), INCA,
+     $                         AB( KA1-L, J2-KA+1 ), INCA,
+     $                         RWORK( J2-KA ), WORK( J2-KA ), KA1 )
+  370       CONTINUE
+            NR = ( N-J2+KA ) / KA1
+            J1 = J2 + ( NR-1 )*KA1
+            DO 380 J = J1, J2, -KA1
+               WORK( J ) = WORK( J-KA )
+               RWORK( J ) = RWORK( J-KA )
+  380       CONTINUE
+            DO 390 J = J2, J1, KA1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              create nonzero element a(j+1,j-ka) outside the band
+</span><span class="comment">*</span><span class="comment">              and store it in WORK(j)
+</span><span class="comment">*</span><span class="comment">
+</span>               WORK( J ) = WORK( J )*AB( KA1, J-KA+1 )
+               AB( KA1, J-KA+1 ) = RWORK( J )*AB( KA1, J-KA+1 )
+  390       CONTINUE
+            IF( UPDATE ) THEN
+               IF( I-K.LT.N-KA .AND. K.LE.KBT )
+     $            WORK( I-K+KA ) = WORK( I-K )
+            END IF
+  400    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         DO 440 K = KB, 1, -1
+            J2 = I - K - 1 + MAX( 1, K-I0+1 )*KA1
+            NR = ( N-J2+KA ) / KA1
+            J1 = J2 + ( NR-1 )*KA1
+            IF( NR.GT.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              generate rotations in 2nd set to annihilate elements
+</span><span class="comment">*</span><span class="comment">              which have been created outside the band
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CLARGV.716"></a><a href="clargv.f.html#CLARGV.1">CLARGV</a>( NR, AB( KA1, J2-KA ), INCA, WORK( J2 ), KA1,
+     $                      RWORK( J2 ), KA1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              apply rotations in 2nd set from the left
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 410 L = 1, KA - 1
+                  CALL <a name="CLARTV.722"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NR, AB( L+1, J2-L ), INCA,
+     $                         AB( L+2, J2-L ), INCA, RWORK( J2 ),
+     $                         WORK( J2 ), KA1 )
+  410          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              apply rotations in 2nd set from both sides to diagonal
+</span><span class="comment">*</span><span class="comment">              blocks
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CLAR2V.730"></a><a href="clar2v.f.html#CLAR2V.1">CLAR2V</a>( NR, AB( 1, J2 ), AB( 1, J2+1 ), AB( 2, J2 ),
+     $                      INCA, RWORK( J2 ), WORK( J2 ), KA1 )
+<span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CLACGV.733"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( NR, WORK( J2 ), KA1 )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           start applying rotations in 2nd set from the right
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 420 L = KA - 1, KB - K + 1, -1
+               NRT = ( N-J2+L ) / KA1
+               IF( NRT.GT.0 )
+     $            CALL <a name="CLARTV.741"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NRT, AB( KA1-L+1, J2 ), INCA,
+     $                         AB( KA1-L, J2+1 ), INCA, RWORK( J2 ),
+     $                         WORK( J2 ), KA1 )
+  420       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            IF( WANTX ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              post-multiply X by product of rotations in 2nd set
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 430 J = J2, J1, KA1
+                  CALL <a name="CROT.751"></a><a href="crot.f.html#CROT.1">CROT</a>( N-M, X( M+1, J ), 1, X( M+1, J+1 ), 1,
+     $                       RWORK( J ), WORK( J ) )
+  430          CONTINUE
+            END IF
+  440    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         DO 460 K = 1, KB - 1
+            J2 = I - K - 1 + MAX( 1, K-I0+2 )*KA1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           finish applying rotations in 1st set from the right
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 450 L = KB - K, 1, -1
+               NRT = ( N-J2+L ) / KA1
+               IF( NRT.GT.0 )
+     $            CALL <a name="CLARTV.765"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NRT, AB( KA1-L+1, J2 ), INCA,
+     $                         AB( KA1-L, J2+1 ), INCA, RWORK( J2-M ),
+     $                         WORK( J2-M ), KA1 )
+  450       CONTINUE
+  460    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         IF( KB.GT.1 ) THEN
+            DO 470 J = N - 1, I2 + KA, -1
+               RWORK( J-M ) = RWORK( J-KA-M )
+               WORK( J-M ) = WORK( J-KA-M )
+  470       CONTINUE
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>      END IF
+<span class="comment">*</span><span class="comment">
+</span>      GO TO 10
+<span class="comment">*</span><span class="comment">
+</span>  480 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     **************************** Phase 2 *****************************
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The logical structure of this phase is:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     UPDATE = .TRUE.
+</span><span class="comment">*</span><span class="comment">     DO I = 1, M
+</span><span class="comment">*</span><span class="comment">        use S(i) to update A and create a new bulge
+</span><span class="comment">*</span><span class="comment">        apply rotations to push all bulges KA positions upward
+</span><span class="comment">*</span><span class="comment">     END DO
+</span><span class="comment">*</span><span class="comment">     UPDATE = .FALSE.
+</span><span class="comment">*</span><span class="comment">     DO I = M - KA - 1, 2, -1
+</span><span class="comment">*</span><span class="comment">        apply rotations to push all bulges KA positions upward
+</span><span class="comment">*</span><span class="comment">     END DO
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     To avoid duplicating code, the two loops are merged.
+</span><span class="comment">*</span><span class="comment">
+</span>      UPDATE = .TRUE.
+      I = 0
+  490 CONTINUE
+      IF( UPDATE ) THEN
+         I = I + 1
+         KBT = MIN( KB, M-I )
+         I0 = I + 1
+         I1 = MAX( 1, I-KA )
+         I2 = I + KBT - KA1
+         IF( I.GT.M ) THEN
+            UPDATE = .FALSE.
+            I = I - 1
+            I0 = M + 1
+            IF( KA.EQ.0 )
+     $         RETURN
+            GO TO 490
+         END IF
+      ELSE
+         I = I - KA
+         IF( I.LT.2 )
+     $      RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( I.LT.M-KBT ) THEN
+         NX = M
+      ELSE
+         NX = N
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( UPPER ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Transform A, working with the upper triangle
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( UPDATE ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Form  inv(S(i))**H * A * inv(S(i))
+</span><span class="comment">*</span><span class="comment">
+</span>            BII = REAL( BB( KB1, I ) )
+            AB( KA1, I ) = ( REAL( AB( KA1, I ) ) / BII ) / BII
+            DO 500 J = I1, I - 1
+               AB( J-I+KA1, I ) = AB( J-I+KA1, I ) / BII
+  500       CONTINUE
+            DO 510 J = I + 1, MIN( N, I+KA )
+               AB( I-J+KA1, J ) = AB( I-J+KA1, J ) / BII
+  510       CONTINUE
+            DO 540 K = I + 1, I + KBT
+               DO 520 J = K, I + KBT
+                  AB( K-J+KA1, J ) = AB( K-J+KA1, J ) -
+     $                               BB( I-J+KB1, J )*
+     $                               CONJG( AB( I-K+KA1, K ) ) -
+     $                               CONJG( BB( I-K+KB1, K ) )*
+     $                               AB( I-J+KA1, J ) +
+     $                               REAL( AB( KA1, I ) )*
+     $                               BB( I-J+KB1, J )*
+     $                               CONJG( BB( I-K+KB1, K ) )
+  520          CONTINUE
+               DO 530 J = I + KBT + 1, MIN( N, I+KA )
+                  AB( K-J+KA1, J ) = AB( K-J+KA1, J ) -
+     $                               CONJG( BB( I-K+KB1, K ) )*
+     $                               AB( I-J+KA1, J )
+  530          CONTINUE
+  540       CONTINUE
+            DO 560 J = I1, I
+               DO 550 K = I + 1, MIN( J+KA, I+KBT )
+                  AB( J-K+KA1, K ) = AB( J-K+KA1, K ) -
+     $                               BB( I-K+KB1, K )*AB( J-I+KA1, I )
+  550          CONTINUE
+  560       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            IF( WANTX ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              post-multiply X by inv(S(i))
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CSSCAL( NX, ONE / BII, X( 1, I ), 1 )
+               IF( KBT.GT.0 )
+     $            CALL CGERU( NX, KBT, -CONE, X( 1, I ), 1,
+     $                        BB( KB, I+1 ), LDBB-1, X( 1, I+1 ), LDX )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           store a(i1,i) in RA1 for use in next loop over K
+</span><span class="comment">*</span><span class="comment">
+</span>            RA1 = AB( I1-I+KA1, I )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Generate and apply vectors of rotations to chase all the
+</span><span class="comment">*</span><span class="comment">        existing bulges KA positions up toward the top of the band
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 610 K = 1, KB - 1
+            IF( UPDATE ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Determine the rotations which would annihilate the bulge
+</span><span class="comment">*</span><span class="comment">              which has in theory just been created
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( I+K-KA1.GT.0 .AND. I+K.LT.M ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 generate rotation to annihilate a(i+k-ka-1,i)
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL <a name="CLARTG.897"></a><a href="clartg.f.html#CLARTG.1">CLARTG</a>( AB( K+1, I ), RA1, RWORK( I+K-KA ),
+     $                         WORK( I+K-KA ), RA )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 create nonzero element a(i+k-ka-1,i+k) outside the
+</span><span class="comment">*</span><span class="comment">                 band and store it in WORK(m-kb+i+k)
+</span><span class="comment">*</span><span class="comment">
+</span>                  T = -BB( KB1-K, I+K )*RA1
+                  WORK( M-KB+I+K ) = RWORK( I+K-KA )*T -
+     $                               CONJG( WORK( I+K-KA ) )*
+     $                               AB( 1, I+K )
+                  AB( 1, I+K ) = WORK( I+K-KA )*T +
+     $                           RWORK( I+K-KA )*AB( 1, I+K )
+                  RA1 = RA
+               END IF
+            END IF
+            J2 = I + K + 1 - MAX( 1, K+I0-M+1 )*KA1
+            NR = ( J2+KA-1 ) / KA1
+            J1 = J2 - ( NR-1 )*KA1
+            IF( UPDATE ) THEN
+               J2T = MIN( J2, I-2*KA+K-1 )
+            ELSE
+               J2T = J2
+            END IF
+            NRT = ( J2T+KA-1 ) / KA1
+            DO 570 J = J1, J2T, KA1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              create nonzero element a(j-1,j+ka) outside the band
+</span><span class="comment">*</span><span class="comment">              and store it in WORK(j)
+</span><span class="comment">*</span><span class="comment">
+</span>               WORK( J ) = WORK( J )*AB( 1, J+KA-1 )
+               AB( 1, J+KA-1 ) = RWORK( J )*AB( 1, J+KA-1 )
+  570       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           generate rotations in 1st set to annihilate elements which
+</span><span class="comment">*</span><span class="comment">           have been created outside the band
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( NRT.GT.0 )
+     $         CALL <a name="CLARGV.934"></a><a href="clargv.f.html#CLARGV.1">CLARGV</a>( NRT, AB( 1, J1+KA ), INCA, WORK( J1 ), KA1,
+     $                      RWORK( J1 ), KA1 )
+            IF( NR.GT.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              apply rotations in 1st set from the left
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 580 L = 1, KA - 1
+                  CALL <a name="CLARTV.941"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NR, AB( KA1-L, J1+L ), INCA,
+     $                         AB( KA-L, J1+L ), INCA, RWORK( J1 ),
+     $                         WORK( J1 ), KA1 )
+  580          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              apply rotations in 1st set from both sides to diagonal
+</span><span class="comment">*</span><span class="comment">              blocks
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CLAR2V.949"></a><a href="clar2v.f.html#CLAR2V.1">CLAR2V</a>( NR, AB( KA1, J1 ), AB( KA1, J1-1 ),
+     $                      AB( KA, J1 ), INCA, RWORK( J1 ), WORK( J1 ),
+     $                      KA1 )
+<span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CLACGV.953"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( NR, WORK( J1 ), KA1 )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           start applying rotations in 1st set from the right
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 590 L = KA - 1, KB - K + 1, -1
+               NRT = ( J2+L-1 ) / KA1
+               J1T = J2 - ( NRT-1 )*KA1
+               IF( NRT.GT.0 )
+     $            CALL <a name="CLARTV.962"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NRT, AB( L, J1T ), INCA,
+     $                         AB( L+1, J1T-1 ), INCA, RWORK( J1T ),
+     $                         WORK( J1T ), KA1 )
+  590       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            IF( WANTX ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              post-multiply X by product of rotations in 1st set
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 600 J = J1, J2, KA1
+                  CALL <a name="CROT.972"></a><a href="crot.f.html#CROT.1">CROT</a>( NX, X( 1, J ), 1, X( 1, J-1 ), 1,
+     $                       RWORK( J ), WORK( J ) )
+  600          CONTINUE
+            END IF
+  610    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         IF( UPDATE ) THEN
+            IF( I2.GT.0 .AND. KBT.GT.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              create nonzero element a(i+kbt-ka-1,i+kbt) outside the
+</span><span class="comment">*</span><span class="comment">              band and store it in WORK(m-kb+i+kbt)
+</span><span class="comment">*</span><span class="comment">
+</span>               WORK( M-KB+I+KBT ) = -BB( KB1-KBT, I+KBT )*RA1
+            END IF
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         DO 650 K = KB, 1, -1
+            IF( UPDATE ) THEN
+               J2 = I + K + 1 - MAX( 2, K+I0-M )*KA1
+            ELSE
+               J2 = I + K + 1 - MAX( 1, K+I0-M )*KA1
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           finish applying rotations in 2nd set from the right
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 620 L = KB - K, 1, -1
+               NRT = ( J2+KA+L-1 ) / KA1
+               J1T = J2 - ( NRT-1 )*KA1
+               IF( NRT.GT.0 )
+     $            CALL <a name="CLARTV.1001"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NRT, AB( L, J1T+KA ), INCA,
+     $                         AB( L+1, J1T+KA-1 ), INCA,
+     $                         RWORK( M-KB+J1T+KA ),
+     $                         WORK( M-KB+J1T+KA ), KA1 )
+  620       CONTINUE
+            NR = ( J2+KA-1 ) / KA1
+            J1 = J2 - ( NR-1 )*KA1
+            DO 630 J = J1, J2, KA1
+               WORK( M-KB+J ) = WORK( M-KB+J+KA )
+               RWORK( M-KB+J ) = RWORK( M-KB+J+KA )
+  630       CONTINUE
+            DO 640 J = J1, J2, KA1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              create nonzero element a(j-1,j+ka) outside the band
+</span><span class="comment">*</span><span class="comment">              and store it in WORK(m-kb+j)
+</span><span class="comment">*</span><span class="comment">
+</span>               WORK( M-KB+J ) = WORK( M-KB+J )*AB( 1, J+KA-1 )
+               AB( 1, J+KA-1 ) = RWORK( M-KB+J )*AB( 1, J+KA-1 )
+  640       CONTINUE
+            IF( UPDATE ) THEN
+               IF( I+K.GT.KA1 .AND. K.LE.KBT )
+     $            WORK( M-KB+I+K-KA ) = WORK( M-KB+I+K )
+            END IF
+  650    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         DO 690 K = KB, 1, -1
+            J2 = I + K + 1 - MAX( 1, K+I0-M )*KA1
+            NR = ( J2+KA-1 ) / KA1
+            J1 = J2 - ( NR-1 )*KA1
+            IF( NR.GT.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              generate rotations in 2nd set to annihilate elements
+</span><span class="comment">*</span><span class="comment">              which have been created outside the band
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CLARGV.1035"></a><a href="clargv.f.html#CLARGV.1">CLARGV</a>( NR, AB( 1, J1+KA ), INCA, WORK( M-KB+J1 ),
+     $                      KA1, RWORK( M-KB+J1 ), KA1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              apply rotations in 2nd set from the left
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 660 L = 1, KA - 1
+                  CALL <a name="CLARTV.1041"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NR, AB( KA1-L, J1+L ), INCA,
+     $                         AB( KA-L, J1+L ), INCA, RWORK( M-KB+J1 ),
+     $                         WORK( M-KB+J1 ), KA1 )
+  660          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              apply rotations in 2nd set from both sides to diagonal
+</span><span class="comment">*</span><span class="comment">              blocks
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CLAR2V.1049"></a><a href="clar2v.f.html#CLAR2V.1">CLAR2V</a>( NR, AB( KA1, J1 ), AB( KA1, J1-1 ),
+     $                      AB( KA, J1 ), INCA, RWORK( M-KB+J1 ),
+     $                      WORK( M-KB+J1 ), KA1 )
+<span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CLACGV.1053"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( NR, WORK( M-KB+J1 ), KA1 )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           start applying rotations in 2nd set from the right
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 670 L = KA - 1, KB - K + 1, -1
+               NRT = ( J2+L-1 ) / KA1
+               J1T = J2 - ( NRT-1 )*KA1
+               IF( NRT.GT.0 )
+     $            CALL <a name="CLARTV.1062"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NRT, AB( L, J1T ), INCA,
+     $                         AB( L+1, J1T-1 ), INCA,
+     $                         RWORK( M-KB+J1T ), WORK( M-KB+J1T ),
+     $                         KA1 )
+  670       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            IF( WANTX ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              post-multiply X by product of rotations in 2nd set
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 680 J = J1, J2, KA1
+                  CALL <a name="CROT.1073"></a><a href="crot.f.html#CROT.1">CROT</a>( NX, X( 1, J ), 1, X( 1, J-1 ), 1,
+     $                       RWORK( M-KB+J ), WORK( M-KB+J ) )
+  680          CONTINUE
+            END IF
+  690    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         DO 710 K = 1, KB - 1
+            J2 = I + K + 1 - MAX( 1, K+I0-M+1 )*KA1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           finish applying rotations in 1st set from the right
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 700 L = KB - K, 1, -1
+               NRT = ( J2+L-1 ) / KA1
+               J1T = J2 - ( NRT-1 )*KA1
+               IF( NRT.GT.0 )
+     $            CALL <a name="CLARTV.1088"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NRT, AB( L, J1T ), INCA,
+     $                         AB( L+1, J1T-1 ), INCA, RWORK( J1T ),
+     $                         WORK( J1T ), KA1 )
+  700       CONTINUE
+  710    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         IF( KB.GT.1 ) THEN
+            DO 720 J = 2, I2 - KA
+               RWORK( J ) = RWORK( J+KA )
+               WORK( J ) = WORK( J+KA )
+  720       CONTINUE
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Transform A, working with the lower triangle
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( UPDATE ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Form  inv(S(i))**H * A * inv(S(i))
+</span><span class="comment">*</span><span class="comment">
+</span>            BII = REAL( BB( 1, I ) )
+            AB( 1, I ) = ( REAL( AB( 1, I ) ) / BII ) / BII
+            DO 730 J = I1, I - 1
+               AB( I-J+1, J ) = AB( I-J+1, J ) / BII
+  730       CONTINUE
+            DO 740 J = I + 1, MIN( N, I+KA )
+               AB( J-I+1, I ) = AB( J-I+1, I ) / BII
+  740       CONTINUE
+            DO 770 K = I + 1, I + KBT
+               DO 750 J = K, I + KBT
+                  AB( J-K+1, K ) = AB( J-K+1, K ) -
+     $                             BB( J-I+1, I )*CONJG( AB( K-I+1,
+     $                             I ) ) - CONJG( BB( K-I+1, I ) )*
+     $                             AB( J-I+1, I ) + REAL( AB( 1, I ) )*
+     $                             BB( J-I+1, I )*CONJG( BB( K-I+1,
+     $                             I ) )
+  750          CONTINUE
+               DO 760 J = I + KBT + 1, MIN( N, I+KA )
+                  AB( J-K+1, K ) = AB( J-K+1, K ) -
+     $                             CONJG( BB( K-I+1, I ) )*
+     $                             AB( J-I+1, I )
+  760          CONTINUE
+  770       CONTINUE
+            DO 790 J = I1, I
+               DO 780 K = I + 1, MIN( J+KA, I+KBT )
+                  AB( K-J+1, J ) = AB( K-J+1, J ) -
+     $                             BB( K-I+1, I )*AB( I-J+1, J )
+  780          CONTINUE
+  790       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            IF( WANTX ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              post-multiply X by inv(S(i))
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL CSSCAL( NX, ONE / BII, X( 1, I ), 1 )
+               IF( KBT.GT.0 )
+     $            CALL CGERC( NX, KBT, -CONE, X( 1, I ), 1, BB( 2, I ),
+     $                        1, X( 1, I+1 ), LDX )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           store a(i,i1) in RA1 for use in next loop over K
+</span><span class="comment">*</span><span class="comment">
+</span>            RA1 = AB( I-I1+1, I1 )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Generate and apply vectors of rotations to chase all the
+</span><span class="comment">*</span><span class="comment">        existing bulges KA positions up toward the top of the band
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 840 K = 1, KB - 1
+            IF( UPDATE ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Determine the rotations which would annihilate the bulge
+</span><span class="comment">*</span><span class="comment">              which has in theory just been created
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( I+K-KA1.GT.0 .AND. I+K.LT.M ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 generate rotation to annihilate a(i,i+k-ka-1)
+</span><span class="comment">*</span><span class="comment">
+</span>                  CALL <a name="CLARTG.1167"></a><a href="clartg.f.html#CLARTG.1">CLARTG</a>( AB( KA1-K, I+K-KA ), RA1,
+     $                         RWORK( I+K-KA ), WORK( I+K-KA ), RA )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 create nonzero element a(i+k,i+k-ka-1) outside the
+</span><span class="comment">*</span><span class="comment">                 band and store it in WORK(m-kb+i+k)
+</span><span class="comment">*</span><span class="comment">
+</span>                  T = -BB( K+1, I )*RA1
+                  WORK( M-KB+I+K ) = RWORK( I+K-KA )*T -
+     $                               CONJG( WORK( I+K-KA ) )*
+     $                               AB( KA1, I+K-KA )
+                  AB( KA1, I+K-KA ) = WORK( I+K-KA )*T +
+     $                                RWORK( I+K-KA )*AB( KA1, I+K-KA )
+                  RA1 = RA
+               END IF
+            END IF
+            J2 = I + K + 1 - MAX( 1, K+I0-M+1 )*KA1
+            NR = ( J2+KA-1 ) / KA1
+            J1 = J2 - ( NR-1 )*KA1
+            IF( UPDATE ) THEN
+               J2T = MIN( J2, I-2*KA+K-1 )
+            ELSE
+               J2T = J2
+            END IF
+            NRT = ( J2T+KA-1 ) / KA1
+            DO 800 J = J1, J2T, KA1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              create nonzero element a(j+ka,j-1) outside the band
+</span><span class="comment">*</span><span class="comment">              and store it in WORK(j)
+</span><span class="comment">*</span><span class="comment">
+</span>               WORK( J ) = WORK( J )*AB( KA1, J-1 )
+               AB( KA1, J-1 ) = RWORK( J )*AB( KA1, J-1 )
+  800       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           generate rotations in 1st set to annihilate elements which
+</span><span class="comment">*</span><span class="comment">           have been created outside the band
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( NRT.GT.0 )
+     $         CALL <a name="CLARGV.1204"></a><a href="clargv.f.html#CLARGV.1">CLARGV</a>( NRT, AB( KA1, J1 ), INCA, WORK( J1 ), KA1,
+     $                      RWORK( J1 ), KA1 )
+            IF( NR.GT.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              apply rotations in 1st set from the right
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 810 L = 1, KA - 1
+                  CALL <a name="CLARTV.1211"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NR, AB( L+1, J1 ), INCA, AB( L+2, J1-1 ),
+     $                         INCA, RWORK( J1 ), WORK( J1 ), KA1 )
+  810          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              apply rotations in 1st set from both sides to diagonal
+</span><span class="comment">*</span><span class="comment">              blocks
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CLAR2V.1218"></a><a href="clar2v.f.html#CLAR2V.1">CLAR2V</a>( NR, AB( 1, J1 ), AB( 1, J1-1 ),
+     $                      AB( 2, J1-1 ), INCA, RWORK( J1 ),
+     $                      WORK( J1 ), KA1 )
+<span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CLACGV.1222"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( NR, WORK( J1 ), KA1 )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           start applying rotations in 1st set from the left
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 820 L = KA - 1, KB - K + 1, -1
+               NRT = ( J2+L-1 ) / KA1
+               J1T = J2 - ( NRT-1 )*KA1
+               IF( NRT.GT.0 )
+     $            CALL <a name="CLARTV.1231"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NRT, AB( KA1-L+1, J1T-KA1+L ), INCA,
+     $                         AB( KA1-L, J1T-KA1+L ), INCA,
+     $                         RWORK( J1T ), WORK( J1T ), KA1 )
+  820       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            IF( WANTX ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              post-multiply X by product of rotations in 1st set
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 830 J = J1, J2, KA1
+                  CALL <a name="CROT.1241"></a><a href="crot.f.html#CROT.1">CROT</a>( NX, X( 1, J ), 1, X( 1, J-1 ), 1,
+     $                       RWORK( J ), CONJG( WORK( J ) ) )
+  830          CONTINUE
+            END IF
+  840    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         IF( UPDATE ) THEN
+            IF( I2.GT.0 .AND. KBT.GT.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              create nonzero element a(i+kbt,i+kbt-ka-1) outside the
+</span><span class="comment">*</span><span class="comment">              band and store it in WORK(m-kb+i+kbt)
+</span><span class="comment">*</span><span class="comment">
+</span>               WORK( M-KB+I+KBT ) = -BB( KBT+1, I )*RA1
+            END IF
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         DO 880 K = KB, 1, -1
+            IF( UPDATE ) THEN
+               J2 = I + K + 1 - MAX( 2, K+I0-M )*KA1
+            ELSE
+               J2 = I + K + 1 - MAX( 1, K+I0-M )*KA1
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           finish applying rotations in 2nd set from the left
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 850 L = KB - K, 1, -1
+               NRT = ( J2+KA+L-1 ) / KA1
+               J1T = J2 - ( NRT-1 )*KA1
+               IF( NRT.GT.0 )
+     $            CALL <a name="CLARTV.1270"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NRT, AB( KA1-L+1, J1T+L-1 ), INCA,
+     $                         AB( KA1-L, J1T+L-1 ), INCA,
+     $                         RWORK( M-KB+J1T+KA ),
+     $                         WORK( M-KB+J1T+KA ), KA1 )
+  850       CONTINUE
+            NR = ( J2+KA-1 ) / KA1
+            J1 = J2 - ( NR-1 )*KA1
+            DO 860 J = J1, J2, KA1
+               WORK( M-KB+J ) = WORK( M-KB+J+KA )
+               RWORK( M-KB+J ) = RWORK( M-KB+J+KA )
+  860       CONTINUE
+            DO 870 J = J1, J2, KA1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              create nonzero element a(j+ka,j-1) outside the band
+</span><span class="comment">*</span><span class="comment">              and store it in WORK(m-kb+j)
+</span><span class="comment">*</span><span class="comment">
+</span>               WORK( M-KB+J ) = WORK( M-KB+J )*AB( KA1, J-1 )
+               AB( KA1, J-1 ) = RWORK( M-KB+J )*AB( KA1, J-1 )
+  870       CONTINUE
+            IF( UPDATE ) THEN
+               IF( I+K.GT.KA1 .AND. K.LE.KBT )
+     $            WORK( M-KB+I+K-KA ) = WORK( M-KB+I+K )
+            END IF
+  880    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         DO 920 K = KB, 1, -1
+            J2 = I + K + 1 - MAX( 1, K+I0-M )*KA1
+            NR = ( J2+KA-1 ) / KA1
+            J1 = J2 - ( NR-1 )*KA1
+            IF( NR.GT.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              generate rotations in 2nd set to annihilate elements
+</span><span class="comment">*</span><span class="comment">              which have been created outside the band
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CLARGV.1304"></a><a href="clargv.f.html#CLARGV.1">CLARGV</a>( NR, AB( KA1, J1 ), INCA, WORK( M-KB+J1 ),
+     $                      KA1, RWORK( M-KB+J1 ), KA1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              apply rotations in 2nd set from the right
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 890 L = 1, KA - 1
+                  CALL <a name="CLARTV.1310"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NR, AB( L+1, J1 ), INCA, AB( L+2, J1-1 ),
+     $                         INCA, RWORK( M-KB+J1 ), WORK( M-KB+J1 ),
+     $                         KA1 )
+  890          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              apply rotations in 2nd set from both sides to diagonal
+</span><span class="comment">*</span><span class="comment">              blocks
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CLAR2V.1318"></a><a href="clar2v.f.html#CLAR2V.1">CLAR2V</a>( NR, AB( 1, J1 ), AB( 1, J1-1 ),
+     $                      AB( 2, J1-1 ), INCA, RWORK( M-KB+J1 ),
+     $                      WORK( M-KB+J1 ), KA1 )
+<span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CLACGV.1322"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( NR, WORK( M-KB+J1 ), KA1 )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           start applying rotations in 2nd set from the left
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 900 L = KA - 1, KB - K + 1, -1
+               NRT = ( J2+L-1 ) / KA1
+               J1T = J2 - ( NRT-1 )*KA1
+               IF( NRT.GT.0 )
+     $            CALL <a name="CLARTV.1331"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NRT, AB( KA1-L+1, J1T-KA1+L ), INCA,
+     $                         AB( KA1-L, J1T-KA1+L ), INCA,
+     $                         RWORK( M-KB+J1T ), WORK( M-KB+J1T ),
+     $                         KA1 )
+  900       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            IF( WANTX ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              post-multiply X by product of rotations in 2nd set
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 910 J = J1, J2, KA1
+                  CALL <a name="CROT.1342"></a><a href="crot.f.html#CROT.1">CROT</a>( NX, X( 1, J ), 1, X( 1, J-1 ), 1,
+     $                       RWORK( M-KB+J ), CONJG( WORK( M-KB+J ) ) )
+  910          CONTINUE
+            END IF
+  920    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         DO 940 K = 1, KB - 1
+            J2 = I + K + 1 - MAX( 1, K+I0-M+1 )*KA1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           finish applying rotations in 1st set from the left
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 930 L = KB - K, 1, -1
+               NRT = ( J2+L-1 ) / KA1
+               J1T = J2 - ( NRT-1 )*KA1
+               IF( NRT.GT.0 )
+     $            CALL <a name="CLARTV.1357"></a><a href="clartv.f.html#CLARTV.1">CLARTV</a>( NRT, AB( KA1-L+1, J1T-KA1+L ), INCA,
+     $                         AB( KA1-L, J1T-KA1+L ), INCA,
+     $                         RWORK( J1T ), WORK( J1T ), KA1 )
+  930       CONTINUE
+  940    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         IF( KB.GT.1 ) THEN
+            DO 950 J = 2, I2 - KA
+               RWORK( J ) = RWORK( J+KA )
+               WORK( J ) = WORK( J+KA )
+  950       CONTINUE
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>      END IF
+<span class="comment">*</span><span class="comment">
+</span>      GO TO 490
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CHBGST.1374"></a><a href="chbgst.f.html#CHBGST.1">CHBGST</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

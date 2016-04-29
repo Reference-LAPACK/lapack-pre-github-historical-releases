@@ -1,0 +1,549 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>ztgsja.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZTGSJA.1"></a><a href="ztgsja.f.html#ZTGSJA.1">ZTGSJA</a>( JOBU, JOBV, JOBQ, M, P, N, K, L, A, LDA, B,
+     $                   LDB, TOLA, TOLB, ALPHA, BETA, U, LDU, V, LDV,
+     $                   Q, LDQ, WORK, NCYCLE, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          JOBQ, JOBU, JOBV
+      INTEGER            INFO, K, L, LDA, LDB, LDQ, LDU, LDV, M, N,
+     $                   NCYCLE, P
+      DOUBLE PRECISION   TOLA, TOLB
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   ALPHA( * ), BETA( * )
+      COMPLEX*16         A( LDA, * ), B( LDB, * ), Q( LDQ, * ),
+     $                   U( LDU, * ), V( LDV, * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZTGSJA.24"></a><a href="ztgsja.f.html#ZTGSJA.1">ZTGSJA</a> computes the generalized singular value decomposition (GSVD)
+</span><span class="comment">*</span><span class="comment">  of two complex upper triangular (or trapezoidal) matrices A and B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  On entry, it is assumed that matrices A and B have the following
+</span><span class="comment">*</span><span class="comment">  forms, which may be obtained by the preprocessing subroutine <a name="ZGGSVP.28"></a><a href="zggsvp.f.html#ZGGSVP.1">ZGGSVP</a>
+</span><span class="comment">*</span><span class="comment">  from a general M-by-N matrix A and P-by-N matrix B:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">               N-K-L  K    L
+</span><span class="comment">*</span><span class="comment">     A =    K ( 0    A12  A13 ) if M-K-L &gt;= 0;
+</span><span class="comment">*</span><span class="comment">            L ( 0     0   A23 )
+</span><span class="comment">*</span><span class="comment">        M-K-L ( 0     0    0  )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">             N-K-L  K    L
+</span><span class="comment">*</span><span class="comment">     A =  K ( 0    A12  A13 ) if M-K-L &lt; 0;
+</span><span class="comment">*</span><span class="comment">        M-K ( 0     0   A23 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">             N-K-L  K    L
+</span><span class="comment">*</span><span class="comment">     B =  L ( 0     0   B13 )
+</span><span class="comment">*</span><span class="comment">        P-L ( 0     0    0  )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where the K-by-K matrix A12 and L-by-L matrix B13 are nonsingular
+</span><span class="comment">*</span><span class="comment">  upper triangular; A23 is L-by-L upper triangular if M-K-L &gt;= 0,
+</span><span class="comment">*</span><span class="comment">  otherwise A23 is (M-K)-by-L upper trapezoidal.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  On exit,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">         U'*A*Q = D1*( 0 R ),    V'*B*Q = D2*( 0 R ),
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where U, V and Q are unitary matrices, Z' denotes the conjugate
+</span><span class="comment">*</span><span class="comment">  transpose of Z, R is a nonsingular upper triangular matrix, and D1
+</span><span class="comment">*</span><span class="comment">  and D2 are ``diagonal'' matrices, which are of the following
+</span><span class="comment">*</span><span class="comment">  structures:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If M-K-L &gt;= 0,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                      K  L
+</span><span class="comment">*</span><span class="comment">         D1 =     K ( I  0 )
+</span><span class="comment">*</span><span class="comment">                  L ( 0  C )
+</span><span class="comment">*</span><span class="comment">              M-K-L ( 0  0 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                     K  L
+</span><span class="comment">*</span><span class="comment">         D2 = L   ( 0  S )
+</span><span class="comment">*</span><span class="comment">              P-L ( 0  0 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 N-K-L  K    L
+</span><span class="comment">*</span><span class="comment">    ( 0 R ) = K (  0   R11  R12 ) K
+</span><span class="comment">*</span><span class="comment">              L (  0    0   R22 ) L
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">    C = diag( ALPHA(K+1), ... , ALPHA(K+L) ),
+</span><span class="comment">*</span><span class="comment">    S = diag( BETA(K+1),  ... , BETA(K+L) ),
+</span><span class="comment">*</span><span class="comment">    C**2 + S**2 = I.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">    R is stored in A(1:K+L,N-K-L+1:N) on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If M-K-L &lt; 0,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 K M-K K+L-M
+</span><span class="comment">*</span><span class="comment">      D1 =   K ( I  0    0   )
+</span><span class="comment">*</span><span class="comment">           M-K ( 0  C    0   )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                   K M-K K+L-M
+</span><span class="comment">*</span><span class="comment">      D2 =   M-K ( 0  S    0   )
+</span><span class="comment">*</span><span class="comment">           K+L-M ( 0  0    I   )
+</span><span class="comment">*</span><span class="comment">             P-L ( 0  0    0   )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 N-K-L  K   M-K  K+L-M
+</span><span class="comment">*</span><span class="comment"> ( 0 R ) =    K ( 0    R11  R12  R13  )
+</span><span class="comment">*</span><span class="comment">            M-K ( 0     0   R22  R23  )
+</span><span class="comment">*</span><span class="comment">          K+L-M ( 0     0    0   R33  )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where
+</span><span class="comment">*</span><span class="comment">  C = diag( ALPHA(K+1), ... , ALPHA(M) ),
+</span><span class="comment">*</span><span class="comment">  S = diag( BETA(K+1),  ... , BETA(M) ),
+</span><span class="comment">*</span><span class="comment">  C**2 + S**2 = I.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  R = ( R11 R12 R13 ) is stored in A(1:M, N-K-L+1:N) and R33 is stored
+</span><span class="comment">*</span><span class="comment">      (  0  R22 R23 )
+</span><span class="comment">*</span><span class="comment">  in B(M-K+1:L,N+M-K-L+1:N) on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The computation of the unitary transformation matrices U, V or Q
+</span><span class="comment">*</span><span class="comment">  is optional.  These matrices may either be formed explicitly, or they
+</span><span class="comment">*</span><span class="comment">  may be postmultiplied into input matrices U1, V1, or Q1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOBU    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  U must contain a unitary matrix U1 on entry, and
+</span><span class="comment">*</span><span class="comment">                  the product U1*U is returned;
+</span><span class="comment">*</span><span class="comment">          = 'I':  U is initialized to the unit matrix, and the
+</span><span class="comment">*</span><span class="comment">                  unitary matrix U is returned;
+</span><span class="comment">*</span><span class="comment">          = 'N':  U is not computed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOBV    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'V':  V must contain a unitary matrix V1 on entry, and
+</span><span class="comment">*</span><span class="comment">                  the product V1*V is returned;
+</span><span class="comment">*</span><span class="comment">          = 'I':  V is initialized to the unit matrix, and the
+</span><span class="comment">*</span><span class="comment">                  unitary matrix V is returned;
+</span><span class="comment">*</span><span class="comment">          = 'N':  V is not computed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOBQ    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'Q':  Q must contain a unitary matrix Q1 on entry, and
+</span><span class="comment">*</span><span class="comment">                  the product Q1*Q is returned;
+</span><span class="comment">*</span><span class="comment">          = 'I':  Q is initialized to the unit matrix, and the
+</span><span class="comment">*</span><span class="comment">                  unitary matrix Q is returned;
+</span><span class="comment">*</span><span class="comment">          = 'N':  Q is not computed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix A.  M &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  P       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix B.  P &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrices A and B.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  K       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">  L       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          K and L specify the subblocks in the input matrices A and B:
+</span><span class="comment">*</span><span class="comment">          A23 = A(K+1:MIN(K+L,M),N-L+1:N) and B13 = B(1:L,,N-L+1:N)
+</span><span class="comment">*</span><span class="comment">          of A and B, whose GSVD is going to be computed by <a name="ZTGSJA.146"></a><a href="ztgsja.f.html#ZTGSJA.1">ZTGSJA</a>.
+</span><span class="comment">*</span><span class="comment">          See Further details.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) COMPLEX*16 array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the M-by-N matrix A.
+</span><span class="comment">*</span><span class="comment">          On exit, A(N-K+1:N,1:MIN(K+L,M) ) contains the triangular
+</span><span class="comment">*</span><span class="comment">          matrix R or part of R.  See Purpose for details.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A. LDA &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input/output) COMPLEX*16 array, dimension (LDB,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the P-by-N matrix B.
+</span><span class="comment">*</span><span class="comment">          On exit, if necessary, B(M-K+1:L,N+M-K-L+1:N) contains
+</span><span class="comment">*</span><span class="comment">          a part of R.  See Purpose for details.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B. LDB &gt;= max(1,P).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TOLA    (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">  TOLB    (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          TOLA and TOLB are the convergence criteria for the Jacobi-
+</span><span class="comment">*</span><span class="comment">          Kogbetliantz iteration procedure. Generally, they are the
+</span><span class="comment">*</span><span class="comment">          same as used in the preprocessing step, say
+</span><span class="comment">*</span><span class="comment">              TOLA = MAX(M,N)*norm(A)*MAZHEPS,
+</span><span class="comment">*</span><span class="comment">              TOLB = MAX(P,N)*norm(B)*MAZHEPS.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ALPHA   (output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">  BETA    (output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On exit, ALPHA and BETA contain the generalized singular
+</span><span class="comment">*</span><span class="comment">          value pairs of A and B;
+</span><span class="comment">*</span><span class="comment">            ALPHA(1:K) = 1,
+</span><span class="comment">*</span><span class="comment">            BETA(1:K)  = 0,
+</span><span class="comment">*</span><span class="comment">          and if M-K-L &gt;= 0,
+</span><span class="comment">*</span><span class="comment">            ALPHA(K+1:K+L) = diag(C),
+</span><span class="comment">*</span><span class="comment">            BETA(K+1:K+L)  = diag(S),
+</span><span class="comment">*</span><span class="comment">          or if M-K-L &lt; 0,
+</span><span class="comment">*</span><span class="comment">            ALPHA(K+1:M)= C, ALPHA(M+1:K+L)= 0
+</span><span class="comment">*</span><span class="comment">            BETA(K+1:M) = S, BETA(M+1:K+L) = 1.
+</span><span class="comment">*</span><span class="comment">          Furthermore, if K+L &lt; N,
+</span><span class="comment">*</span><span class="comment">            ALPHA(K+L+1:N) = 0
+</span><span class="comment">*</span><span class="comment">            BETA(K+L+1:N)  = 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  U       (input/output) COMPLEX*16 array, dimension (LDU,M)
+</span><span class="comment">*</span><span class="comment">          On entry, if JOBU = 'U', U must contain a matrix U1 (usually
+</span><span class="comment">*</span><span class="comment">          the unitary matrix returned by <a name="ZGGSVP.191"></a><a href="zggsvp.f.html#ZGGSVP.1">ZGGSVP</a>).
+</span><span class="comment">*</span><span class="comment">          On exit,
+</span><span class="comment">*</span><span class="comment">          if JOBU = 'I', U contains the unitary matrix U;
+</span><span class="comment">*</span><span class="comment">          if JOBU = 'U', U contains the product U1*U.
+</span><span class="comment">*</span><span class="comment">          If JOBU = 'N', U is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDU     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array U. LDU &gt;= max(1,M) if
+</span><span class="comment">*</span><span class="comment">          JOBU = 'U'; LDU &gt;= 1 otherwise.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  V       (input/output) COMPLEX*16 array, dimension (LDV,P)
+</span><span class="comment">*</span><span class="comment">          On entry, if JOBV = 'V', V must contain a matrix V1 (usually
+</span><span class="comment">*</span><span class="comment">          the unitary matrix returned by <a name="ZGGSVP.203"></a><a href="zggsvp.f.html#ZGGSVP.1">ZGGSVP</a>).
+</span><span class="comment">*</span><span class="comment">          On exit,
+</span><span class="comment">*</span><span class="comment">          if JOBV = 'I', V contains the unitary matrix V;
+</span><span class="comment">*</span><span class="comment">          if JOBV = 'V', V contains the product V1*V.
+</span><span class="comment">*</span><span class="comment">          If JOBV = 'N', V is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDV     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array V. LDV &gt;= max(1,P) if
+</span><span class="comment">*</span><span class="comment">          JOBV = 'V'; LDV &gt;= 1 otherwise.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Q       (input/output) COMPLEX*16 array, dimension (LDQ,N)
+</span><span class="comment">*</span><span class="comment">          On entry, if JOBQ = 'Q', Q must contain a matrix Q1 (usually
+</span><span class="comment">*</span><span class="comment">          the unitary matrix returned by <a name="ZGGSVP.215"></a><a href="zggsvp.f.html#ZGGSVP.1">ZGGSVP</a>).
+</span><span class="comment">*</span><span class="comment">          On exit,
+</span><span class="comment">*</span><span class="comment">          if JOBQ = 'I', Q contains the unitary matrix Q;
+</span><span class="comment">*</span><span class="comment">          if JOBQ = 'Q', Q contains the product Q1*Q.
+</span><span class="comment">*</span><span class="comment">          If JOBQ = 'N', Q is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDQ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Q. LDQ &gt;= max(1,N) if
+</span><span class="comment">*</span><span class="comment">          JOBQ = 'Q'; LDQ &gt;= 1 otherwise.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) COMPLEX*16 array, dimension (2*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NCYCLE  (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of cycles required for convergence.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">          = 1:  the procedure does not converge after MAXIT cycles.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Internal Parameters
+</span><span class="comment">*</span><span class="comment">  ===================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  MAXIT   INTEGER
+</span><span class="comment">*</span><span class="comment">          MAXIT specifies the total loops that the iterative procedure
+</span><span class="comment">*</span><span class="comment">          may take. If after MAXIT cycles, the routine fails to
+</span><span class="comment">*</span><span class="comment">          converge, we return INFO = 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZTGSJA.246"></a><a href="ztgsja.f.html#ZTGSJA.1">ZTGSJA</a> essentially uses a variant of Kogbetliantz algorithm to reduce
+</span><span class="comment">*</span><span class="comment">  min(L,M-K)-by-L triangular (or trapezoidal) matrix A23 and L-by-L
+</span><span class="comment">*</span><span class="comment">  matrix B13 to the form:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           U1'*A13*Q1 = C1*R1; V1'*B13*Q1 = S1*R1,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where U1, V1 and Q1 are unitary matrix, and Z' is the conjugate
+</span><span class="comment">*</span><span class="comment">  transpose of Z.  C1 and S1 are diagonal matrices satisfying
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                C1**2 + S1**2 = I,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  and R1 is an L-by-L nonsingular upper triangular matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      INTEGER            MAXIT
+      PARAMETER          ( MAXIT = 40 )
+      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+      COMPLEX*16         CZERO, CONE
+      PARAMETER          ( CZERO = ( 0.0D+0, 0.0D+0 ),
+     $                   CONE = ( 1.0D+0, 0.0D+0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span><span class="comment">*</span><span class="comment">
+</span>      LOGICAL            INITQ, INITU, INITV, UPPER, WANTQ, WANTU, WANTV
+      INTEGER            I, J, KCYCLE
+      DOUBLE PRECISION   A1, A3, B1, B3, CSQ, CSU, CSV, ERROR, GAMMA,
+     $                   RWK, SSMIN
+      COMPLEX*16         A2, B2, SNQ, SNU, SNV
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.279"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.280"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DLARTG.283"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>, <a name="XERBLA.283"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, ZCOPY, ZDSCAL, <a name="ZLAGS2.283"></a><a href="zlags2.f.html#ZLAGS2.1">ZLAGS2</a>, <a name="ZLAPLL.283"></a><a href="zlapll.f.html#ZLAPLL.1">ZLAPLL</a>,
+     $                   <a name="ZLASET.284"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>, <a name="ZROT.284"></a><a href="zrot.f.html#ZROT.1">ZROT</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, DBLE, DCONJG, MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Decode and test the input parameters
+</span><span class="comment">*</span><span class="comment">
+</span>      INITU = <a name="LSAME.293"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBU, <span class="string">'I'</span> )
+      WANTU = INITU .OR. <a name="LSAME.294"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBU, <span class="string">'U'</span> )
+<span class="comment">*</span><span class="comment">
+</span>      INITV = <a name="LSAME.296"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBV, <span class="string">'I'</span> )
+      WANTV = INITV .OR. <a name="LSAME.297"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBV, <span class="string">'V'</span> )
+<span class="comment">*</span><span class="comment">
+</span>      INITQ = <a name="LSAME.299"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBQ, <span class="string">'I'</span> )
+      WANTQ = INITQ .OR. <a name="LSAME.300"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBQ, <span class="string">'Q'</span> )
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( .NOT.( INITU .OR. WANTU .OR. <a name="LSAME.303"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBU, <span class="string">'N'</span> ) ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.( INITV .OR. WANTV .OR. <a name="LSAME.305"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBV, <span class="string">'N'</span> ) ) ) THEN
+         INFO = -2
+      ELSE IF( .NOT.( INITQ .OR. WANTQ .OR. <a name="LSAME.307"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBQ, <span class="string">'N'</span> ) ) ) THEN
+         INFO = -3
+      ELSE IF( M.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( P.LT.0 ) THEN
+         INFO = -5
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -6
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -10
+      ELSE IF( LDB.LT.MAX( 1, P ) ) THEN
+         INFO = -12
+      ELSE IF( LDU.LT.1 .OR. ( WANTU .AND. LDU.LT.M ) ) THEN
+         INFO = -18
+      ELSE IF( LDV.LT.1 .OR. ( WANTV .AND. LDV.LT.P ) ) THEN
+         INFO = -20
+      ELSE IF( LDQ.LT.1 .OR. ( WANTQ .AND. LDQ.LT.N ) ) THEN
+         INFO = -22
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.327"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZTGSJA.327"></a><a href="ztgsja.f.html#ZTGSJA.1">ZTGSJA</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Initialize U, V and Q, if necessary
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( INITU )
+     $   CALL <a name="ZLASET.334"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'Full'</span>, M, M, CZERO, CONE, U, LDU )
+      IF( INITV )
+     $   CALL <a name="ZLASET.336"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'Full'</span>, P, P, CZERO, CONE, V, LDV )
+      IF( INITQ )
+     $   CALL <a name="ZLASET.338"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'Full'</span>, N, N, CZERO, CONE, Q, LDQ )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Loop until convergence
+</span><span class="comment">*</span><span class="comment">
+</span>      UPPER = .FALSE.
+      DO 40 KCYCLE = 1, MAXIT
+<span class="comment">*</span><span class="comment">
+</span>         UPPER = .NOT.UPPER
+<span class="comment">*</span><span class="comment">
+</span>         DO 20 I = 1, L - 1
+            DO 10 J = I + 1, L
+<span class="comment">*</span><span class="comment">
+</span>               A1 = ZERO
+               A2 = CZERO
+               A3 = ZERO
+               IF( K+I.LE.M )
+     $            A1 = DBLE( A( K+I, N-L+I ) )
+               IF( K+J.LE.M )
+     $            A3 = DBLE( A( K+J, N-L+J ) )
+<span class="comment">*</span><span class="comment">
+</span>               B1 = DBLE( B( I, N-L+I ) )
+               B3 = DBLE( B( J, N-L+J ) )
+<span class="comment">*</span><span class="comment">
+</span>               IF( UPPER ) THEN
+                  IF( K+I.LE.M )
+     $               A2 = A( K+I, N-L+J )
+                  B2 = B( I, N-L+J )
+               ELSE
+                  IF( K+J.LE.M )
+     $               A2 = A( K+J, N-L+I )
+                  B2 = B( J, N-L+I )
+               END IF
+<span class="comment">*</span><span class="comment">
+</span>               CALL <a name="ZLAGS2.371"></a><a href="zlags2.f.html#ZLAGS2.1">ZLAGS2</a>( UPPER, A1, A2, A3, B1, B2, B3, CSU, SNU,
+     $                      CSV, SNV, CSQ, SNQ )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Update (K+I)-th and (K+J)-th rows of matrix A: U'*A
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( K+J.LE.M )
+     $            CALL <a name="ZROT.377"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( L, A( K+J, N-L+1 ), LDA, A( K+I, N-L+1 ),
+     $                       LDA, CSU, DCONJG( SNU ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Update I-th and J-th rows of matrix B: V'*B
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="ZROT.382"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( L, B( J, N-L+1 ), LDB, B( I, N-L+1 ), LDB,
+     $                    CSV, DCONJG( SNV ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Update (N-L+I)-th and (N-L+J)-th columns of matrices
+</span><span class="comment">*</span><span class="comment">              A and B: A*Q and B*Q
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="ZROT.388"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( MIN( K+L, M ), A( 1, N-L+J ), 1,
+     $                    A( 1, N-L+I ), 1, CSQ, SNQ )
+<span class="comment">*</span><span class="comment">
+</span>               CALL <a name="ZROT.391"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( L, B( 1, N-L+J ), 1, B( 1, N-L+I ), 1, CSQ,
+     $                    SNQ )
+<span class="comment">*</span><span class="comment">
+</span>               IF( UPPER ) THEN
+                  IF( K+I.LE.M )
+     $               A( K+I, N-L+J ) = CZERO
+                  B( I, N-L+J ) = CZERO
+               ELSE
+                  IF( K+J.LE.M )
+     $               A( K+J, N-L+I ) = CZERO
+                  B( J, N-L+I ) = CZERO
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Ensure that the diagonal elements of A and B are real.
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( K+I.LE.M )
+     $            A( K+I, N-L+I ) = DBLE( A( K+I, N-L+I ) )
+               IF( K+J.LE.M )
+     $            A( K+J, N-L+J ) = DBLE( A( K+J, N-L+J ) )
+               B( I, N-L+I ) = DBLE( B( I, N-L+I ) )
+               B( J, N-L+J ) = DBLE( B( J, N-L+J ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Update unitary matrices U, V, Q, if desired.
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( WANTU .AND. K+J.LE.M )
+     $            CALL <a name="ZROT.416"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( M, U( 1, K+J ), 1, U( 1, K+I ), 1, CSU,
+     $                       SNU )
+<span class="comment">*</span><span class="comment">
+</span>               IF( WANTV )
+     $            CALL <a name="ZROT.420"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( P, V( 1, J ), 1, V( 1, I ), 1, CSV, SNV )
+<span class="comment">*</span><span class="comment">
+</span>               IF( WANTQ )
+     $            CALL <a name="ZROT.423"></a><a href="zrot.f.html#ZROT.1">ZROT</a>( N, Q( 1, N-L+J ), 1, Q( 1, N-L+I ), 1, CSQ,
+     $                       SNQ )
+<span class="comment">*</span><span class="comment">
+</span>   10       CONTINUE
+   20    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         IF( .NOT.UPPER ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           The matrices A13 and B13 were lower triangular at the start
+</span><span class="comment">*</span><span class="comment">           of the cycle, and are now upper triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Convergence test: test the parallelism of the corresponding
+</span><span class="comment">*</span><span class="comment">           rows of A and B.
+</span><span class="comment">*</span><span class="comment">
+</span>            ERROR = ZERO
+            DO 30 I = 1, MIN( L, M-K )
+               CALL ZCOPY( L-I+1, A( K+I, N-L+I ), LDA, WORK, 1 )
+               CALL ZCOPY( L-I+1, B( I, N-L+I ), LDB, WORK( L+1 ), 1 )
+               CALL <a name="ZLAPLL.441"></a><a href="zlapll.f.html#ZLAPLL.1">ZLAPLL</a>( L-I+1, WORK, 1, WORK( L+1 ), 1, SSMIN )
+               ERROR = MAX( ERROR, SSMIN )
+   30       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>            IF( ABS( ERROR ).LE.MIN( TOLA, TOLB ) )
+     $         GO TO 50
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        End of cycle loop
+</span><span class="comment">*</span><span class="comment">
+</span>   40 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The algorithm has not converged after MAXIT cycles.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 1
+      GO TO 100
+<span class="comment">*</span><span class="comment">
+</span>   50 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If ERROR &lt;= MIN(TOLA,TOLB), then the algorithm has converged.
+</span><span class="comment">*</span><span class="comment">     Compute the generalized singular value pairs (ALPHA, BETA), and
+</span><span class="comment">*</span><span class="comment">     set the triangular matrix R to array A.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 60 I = 1, K
+         ALPHA( I ) = ONE
+         BETA( I ) = ZERO
+   60 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      DO 70 I = 1, MIN( L, M-K )
+<span class="comment">*</span><span class="comment">
+</span>         A1 = DBLE( A( K+I, N-L+I ) )
+         B1 = DBLE( B( I, N-L+I ) )
+<span class="comment">*</span><span class="comment">
+</span>         IF( A1.NE.ZERO ) THEN
+            GAMMA = B1 / A1
+<span class="comment">*</span><span class="comment">
+</span>            IF( GAMMA.LT.ZERO ) THEN
+               CALL ZDSCAL( L-I+1, -ONE, B( I, N-L+I ), LDB )
+               IF( WANTV )
+     $            CALL ZDSCAL( P, -ONE, V( 1, I ), 1 )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>            CALL <a name="DLARTG.483"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( ABS( GAMMA ), ONE, BETA( K+I ), ALPHA( K+I ),
+     $                   RWK )
+<span class="comment">*</span><span class="comment">
+</span>            IF( ALPHA( K+I ).GE.BETA( K+I ) ) THEN
+               CALL ZDSCAL( L-I+1, ONE / ALPHA( K+I ), A( K+I, N-L+I ),
+     $                      LDA )
+            ELSE
+               CALL ZDSCAL( L-I+1, ONE / BETA( K+I ), B( I, N-L+I ),
+     $                      LDB )
+               CALL ZCOPY( L-I+1, B( I, N-L+I ), LDB, A( K+I, N-L+I ),
+     $                     LDA )
+            END IF
+<span class="comment">*</span><span class="comment">
+</span>         ELSE
+            ALPHA( K+I ) = ZERO
+            BETA( K+I ) = ONE
+            CALL ZCOPY( L-I+1, B( I, N-L+I ), LDB, A( K+I, N-L+I ),
+     $                  LDA )
+         END IF
+   70 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Post-assignment
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 80 I = M + 1, K + L
+         ALPHA( I ) = ZERO
+         BETA( I ) = ONE
+   80 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      IF( K+L.LT.N ) THEN
+         DO 90 I = K + L + 1, N
+            ALPHA( I ) = ZERO
+            BETA( I ) = ZERO
+   90    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>  100 CONTINUE
+      NCYCLE = KCYCLE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZTGSJA.523"></a><a href="ztgsja.f.html#ZTGSJA.1">ZTGSJA</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zlatdf.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZLATDF.1"></a><a href="zlatdf.f.html#ZLATDF.1">ZLATDF</a>( IJOB, N, Z, LDZ, RHS, RDSUM, RDSCAL, IPIV,
+     $                   JPIV )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            IJOB, LDZ, N
+      DOUBLE PRECISION   RDSCAL, RDSUM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IPIV( * ), JPIV( * )
+      COMPLEX*16         RHS( * ), Z( LDZ, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZLATDF.20"></a><a href="zlatdf.f.html#ZLATDF.1">ZLATDF</a> computes the contribution to the reciprocal Dif-estimate
+</span><span class="comment">*</span><span class="comment">  by solving for x in Z * x = b, where b is chosen such that the norm
+</span><span class="comment">*</span><span class="comment">  of x is as large as possible. It is assumed that LU decomposition
+</span><span class="comment">*</span><span class="comment">  of Z has been computed by <a name="ZGETC2.23"></a><a href="zgetc2.f.html#ZGETC2.1">ZGETC2</a>. On entry RHS = f holds the
+</span><span class="comment">*</span><span class="comment">  contribution from earlier solved sub-systems, and on return RHS = x.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The factorization of Z returned by <a name="ZGETC2.26"></a><a href="zgetc2.f.html#ZGETC2.1">ZGETC2</a> has the form
+</span><span class="comment">*</span><span class="comment">  Z = P * L * U * Q, where P and Q are permutation matrices. L is lower
+</span><span class="comment">*</span><span class="comment">  triangular with unit diagonal elements and U is upper triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IJOB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          IJOB = 2: First compute an approximative null-vector e
+</span><span class="comment">*</span><span class="comment">              of Z using <a name="ZGECON.35"></a><a href="zgecon.f.html#ZGECON.1">ZGECON</a>, e is normalized and solve for
+</span><span class="comment">*</span><span class="comment">              Zx = +-e - f with the sign giving the greater value of
+</span><span class="comment">*</span><span class="comment">              2-norm(x).  About 5 times as expensive as Default.
+</span><span class="comment">*</span><span class="comment">          IJOB .ne. 2: Local look ahead strategy where
+</span><span class="comment">*</span><span class="comment">              all entries of the r.h.s. b is choosen as either +1 or
+</span><span class="comment">*</span><span class="comment">              -1.  Default.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix Z.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z       (input) DOUBLE PRECISION array, dimension (LDZ, N)
+</span><span class="comment">*</span><span class="comment">          On entry, the LU part of the factorization of the n-by-n
+</span><span class="comment">*</span><span class="comment">          matrix Z computed by <a name="ZGETC2.47"></a><a href="zgetc2.f.html#ZGETC2.1">ZGETC2</a>:  Z = P * L * U * Q
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDZ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Z.  LDA &gt;= max(1, N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RHS     (input/output) DOUBLE PRECISION array, dimension (N).
+</span><span class="comment">*</span><span class="comment">          On entry, RHS contains contributions from other subsystems.
+</span><span class="comment">*</span><span class="comment">          On exit, RHS contains the solution of the subsystem with
+</span><span class="comment">*</span><span class="comment">          entries according to the value of IJOB (see above).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RDSUM   (input/output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          On entry, the sum of squares of computed contributions to
+</span><span class="comment">*</span><span class="comment">          the Dif-estimate under computation by <a name="ZTGSYL.59"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>, where the
+</span><span class="comment">*</span><span class="comment">          scaling factor RDSCAL (see below) has been factored out.
+</span><span class="comment">*</span><span class="comment">          On exit, the corresponding sum of squares updated with the
+</span><span class="comment">*</span><span class="comment">          contributions from the current sub-system.
+</span><span class="comment">*</span><span class="comment">          If TRANS = 'T' RDSUM is not touched.
+</span><span class="comment">*</span><span class="comment">          NOTE: RDSUM only makes sense when <a name="ZTGSY2.64"></a><a href="ztgsy2.f.html#ZTGSY2.1">ZTGSY2</a> is called by <a name="CTGSYL.64"></a><a href="ctgsyl.f.html#CTGSYL.1">CTGSYL</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RDSCAL  (input/output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          On entry, scaling factor used to prevent overflow in RDSUM.
+</span><span class="comment">*</span><span class="comment">          On exit, RDSCAL is updated w.r.t. the current contributions
+</span><span class="comment">*</span><span class="comment">          in RDSUM.
+</span><span class="comment">*</span><span class="comment">          If TRANS = 'T', RDSCAL is not touched.
+</span><span class="comment">*</span><span class="comment">          NOTE: RDSCAL only makes sense when <a name="ZTGSY2.71"></a><a href="ztgsy2.f.html#ZTGSY2.1">ZTGSY2</a> is called by
+</span><span class="comment">*</span><span class="comment">          <a name="ZTGSYL.72"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IPIV    (input) INTEGER array, dimension (N).
+</span><span class="comment">*</span><span class="comment">          The pivot indices; for 1 &lt;= i &lt;= N, row i of the
+</span><span class="comment">*</span><span class="comment">          matrix has been interchanged with row IPIV(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JPIV    (input) INTEGER array, dimension (N).
+</span><span class="comment">*</span><span class="comment">          The pivot indices; for 1 &lt;= j &lt;= N, column j of the
+</span><span class="comment">*</span><span class="comment">          matrix has been interchanged with column JPIV(j).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Bo Kagstrom and Peter Poromaa, Department of Computing Science,
+</span><span class="comment">*</span><span class="comment">     Umea University, S-901 87 Umea, Sweden.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This routine is a further developed implementation of algorithm
+</span><span class="comment">*</span><span class="comment">  BSOLVE in [1] using complete pivoting in the LU factorization.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">   [1]   Bo Kagstrom and Lars Westin,
+</span><span class="comment">*</span><span class="comment">         Generalized Schur Methods with Condition Estimators for
+</span><span class="comment">*</span><span class="comment">         Solving the Generalized Sylvester Equation, IEEE Transactions
+</span><span class="comment">*</span><span class="comment">         on Automatic Control, Vol. 34, No. 7, July 1989, pp 745-751.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">   [2]   Peter Poromaa,
+</span><span class="comment">*</span><span class="comment">         On Efficient and Robust Estimators for the Separation
+</span><span class="comment">*</span><span class="comment">         between two Regular Matrix Pairs with Applications in
+</span><span class="comment">*</span><span class="comment">         Condition Estimation. Report UMINF-95.05, Department of
+</span><span class="comment">*</span><span class="comment">         Computing Science, Umea University, S-901 87 Umea, Sweden,
+</span><span class="comment">*</span><span class="comment">         1995.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      INTEGER            MAXDIM
+      PARAMETER          ( MAXDIM = 2 )
+      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+      COMPLEX*16         CONE
+      PARAMETER          ( CONE = ( 1.0D+0, 0.0D+0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, INFO, J, K
+      DOUBLE PRECISION   RTEMP, SCALE, SMINU, SPLUS
+      COMPLEX*16         BM, BP, PMONE, TEMP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      DOUBLE PRECISION   RWORK( MAXDIM )
+      COMPLEX*16         WORK( 4*MAXDIM ), XM( MAXDIM ), XP( MAXDIM )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           ZAXPY, ZCOPY, <a name="ZGECON.124"></a><a href="zgecon.f.html#ZGECON.1">ZGECON</a>, <a name="ZGESC2.124"></a><a href="zgesc2.f.html#ZGESC2.1">ZGESC2</a>, <a name="ZLASSQ.124"></a><a href="zlassq.f.html#ZLASSQ.1">ZLASSQ</a>, <a name="ZLASWP.124"></a><a href="zlaswp.f.html#ZLASWP.1">ZLASWP</a>,
+     $                   ZSCAL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      DOUBLE PRECISION   DZASUM
+      COMPLEX*16         ZDOTC
+      EXTERNAL           DZASUM, ZDOTC
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, DBLE, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( IJOB.NE.2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Apply permutations IPIV to RHS
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="ZLASWP.141"></a><a href="zlaswp.f.html#ZLASWP.1">ZLASWP</a>( 1, RHS, LDZ, 1, N-1, IPIV, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve for L-part choosing RHS either to +1 or -1.
+</span><span class="comment">*</span><span class="comment">
+</span>         PMONE = -CONE
+         DO 10 J = 1, N - 1
+            BP = RHS( J ) + CONE
+            BM = RHS( J ) - CONE
+            SPLUS = ONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Lockahead for L- part RHS(1:N-1) = +-1
+</span><span class="comment">*</span><span class="comment">           SPLUS and SMIN computed more efficiently than in BSOLVE[1].
+</span><span class="comment">*</span><span class="comment">
+</span>            SPLUS = SPLUS + DBLE( ZDOTC( N-J, Z( J+1, J ), 1, Z( J+1,
+     $              J ), 1 ) )
+            SMINU = DBLE( ZDOTC( N-J, Z( J+1, J ), 1, RHS( J+1 ), 1 ) )
+            SPLUS = SPLUS*DBLE( RHS( J ) )
+            IF( SPLUS.GT.SMINU ) THEN
+               RHS( J ) = BP
+            ELSE IF( SMINU.GT.SPLUS ) THEN
+               RHS( J ) = BM
+            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              In this case the updating sums are equal and we can
+</span><span class="comment">*</span><span class="comment">              choose RHS(J) +1 or -1. The first time this happens we
+</span><span class="comment">*</span><span class="comment">              choose -1, thereafter +1. This is a simple way to get
+</span><span class="comment">*</span><span class="comment">              good estimates of matrices like Byers well-known example
+</span><span class="comment">*</span><span class="comment">              (see [1]). (Not done in BSOLVE.)
+</span><span class="comment">*</span><span class="comment">
+</span>               RHS( J ) = RHS( J ) + PMONE
+               PMONE = CONE
+            END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute the remaining r.h.s.
+</span><span class="comment">*</span><span class="comment">
+</span>            TEMP = -RHS( J )
+            CALL ZAXPY( N-J, TEMP, Z( J+1, J ), 1, RHS( J+1 ), 1 )
+   10    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve for U- part, lockahead for RHS(N) = +-1. This is not done
+</span><span class="comment">*</span><span class="comment">        In BSOLVE and will hopefully give us a better estimate because
+</span><span class="comment">*</span><span class="comment">        any ill-conditioning of the original matrix is transfered to U
+</span><span class="comment">*</span><span class="comment">        and not to L. U(N, N) is an approximation to sigma_min(LU).
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL ZCOPY( N-1, RHS, 1, WORK, 1 )
+         WORK( N ) = RHS( N ) + CONE
+         RHS( N ) = RHS( N ) - CONE
+         SPLUS = ZERO
+         SMINU = ZERO
+         DO 30 I = N, 1, -1
+            TEMP = CONE / Z( I, I )
+            WORK( I ) = WORK( I )*TEMP
+            RHS( I ) = RHS( I )*TEMP
+            DO 20 K = I + 1, N
+               WORK( I ) = WORK( I ) - WORK( K )*( Z( I, K )*TEMP )
+               RHS( I ) = RHS( I ) - RHS( K )*( Z( I, K )*TEMP )
+   20       CONTINUE
+            SPLUS = SPLUS + ABS( WORK( I ) )
+            SMINU = SMINU + ABS( RHS( I ) )
+   30    CONTINUE
+         IF( SPLUS.GT.SMINU )
+     $      CALL ZCOPY( N, WORK, 1, RHS, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Apply the permutations JPIV to the computed solution (RHS)
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="ZLASWP.206"></a><a href="zlaswp.f.html#ZLASWP.1">ZLASWP</a>( 1, RHS, LDZ, 1, N-1, JPIV, -1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute the sum of squares
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="ZLASSQ.210"></a><a href="zlassq.f.html#ZLASSQ.1">ZLASSQ</a>( N, RHS, 1, RDSCAL, RDSUM )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ENTRY IJOB = 2
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute approximate nullvector XM of Z
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="ZGECON.218"></a><a href="zgecon.f.html#ZGECON.1">ZGECON</a>( <span class="string">'I'</span>, N, Z, LDZ, ONE, RTEMP, WORK, RWORK, INFO )
+      CALL ZCOPY( N, WORK( N+1 ), 1, XM, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute RHS
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="ZLASWP.223"></a><a href="zlaswp.f.html#ZLASWP.1">ZLASWP</a>( 1, XM, LDZ, 1, N-1, IPIV, -1 )
+      TEMP = CONE / SQRT( ZDOTC( N, XM, 1, XM, 1 ) )
+      CALL ZSCAL( N, TEMP, XM, 1 )
+      CALL ZCOPY( N, XM, 1, XP, 1 )
+      CALL ZAXPY( N, CONE, RHS, 1, XP, 1 )
+      CALL ZAXPY( N, -CONE, XM, 1, RHS, 1 )
+      CALL <a name="ZGESC2.229"></a><a href="zgesc2.f.html#ZGESC2.1">ZGESC2</a>( N, Z, LDZ, RHS, IPIV, JPIV, SCALE )
+      CALL <a name="ZGESC2.230"></a><a href="zgesc2.f.html#ZGESC2.1">ZGESC2</a>( N, Z, LDZ, XP, IPIV, JPIV, SCALE )
+      IF( DZASUM( N, XP, 1 ).GT.DZASUM( N, RHS, 1 ) )
+     $   CALL ZCOPY( N, XP, 1, RHS, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the sum of squares
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="ZLASSQ.236"></a><a href="zlassq.f.html#ZLASSQ.1">ZLASSQ</a>( N, RHS, 1, RDSCAL, RDSUM )
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZLATDF.239"></a><a href="zlatdf.f.html#ZLATDF.1">ZLATDF</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

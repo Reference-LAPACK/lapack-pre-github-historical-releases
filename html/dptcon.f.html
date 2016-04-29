@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dptcon.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DPTCON.1"></a><a href="dptcon.f.html#DPTCON.1">DPTCON</a>( N, D, E, ANORM, RCOND, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, N
+      DOUBLE PRECISION   ANORM, RCOND
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   D( * ), E( * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DPTCON.18"></a><a href="dptcon.f.html#DPTCON.1">DPTCON</a> computes the reciprocal of the condition number (in the
+</span><span class="comment">*</span><span class="comment">  1-norm) of a real symmetric positive definite tridiagonal matrix
+</span><span class="comment">*</span><span class="comment">  using the factorization A = L*D*L**T or A = U**T*D*U computed by
+</span><span class="comment">*</span><span class="comment">  <a name="DPTTRF.21"></a><a href="dpttrf.f.html#DPTTRF.1">DPTTRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Norm(inv(A)) is computed by a direct method, and the reciprocal of
+</span><span class="comment">*</span><span class="comment">  the condition number is computed as
+</span><span class="comment">*</span><span class="comment">               RCOND = 1 / (ANORM * norm(inv(A))).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The n diagonal elements of the diagonal matrix D from the
+</span><span class="comment">*</span><span class="comment">          factorization of A, as computed by <a name="DPTTRF.35"></a><a href="dpttrf.f.html#DPTTRF.1">DPTTRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E       (input) DOUBLE PRECISION array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          The (n-1) off-diagonal elements of the unit bidiagonal factor
+</span><span class="comment">*</span><span class="comment">          U or L from the factorization of A,  as computed by <a name="DPTTRF.39"></a><a href="dpttrf.f.html#DPTTRF.1">DPTTRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ANORM   (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The 1-norm of the original matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RCOND   (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The reciprocal of the condition number of the matrix A,
+</span><span class="comment">*</span><span class="comment">          computed as RCOND = 1/(ANORM * AINVNM), where AINVNM is the
+</span><span class="comment">*</span><span class="comment">          1-norm of inv(A) computed in this routine.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The method used is described in Nicholas J. Higham, &quot;Efficient
+</span><span class="comment">*</span><span class="comment">  Algorithms for Computing the Condition Number of a Tridiagonal
+</span><span class="comment">*</span><span class="comment">  Matrix&quot;, SIAM J. Sci. Stat. Comput., Vol. 7, No. 1, January 1986.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ONE, ZERO
+      PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, IX
+      DOUBLE PRECISION   AINVNM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      INTEGER            IDAMAX
+      EXTERNAL           IDAMAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.77"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input arguments.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( N.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( ANORM.LT.ZERO ) THEN
+         INFO = -4
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.93"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DPTCON.93"></a><a href="dptcon.f.html#DPTCON.1">DPTCON</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      RCOND = ZERO
+      IF( N.EQ.0 ) THEN
+         RCOND = ONE
+         RETURN
+      ELSE IF( ANORM.EQ.ZERO ) THEN
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Check that D(1:N) is positive.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 10 I = 1, N
+         IF( D( I ).LE.ZERO )
+     $      RETURN
+   10 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Solve M(A) * x = e, where M(A) = (m(i,j)) is given by
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        m(i,j) =  abs(A(i,j)), i = j,
+</span><span class="comment">*</span><span class="comment">        m(i,j) = -abs(A(i,j)), i .ne. j,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     and e = [ 1, 1, ..., 1 ]'.  Note M(A) = M(L)*D*M(L)'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Solve M(L) * x = e.
+</span><span class="comment">*</span><span class="comment">
+</span>      WORK( 1 ) = ONE
+      DO 20 I = 2, N
+         WORK( I ) = ONE + WORK( I-1 )*ABS( E( I-1 ) )
+   20 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Solve D * M(L)' * x = b.
+</span><span class="comment">*</span><span class="comment">
+</span>      WORK( N ) = WORK( N ) / D( N )
+      DO 30 I = N - 1, 1, -1
+         WORK( I ) = WORK( I ) / D( I ) + WORK( I+1 )*ABS( E( I ) )
+   30 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute AINVNM = max(x(i)), 1&lt;=i&lt;=n.
+</span><span class="comment">*</span><span class="comment">
+</span>      IX = IDAMAX( N, WORK, 1 )
+      AINVNM = ABS( WORK( IX ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the reciprocal condition number.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( AINVNM.NE.ZERO )
+     $   RCOND = ( ONE / AINVNM ) / ANORM
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DPTCON.147"></a><a href="dptcon.f.html#DPTCON.1">DPTCON</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

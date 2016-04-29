@@ -1,0 +1,381 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zgelsx.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZGELSX.1"></a><a href="zgelsx.f.html#ZGELSX.1">ZGELSX</a>( M, N, NRHS, A, LDA, B, LDB, JPVT, RCOND, RANK,
+     $                   WORK, RWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK driver routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, LDA, LDB, M, N, NRHS, RANK
+      DOUBLE PRECISION   RCOND
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            JPVT( * )
+      DOUBLE PRECISION   RWORK( * )
+      COMPLEX*16         A( LDA, * ), B( LDB, * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This routine is deprecated and has been replaced by routine <a name="ZGELSY.21"></a><a href="zgelsy.f.html#ZGELSY.1">ZGELSY</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZGELSX.23"></a><a href="zgelsx.f.html#ZGELSX.1">ZGELSX</a> computes the minimum-norm solution to a complex linear least
+</span><span class="comment">*</span><span class="comment">  squares problem:
+</span><span class="comment">*</span><span class="comment">      minimize || A * X - B ||
+</span><span class="comment">*</span><span class="comment">  using a complete orthogonal factorization of A.  A is an M-by-N
+</span><span class="comment">*</span><span class="comment">  matrix which may be rank-deficient.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Several right hand side vectors b and solution vectors x can be
+</span><span class="comment">*</span><span class="comment">  handled in a single call; they are stored as the columns of the
+</span><span class="comment">*</span><span class="comment">  M-by-NRHS right hand side matrix B and the N-by-NRHS solution
+</span><span class="comment">*</span><span class="comment">  matrix X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The routine first computes a QR factorization with column pivoting:
+</span><span class="comment">*</span><span class="comment">      A * P = Q * [ R11 R12 ]
+</span><span class="comment">*</span><span class="comment">                  [  0  R22 ]
+</span><span class="comment">*</span><span class="comment">  with R11 defined as the largest leading submatrix whose estimated
+</span><span class="comment">*</span><span class="comment">  condition number is less than 1/RCOND.  The order of R11, RANK,
+</span><span class="comment">*</span><span class="comment">  is the effective rank of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Then, R22 is considered to be negligible, and R12 is annihilated
+</span><span class="comment">*</span><span class="comment">  by unitary transformations from the right, arriving at the
+</span><span class="comment">*</span><span class="comment">  complete orthogonal factorization:
+</span><span class="comment">*</span><span class="comment">     A * P = Q * [ T11 0 ] * Z
+</span><span class="comment">*</span><span class="comment">                 [  0  0 ]
+</span><span class="comment">*</span><span class="comment">  The minimum-norm solution is then
+</span><span class="comment">*</span><span class="comment">     X = P * Z' [ inv(T11)*Q1'*B ]
+</span><span class="comment">*</span><span class="comment">                [        0       ]
+</span><span class="comment">*</span><span class="comment">  where Q1 consists of the first RANK columns of Q.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix A.  M &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NRHS    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of right hand sides, i.e., the number of
+</span><span class="comment">*</span><span class="comment">          columns of matrices B and X. NRHS &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) COMPLEX*16 array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the M-by-N matrix A.
+</span><span class="comment">*</span><span class="comment">          On exit, A has been overwritten by details of its
+</span><span class="comment">*</span><span class="comment">          complete orthogonal factorization.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input/output) COMPLEX*16 array, dimension (LDB,NRHS)
+</span><span class="comment">*</span><span class="comment">          On entry, the M-by-NRHS right hand side matrix B.
+</span><span class="comment">*</span><span class="comment">          On exit, the N-by-NRHS solution matrix X.
+</span><span class="comment">*</span><span class="comment">          If m &gt;= n and RANK = n, the residual sum-of-squares for
+</span><span class="comment">*</span><span class="comment">          the solution in the i-th column is given by the sum of
+</span><span class="comment">*</span><span class="comment">          squares of elements N+1:M in that column.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B. LDB &gt;= max(1,M,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JPVT    (input/output) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On entry, if JPVT(i) .ne. 0, the i-th column of A is an
+</span><span class="comment">*</span><span class="comment">          initial column, otherwise it is a free column.  Before
+</span><span class="comment">*</span><span class="comment">          the QR factorization of A, all initial columns are
+</span><span class="comment">*</span><span class="comment">          permuted to the leading positions; only the remaining
+</span><span class="comment">*</span><span class="comment">          free columns are moved as a result of column pivoting
+</span><span class="comment">*</span><span class="comment">          during the factorization.
+</span><span class="comment">*</span><span class="comment">          On exit, if JPVT(i) = k, then the i-th column of A*P
+</span><span class="comment">*</span><span class="comment">          was the k-th column of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RCOND   (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          RCOND is used to determine the effective rank of A, which
+</span><span class="comment">*</span><span class="comment">          is defined as the order of the largest leading triangular
+</span><span class="comment">*</span><span class="comment">          submatrix R11 in the QR factorization with pivoting of A,
+</span><span class="comment">*</span><span class="comment">          whose estimated condition number &lt; 1/RCOND.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RANK    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          The effective rank of A, i.e., the order of the submatrix
+</span><span class="comment">*</span><span class="comment">          R11.  This is the same as the order of the submatrix T11
+</span><span class="comment">*</span><span class="comment">          in the complete orthogonal factorization of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) COMPLEX*16 array, dimension
+</span><span class="comment">*</span><span class="comment">                      (min(M,N) + max( N, 2*min(M,N)+NRHS )),
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RWORK   (workspace) DOUBLE PRECISION array, dimension (2*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      INTEGER            IMAX, IMIN
+      PARAMETER          ( IMAX = 1, IMIN = 2 )
+      DOUBLE PRECISION   ZERO, ONE, DONE, NTDONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0, DONE = ZERO,
+     $                   NTDONE = ONE )
+      COMPLEX*16         CZERO, CONE
+      PARAMETER          ( CZERO = ( 0.0D+0, 0.0D+0 ),
+     $                   CONE = ( 1.0D+0, 0.0D+0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, IASCL, IBSCL, ISMAX, ISMIN, J, K, MN
+      DOUBLE PRECISION   ANRM, BIGNUM, BNRM, SMAX, SMAXPR, SMIN, SMINPR,
+     $                   SMLNUM
+      COMPLEX*16         C1, C2, S1, S2, T1, T2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.131"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, <a name="ZGEQPF.131"></a><a href="zgeqpf.f.html#ZGEQPF.1">ZGEQPF</a>, <a name="ZLAIC1.131"></a><a href="zlaic1.f.html#ZLAIC1.1">ZLAIC1</a>, <a name="ZLASCL.131"></a><a href="zlascl.f.html#ZLASCL.1">ZLASCL</a>, <a name="ZLASET.131"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>, <a name="ZLATZM.131"></a><a href="zlatzm.f.html#ZLATZM.1">ZLATZM</a>,
+     $                   ZTRSM, <a name="ZTZRQF.132"></a><a href="ztzrqf.f.html#ZTZRQF.1">ZTZRQF</a>, <a name="ZUNM2R.132"></a><a href="zunm2r.f.html#ZUNM2R.1">ZUNM2R</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      DOUBLE PRECISION   <a name="DLAMCH.135"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="ZLANGE.135"></a><a href="zlange.f.html#ZLANGE.1">ZLANGE</a>
+      EXTERNAL           <a name="DLAMCH.136"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>, <a name="ZLANGE.136"></a><a href="zlange.f.html#ZLANGE.1">ZLANGE</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, DCONJG, MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      MN = MIN( M, N )
+      ISMIN = MN + 1
+      ISMAX = 2*MN + 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input arguments.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( M.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( NRHS.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -5
+      ELSE IF( LDB.LT.MAX( 1, M, N ) ) THEN
+         INFO = -7
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.163"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZGELSX.163"></a><a href="zgelsx.f.html#ZGELSX.1">ZGELSX</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( MIN( M, N, NRHS ).EQ.0 ) THEN
+         RANK = 0
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Get machine parameters
+</span><span class="comment">*</span><span class="comment">
+</span>      SMLNUM = <a name="DLAMCH.176"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'S'</span> ) / <a name="DLAMCH.176"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'P'</span> )
+      BIGNUM = ONE / SMLNUM
+      CALL <a name="DLABAD.178"></a><a href="dlabad.f.html#DLABAD.1">DLABAD</a>( SMLNUM, BIGNUM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Scale A, B if max elements outside range [SMLNUM,BIGNUM]
+</span><span class="comment">*</span><span class="comment">
+</span>      ANRM = <a name="ZLANGE.182"></a><a href="zlange.f.html#ZLANGE.1">ZLANGE</a>( <span class="string">'M'</span>, M, N, A, LDA, RWORK )
+      IASCL = 0
+      IF( ANRM.GT.ZERO .AND. ANRM.LT.SMLNUM ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Scale matrix norm up to SMLNUM
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="ZLASCL.188"></a><a href="zlascl.f.html#ZLASCL.1">ZLASCL</a>( <span class="string">'G'</span>, 0, 0, ANRM, SMLNUM, M, N, A, LDA, INFO )
+         IASCL = 1
+      ELSE IF( ANRM.GT.BIGNUM ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Scale matrix norm down to BIGNUM
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="ZLASCL.194"></a><a href="zlascl.f.html#ZLASCL.1">ZLASCL</a>( <span class="string">'G'</span>, 0, 0, ANRM, BIGNUM, M, N, A, LDA, INFO )
+         IASCL = 2
+      ELSE IF( ANRM.EQ.ZERO ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Matrix all zero. Return zero solution.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="ZLASET.200"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'F'</span>, MAX( M, N ), NRHS, CZERO, CZERO, B, LDB )
+         RANK = 0
+         GO TO 100
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      BNRM = <a name="ZLANGE.205"></a><a href="zlange.f.html#ZLANGE.1">ZLANGE</a>( <span class="string">'M'</span>, M, NRHS, B, LDB, RWORK )
+      IBSCL = 0
+      IF( BNRM.GT.ZERO .AND. BNRM.LT.SMLNUM ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Scale matrix norm up to SMLNUM
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="ZLASCL.211"></a><a href="zlascl.f.html#ZLASCL.1">ZLASCL</a>( <span class="string">'G'</span>, 0, 0, BNRM, SMLNUM, M, NRHS, B, LDB, INFO )
+         IBSCL = 1
+      ELSE IF( BNRM.GT.BIGNUM ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Scale matrix norm down to BIGNUM
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="ZLASCL.217"></a><a href="zlascl.f.html#ZLASCL.1">ZLASCL</a>( <span class="string">'G'</span>, 0, 0, BNRM, BIGNUM, M, NRHS, B, LDB, INFO )
+         IBSCL = 2
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute QR factorization with column pivoting of A:
+</span><span class="comment">*</span><span class="comment">        A * P = Q * R
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="ZGEQPF.224"></a><a href="zgeqpf.f.html#ZGEQPF.1">ZGEQPF</a>( M, N, A, LDA, JPVT, WORK( 1 ), WORK( MN+1 ), RWORK,
+     $             INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     complex workspace MN+N. Real workspace 2*N. Details of Householder
+</span><span class="comment">*</span><span class="comment">     rotations stored in WORK(1:MN).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Determine RANK using incremental condition estimation
+</span><span class="comment">*</span><span class="comment">
+</span>      WORK( ISMIN ) = CONE
+      WORK( ISMAX ) = CONE
+      SMAX = ABS( A( 1, 1 ) )
+      SMIN = SMAX
+      IF( ABS( A( 1, 1 ) ).EQ.ZERO ) THEN
+         RANK = 0
+         CALL <a name="ZLASET.238"></a><a href="zlaset.f.html#ZLASET.1">ZLASET</a>( <span class="string">'F'</span>, MAX( M, N ), NRHS, CZERO, CZERO, B, LDB )
+         GO TO 100
+      ELSE
+         RANK = 1
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>   10 CONTINUE
+      IF( RANK.LT.MN ) THEN
+         I = RANK + 1
+         CALL <a name="ZLAIC1.247"></a><a href="zlaic1.f.html#ZLAIC1.1">ZLAIC1</a>( IMIN, RANK, WORK( ISMIN ), SMIN, A( 1, I ),
+     $                A( I, I ), SMINPR, S1, C1 )
+         CALL <a name="ZLAIC1.249"></a><a href="zlaic1.f.html#ZLAIC1.1">ZLAIC1</a>( IMAX, RANK, WORK( ISMAX ), SMAX, A( 1, I ),
+     $                A( I, I ), SMAXPR, S2, C2 )
+<span class="comment">*</span><span class="comment">
+</span>         IF( SMAXPR*RCOND.LE.SMINPR ) THEN
+            DO 20 I = 1, RANK
+               WORK( ISMIN+I-1 ) = S1*WORK( ISMIN+I-1 )
+               WORK( ISMAX+I-1 ) = S2*WORK( ISMAX+I-1 )
+   20       CONTINUE
+            WORK( ISMIN+RANK ) = C1
+            WORK( ISMAX+RANK ) = C2
+            SMIN = SMINPR
+            SMAX = SMAXPR
+            RANK = RANK + 1
+            GO TO 10
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Logically partition R = [ R11 R12 ]
+</span><span class="comment">*</span><span class="comment">                             [  0  R22 ]
+</span><span class="comment">*</span><span class="comment">     where R11 = R(1:RANK,1:RANK)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     [R11,R12] = [ T11, 0 ] * Y
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( RANK.LT.N )
+     $   CALL <a name="ZTZRQF.273"></a><a href="ztzrqf.f.html#ZTZRQF.1">ZTZRQF</a>( RANK, N, A, LDA, WORK( MN+1 ), INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Details of Householder rotations stored in WORK(MN+1:2*MN)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     B(1:M,1:NRHS) := Q' * B(1:M,1:NRHS)
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="ZUNM2R.279"></a><a href="zunm2r.f.html#ZUNM2R.1">ZUNM2R</a>( <span class="string">'Left'</span>, <span class="string">'Conjugate transpose'</span>, M, NRHS, MN, A, LDA,
+     $             WORK( 1 ), B, LDB, WORK( 2*MN+1 ), INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     workspace NRHS
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">      B(1:RANK,1:NRHS) := inv(T11) * B(1:RANK,1:NRHS)
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL ZTRSM( <span class="string">'Left'</span>, <span class="string">'Upper'</span>, <span class="string">'No transpose'</span>, <span class="string">'Non-unit'</span>, RANK,
+     $            NRHS, CONE, A, LDA, B, LDB )
+<span class="comment">*</span><span class="comment">
+</span>      DO 40 I = RANK + 1, N
+         DO 30 J = 1, NRHS
+            B( I, J ) = CZERO
+   30    CONTINUE
+   40 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     B(1:N,1:NRHS) := Y' * B(1:N,1:NRHS)
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( RANK.LT.N ) THEN
+         DO 50 I = 1, RANK
+            CALL <a name="ZLATZM.299"></a><a href="zlatzm.f.html#ZLATZM.1">ZLATZM</a>( <span class="string">'Left'</span>, N-RANK+1, NRHS, A( I, RANK+1 ), LDA,
+     $                   DCONJG( WORK( MN+I ) ), B( I, 1 ),
+     $                   B( RANK+1, 1 ), LDB, WORK( 2*MN+1 ) )
+   50    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     workspace NRHS
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     B(1:N,1:NRHS) := P * B(1:N,1:NRHS)
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 90 J = 1, NRHS
+         DO 60 I = 1, N
+            WORK( 2*MN+I ) = NTDONE
+   60    CONTINUE
+         DO 80 I = 1, N
+            IF( WORK( 2*MN+I ).EQ.NTDONE ) THEN
+               IF( JPVT( I ).NE.I ) THEN
+                  K = I
+                  T1 = B( K, J )
+                  T2 = B( JPVT( K ), J )
+   70             CONTINUE
+                  B( JPVT( K ), J ) = T1
+                  WORK( 2*MN+K ) = DONE
+                  T1 = T2
+                  K = JPVT( K )
+                  T2 = B( JPVT( K ), J )
+                  IF( JPVT( K ).NE.I )
+     $               GO TO 70
+                  B( I, J ) = T1
+                  WORK( 2*MN+K ) = DONE
+               END IF
+            END IF
+   80    CONTINUE
+   90 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Undo scaling
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( IASCL.EQ.1 ) THEN
+         CALL <a name="ZLASCL.337"></a><a href="zlascl.f.html#ZLASCL.1">ZLASCL</a>( <span class="string">'G'</span>, 0, 0, ANRM, SMLNUM, N, NRHS, B, LDB, INFO )
+         CALL <a name="ZLASCL.338"></a><a href="zlascl.f.html#ZLASCL.1">ZLASCL</a>( <span class="string">'U'</span>, 0, 0, SMLNUM, ANRM, RANK, RANK, A, LDA,
+     $                INFO )
+      ELSE IF( IASCL.EQ.2 ) THEN
+         CALL <a name="ZLASCL.341"></a><a href="zlascl.f.html#ZLASCL.1">ZLASCL</a>( <span class="string">'G'</span>, 0, 0, ANRM, BIGNUM, N, NRHS, B, LDB, INFO )
+         CALL <a name="ZLASCL.342"></a><a href="zlascl.f.html#ZLASCL.1">ZLASCL</a>( <span class="string">'U'</span>, 0, 0, BIGNUM, ANRM, RANK, RANK, A, LDA,
+     $                INFO )
+      END IF
+      IF( IBSCL.EQ.1 ) THEN
+         CALL <a name="ZLASCL.346"></a><a href="zlascl.f.html#ZLASCL.1">ZLASCL</a>( <span class="string">'G'</span>, 0, 0, SMLNUM, BNRM, N, NRHS, B, LDB, INFO )
+      ELSE IF( IBSCL.EQ.2 ) THEN
+         CALL <a name="ZLASCL.348"></a><a href="zlascl.f.html#ZLASCL.1">ZLASCL</a>( <span class="string">'G'</span>, 0, 0, BIGNUM, BNRM, N, NRHS, B, LDB, INFO )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>  100 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZGELSX.355"></a><a href="zgelsx.f.html#ZGELSX.1">ZGELSX</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

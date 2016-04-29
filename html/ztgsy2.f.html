@@ -1,0 +1,385 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>ztgsy2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZTGSY2.1"></a><a href="ztgsy2.f.html#ZTGSY2.1">ZTGSY2</a>( TRANS, IJOB, M, N, A, LDA, B, LDB, C, LDC, D,
+     $                   LDD, E, LDE, F, LDF, SCALE, RDSUM, RDSCAL,
+     $                   INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          TRANS
+      INTEGER            IJOB, INFO, LDA, LDB, LDC, LDD, LDE, LDF, M, N
+      DOUBLE PRECISION   RDSCAL, RDSUM, SCALE
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX*16         A( LDA, * ), B( LDB, * ), C( LDC, * ),
+     $                   D( LDD, * ), E( LDE, * ), F( LDF, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZTGSY2.22"></a><a href="ztgsy2.f.html#ZTGSY2.1">ZTGSY2</a> solves the generalized Sylvester equation
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              A * R - L * B = scale *   C               (1)
+</span><span class="comment">*</span><span class="comment">              D * R - L * E = scale * F
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  using Level 1 and 2 BLAS, where R and L are unknown M-by-N matrices,
+</span><span class="comment">*</span><span class="comment">  (A, D), (B, E) and (C, F) are given matrix pairs of size M-by-M,
+</span><span class="comment">*</span><span class="comment">  N-by-N and M-by-N, respectively. A, B, D and E are upper triangular
+</span><span class="comment">*</span><span class="comment">  (i.e., (A,D) and (B,E) in generalized Schur form).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The solution (R, L) overwrites (C, F). 0 &lt;= SCALE &lt;= 1 is an output
+</span><span class="comment">*</span><span class="comment">  scaling factor chosen to avoid overflow.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  In matrix notation solving equation (1) corresponds to solve
+</span><span class="comment">*</span><span class="comment">  Zx = scale * b, where Z is defined as
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">         Z = [ kron(In, A)  -kron(B', Im) ]             (2)
+</span><span class="comment">*</span><span class="comment">             [ kron(In, D)  -kron(E', Im) ],
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Ik is the identity matrix of size k and X' is the transpose of X.
+</span><span class="comment">*</span><span class="comment">  kron(X, Y) is the Kronecker product between the matrices X and Y.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If TRANS = 'C', y in the conjugate transposed system Z'y = scale*b
+</span><span class="comment">*</span><span class="comment">  is solved for, which is equivalent to solve for R and L in
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              A' * R  + D' * L   = scale *  C           (3)
+</span><span class="comment">*</span><span class="comment">              R  * B' + L  * E'  = scale * -F
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This case is used to compute an estimate of Dif[(A, D), (B, E)] =
+</span><span class="comment">*</span><span class="comment">  = sigma_min(Z) using reverse communicaton with <a name="ZLACON.51"></a><a href="zlacon.f.html#ZLACON.1">ZLACON</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZTGSY2.53"></a><a href="ztgsy2.f.html#ZTGSY2.1">ZTGSY2</a> also (IJOB &gt;= 1) contributes to the computation in <a name="ZTGSYL.53"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>
+</span><span class="comment">*</span><span class="comment">  of an upper bound on the separation between to matrix pairs. Then
+</span><span class="comment">*</span><span class="comment">  the input (A, D), (B, E) are sub-pencils of two matrix pairs in
+</span><span class="comment">*</span><span class="comment">  <a name="ZTGSYL.56"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TRANS   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'N', solve the generalized Sylvester equation (1).
+</span><span class="comment">*</span><span class="comment">          = 'T': solve the 'transposed' system (3).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IJOB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          Specifies what kind of functionality to be performed.
+</span><span class="comment">*</span><span class="comment">          =0: solve (1) only.
+</span><span class="comment">*</span><span class="comment">          =1: A contribution from this subsystem to a Frobenius
+</span><span class="comment">*</span><span class="comment">              norm-based estimate of the separation between two matrix
+</span><span class="comment">*</span><span class="comment">              pairs is computed. (look ahead strategy is used).
+</span><span class="comment">*</span><span class="comment">          =2: A contribution from this subsystem to a Frobenius
+</span><span class="comment">*</span><span class="comment">              norm-based estimate of the separation between two matrix
+</span><span class="comment">*</span><span class="comment">              pairs is computed. (<a name="DGECON.73"></a><a href="dgecon.f.html#DGECON.1">DGECON</a> on sub-systems is used.)
+</span><span class="comment">*</span><span class="comment">          Not referenced if TRANS = 'T'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          On entry, M specifies the order of A and D, and the row
+</span><span class="comment">*</span><span class="comment">          dimension of C, F, R and L.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          On entry, N specifies the order of B and E, and the column
+</span><span class="comment">*</span><span class="comment">          dimension of C, F, R and L.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input) COMPLEX*16 array, dimension (LDA, M)
+</span><span class="comment">*</span><span class="comment">          On entry, A contains an upper triangular matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the matrix A. LDA &gt;= max(1, M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input) COMPLEX*16 array, dimension (LDB, N)
+</span><span class="comment">*</span><span class="comment">          On entry, B contains an upper triangular matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the matrix B. LDB &gt;= max(1, N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C       (input/output) COMPLEX*16 array, dimension (LDC, N)
+</span><span class="comment">*</span><span class="comment">          On entry, C contains the right-hand-side of the first matrix
+</span><span class="comment">*</span><span class="comment">          equation in (1).
+</span><span class="comment">*</span><span class="comment">          On exit, if IJOB = 0, C has been overwritten by the solution
+</span><span class="comment">*</span><span class="comment">          R.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDC     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the matrix C. LDC &gt;= max(1, M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input) COMPLEX*16 array, dimension (LDD, M)
+</span><span class="comment">*</span><span class="comment">          On entry, D contains an upper triangular matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDD     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the matrix D. LDD &gt;= max(1, M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E       (input) COMPLEX*16 array, dimension (LDE, N)
+</span><span class="comment">*</span><span class="comment">          On entry, E contains an upper triangular matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDE     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the matrix E. LDE &gt;= max(1, N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  F       (input/output) COMPLEX*16 array, dimension (LDF, N)
+</span><span class="comment">*</span><span class="comment">          On entry, F contains the right-hand-side of the second matrix
+</span><span class="comment">*</span><span class="comment">          equation in (1).
+</span><span class="comment">*</span><span class="comment">          On exit, if IJOB = 0, F has been overwritten by the solution
+</span><span class="comment">*</span><span class="comment">          L.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDF     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the matrix F. LDF &gt;= max(1, M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SCALE   (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          On exit, 0 &lt;= SCALE &lt;= 1. If 0 &lt; SCALE &lt; 1, the solutions
+</span><span class="comment">*</span><span class="comment">          R and L (C and F on entry) will hold the solutions to a
+</span><span class="comment">*</span><span class="comment">          slightly perturbed system but the input matrices A, B, D and
+</span><span class="comment">*</span><span class="comment">          E have not been changed. If SCALE = 0, R and L will hold the
+</span><span class="comment">*</span><span class="comment">          solutions to the homogeneous system with C = F = 0.
+</span><span class="comment">*</span><span class="comment">          Normally, SCALE = 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RDSUM   (input/output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          On entry, the sum of squares of computed contributions to
+</span><span class="comment">*</span><span class="comment">          the Dif-estimate under computation by <a name="ZTGSYL.136"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>, where the
+</span><span class="comment">*</span><span class="comment">          scaling factor RDSCAL (see below) has been factored out.
+</span><span class="comment">*</span><span class="comment">          On exit, the corresponding sum of squares updated with the
+</span><span class="comment">*</span><span class="comment">          contributions from the current sub-system.
+</span><span class="comment">*</span><span class="comment">          If TRANS = 'T' RDSUM is not touched.
+</span><span class="comment">*</span><span class="comment">          NOTE: RDSUM only makes sense when <a name="ZTGSY2.141"></a><a href="ztgsy2.f.html#ZTGSY2.1">ZTGSY2</a> is called by
+</span><span class="comment">*</span><span class="comment">          <a name="ZTGSYL.142"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RDSCAL  (input/output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          On entry, scaling factor used to prevent overflow in RDSUM.
+</span><span class="comment">*</span><span class="comment">          On exit, RDSCAL is updated w.r.t. the current contributions
+</span><span class="comment">*</span><span class="comment">          in RDSUM.
+</span><span class="comment">*</span><span class="comment">          If TRANS = 'T', RDSCAL is not touched.
+</span><span class="comment">*</span><span class="comment">          NOTE: RDSCAL only makes sense when <a name="ZTGSY2.149"></a><a href="ztgsy2.f.html#ZTGSY2.1">ZTGSY2</a> is called by
+</span><span class="comment">*</span><span class="comment">          <a name="ZTGSYL.150"></a><a href="ztgsyl.f.html#ZTGSYL.1">ZTGSYL</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO is set to
+</span><span class="comment">*</span><span class="comment">            =0: Successful exit
+</span><span class="comment">*</span><span class="comment">            &lt;0: If INFO = -i, input argument number i is illegal.
+</span><span class="comment">*</span><span class="comment">            &gt;0: The matrix pairs (A, D) and (B, E) have common or very
+</span><span class="comment">*</span><span class="comment">                close eigenvalues.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Bo Kagstrom and Peter Poromaa, Department of Computing Science,
+</span><span class="comment">*</span><span class="comment">     Umea University, S-901 87 Umea, Sweden.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE
+      INTEGER            LDZ
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0, LDZ = 2 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            NOTRAN
+      INTEGER            I, IERR, J, K
+      DOUBLE PRECISION   SCALOC
+      COMPLEX*16         ALPHA
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      INTEGER            IPIV( LDZ ), JPIV( LDZ )
+      COMPLEX*16         RHS( LDZ ), Z( LDZ, LDZ )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.184"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.185"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.188"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>, ZAXPY, <a name="ZGESC2.188"></a><a href="zgesc2.f.html#ZGESC2.1">ZGESC2</a>, <a name="ZGETC2.188"></a><a href="zgetc2.f.html#ZGETC2.1">ZGETC2</a>, <a name="ZLATDF.188"></a><a href="zlatdf.f.html#ZLATDF.1">ZLATDF</a>, ZSCAL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          DCMPLX, DCONJG, MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Decode and test input parameters
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IERR = 0
+      NOTRAN = <a name="LSAME.199"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'N'</span> )
+      IF( .NOT.NOTRAN .AND. .NOT.<a name="LSAME.200"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'C'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( NOTRAN ) THEN
+         IF( ( IJOB.LT.0 ) .OR. ( IJOB.GT.2 ) ) THEN
+            INFO = -2
+         END IF
+      END IF
+      IF( INFO.EQ.0 ) THEN
+         IF( M.LE.0 ) THEN
+            INFO = -3
+         ELSE IF( N.LE.0 ) THEN
+            INFO = -4
+         ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+            INFO = -5
+         ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
+            INFO = -8
+         ELSE IF( LDC.LT.MAX( 1, M ) ) THEN
+            INFO = -10
+         ELSE IF( LDD.LT.MAX( 1, M ) ) THEN
+            INFO = -12
+         ELSE IF( LDE.LT.MAX( 1, N ) ) THEN
+            INFO = -14
+         ELSE IF( LDF.LT.MAX( 1, M ) ) THEN
+            INFO = -16
+         END IF
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.227"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZTGSY2.227"></a><a href="ztgsy2.f.html#ZTGSY2.1">ZTGSY2</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( NOTRAN ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve (I, J) - system
+</span><span class="comment">*</span><span class="comment">           A(I, I) * R(I, J) - L(I, J) * B(J, J) = C(I, J)
+</span><span class="comment">*</span><span class="comment">           D(I, I) * R(I, J) - L(I, J) * E(J, J) = F(I, J)
+</span><span class="comment">*</span><span class="comment">        for I = M, M - 1, ..., 1; J = 1, 2, ..., N
+</span><span class="comment">*</span><span class="comment">
+</span>         SCALE = ONE
+         SCALOC = ONE
+         DO 30 J = 1, N
+            DO 20 I = M, 1, -1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Build 2 by 2 system
+</span><span class="comment">*</span><span class="comment">
+</span>               Z( 1, 1 ) = A( I, I )
+               Z( 2, 1 ) = D( I, I )
+               Z( 1, 2 ) = -B( J, J )
+               Z( 2, 2 ) = -E( J, J )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Set up right hand side(s)
+</span><span class="comment">*</span><span class="comment">
+</span>               RHS( 1 ) = C( I, J )
+               RHS( 2 ) = F( I, J )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Solve Z * x = RHS
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="ZGETC2.257"></a><a href="zgetc2.f.html#ZGETC2.1">ZGETC2</a>( LDZ, Z, LDZ, IPIV, JPIV, IERR )
+               IF( IERR.GT.0 )
+     $            INFO = IERR
+               IF( IJOB.EQ.0 ) THEN
+                  CALL <a name="ZGESC2.261"></a><a href="zgesc2.f.html#ZGESC2.1">ZGESC2</a>( LDZ, Z, LDZ, RHS, IPIV, JPIV, SCALOC )
+                  IF( SCALOC.NE.ONE ) THEN
+                     DO 10 K = 1, N
+                        CALL ZSCAL( M, DCMPLX( SCALOC, ZERO ),
+     $                              C( 1, K ), 1 )
+                        CALL ZSCAL( M, DCMPLX( SCALOC, ZERO ),
+     $                              F( 1, K ), 1 )
+   10                CONTINUE
+                     SCALE = SCALE*SCALOC
+                  END IF
+               ELSE
+                  CALL <a name="ZLATDF.272"></a><a href="zlatdf.f.html#ZLATDF.1">ZLATDF</a>( IJOB, LDZ, Z, LDZ, RHS, RDSUM, RDSCAL,
+     $                         IPIV, JPIV )
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Unpack solution vector(s)
+</span><span class="comment">*</span><span class="comment">
+</span>               C( I, J ) = RHS( 1 )
+               F( I, J ) = RHS( 2 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Substitute R(I, J) and L(I, J) into remaining equation.
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( I.GT.1 ) THEN
+                  ALPHA = -RHS( 1 )
+                  CALL ZAXPY( I-1, ALPHA, A( 1, I ), 1, C( 1, J ), 1 )
+                  CALL ZAXPY( I-1, ALPHA, D( 1, I ), 1, F( 1, J ), 1 )
+               END IF
+               IF( J.LT.N ) THEN
+                  CALL ZAXPY( N-J, RHS( 2 ), B( J, J+1 ), LDB,
+     $                        C( I, J+1 ), LDC )
+                  CALL ZAXPY( N-J, RHS( 2 ), E( J, J+1 ), LDE,
+     $                        F( I, J+1 ), LDF )
+               END IF
+<span class="comment">*</span><span class="comment">
+</span>   20       CONTINUE
+   30    CONTINUE
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve transposed (I, J) - system:
+</span><span class="comment">*</span><span class="comment">           A(I, I)' * R(I, J) + D(I, I)' * L(J, J) = C(I, J)
+</span><span class="comment">*</span><span class="comment">           R(I, I) * B(J, J) + L(I, J) * E(J, J)   = -F(I, J)
+</span><span class="comment">*</span><span class="comment">        for I = 1, 2, ..., M, J = N, N - 1, ..., 1
+</span><span class="comment">*</span><span class="comment">
+</span>         SCALE = ONE
+         SCALOC = ONE
+         DO 80 I = 1, M
+            DO 70 J = N, 1, -1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Build 2 by 2 system Z'
+</span><span class="comment">*</span><span class="comment">
+</span>               Z( 1, 1 ) = DCONJG( A( I, I ) )
+               Z( 2, 1 ) = -DCONJG( B( J, J ) )
+               Z( 1, 2 ) = DCONJG( D( I, I ) )
+               Z( 2, 2 ) = -DCONJG( E( J, J ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Set up right hand side(s)
+</span><span class="comment">*</span><span class="comment">
+</span>               RHS( 1 ) = C( I, J )
+               RHS( 2 ) = F( I, J )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Solve Z' * x = RHS
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="ZGETC2.324"></a><a href="zgetc2.f.html#ZGETC2.1">ZGETC2</a>( LDZ, Z, LDZ, IPIV, JPIV, IERR )
+               IF( IERR.GT.0 )
+     $            INFO = IERR
+               CALL <a name="ZGESC2.327"></a><a href="zgesc2.f.html#ZGESC2.1">ZGESC2</a>( LDZ, Z, LDZ, RHS, IPIV, JPIV, SCALOC )
+               IF( SCALOC.NE.ONE ) THEN
+                  DO 40 K = 1, N
+                     CALL ZSCAL( M, DCMPLX( SCALOC, ZERO ), C( 1, K ),
+     $                           1 )
+                     CALL ZSCAL( M, DCMPLX( SCALOC, ZERO ), F( 1, K ),
+     $                           1 )
+   40             CONTINUE
+                  SCALE = SCALE*SCALOC
+               END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Unpack solution vector(s)
+</span><span class="comment">*</span><span class="comment">
+</span>               C( I, J ) = RHS( 1 )
+               F( I, J ) = RHS( 2 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Substitute R(I, J) and L(I, J) into remaining equation.
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 50 K = 1, J - 1
+                  F( I, K ) = F( I, K ) + RHS( 1 )*DCONJG( B( K, J ) ) +
+     $                        RHS( 2 )*DCONJG( E( K, J ) )
+   50          CONTINUE
+               DO 60 K = I + 1, M
+                  C( K, J ) = C( K, J ) - DCONJG( A( I, K ) )*RHS( 1 ) -
+     $                        DCONJG( D( I, K ) )*RHS( 2 )
+   60          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>   70       CONTINUE
+   80    CONTINUE
+      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZTGSY2.359"></a><a href="ztgsy2.f.html#ZTGSY2.1">ZTGSY2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,45 @@
+####################################################################
+#  LAPACK make include file.                                       #
+#  LAPACK, Version 3.0                                             #
+#  June 30, 1999                                                  #
+####################################################################
+#
+SHELL = /sbin/sh
+#
+#  The machine (platform) identifier to append to the library names
+#
+PLAT = _IRIX64-64
+#  
+#  Modify the FORTRAN and OPTS definitions to refer to the
+#  compiler and desired compiler options for your machine.  NOOPT
+#  refers to the compiler options desired when NO OPTIMIZATION is
+#  selected.  Define LOADER and LOADOPTS to refer to the loader and 
+#  desired load options for your machine.
+#
+FORTRAN  = f77
+OPTS     = -O3 -64 -mips4 -r10000 -OPT:IEEE_NaN_inf=ON
+#OPTS     = -g  -DEBUG:subscript_check=ON -trapuv -OPT:IEEE_NaN_inf=ON
+DRVOPTS  = $(OPTS) -static
+NOOPT    = -64 -mips4 -r10000 -OPT:IEEE_NaN_inf=ON
+#NOOPT    = -g  -DEBUG:subscript_check=ON -trapuv -OPT:IEEE_NaN_inf=ON
+LOADER   = f77
+LOADOPTS = -O3 -64 -mips4 -r10000 -OPT:IEEE_NaN_inf=ON
+#LOADOPTS = -g  -DEBUG:subscript_check=ON -trapuv -OPT:IEEE_NaN_inf=ON
+#
+#  The archiver and the flag(s) to use when building archive (library)
+#  If you system has no ranlib, set RANLIB = echo.
+#
+ARCH     = ar
+ARCHFLAGS= cr
+RANLIB   = echo
+#
+#  The location of the libraries to which you will link.  (The 
+#  machine-specific, optimized BLAS library should be used whenever
+#  possible.)
+#
+BLASLIB      = ../../blas$(PLAT).a
+#BLASLIB     = -lblas
+LAPACKLIB    = lapack$(PLAT).a
+TMGLIB       = tmglib$(PLAT).a
+EIGSRCLIB    = eigsrc$(PLAT).a
+LINSRCLIB    = linsrc$(PLAT).a

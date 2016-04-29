@@ -1,0 +1,229 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlaed9.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLAED9.1"></a><a href="dlaed9.f.html#DLAED9.1">DLAED9</a>( K, KSTART, KSTOP, N, D, Q, LDQ, RHO, DLAMDA, W,
+     $                   S, LDS, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, K, KSTART, KSTOP, LDQ, LDS, N
+      DOUBLE PRECISION   RHO
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   D( * ), DLAMDA( * ), Q( LDQ, * ), S( LDS, * ),
+     $                   W( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLAED9.20"></a><a href="dlaed9.f.html#DLAED9.1">DLAED9</a> finds the roots of the secular equation, as defined by the
+</span><span class="comment">*</span><span class="comment">  values in D, Z, and RHO, between KSTART and KSTOP.  It makes the
+</span><span class="comment">*</span><span class="comment">  appropriate calls to <a name="DLAED4.22"></a><a href="dlaed4.f.html#DLAED4.1">DLAED4</a> and then stores the new matrix of
+</span><span class="comment">*</span><span class="comment">  eigenvectors for use in calculating the next level of Z vectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  K       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of terms in the rational function to be solved by
+</span><span class="comment">*</span><span class="comment">          <a name="DLAED4.30"></a><a href="dlaed4.f.html#DLAED4.1">DLAED4</a>.  K &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KSTART  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">  KSTOP   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The updated eigenvalues Lambda(I), KSTART &lt;= I &lt;= KSTOP
+</span><span class="comment">*</span><span class="comment">          are to be computed.  1 &lt;= KSTART &lt;= KSTOP &lt;= K.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows and columns in the Q matrix.
+</span><span class="comment">*</span><span class="comment">          N &gt;= K (delation may result in N &gt; K).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          D(I) contains the updated eigenvalues
+</span><span class="comment">*</span><span class="comment">          for KSTART &lt;= I &lt;= KSTOP.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Q       (workspace) DOUBLE PRECISION array, dimension (LDQ,N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDQ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Q.  LDQ &gt;= max( 1, N ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RHO     (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The value of the parameter in the rank one update equation.
+</span><span class="comment">*</span><span class="comment">          RHO &gt;= 0 required.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DLAMDA  (input) DOUBLE PRECISION array, dimension (K)
+</span><span class="comment">*</span><span class="comment">          The first K elements of this array contain the old roots
+</span><span class="comment">*</span><span class="comment">          of the deflated updating problem.  These are the poles
+</span><span class="comment">*</span><span class="comment">          of the secular equation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  W       (input) DOUBLE PRECISION array, dimension (K)
+</span><span class="comment">*</span><span class="comment">          The first K elements of this array contain the components
+</span><span class="comment">*</span><span class="comment">          of the deflation-adjusted updating vector.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  S       (output) DOUBLE PRECISION array, dimension (LDS, K)
+</span><span class="comment">*</span><span class="comment">          Will contain the eigenvectors of the repaired matrix which
+</span><span class="comment">*</span><span class="comment">          will be stored for subsequent Z vector calculation and
+</span><span class="comment">*</span><span class="comment">          multiplied by the previously accumulated eigenvectors
+</span><span class="comment">*</span><span class="comment">          to update the system.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDS     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of S.  LDS &gt;= max( 1, K ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit.
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = 1, an eigenvalue did not converge
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Jeff Rutter, Computer Science Division, University of California
+</span><span class="comment">*</span><span class="comment">     at Berkeley, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, J
+      DOUBLE PRECISION   TEMP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      DOUBLE PRECISION   <a name="DLAMC3.91"></a><a href="dlamch.f.html#DLAMC3.574">DLAMC3</a>, DNRM2
+      EXTERNAL           <a name="DLAMC3.92"></a><a href="dlamch.f.html#DLAMC3.574">DLAMC3</a>, DNRM2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DCOPY, <a name="DLAED4.95"></a><a href="dlaed4.f.html#DLAED4.1">DLAED4</a>, <a name="XERBLA.95"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX, SIGN, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+<span class="comment">*</span><span class="comment">
+</span>      IF( K.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( KSTART.LT.1 .OR. KSTART.GT.MAX( 1, K ) ) THEN
+         INFO = -2
+      ELSE IF( MAX( 1, KSTOP ).LT.KSTART .OR. KSTOP.GT.MAX( 1, K ) )
+     $          THEN
+         INFO = -3
+      ELSE IF( N.LT.K ) THEN
+         INFO = -4
+      ELSE IF( LDQ.LT.MAX( 1, K ) ) THEN
+         INFO = -7
+      ELSE IF( LDS.LT.MAX( 1, K ) ) THEN
+         INFO = -12
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.121"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DLAED9.121"></a><a href="dlaed9.f.html#DLAED9.1">DLAED9</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( K.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Modify values DLAMDA(i) to make sure all DLAMDA(i)-DLAMDA(j) can
+</span><span class="comment">*</span><span class="comment">     be computed with high relative accuracy (barring over/underflow).
+</span><span class="comment">*</span><span class="comment">     This is a problem on machines without a guard digit in
+</span><span class="comment">*</span><span class="comment">     add/subtract (Cray XMP, Cray YMP, Cray C 90 and Cray 2).
+</span><span class="comment">*</span><span class="comment">     The following code replaces DLAMDA(I) by 2*DLAMDA(I)-DLAMDA(I),
+</span><span class="comment">*</span><span class="comment">     which on any of these machines zeros out the bottommost
+</span><span class="comment">*</span><span class="comment">     bit of DLAMDA(I) if it is 1; this makes the subsequent
+</span><span class="comment">*</span><span class="comment">     subtractions DLAMDA(I)-DLAMDA(J) unproblematic when cancellation
+</span><span class="comment">*</span><span class="comment">     occurs. On binary machines with a guard digit (almost all
+</span><span class="comment">*</span><span class="comment">     machines) it does not change DLAMDA(I) at all. On hexadecimal
+</span><span class="comment">*</span><span class="comment">     and decimal machines with a guard digit, it slightly
+</span><span class="comment">*</span><span class="comment">     changes the bottommost bits of DLAMDA(I). It does not account
+</span><span class="comment">*</span><span class="comment">     for hexadecimal or decimal machines without guard digits
+</span><span class="comment">*</span><span class="comment">     (we know of none). We use a subroutine call to compute
+</span><span class="comment">*</span><span class="comment">     2*DLAMBDA(I) to prevent optimizing compilers from eliminating
+</span><span class="comment">*</span><span class="comment">     this code.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 10 I = 1, N
+         DLAMDA( I ) = <a name="DLAMC3.148"></a><a href="dlamch.f.html#DLAMC3.574">DLAMC3</a>( DLAMDA( I ), DLAMDA( I ) ) - DLAMDA( I )
+   10 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      DO 20 J = KSTART, KSTOP
+         CALL <a name="DLAED4.152"></a><a href="dlaed4.f.html#DLAED4.1">DLAED4</a>( K, J, DLAMDA, W, Q( 1, J ), RHO, D( J ), INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        If the zero finder fails, the computation is terminated.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( INFO.NE.0 )
+     $      GO TO 120
+   20 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      IF( K.EQ.1 .OR. K.EQ.2 ) THEN
+         DO 40 I = 1, K
+            DO 30 J = 1, K
+               S( J, I ) = Q( J, I )
+   30       CONTINUE
+   40    CONTINUE
+         GO TO 120
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute updated W.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL DCOPY( K, W, 1, S, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Initialize W(I) = Q(I,I)
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL DCOPY( K, Q, LDQ+1, W, 1 )
+      DO 70 J = 1, K
+         DO 50 I = 1, J - 1
+            W( I ) = W( I )*( Q( I, J ) / ( DLAMDA( I )-DLAMDA( J ) ) )
+   50    CONTINUE
+         DO 60 I = J + 1, K
+            W( I ) = W( I )*( Q( I, J ) / ( DLAMDA( I )-DLAMDA( J ) ) )
+   60    CONTINUE
+   70 CONTINUE
+      DO 80 I = 1, K
+         W( I ) = SIGN( SQRT( -W( I ) ), S( I, 1 ) )
+   80 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute eigenvectors of the modified rank-1 modification.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 110 J = 1, K
+         DO 90 I = 1, K
+            Q( I, J ) = W( I ) / Q( I, J )
+   90    CONTINUE
+         TEMP = DNRM2( K, Q( 1, J ), 1 )
+         DO 100 I = 1, K
+            S( I, J ) = Q( I, J ) / TEMP
+  100    CONTINUE
+  110 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>  120 CONTINUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLAED9.203"></a><a href="dlaed9.f.html#DLAED9.1">DLAED9</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

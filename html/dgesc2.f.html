@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dgesc2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DGESC2.1"></a><a href="dgesc2.f.html#DGESC2.1">DGESC2</a>( N, A, LDA, RHS, IPIV, JPIV, SCALE )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            LDA, N
+      DOUBLE PRECISION   SCALE
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IPIV( * ), JPIV( * )
+      DOUBLE PRECISION   A( LDA, * ), RHS( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DGESC2.19"></a><a href="dgesc2.f.html#DGESC2.1">DGESC2</a> solves a system of linear equations
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">            A * X = scale* RHS
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  with a general N-by-N matrix A using the LU factorization with
+</span><span class="comment">*</span><span class="comment">  complete pivoting computed by <a name="DGETC2.24"></a><a href="dgetc2.f.html#DGETC2.1">DGETC2</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input) DOUBLE PRECISION array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the  LU part of the factorization of the n-by-n
+</span><span class="comment">*</span><span class="comment">          matrix A computed by <a name="DGETC2.34"></a><a href="dgetc2.f.html#DGETC2.1">DGETC2</a>:  A = P * L * U * Q
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(1, N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RHS     (input/output) DOUBLE PRECISION array, dimension (N).
+</span><span class="comment">*</span><span class="comment">          On entry, the right hand side vector b.
+</span><span class="comment">*</span><span class="comment">          On exit, the solution vector X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IPIV    (input) INTEGER array, dimension (N).
+</span><span class="comment">*</span><span class="comment">          The pivot indices; for 1 &lt;= i &lt;= N, row i of the
+</span><span class="comment">*</span><span class="comment">          matrix has been interchanged with row IPIV(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JPIV    (input) INTEGER array, dimension (N).
+</span><span class="comment">*</span><span class="comment">          The pivot indices; for 1 &lt;= j &lt;= N, column j of the
+</span><span class="comment">*</span><span class="comment">          matrix has been interchanged with column JPIV(j).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SCALE    (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">           On exit, SCALE contains the scale factor. SCALE is chosen
+</span><span class="comment">*</span><span class="comment">           0 &lt;= SCALE &lt;= 1 to prevent owerflow in the solution.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Bo Kagstrom and Peter Poromaa, Department of Computing Science,
+</span><span class="comment">*</span><span class="comment">     Umea University, S-901 87 Umea, Sweden.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ONE, TWO
+      PARAMETER          ( ONE = 1.0D+0, TWO = 2.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, J
+      DOUBLE PRECISION   BIGNUM, EPS, SMLNUM, TEMP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DLASWP.73"></a><a href="dlaswp.f.html#DLASWP.1">DLASWP</a>, DSCAL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      INTEGER            IDAMAX
+      DOUBLE PRECISION   <a name="DLAMCH.77"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+      EXTERNAL           IDAMAX, <a name="DLAMCH.78"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">      Set constant to control owerflow
+</span><span class="comment">*</span><span class="comment">
+</span>      EPS = <a name="DLAMCH.87"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'P'</span> )
+      SMLNUM = <a name="DLAMCH.88"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'S'</span> ) / EPS
+      BIGNUM = ONE / SMLNUM
+      CALL <a name="DLABAD.90"></a><a href="dlabad.f.html#DLABAD.1">DLABAD</a>( SMLNUM, BIGNUM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Apply permutations IPIV to RHS
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="DLASWP.94"></a><a href="dlaswp.f.html#DLASWP.1">DLASWP</a>( 1, RHS, LDA, 1, N-1, IPIV, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Solve for L part
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 20 I = 1, N - 1
+         DO 10 J = I + 1, N
+            RHS( J ) = RHS( J ) - A( J, I )*RHS( I )
+   10    CONTINUE
+   20 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Solve for U part
+</span><span class="comment">*</span><span class="comment">
+</span>      SCALE = ONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Check for scaling
+</span><span class="comment">*</span><span class="comment">
+</span>      I = IDAMAX( N, RHS, 1 )
+      IF( TWO*SMLNUM*ABS( RHS( I ) ).GT.ABS( A( N, N ) ) ) THEN
+         TEMP = ( ONE / TWO ) / ABS( RHS( I ) )
+         CALL DSCAL( N, TEMP, RHS( 1 ), 1 )
+         SCALE = SCALE*TEMP
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      DO 40 I = N, 1, -1
+         TEMP = ONE / A( I, I )
+         RHS( I ) = RHS( I )*TEMP
+         DO 30 J = I + 1, N
+            RHS( I ) = RHS( I ) - RHS( J )*( A( I, J )*TEMP )
+   30    CONTINUE
+   40 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Apply permutations JPIV to the solution (RHS)
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="DLASWP.127"></a><a href="dlaswp.f.html#DLASWP.1">DLASWP</a>( 1, RHS, LDA, 1, N-1, JPIV, -1 )
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DGESC2.130"></a><a href="dgesc2.f.html#DGESC2.1">DGESC2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

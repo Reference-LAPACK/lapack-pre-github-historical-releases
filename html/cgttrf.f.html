@@ -1,0 +1,198 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>cgttrf.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CGTTRF.1"></a><a href="cgttrf.f.html#CGTTRF.1">CGTTRF</a>( N, DL, D, DU, DU2, IPIV, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IPIV( * )
+      COMPLEX            D( * ), DL( * ), DU( * ), DU2( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CGTTRF.18"></a><a href="cgttrf.f.html#CGTTRF.1">CGTTRF</a> computes an LU factorization of a complex tridiagonal matrix A
+</span><span class="comment">*</span><span class="comment">  using elimination with partial pivoting and row interchanges.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The factorization has the form
+</span><span class="comment">*</span><span class="comment">     A = L * U
+</span><span class="comment">*</span><span class="comment">  where L is a product of permutation and unit lower bidiagonal
+</span><span class="comment">*</span><span class="comment">  matrices and U is upper triangular with nonzeros in only the main
+</span><span class="comment">*</span><span class="comment">  diagonal and first two superdiagonals.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DL      (input/output) COMPLEX array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          On entry, DL must contain the (n-1) sub-diagonal elements of
+</span><span class="comment">*</span><span class="comment">          A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, DL is overwritten by the (n-1) multipliers that
+</span><span class="comment">*</span><span class="comment">          define the matrix L from the LU factorization of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input/output) COMPLEX array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On entry, D must contain the diagonal elements of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, D is overwritten by the n diagonal elements of the
+</span><span class="comment">*</span><span class="comment">          upper triangular matrix U from the LU factorization of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DU      (input/output) COMPLEX array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          On entry, DU must contain the (n-1) super-diagonal elements
+</span><span class="comment">*</span><span class="comment">          of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, DU is overwritten by the (n-1) elements of the first
+</span><span class="comment">*</span><span class="comment">          super-diagonal of U.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DU2     (output) COMPLEX array, dimension (N-2)
+</span><span class="comment">*</span><span class="comment">          On exit, DU2 is overwritten by the (n-2) elements of the
+</span><span class="comment">*</span><span class="comment">          second super-diagonal of U.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IPIV    (output) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The pivot indices; for 1 &lt;= i &lt;= n, row i of the matrix was
+</span><span class="comment">*</span><span class="comment">          interchanged with row IPIV(i).  IPIV(i) will always be either
+</span><span class="comment">*</span><span class="comment">          i or i+1; IPIV(i) = i indicates a row interchange was not
+</span><span class="comment">*</span><span class="comment">          required.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -k, the k-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = k, U(k,k) is exactly zero. The factorization
+</span><span class="comment">*</span><span class="comment">                has been completed, but the factor U is exactly
+</span><span class="comment">*</span><span class="comment">                singular, and division by zero will occur if it is used
+</span><span class="comment">*</span><span class="comment">                to solve a system of equations.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO
+      PARAMETER          ( ZERO = 0.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I
+      COMPLEX            FACT, TEMP, ZDUM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.82"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, AIMAG, REAL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Functions ..
+</span>      REAL               CABS1
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Function definitions ..
+</span>      CABS1( ZDUM ) = ABS( REAL( ZDUM ) ) + ABS( AIMAG( ZDUM ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( N.LT.0 ) THEN
+         INFO = -1
+         CALL <a name="XERBLA.98"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CGTTRF.98"></a><a href="cgttrf.f.html#CGTTRF.1">CGTTRF</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Initialize IPIV(i) = i and DU2(i) = 0
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 10 I = 1, N
+         IPIV( I ) = I
+   10 CONTINUE
+      DO 20 I = 1, N - 2
+         DU2( I ) = ZERO
+   20 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      DO 30 I = 1, N - 2
+         IF( CABS1( D( I ) ).GE.CABS1( DL( I ) ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           No row interchange required, eliminate DL(I)
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( CABS1( D( I ) ).NE.ZERO ) THEN
+               FACT = DL( I ) / D( I )
+               DL( I ) = FACT
+               D( I+1 ) = D( I+1 ) - FACT*DU( I )
+            END IF
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Interchange rows I and I+1, eliminate DL(I)
+</span><span class="comment">*</span><span class="comment">
+</span>            FACT = D( I ) / DL( I )
+            D( I ) = DL( I )
+            DL( I ) = FACT
+            TEMP = DU( I )
+            DU( I ) = D( I+1 )
+            D( I+1 ) = TEMP - FACT*D( I+1 )
+            DU2( I ) = DU( I+1 )
+            DU( I+1 ) = -FACT*DU( I+1 )
+            IPIV( I ) = I + 1
+         END IF
+   30 CONTINUE
+      IF( N.GT.1 ) THEN
+         I = N - 1
+         IF( CABS1( D( I ) ).GE.CABS1( DL( I ) ) ) THEN
+            IF( CABS1( D( I ) ).NE.ZERO ) THEN
+               FACT = DL( I ) / D( I )
+               DL( I ) = FACT
+               D( I+1 ) = D( I+1 ) - FACT*DU( I )
+            END IF
+         ELSE
+            FACT = D( I ) / DL( I )
+            D( I ) = DL( I )
+            DL( I ) = FACT
+            TEMP = DU( I )
+            DU( I ) = D( I+1 )
+            D( I+1 ) = TEMP - FACT*D( I+1 )
+            IPIV( I ) = I + 1
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Check for a zero on the diagonal of U.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 40 I = 1, N
+         IF( CABS1( D( I ) ).EQ.ZERO ) THEN
+            INFO = I
+            GO TO 50
+         END IF
+   40 CONTINUE
+   50 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CGTTRF.172"></a><a href="cgttrf.f.html#CGTTRF.1">CGTTRF</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

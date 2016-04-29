@@ -1,0 +1,219 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slaed1.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLAED1.1"></a><a href="slaed1.f.html#SLAED1.1">SLAED1</a>( N, D, Q, LDQ, INDXQ, RHO, CUTPNT, WORK, IWORK,
+     $                   INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            CUTPNT, INFO, LDQ, N
+      REAL               RHO
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            INDXQ( * ), IWORK( * )
+      REAL               D( * ), Q( LDQ, * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLAED1.20"></a><a href="slaed1.f.html#SLAED1.1">SLAED1</a> computes the updated eigensystem of a diagonal
+</span><span class="comment">*</span><span class="comment">  matrix after modification by a rank-one symmetric matrix.  This
+</span><span class="comment">*</span><span class="comment">  routine is used only for the eigenproblem which requires all
+</span><span class="comment">*</span><span class="comment">  eigenvalues and eigenvectors of a tridiagonal matrix.  <a name="SLAED7.23"></a><a href="slaed7.f.html#SLAED7.1">SLAED7</a> handles
+</span><span class="comment">*</span><span class="comment">  the case in which eigenvalues only or eigenvalues and eigenvectors
+</span><span class="comment">*</span><span class="comment">  of a full symmetric matrix (which was reduced to tridiagonal form)
+</span><span class="comment">*</span><span class="comment">  are desired.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">    T = Q(in) ( D(in) + RHO * Z*Z' ) Q'(in) = Q(out) * D(out) * Q'(out)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     where Z = Q'u, u is a vector of length N with ones in the
+</span><span class="comment">*</span><span class="comment">     CUTPNT and CUTPNT + 1 th elements and zeros elsewhere.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The eigenvectors of the original matrix are stored in Q, and the
+</span><span class="comment">*</span><span class="comment">     eigenvalues are in D.  The algorithm consists of three stages:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        The first stage consists of deflating the size of the problem
+</span><span class="comment">*</span><span class="comment">        when there are multiple eigenvalues or if there is a zero in
+</span><span class="comment">*</span><span class="comment">        the Z vector.  For each such occurence the dimension of the
+</span><span class="comment">*</span><span class="comment">        secular equation problem is reduced by one.  This stage is
+</span><span class="comment">*</span><span class="comment">        performed by the routine <a name="SLAED2.40"></a><a href="slaed2.f.html#SLAED2.1">SLAED2</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        The second stage consists of calculating the updated
+</span><span class="comment">*</span><span class="comment">        eigenvalues. This is done by finding the roots of the secular
+</span><span class="comment">*</span><span class="comment">        equation via the routine <a name="SLAED4.44"></a><a href="slaed4.f.html#SLAED4.1">SLAED4</a> (as called by <a name="SLAED3.44"></a><a href="slaed3.f.html#SLAED3.1">SLAED3</a>).
+</span><span class="comment">*</span><span class="comment">        This routine also calculates the eigenvectors of the current
+</span><span class="comment">*</span><span class="comment">        problem.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        The final stage consists of computing the updated eigenvectors
+</span><span class="comment">*</span><span class="comment">        directly using the updated eigenvalues.  The eigenvectors for
+</span><span class="comment">*</span><span class="comment">        the current problem are multiplied with the eigenvectors from
+</span><span class="comment">*</span><span class="comment">        the overall problem.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The dimension of the symmetric tridiagonal matrix.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D      (input/output) REAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         On entry, the eigenvalues of the rank-1-perturbed matrix.
+</span><span class="comment">*</span><span class="comment">         On exit, the eigenvalues of the repaired matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Q      (input/output) REAL array, dimension (LDQ,N)
+</span><span class="comment">*</span><span class="comment">         On entry, the eigenvectors of the rank-1-perturbed matrix.
+</span><span class="comment">*</span><span class="comment">         On exit, the eigenvectors of the repaired tridiagonal matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDQ    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of the array Q.  LDQ &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INDXQ  (input/output) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">         On entry, the permutation which separately sorts the two
+</span><span class="comment">*</span><span class="comment">         subproblems in D into ascending order.
+</span><span class="comment">*</span><span class="comment">         On exit, the permutation which will reintegrate the
+</span><span class="comment">*</span><span class="comment">         subproblems back into sorted order,
+</span><span class="comment">*</span><span class="comment">         i.e. D( INDXQ( I = 1, N ) ) will be in ascending order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RHO    (input) REAL
+</span><span class="comment">*</span><span class="comment">         The subdiagonal entry used to create the rank-1 modification.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CUTPNT (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The location of the last eigenvalue in the leading sub-matrix.
+</span><span class="comment">*</span><span class="comment">         min(1,N) &lt;= CUTPNT &lt;= N/2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK   (workspace) REAL array, dimension (4*N + N**2)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK  (workspace) INTEGER array, dimension (4*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO   (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit.
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = 1, an eigenvalue did not converge
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Jeff Rutter, Computer Science Division, University of California
+</span><span class="comment">*</span><span class="comment">     at Berkeley, USA
+</span><span class="comment">*</span><span class="comment">  Modified by Francoise Tisseur, University of Tennessee.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            COLTYP, CPP1, I, IDLMDA, INDX, INDXC, INDXP,
+     $                   IQ2, IS, IW, IZ, K, N1, N2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           SCOPY, <a name="SLAED2.108"></a><a href="slaed2.f.html#SLAED2.1">SLAED2</a>, <a name="SLAED3.108"></a><a href="slaed3.f.html#SLAED3.1">SLAED3</a>, <a name="SLAMRG.108"></a><a href="slamrg.f.html#SLAMRG.1">SLAMRG</a>, <a name="XERBLA.108"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+<span class="comment">*</span><span class="comment">
+</span>      IF( N.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( LDQ.LT.MAX( 1, N ) ) THEN
+         INFO = -4
+      ELSE IF( MIN( 1, N / 2 ).GT.CUTPNT .OR. ( N / 2 ).LT.CUTPNT ) THEN
+         INFO = -7
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.127"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="SLAED1.127"></a><a href="slaed1.f.html#SLAED1.1">SLAED1</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The following values are integer pointers which indicate
+</span><span class="comment">*</span><span class="comment">     the portion of the workspace
+</span><span class="comment">*</span><span class="comment">     used by a particular array in <a name="SLAED2.138"></a><a href="slaed2.f.html#SLAED2.1">SLAED2</a> and <a name="SLAED3.138"></a><a href="slaed3.f.html#SLAED3.1">SLAED3</a>.
+</span><span class="comment">*</span><span class="comment">
+</span>      IZ = 1
+      IDLMDA = IZ + N
+      IW = IDLMDA + N
+      IQ2 = IW + N
+<span class="comment">*</span><span class="comment">
+</span>      INDX = 1
+      INDXC = INDX + N
+      COLTYP = INDXC + N
+      INDXP = COLTYP + N
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Form the z-vector which consists of the last row of Q_1 and the
+</span><span class="comment">*</span><span class="comment">     first row of Q_2.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL SCOPY( CUTPNT, Q( CUTPNT, 1 ), LDQ, WORK( IZ ), 1 )
+      CPP1 = CUTPNT + 1
+      CALL SCOPY( N-CUTPNT, Q( CPP1, CPP1 ), LDQ, WORK( IZ+CUTPNT ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Deflate eigenvalues.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="SLAED2.160"></a><a href="slaed2.f.html#SLAED2.1">SLAED2</a>( K, N, CUTPNT, D, Q, LDQ, INDXQ, RHO, WORK( IZ ),
+     $             WORK( IDLMDA ), WORK( IW ), WORK( IQ2 ),
+     $             IWORK( INDX ), IWORK( INDXC ), IWORK( INDXP ),
+     $             IWORK( COLTYP ), INFO )
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.NE.0 )
+     $   GO TO 20
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Solve Secular Equation.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( K.NE.0 ) THEN
+         IS = ( IWORK( COLTYP )+IWORK( COLTYP+1 ) )*CUTPNT +
+     $        ( IWORK( COLTYP+1 )+IWORK( COLTYP+2 ) )*( N-CUTPNT ) + IQ2
+         CALL <a name="SLAED3.173"></a><a href="slaed3.f.html#SLAED3.1">SLAED3</a>( K, N, CUTPNT, D, Q, LDQ, RHO, WORK( IDLMDA ),
+     $                WORK( IQ2 ), IWORK( INDXC ), IWORK( COLTYP ),
+     $                WORK( IW ), WORK( IS ), INFO )
+         IF( INFO.NE.0 )
+     $      GO TO 20
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Prepare the INDXQ sorting permutation.
+</span><span class="comment">*</span><span class="comment">
+</span>         N1 = K
+         N2 = N - K
+         CALL <a name="SLAMRG.183"></a><a href="slamrg.f.html#SLAMRG.1">SLAMRG</a>( N1, N2, D, 1, -1, INDXQ )
+      ELSE
+         DO 10 I = 1, N
+            INDXQ( I ) = I
+   10    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>   20 CONTINUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLAED1.193"></a><a href="slaed1.f.html#SLAED1.1">SLAED1</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

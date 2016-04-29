@@ -1,0 +1,293 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>cgtts2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CGTTS2.1"></a><a href="cgtts2.f.html#CGTTS2.1">CGTTS2</a>( ITRANS, N, NRHS, DL, D, DU, DU2, IPIV, B, LDB )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            ITRANS, LDB, N, NRHS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IPIV( * )
+      COMPLEX            B( LDB, * ), D( * ), DL( * ), DU( * ), DU2( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CGTTS2.18"></a><a href="cgtts2.f.html#CGTTS2.1">CGTTS2</a> solves one of the systems of equations
+</span><span class="comment">*</span><span class="comment">     A * X = B,  A**T * X = B,  or  A**H * X = B,
+</span><span class="comment">*</span><span class="comment">  with a tridiagonal matrix A using the LU factorization computed
+</span><span class="comment">*</span><span class="comment">  by <a name="CGTTRF.21"></a><a href="cgttrf.f.html#CGTTRF.1">CGTTRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ITRANS  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          Specifies the form of the system of equations.
+</span><span class="comment">*</span><span class="comment">          = 0:  A * X = B     (No transpose)
+</span><span class="comment">*</span><span class="comment">          = 1:  A**T * X = B  (Transpose)
+</span><span class="comment">*</span><span class="comment">          = 2:  A**H * X = B  (Conjugate transpose)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NRHS    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of right hand sides, i.e., the number of columns
+</span><span class="comment">*</span><span class="comment">          of the matrix B.  NRHS &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DL      (input) COMPLEX array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          The (n-1) multipliers that define the matrix L from the
+</span><span class="comment">*</span><span class="comment">          LU factorization of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input) COMPLEX array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The n diagonal elements of the upper triangular matrix U from
+</span><span class="comment">*</span><span class="comment">          the LU factorization of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DU      (input) COMPLEX array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          The (n-1) elements of the first super-diagonal of U.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DU2     (input) COMPLEX array, dimension (N-2)
+</span><span class="comment">*</span><span class="comment">          The (n-2) elements of the second super-diagonal of U.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IPIV    (input) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The pivot indices; for 1 &lt;= i &lt;= n, row i of the matrix was
+</span><span class="comment">*</span><span class="comment">          interchanged with row IPIV(i).  IPIV(i) will always be either
+</span><span class="comment">*</span><span class="comment">          i or i+1; IPIV(i) = i indicates a row interchange was not
+</span><span class="comment">*</span><span class="comment">          required.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input/output) COMPLEX array, dimension (LDB,NRHS)
+</span><span class="comment">*</span><span class="comment">          On entry, the matrix of right hand side vectors B.
+</span><span class="comment">*</span><span class="comment">          On exit, B is overwritten by the solution vectors X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B.  LDB &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, J
+      COMPLEX            TEMP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          CONJG
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 .OR. NRHS.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      IF( ITRANS.EQ.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve A*X = B using the LU factorization of A,
+</span><span class="comment">*</span><span class="comment">        overwriting each right hand side vector with its solution.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( NRHS.LE.1 ) THEN
+            J = 1
+   10       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Solve L*x = b.
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 20 I = 1, N - 1
+               IF( IPIV( I ).EQ.I ) THEN
+                  B( I+1, J ) = B( I+1, J ) - DL( I )*B( I, J )
+               ELSE
+                  TEMP = B( I, J )
+                  B( I, J ) = B( I+1, J )
+                  B( I+1, J ) = TEMP - DL( I )*B( I, J )
+               END IF
+   20       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Solve U*x = b.
+</span><span class="comment">*</span><span class="comment">
+</span>            B( N, J ) = B( N, J ) / D( N )
+            IF( N.GT.1 )
+     $         B( N-1, J ) = ( B( N-1, J )-DU( N-1 )*B( N, J ) ) /
+     $                       D( N-1 )
+            DO 30 I = N - 2, 1, -1
+               B( I, J ) = ( B( I, J )-DU( I )*B( I+1, J )-DU2( I )*
+     $                     B( I+2, J ) ) / D( I )
+   30       CONTINUE
+            IF( J.LT.NRHS ) THEN
+               J = J + 1
+               GO TO 10
+            END IF
+         ELSE
+            DO 60 J = 1, NRHS
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Solve L*x = b.
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 40 I = 1, N - 1
+                  IF( IPIV( I ).EQ.I ) THEN
+                     B( I+1, J ) = B( I+1, J ) - DL( I )*B( I, J )
+                  ELSE
+                     TEMP = B( I, J )
+                     B( I, J ) = B( I+1, J )
+                     B( I+1, J ) = TEMP - DL( I )*B( I, J )
+                  END IF
+   40          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Solve U*x = b.
+</span><span class="comment">*</span><span class="comment">
+</span>               B( N, J ) = B( N, J ) / D( N )
+               IF( N.GT.1 )
+     $            B( N-1, J ) = ( B( N-1, J )-DU( N-1 )*B( N, J ) ) /
+     $                          D( N-1 )
+               DO 50 I = N - 2, 1, -1
+                  B( I, J ) = ( B( I, J )-DU( I )*B( I+1, J )-DU2( I )*
+     $                        B( I+2, J ) ) / D( I )
+   50          CONTINUE
+   60       CONTINUE
+         END IF
+      ELSE IF( ITRANS.EQ.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve A**T * X = B.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( NRHS.LE.1 ) THEN
+            J = 1
+   70       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Solve U**T * x = b.
+</span><span class="comment">*</span><span class="comment">
+</span>            B( 1, J ) = B( 1, J ) / D( 1 )
+            IF( N.GT.1 )
+     $         B( 2, J ) = ( B( 2, J )-DU( 1 )*B( 1, J ) ) / D( 2 )
+            DO 80 I = 3, N
+               B( I, J ) = ( B( I, J )-DU( I-1 )*B( I-1, J )-DU2( I-2 )*
+     $                     B( I-2, J ) ) / D( I )
+   80       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Solve L**T * x = b.
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 90 I = N - 1, 1, -1
+               IF( IPIV( I ).EQ.I ) THEN
+                  B( I, J ) = B( I, J ) - DL( I )*B( I+1, J )
+               ELSE
+                  TEMP = B( I+1, J )
+                  B( I+1, J ) = B( I, J ) - DL( I )*TEMP
+                  B( I, J ) = TEMP
+               END IF
+   90       CONTINUE
+            IF( J.LT.NRHS ) THEN
+               J = J + 1
+               GO TO 70
+            END IF
+         ELSE
+            DO 120 J = 1, NRHS
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Solve U**T * x = b.
+</span><span class="comment">*</span><span class="comment">
+</span>               B( 1, J ) = B( 1, J ) / D( 1 )
+               IF( N.GT.1 )
+     $            B( 2, J ) = ( B( 2, J )-DU( 1 )*B( 1, J ) ) / D( 2 )
+               DO 100 I = 3, N
+                  B( I, J ) = ( B( I, J )-DU( I-1 )*B( I-1, J )-
+     $                        DU2( I-2 )*B( I-2, J ) ) / D( I )
+  100          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Solve L**T * x = b.
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 110 I = N - 1, 1, -1
+                  IF( IPIV( I ).EQ.I ) THEN
+                     B( I, J ) = B( I, J ) - DL( I )*B( I+1, J )
+                  ELSE
+                     TEMP = B( I+1, J )
+                     B( I+1, J ) = B( I, J ) - DL( I )*TEMP
+                     B( I, J ) = TEMP
+                  END IF
+  110          CONTINUE
+  120       CONTINUE
+         END IF
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve A**H * X = B.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( NRHS.LE.1 ) THEN
+            J = 1
+  130       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Solve U**H * x = b.
+</span><span class="comment">*</span><span class="comment">
+</span>            B( 1, J ) = B( 1, J ) / CONJG( D( 1 ) )
+            IF( N.GT.1 )
+     $         B( 2, J ) = ( B( 2, J )-CONJG( DU( 1 ) )*B( 1, J ) ) /
+     $                     CONJG( D( 2 ) )
+            DO 140 I = 3, N
+               B( I, J ) = ( B( I, J )-CONJG( DU( I-1 ) )*B( I-1, J )-
+     $                     CONJG( DU2( I-2 ) )*B( I-2, J ) ) /
+     $                     CONJG( D( I ) )
+  140       CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Solve L**H * x = b.
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 150 I = N - 1, 1, -1
+               IF( IPIV( I ).EQ.I ) THEN
+                  B( I, J ) = B( I, J ) - CONJG( DL( I ) )*B( I+1, J )
+               ELSE
+                  TEMP = B( I+1, J )
+                  B( I+1, J ) = B( I, J ) - CONJG( DL( I ) )*TEMP
+                  B( I, J ) = TEMP
+               END IF
+  150       CONTINUE
+            IF( J.LT.NRHS ) THEN
+               J = J + 1
+               GO TO 130
+            END IF
+         ELSE
+            DO 180 J = 1, NRHS
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Solve U**H * x = b.
+</span><span class="comment">*</span><span class="comment">
+</span>               B( 1, J ) = B( 1, J ) / CONJG( D( 1 ) )
+               IF( N.GT.1 )
+     $            B( 2, J ) = ( B( 2, J )-CONJG( DU( 1 ) )*B( 1, J ) ) /
+     $                        CONJG( D( 2 ) )
+               DO 160 I = 3, N
+                  B( I, J ) = ( B( I, J )-CONJG( DU( I-1 ) )*
+     $                        B( I-1, J )-CONJG( DU2( I-2 ) )*
+     $                        B( I-2, J ) ) / CONJG( D( I ) )
+  160          CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Solve L**H * x = b.
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 170 I = N - 1, 1, -1
+                  IF( IPIV( I ).EQ.I ) THEN
+                     B( I, J ) = B( I, J ) - CONJG( DL( I ) )*
+     $                           B( I+1, J )
+                  ELSE
+                     TEMP = B( I+1, J )
+                     B( I+1, J ) = B( I, J ) - CONJG( DL( I ) )*TEMP
+                     B( I, J ) = TEMP
+                  END IF
+  170          CONTINUE
+  180       CONTINUE
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CGTTS2.269"></a><a href="cgtts2.f.html#CGTTS2.1">CGTTS2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

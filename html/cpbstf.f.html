@@ -1,0 +1,287 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>cpbstf.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CPBSTF.1"></a><a href="cpbstf.f.html#CPBSTF.1">CPBSTF</a>( UPLO, N, KD, AB, LDAB, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          UPLO
+      INTEGER            INFO, KD, LDAB, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX            AB( LDAB, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CPBSTF.18"></a><a href="cpbstf.f.html#CPBSTF.1">CPBSTF</a> computes a split Cholesky factorization of a complex
+</span><span class="comment">*</span><span class="comment">  Hermitian positive definite band matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This routine is designed to be used in conjunction with <a name="CHBGST.21"></a><a href="chbgst.f.html#CHBGST.1">CHBGST</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The factorization has the form  A = S**H*S  where S is a band matrix
+</span><span class="comment">*</span><span class="comment">  of the same bandwidth as A and the following structure:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">    S = ( U    )
+</span><span class="comment">*</span><span class="comment">        ( M  L )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where U is upper triangular of order m = (n+kd)/2, and L is lower
+</span><span class="comment">*</span><span class="comment">  triangular of order n-m.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangle of A is stored;
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangle of A is stored.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KD      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of superdiagonals of the matrix A if UPLO = 'U',
+</span><span class="comment">*</span><span class="comment">          or the number of subdiagonals if UPLO = 'L'.  KD &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AB      (input/output) COMPLEX array, dimension (LDAB,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper or lower triangle of the Hermitian band
+</span><span class="comment">*</span><span class="comment">          matrix A, stored in the first kd+1 rows of the array.  The
+</span><span class="comment">*</span><span class="comment">          j-th column of A is stored in the j-th column of the array AB
+</span><span class="comment">*</span><span class="comment">          as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', AB(kd+1+i-j,j) = A(i,j) for max(1,j-kd)&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', AB(1+i-j,j)    = A(i,j) for j&lt;=i&lt;=min(n,j+kd).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, the factor S from the split Cholesky
+</span><span class="comment">*</span><span class="comment">          factorization A = S**H*S. See Further Details.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDAB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array AB.  LDAB &gt;= KD+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0: successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0: if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0: if INFO = i, the factorization could not be completed,
+</span><span class="comment">*</span><span class="comment">               because the updated element a(i,i) was negative; the
+</span><span class="comment">*</span><span class="comment">               matrix A is not positive definite.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The band storage scheme is illustrated by the following example, when
+</span><span class="comment">*</span><span class="comment">  N = 7, KD = 2:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  S = ( s11  s12  s13                     )
+</span><span class="comment">*</span><span class="comment">      (      s22  s23  s24                )
+</span><span class="comment">*</span><span class="comment">      (           s33  s34                )
+</span><span class="comment">*</span><span class="comment">      (                s44                )
+</span><span class="comment">*</span><span class="comment">      (           s53  s54  s55           )
+</span><span class="comment">*</span><span class="comment">      (                s64  s65  s66      )
+</span><span class="comment">*</span><span class="comment">      (                     s75  s76  s77 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If UPLO = 'U', the array AB holds:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  on entry:                          on exit:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">   *    *   a13  a24  a35  a46  a57   *    *   s13  s24  s53' s64' s75'
+</span><span class="comment">*</span><span class="comment">   *   a12  a23  a34  a45  a56  a67   *   s12  s23  s34  s54' s65' s76'
+</span><span class="comment">*</span><span class="comment">  a11  a22  a33  a44  a55  a66  a77  s11  s22  s33  s44  s55  s66  s77
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  If UPLO = 'L', the array AB holds:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  on entry:                          on exit:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  a11  a22  a33  a44  a55  a66  a77  s11  s22  s33  s44  s55  s66  s77
+</span><span class="comment">*</span><span class="comment">  a21  a32  a43  a54  a65  a76   *   s12' s23' s34' s54  s65  s76   *
+</span><span class="comment">*</span><span class="comment">  a31  a42  a53  a64  a64   *    *   s13' s24' s53  s64  s75   *    *
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Array elements marked * are not used by the routine; s12' denotes
+</span><span class="comment">*</span><span class="comment">  conjg(s12); the diagonal elements of S are real.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ONE, ZERO
+      PARAMETER          ( ONE = 1.0E+0, ZERO = 0.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            UPPER
+      INTEGER            J, KLD, KM, M
+      REAL               AJJ
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.112"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.113"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           CHER, <a name="CLACGV.116"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>, CSSCAL, <a name="XERBLA.116"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX, MIN, REAL, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      UPPER = <a name="LSAME.126"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> )
+      IF( .NOT.UPPER .AND. .NOT.<a name="LSAME.127"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( KD.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( LDAB.LT.KD+1 ) THEN
+         INFO = -5
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.137"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CPBSTF.137"></a><a href="cpbstf.f.html#CPBSTF.1">CPBSTF</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      KLD = MAX( 1, LDAB-1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set the splitting point m.
+</span><span class="comment">*</span><span class="comment">
+</span>      M = ( N+KD ) / 2
+<span class="comment">*</span><span class="comment">
+</span>      IF( UPPER ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Factorize A(m+1:n,m+1:n) as L**H*L, and update A(1:m,1:m).
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 10 J = N, M + 1, -1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute s(j,j) and test for non-positive-definiteness.
+</span><span class="comment">*</span><span class="comment">
+</span>            AJJ = REAL( AB( KD+1, J ) )
+            IF( AJJ.LE.ZERO ) THEN
+               AB( KD+1, J ) = AJJ
+               GO TO 50
+            END IF
+            AJJ = SQRT( AJJ )
+            AB( KD+1, J ) = AJJ
+            KM = MIN( J-1, KD )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute elements j-km:j-1 of the j-th column and update the
+</span><span class="comment">*</span><span class="comment">           the leading submatrix within the band.
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL CSSCAL( KM, ONE / AJJ, AB( KD+1-KM, J ), 1 )
+            CALL CHER( <span class="string">'Upper'</span>, KM, -ONE, AB( KD+1-KM, J ), 1,
+     $                 AB( KD+1, J-KM ), KLD )
+   10    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Factorize the updated submatrix A(1:m,1:m) as U**H*U.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 20 J = 1, M
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute s(j,j) and test for non-positive-definiteness.
+</span><span class="comment">*</span><span class="comment">
+</span>            AJJ = REAL( AB( KD+1, J ) )
+            IF( AJJ.LE.ZERO ) THEN
+               AB( KD+1, J ) = AJJ
+               GO TO 50
+            END IF
+            AJJ = SQRT( AJJ )
+            AB( KD+1, J ) = AJJ
+            KM = MIN( KD, M-J )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute elements j+1:j+km of the j-th row and update the
+</span><span class="comment">*</span><span class="comment">           trailing submatrix within the band.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( KM.GT.0 ) THEN
+               CALL CSSCAL( KM, ONE / AJJ, AB( KD, J+1 ), KLD )
+               CALL <a name="CLACGV.197"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( KM, AB( KD, J+1 ), KLD )
+               CALL CHER( <span class="string">'Upper'</span>, KM, -ONE, AB( KD, J+1 ), KLD,
+     $                    AB( KD+1, J+1 ), KLD )
+               CALL <a name="CLACGV.200"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( KM, AB( KD, J+1 ), KLD )
+            END IF
+   20    CONTINUE
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Factorize A(m+1:n,m+1:n) as L**H*L, and update A(1:m,1:m).
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 30 J = N, M + 1, -1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute s(j,j) and test for non-positive-definiteness.
+</span><span class="comment">*</span><span class="comment">
+</span>            AJJ = REAL( AB( 1, J ) )
+            IF( AJJ.LE.ZERO ) THEN
+               AB( 1, J ) = AJJ
+               GO TO 50
+            END IF
+            AJJ = SQRT( AJJ )
+            AB( 1, J ) = AJJ
+            KM = MIN( J-1, KD )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute elements j-km:j-1 of the j-th row and update the
+</span><span class="comment">*</span><span class="comment">           trailing submatrix within the band.
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL CSSCAL( KM, ONE / AJJ, AB( KM+1, J-KM ), KLD )
+            CALL <a name="CLACGV.224"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( KM, AB( KM+1, J-KM ), KLD )
+            CALL CHER( <span class="string">'Lower'</span>, KM, -ONE, AB( KM+1, J-KM ), KLD,
+     $                 AB( 1, J-KM ), KLD )
+            CALL <a name="CLACGV.227"></a><a href="clacgv.f.html#CLACGV.1">CLACGV</a>( KM, AB( KM+1, J-KM ), KLD )
+   30    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Factorize the updated submatrix A(1:m,1:m) as U**H*U.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 40 J = 1, M
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute s(j,j) and test for non-positive-definiteness.
+</span><span class="comment">*</span><span class="comment">
+</span>            AJJ = REAL( AB( 1, J ) )
+            IF( AJJ.LE.ZERO ) THEN
+               AB( 1, J ) = AJJ
+               GO TO 50
+            END IF
+            AJJ = SQRT( AJJ )
+            AB( 1, J ) = AJJ
+            KM = MIN( KD, M-J )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute elements j+1:j+km of the j-th column and update the
+</span><span class="comment">*</span><span class="comment">           trailing submatrix within the band.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( KM.GT.0 ) THEN
+               CALL CSSCAL( KM, ONE / AJJ, AB( 2, J ), 1 )
+               CALL CHER( <span class="string">'Lower'</span>, KM, -ONE, AB( 2, J ), 1,
+     $                    AB( 1, J+1 ), KLD )
+            END IF
+   40    CONTINUE
+      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span>   50 CONTINUE
+      INFO = J
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CPBSTF.261"></a><a href="cpbstf.f.html#CPBSTF.1">CPBSTF</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

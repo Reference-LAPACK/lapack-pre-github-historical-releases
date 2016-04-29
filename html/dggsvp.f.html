@@ -1,0 +1,417 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dggsvp.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DGGSVP.1"></a><a href="dggsvp.f.html#DGGSVP.1">DGGSVP</a>( JOBU, JOBV, JOBQ, M, P, N, A, LDA, B, LDB,
+     $                   TOLA, TOLB, K, L, U, LDU, V, LDV, Q, LDQ,
+     $                   IWORK, TAU, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          JOBQ, JOBU, JOBV
+      INTEGER            INFO, K, L, LDA, LDB, LDQ, LDU, LDV, M, N, P
+      DOUBLE PRECISION   TOLA, TOLB
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IWORK( * )
+      DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), Q( LDQ, * ),
+     $                   TAU( * ), U( LDU, * ), V( LDV, * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DGGSVP.23"></a><a href="dggsvp.f.html#DGGSVP.1">DGGSVP</a> computes orthogonal matrices U, V and Q such that
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                   N-K-L  K    L
+</span><span class="comment">*</span><span class="comment">   U'*A*Q =     K ( 0    A12  A13 )  if M-K-L &gt;= 0;
+</span><span class="comment">*</span><span class="comment">                L ( 0     0   A23 )
+</span><span class="comment">*</span><span class="comment">            M-K-L ( 0     0    0  )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                   N-K-L  K    L
+</span><span class="comment">*</span><span class="comment">          =     K ( 0    A12  A13 )  if M-K-L &lt; 0;
+</span><span class="comment">*</span><span class="comment">              M-K ( 0     0   A23 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 N-K-L  K    L
+</span><span class="comment">*</span><span class="comment">   V'*B*Q =   L ( 0     0   B13 )
+</span><span class="comment">*</span><span class="comment">            P-L ( 0     0    0  )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where the K-by-K matrix A12 and L-by-L matrix B13 are nonsingular
+</span><span class="comment">*</span><span class="comment">  upper triangular; A23 is L-by-L upper triangular if M-K-L &gt;= 0,
+</span><span class="comment">*</span><span class="comment">  otherwise A23 is (M-K)-by-L upper trapezoidal.  K+L = the effective
+</span><span class="comment">*</span><span class="comment">  numerical rank of the (M+P)-by-N matrix (A',B')'.  Z' denotes the
+</span><span class="comment">*</span><span class="comment">  transpose of Z.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This decomposition is the preprocessing step for computing the
+</span><span class="comment">*</span><span class="comment">  Generalized Singular Value Decomposition (GSVD), see subroutine
+</span><span class="comment">*</span><span class="comment">  <a name="DGGSVD.46"></a><a href="dggsvd.f.html#DGGSVD.1">DGGSVD</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOBU    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  Orthogonal matrix U is computed;
+</span><span class="comment">*</span><span class="comment">          = 'N':  U is not computed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOBV    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'V':  Orthogonal matrix V is computed;
+</span><span class="comment">*</span><span class="comment">          = 'N':  V is not computed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOBQ    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'Q':  Orthogonal matrix Q is computed;
+</span><span class="comment">*</span><span class="comment">          = 'N':  Q is not computed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix A.  M &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  P       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix B.  P &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrices A and B.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) DOUBLE PRECISION array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the M-by-N matrix A.
+</span><span class="comment">*</span><span class="comment">          On exit, A contains the triangular (or trapezoidal) matrix
+</span><span class="comment">*</span><span class="comment">          described in the Purpose section.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A. LDA &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input/output) DOUBLE PRECISION array, dimension (LDB,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the P-by-N matrix B.
+</span><span class="comment">*</span><span class="comment">          On exit, B contains the triangular matrix described in
+</span><span class="comment">*</span><span class="comment">          the Purpose section.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B. LDB &gt;= max(1,P).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TOLA    (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">  TOLB    (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          TOLA and TOLB are the thresholds to determine the effective
+</span><span class="comment">*</span><span class="comment">          numerical rank of matrix B and a subblock of A. Generally,
+</span><span class="comment">*</span><span class="comment">          they are set to
+</span><span class="comment">*</span><span class="comment">             TOLA = MAX(M,N)*norm(A)*MAZHEPS,
+</span><span class="comment">*</span><span class="comment">             TOLB = MAX(P,N)*norm(B)*MAZHEPS.
+</span><span class="comment">*</span><span class="comment">          The size of TOLA and TOLB may affect the size of backward
+</span><span class="comment">*</span><span class="comment">          errors of the decomposition.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  K       (output) INTEGER
+</span><span class="comment">*</span><span class="comment">  L       (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          On exit, K and L specify the dimension of the subblocks
+</span><span class="comment">*</span><span class="comment">          described in Purpose.
+</span><span class="comment">*</span><span class="comment">          K + L = effective numerical rank of (A',B')'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  U       (output) DOUBLE PRECISION array, dimension (LDU,M)
+</span><span class="comment">*</span><span class="comment">          If JOBU = 'U', U contains the orthogonal matrix U.
+</span><span class="comment">*</span><span class="comment">          If JOBU = 'N', U is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDU     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array U. LDU &gt;= max(1,M) if
+</span><span class="comment">*</span><span class="comment">          JOBU = 'U'; LDU &gt;= 1 otherwise.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  V       (output) DOUBLE PRECISION array, dimension (LDV,M)
+</span><span class="comment">*</span><span class="comment">          If JOBV = 'V', V contains the orthogonal matrix V.
+</span><span class="comment">*</span><span class="comment">          If JOBV = 'N', V is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDV     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array V. LDV &gt;= max(1,P) if
+</span><span class="comment">*</span><span class="comment">          JOBV = 'V'; LDV &gt;= 1 otherwise.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Q       (output) DOUBLE PRECISION array, dimension (LDQ,N)
+</span><span class="comment">*</span><span class="comment">          If JOBQ = 'Q', Q contains the orthogonal matrix Q.
+</span><span class="comment">*</span><span class="comment">          If JOBQ = 'N', Q is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDQ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Q. LDQ &gt;= max(1,N) if
+</span><span class="comment">*</span><span class="comment">          JOBQ = 'Q'; LDQ &gt;= 1 otherwise.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK   (workspace) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TAU     (workspace) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) DOUBLE PRECISION array, dimension (max(3*N,M,P))
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The subroutine uses LAPACK subroutine <a name="DGEQPF.142"></a><a href="dgeqpf.f.html#DGEQPF.1">DGEQPF</a> for the QR factorization
+</span><span class="comment">*</span><span class="comment">  with column pivoting to detect the effective numerical rank of the
+</span><span class="comment">*</span><span class="comment">  a matrix. It may be replaced by a better rank determination strategy.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            FORWRD, WANTQ, WANTU, WANTV
+      INTEGER            I, J
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.157"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.158"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DGEQPF.161"></a><a href="dgeqpf.f.html#DGEQPF.1">DGEQPF</a>, <a name="DGEQR2.161"></a><a href="dgeqr2.f.html#DGEQR2.1">DGEQR2</a>, <a name="DGERQ2.161"></a><a href="dgerq2.f.html#DGERQ2.1">DGERQ2</a>, <a name="DLACPY.161"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>, <a name="DLAPMT.161"></a><a href="dlapmt.f.html#DLAPMT.1">DLAPMT</a>, <a name="DLASET.161"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>,
+     $                   <a name="DORG2R.162"></a><a href="dorg2r.f.html#DORG2R.1">DORG2R</a>, <a name="DORM2R.162"></a><a href="dorm2r.f.html#DORM2R.1">DORM2R</a>, <a name="DORMR2.162"></a><a href="dormr2.f.html#DORMR2.1">DORMR2</a>, <a name="XERBLA.162"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters
+</span><span class="comment">*</span><span class="comment">
+</span>      WANTU = <a name="LSAME.171"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBU, <span class="string">'U'</span> )
+      WANTV = <a name="LSAME.172"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBV, <span class="string">'V'</span> )
+      WANTQ = <a name="LSAME.173"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBQ, <span class="string">'Q'</span> )
+      FORWRD = .TRUE.
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( .NOT.( WANTU .OR. <a name="LSAME.177"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBU, <span class="string">'N'</span> ) ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.( WANTV .OR. <a name="LSAME.179"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBV, <span class="string">'N'</span> ) ) ) THEN
+         INFO = -2
+      ELSE IF( .NOT.( WANTQ .OR. <a name="LSAME.181"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOBQ, <span class="string">'N'</span> ) ) ) THEN
+         INFO = -3
+      ELSE IF( M.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( P.LT.0 ) THEN
+         INFO = -5
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -6
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -8
+      ELSE IF( LDB.LT.MAX( 1, P ) ) THEN
+         INFO = -10
+      ELSE IF( LDU.LT.1 .OR. ( WANTU .AND. LDU.LT.M ) ) THEN
+         INFO = -16
+      ELSE IF( LDV.LT.1 .OR. ( WANTV .AND. LDV.LT.P ) ) THEN
+         INFO = -18
+      ELSE IF( LDQ.LT.1 .OR. ( WANTQ .AND. LDQ.LT.N ) ) THEN
+         INFO = -20
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.201"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DGGSVP.201"></a><a href="dggsvp.f.html#DGGSVP.1">DGGSVP</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     QR with column pivoting of B: B*P = V*( S11 S12 )
+</span><span class="comment">*</span><span class="comment">                                           (  0   0  )
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 10 I = 1, N
+         IWORK( I ) = 0
+   10 CONTINUE
+      CALL <a name="DGEQPF.211"></a><a href="dgeqpf.f.html#DGEQPF.1">DGEQPF</a>( P, N, B, LDB, IWORK, TAU, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Update A := A*P
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="DLAPMT.215"></a><a href="dlapmt.f.html#DLAPMT.1">DLAPMT</a>( FORWRD, M, N, A, LDA, IWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Determine the effective rank of matrix B.
+</span><span class="comment">*</span><span class="comment">
+</span>      L = 0
+      DO 20 I = 1, MIN( P, N )
+         IF( ABS( B( I, I ) ).GT.TOLB )
+     $      L = L + 1
+   20 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      IF( WANTV ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Copy the details of V, and form V.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DLASET.229"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'Full'</span>, P, P, ZERO, ZERO, V, LDV )
+         IF( P.GT.1 )
+     $      CALL <a name="DLACPY.231"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>( <span class="string">'Lower'</span>, P-1, N, B( 2, 1 ), LDB, V( 2, 1 ),
+     $                   LDV )
+         CALL <a name="DORG2R.233"></a><a href="dorg2r.f.html#DORG2R.1">DORG2R</a>( P, P, MIN( P, N ), V, LDV, TAU, WORK, INFO )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Clean up B
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 40 J = 1, L - 1
+         DO 30 I = J + 1, L
+            B( I, J ) = ZERO
+   30    CONTINUE
+   40 CONTINUE
+      IF( P.GT.L )
+     $   CALL <a name="DLASET.244"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'Full'</span>, P-L, N, ZERO, ZERO, B( L+1, 1 ), LDB )
+<span class="comment">*</span><span class="comment">
+</span>      IF( WANTQ ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Set Q = I and Update Q := Q*P
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DLASET.250"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'Full'</span>, N, N, ZERO, ONE, Q, LDQ )
+         CALL <a name="DLAPMT.251"></a><a href="dlapmt.f.html#DLAPMT.1">DLAPMT</a>( FORWRD, N, N, Q, LDQ, IWORK )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( P.GE.L .AND. N.NE.L ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        RQ factorization of (S11 S12): ( S11 S12 ) = ( 0 S12 )*Z
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DGERQ2.258"></a><a href="dgerq2.f.html#DGERQ2.1">DGERQ2</a>( L, N, B, LDB, TAU, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Update A := A*Z'
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DORMR2.262"></a><a href="dormr2.f.html#DORMR2.1">DORMR2</a>( <span class="string">'Right'</span>, <span class="string">'Transpose'</span>, M, N, L, B, LDB, TAU, A,
+     $                LDA, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span>         IF( WANTQ ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Update Q := Q*Z'
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="DORMR2.269"></a><a href="dormr2.f.html#DORMR2.1">DORMR2</a>( <span class="string">'Right'</span>, <span class="string">'Transpose'</span>, N, N, L, B, LDB, TAU, Q,
+     $                   LDQ, WORK, INFO )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Clean up B
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DLASET.275"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'Full'</span>, L, N-L, ZERO, ZERO, B, LDB )
+         DO 60 J = N - L + 1, N
+            DO 50 I = J - N + L + 1, L
+               B( I, J ) = ZERO
+   50       CONTINUE
+   60    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Let              N-L     L
+</span><span class="comment">*</span><span class="comment">                A = ( A11    A12 ) M,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     then the following does the complete QR decomposition of A11:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              A11 = U*(  0  T12 )*P1'
+</span><span class="comment">*</span><span class="comment">                      (  0   0  )
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 70 I = 1, N - L
+         IWORK( I ) = 0
+   70 CONTINUE
+      CALL <a name="DGEQPF.295"></a><a href="dgeqpf.f.html#DGEQPF.1">DGEQPF</a>( M, N-L, A, LDA, IWORK, TAU, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Determine the effective rank of A11
+</span><span class="comment">*</span><span class="comment">
+</span>      K = 0
+      DO 80 I = 1, MIN( M, N-L )
+         IF( ABS( A( I, I ) ).GT.TOLA )
+     $      K = K + 1
+   80 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Update A12 := U'*A12, where A12 = A( 1:M, N-L+1:N )
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="DORM2R.307"></a><a href="dorm2r.f.html#DORM2R.1">DORM2R</a>( <span class="string">'Left'</span>, <span class="string">'Transpose'</span>, M, L, MIN( M, N-L ), A, LDA,
+     $             TAU, A( 1, N-L+1 ), LDA, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span>      IF( WANTU ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Copy the details of U, and form U
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DLASET.314"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'Full'</span>, M, M, ZERO, ZERO, U, LDU )
+         IF( M.GT.1 )
+     $      CALL <a name="DLACPY.316"></a><a href="dlacpy.f.html#DLACPY.1">DLACPY</a>( <span class="string">'Lower'</span>, M-1, N-L, A( 2, 1 ), LDA, U( 2, 1 ),
+     $                   LDU )
+         CALL <a name="DORG2R.318"></a><a href="dorg2r.f.html#DORG2R.1">DORG2R</a>( M, M, MIN( M, N-L ), U, LDU, TAU, WORK, INFO )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( WANTQ ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Update Q( 1:N, 1:N-L )  = Q( 1:N, 1:N-L )*P1
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DLAPMT.325"></a><a href="dlapmt.f.html#DLAPMT.1">DLAPMT</a>( FORWRD, N, N-L, Q, LDQ, IWORK )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Clean up A: set the strictly lower triangular part of
+</span><span class="comment">*</span><span class="comment">     A(1:K, 1:K) = 0, and A( K+1:M, 1:N-L ) = 0.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 100 J = 1, K - 1
+         DO 90 I = J + 1, K
+            A( I, J ) = ZERO
+   90    CONTINUE
+  100 CONTINUE
+      IF( M.GT.K )
+     $   CALL <a name="DLASET.337"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'Full'</span>, M-K, N-L, ZERO, ZERO, A( K+1, 1 ), LDA )
+<span class="comment">*</span><span class="comment">
+</span>      IF( N-L.GT.K ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        RQ factorization of ( T11 T12 ) = ( 0 T12 )*Z1
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DGERQ2.343"></a><a href="dgerq2.f.html#DGERQ2.1">DGERQ2</a>( K, N-L, A, LDA, TAU, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span>         IF( WANTQ ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Update Q( 1:N,1:N-L ) = Q( 1:N,1:N-L )*Z1'
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="DORMR2.349"></a><a href="dormr2.f.html#DORMR2.1">DORMR2</a>( <span class="string">'Right'</span>, <span class="string">'Transpose'</span>, N, N-L, K, A, LDA, TAU,
+     $                   Q, LDQ, WORK, INFO )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Clean up A
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DLASET.355"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'Full'</span>, K, N-L-K, ZERO, ZERO, A, LDA )
+         DO 120 J = N - L - K + 1, N - L
+            DO 110 I = J - N + L + K + 1, K
+               A( I, J ) = ZERO
+  110       CONTINUE
+  120    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( M.GT.K ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        QR factorization of A( K+1:M,N-L+1:N )
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="DGEQR2.368"></a><a href="dgeqr2.f.html#DGEQR2.1">DGEQR2</a>( M-K, L, A( K+1, N-L+1 ), LDA, TAU, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span>         IF( WANTU ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Update U(:,K+1:M) := U(:,K+1:M)*U1
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="DORM2R.374"></a><a href="dorm2r.f.html#DORM2R.1">DORM2R</a>( <span class="string">'Right'</span>, <span class="string">'No transpose'</span>, M, M-K, MIN( M-K, L ),
+     $                   A( K+1, N-L+1 ), LDA, TAU, U( 1, K+1 ), LDU,
+     $                   WORK, INFO )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Clean up
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 140 J = N - L + 1, N
+            DO 130 I = J - N + K + L + 1, M
+               A( I, J ) = ZERO
+  130       CONTINUE
+  140    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DGGSVP.391"></a><a href="dggsvp.f.html#DGGSVP.1">DGGSVP</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

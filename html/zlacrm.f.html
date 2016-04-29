@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zlacrm.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZLACRM.1"></a><a href="zlacrm.f.html#ZLACRM.1">ZLACRM</a>( M, N, A, LDA, B, LDB, C, LDC, RWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            LDA, LDB, LDC, M, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   B( LDB, * ), RWORK( * )
+      COMPLEX*16         A( LDA, * ), C( LDC, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZLACRM.18"></a><a href="zlacrm.f.html#ZLACRM.1">ZLACRM</a> performs a very simple matrix-matrix multiplication:
+</span><span class="comment">*</span><span class="comment">           C := A * B,
+</span><span class="comment">*</span><span class="comment">  where A is M by N and complex; B is N by N and real;
+</span><span class="comment">*</span><span class="comment">  C is M by N and complex.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix A and of the matrix C.
+</span><span class="comment">*</span><span class="comment">          M &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns and rows of the matrix B and
+</span><span class="comment">*</span><span class="comment">          the number of columns of the matrix C.
+</span><span class="comment">*</span><span class="comment">          N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input) COMPLEX*16 array, dimension (LDA, N)
+</span><span class="comment">*</span><span class="comment">          A contains the M by N matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A. LDA &gt;=max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input) DOUBLE PRECISION array, dimension (LDB, N)
+</span><span class="comment">*</span><span class="comment">          B contains the N by N matrix B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B. LDB &gt;=max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C       (input) COMPLEX*16 array, dimension (LDC, N)
+</span><span class="comment">*</span><span class="comment">          C contains the M by N matrix C.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDC     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array C. LDC &gt;=max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RWORK   (workspace) DOUBLE PRECISION array, dimension (2*M*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ONE, ZERO
+      PARAMETER          ( ONE = 1.0D0, ZERO = 0.0D0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, J, L
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          DBLE, DCMPLX, DIMAG
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DGEMM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ( M.EQ.0 ) .OR. ( N.EQ.0 ) )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      DO 20 J = 1, N
+         DO 10 I = 1, M
+            RWORK( ( J-1 )*M+I ) = DBLE( A( I, J ) )
+   10    CONTINUE
+   20 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      L = M*N + 1
+      CALL DGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, M, N, N, ONE, RWORK, M, B, LDB, ZERO,
+     $            RWORK( L ), M )
+      DO 40 J = 1, N
+         DO 30 I = 1, M
+            C( I, J ) = RWORK( L+( J-1 )*M+I-1 )
+   30    CONTINUE
+   40 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      DO 60 J = 1, N
+         DO 50 I = 1, M
+            RWORK( ( J-1 )*M+I ) = DIMAG( A( I, J ) )
+   50    CONTINUE
+   60 CONTINUE
+      CALL DGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, M, N, N, ONE, RWORK, M, B, LDB, ZERO,
+     $            RWORK( L ), M )
+      DO 80 J = 1, N
+         DO 70 I = 1, M
+            C( I, J ) = DCMPLX( DBLE( C( I, J ) ),
+     $                  RWORK( L+( J-1 )*M+I-1 ) )
+   70    CONTINUE
+   80 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZLACRM.108"></a><a href="zlacrm.f.html#ZLACRM.1">ZLACRM</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

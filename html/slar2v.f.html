@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slar2v.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLAR2V.1"></a><a href="slar2v.f.html#SLAR2V.1">SLAR2V</a>( N, X, Y, Z, INCX, C, S, INCC )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INCC, INCX, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               C( * ), S( * ), X( * ), Y( * ), Z( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLAR2V.17"></a><a href="slar2v.f.html#SLAR2V.1">SLAR2V</a> applies a vector of real plane rotations from both sides to
+</span><span class="comment">*</span><span class="comment">  a sequence of 2-by-2 real symmetric matrices, defined by the elements
+</span><span class="comment">*</span><span class="comment">  of the vectors x, y and z. For i = 1,2,...,n
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ( x(i)  z(i) ) := (  c(i)  s(i) ) ( x(i)  z(i) ) ( c(i) -s(i) )
+</span><span class="comment">*</span><span class="comment">     ( z(i)  y(i) )    ( -s(i)  c(i) ) ( z(i)  y(i) ) ( s(i)  c(i) )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of plane rotations to be applied.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X       (input/output) REAL array,
+</span><span class="comment">*</span><span class="comment">                         dimension (1+(N-1)*INCX)
+</span><span class="comment">*</span><span class="comment">          The vector x.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Y       (input/output) REAL array,
+</span><span class="comment">*</span><span class="comment">                         dimension (1+(N-1)*INCX)
+</span><span class="comment">*</span><span class="comment">          The vector y.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z       (input/output) REAL array,
+</span><span class="comment">*</span><span class="comment">                         dimension (1+(N-1)*INCX)
+</span><span class="comment">*</span><span class="comment">          The vector z.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INCX    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The increment between elements of X, Y and Z. INCX &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C       (input) REAL array, dimension (1+(N-1)*INCC)
+</span><span class="comment">*</span><span class="comment">          The cosines of the plane rotations.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  S       (input) REAL array, dimension (1+(N-1)*INCC)
+</span><span class="comment">*</span><span class="comment">          The sines of the plane rotations.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INCC    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The increment between elements of C and S. INCC &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, IC, IX
+      REAL               CI, SI, T1, T2, T3, T4, T5, T6, XI, YI, ZI
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      IX = 1
+      IC = 1
+      DO 10 I = 1, N
+         XI = X( IX )
+         YI = Y( IX )
+         ZI = Z( IX )
+         CI = C( IC )
+         SI = S( IC )
+         T1 = SI*ZI
+         T2 = CI*ZI
+         T3 = T2 - SI*XI
+         T4 = T2 + SI*YI
+         T5 = CI*XI + T1
+         T6 = CI*YI - T1
+         X( IX ) = CI*T5 + SI*T4
+         Y( IX ) = CI*T6 - SI*T3
+         Z( IX ) = CI*T4 - SI*T5
+         IX = IX + INCX
+         IC = IC + INCC
+   10 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLAR2V.83"></a><a href="slar2v.f.html#SLAR2V.1">SLAR2V</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      RETURN
+      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>icmax1.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      INTEGER          FUNCTION <a name="ICMAX1.1"></a><a href="icmax1.f.html#ICMAX1.1">ICMAX1</a>( N, CX, INCX )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INCX, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX            CX( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ICMAX1.17"></a><a href="icmax1.f.html#ICMAX1.1">ICMAX1</a> finds the index of the element whose real part has maximum
+</span><span class="comment">*</span><span class="comment">  absolute value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on ICAMAX from Level 1 BLAS.
+</span><span class="comment">*</span><span class="comment">  The change is to use the 'genuine' absolute value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Contributed by Nick Higham for use with <a name="CLACON.23"></a><a href="clacon.f.html#CLACON.1">CLACON</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of elements in the vector CX.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CX      (input) COMPLEX array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The vector whose elements will be summed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INCX    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The spacing between successive values of CX.  INCX &gt;= 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment"> =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, IX
+      REAL               SMAX
+      COMPLEX            ZDUM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Functions ..
+</span>      REAL               CABS1
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Function definitions ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     NEXT LINE IS THE ONLY MODIFICATION.
+</span>      CABS1( ZDUM ) = ABS( ZDUM )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      <a name="ICMAX1.57"></a><a href="icmax1.f.html#ICMAX1.1">ICMAX1</a> = 0
+      IF( N.LT.1 )
+     $   RETURN
+      <a name="ICMAX1.60"></a><a href="icmax1.f.html#ICMAX1.1">ICMAX1</a> = 1
+      IF( N.EQ.1 )
+     $   RETURN
+      IF( INCX.EQ.1 )
+     $   GO TO 30
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     CODE FOR INCREMENT NOT EQUAL TO 1
+</span><span class="comment">*</span><span class="comment">
+</span>      IX = 1
+      SMAX = CABS1( CX( 1 ) )
+      IX = IX + INCX
+      DO 20 I = 2, N
+         IF( CABS1( CX( IX ) ).LE.SMAX )
+     $      GO TO 10
+         <a name="ICMAX1.74"></a><a href="icmax1.f.html#ICMAX1.1">ICMAX1</a> = I
+         SMAX = CABS1( CX( IX ) )
+   10    CONTINUE
+         IX = IX + INCX
+   20 CONTINUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     CODE FOR INCREMENT EQUAL TO 1
+</span><span class="comment">*</span><span class="comment">
+</span>   30 CONTINUE
+      SMAX = CABS1( CX( 1 ) )
+      DO 40 I = 2, N
+         IF( CABS1( CX( I ) ).LE.SMAX )
+     $      GO TO 40
+         <a name="ICMAX1.88"></a><a href="icmax1.f.html#ICMAX1.1">ICMAX1</a> = I
+         SMAX = CABS1( CX( I ) )
+   40 CONTINUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ICMAX1.93"></a><a href="icmax1.f.html#ICMAX1.1">ICMAX1</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

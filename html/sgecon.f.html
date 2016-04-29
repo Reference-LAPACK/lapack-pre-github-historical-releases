@@ -1,0 +1,209 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>sgecon.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SGECON.1"></a><a href="sgecon.f.html#SGECON.1">SGECON</a>( NORM, N, A, LDA, ANORM, RCOND, WORK, IWORK,
+     $                   INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Modified to call <a name="SLACN2.8"></a><a href="slacn2.f.html#SLACN2.1">SLACN2</a> in place of <a name="SLACON.8"></a><a href="slacon.f.html#SLACON.1">SLACON</a>, 7 Feb 03, SJH.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          NORM
+      INTEGER            INFO, LDA, N
+      REAL               ANORM, RCOND
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IWORK( * )
+      REAL               A( LDA, * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SGECON.23"></a><a href="sgecon.f.html#SGECON.1">SGECON</a> estimates the reciprocal of the condition number of a general
+</span><span class="comment">*</span><span class="comment">  real matrix A, in either the 1-norm or the infinity-norm, using
+</span><span class="comment">*</span><span class="comment">  the LU factorization computed by <a name="SGETRF.25"></a><a href="sgetrf.f.html#SGETRF.1">SGETRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  An estimate is obtained for norm(inv(A)), and the reciprocal of the
+</span><span class="comment">*</span><span class="comment">  condition number is computed as
+</span><span class="comment">*</span><span class="comment">     RCOND = 1 / ( norm(A) * norm(inv(A)) ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NORM    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether the 1-norm condition number or the
+</span><span class="comment">*</span><span class="comment">          infinity-norm condition number is required:
+</span><span class="comment">*</span><span class="comment">          = '1' or 'O':  1-norm;
+</span><span class="comment">*</span><span class="comment">          = 'I':         Infinity-norm.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input) REAL array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          The factors L and U from the factorization A = P*L*U
+</span><span class="comment">*</span><span class="comment">          as computed by <a name="SGETRF.45"></a><a href="sgetrf.f.html#SGETRF.1">SGETRF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ANORM   (input) REAL
+</span><span class="comment">*</span><span class="comment">          If NORM = '1' or 'O', the 1-norm of the original matrix A.
+</span><span class="comment">*</span><span class="comment">          If NORM = 'I', the infinity-norm of the original matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  RCOND   (output) REAL
+</span><span class="comment">*</span><span class="comment">          The reciprocal of the condition number of the matrix A,
+</span><span class="comment">*</span><span class="comment">          computed as RCOND = 1/(norm(A) * norm(inv(A))).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) REAL array, dimension (4*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK   (workspace) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ONE, ZERO
+      PARAMETER          ( ONE = 1.0E+0, ZERO = 0.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            ONENRM
+      CHARACTER          NORMIN
+      INTEGER            IX, KASE, KASE1
+      REAL               AINVNM, SCALE, SL, SMLNUM, SU
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      INTEGER            ISAVE( 3 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.82"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      INTEGER            ISAMAX
+      REAL               <a name="SLAMCH.84"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      EXTERNAL           <a name="LSAME.85"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, ISAMAX, <a name="SLAMCH.85"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="SLACN2.88"></a><a href="slacn2.f.html#SLACN2.1">SLACN2</a>, <a name="SLATRS.88"></a><a href="slatrs.f.html#SLATRS.1">SLATRS</a>, <a name="SRSCL.88"></a><a href="srscl.f.html#SRSCL.1">SRSCL</a>, <a name="XERBLA.88"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      ONENRM = NORM.EQ.<span class="string">'1'</span> .OR. <a name="LSAME.98"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'O'</span> )
+      IF( .NOT.ONENRM .AND. .NOT.<a name="LSAME.99"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( NORM, <span class="string">'I'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+         INFO = -4
+      ELSE IF( ANORM.LT.ZERO ) THEN
+         INFO = -5
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.109"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="SGECON.109"></a><a href="sgecon.f.html#SGECON.1">SGECON</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      RCOND = ZERO
+      IF( N.EQ.0 ) THEN
+         RCOND = ONE
+         RETURN
+      ELSE IF( ANORM.EQ.ZERO ) THEN
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      SMLNUM = <a name="SLAMCH.123"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'Safe minimum'</span> )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Estimate the norm of inv(A).
+</span><span class="comment">*</span><span class="comment">
+</span>      AINVNM = ZERO
+      NORMIN = <span class="string">'N'</span>
+      IF( ONENRM ) THEN
+         KASE1 = 1
+      ELSE
+         KASE1 = 2
+      END IF
+      KASE = 0
+   10 CONTINUE
+      CALL <a name="SLACN2.136"></a><a href="slacn2.f.html#SLACN2.1">SLACN2</a>( N, WORK( N+1 ), WORK, IWORK, AINVNM, KASE, ISAVE )
+      IF( KASE.NE.0 ) THEN
+         IF( KASE.EQ.KASE1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Multiply by inv(L).
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="SLATRS.142"></a><a href="slatrs.f.html#SLATRS.1">SLATRS</a>( <span class="string">'Lower'</span>, <span class="string">'No transpose'</span>, <span class="string">'Unit'</span>, NORMIN, N, A,
+     $                   LDA, WORK, SL, WORK( 2*N+1 ), INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Multiply by inv(U).
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="SLATRS.147"></a><a href="slatrs.f.html#SLATRS.1">SLATRS</a>( <span class="string">'Upper'</span>, <span class="string">'No transpose'</span>, <span class="string">'Non-unit'</span>, NORMIN, N,
+     $                   A, LDA, WORK, SU, WORK( 3*N+1 ), INFO )
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Multiply by inv(U').
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="SLATRS.153"></a><a href="slatrs.f.html#SLATRS.1">SLATRS</a>( <span class="string">'Upper'</span>, <span class="string">'Transpose'</span>, <span class="string">'Non-unit'</span>, NORMIN, N, A,
+     $                   LDA, WORK, SU, WORK( 3*N+1 ), INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Multiply by inv(L').
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="SLATRS.158"></a><a href="slatrs.f.html#SLATRS.1">SLATRS</a>( <span class="string">'Lower'</span>, <span class="string">'Transpose'</span>, <span class="string">'Unit'</span>, NORMIN, N, A,
+     $                   LDA, WORK, SL, WORK( 2*N+1 ), INFO )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Divide X by 1/(SL*SU) if doing so will not cause overflow.
+</span><span class="comment">*</span><span class="comment">
+</span>         SCALE = SL*SU
+         NORMIN = <span class="string">'Y'</span>
+         IF( SCALE.NE.ONE ) THEN
+            IX = ISAMAX( N, WORK, 1 )
+            IF( SCALE.LT.ABS( WORK( IX ) )*SMLNUM .OR. SCALE.EQ.ZERO )
+     $         GO TO 20
+            CALL <a name="SRSCL.170"></a><a href="srscl.f.html#SRSCL.1">SRSCL</a>( N, SCALE, WORK, 1 )
+         END IF
+         GO TO 10
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the estimate of the reciprocal condition number.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( AINVNM.NE.ZERO )
+     $   RCOND = ( ONE / AINVNM ) / ANORM
+<span class="comment">*</span><span class="comment">
+</span>   20 CONTINUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SGECON.183"></a><a href="sgecon.f.html#SGECON.1">SGECON</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

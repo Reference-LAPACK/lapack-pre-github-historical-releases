@@ -1,0 +1,286 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dgtsv.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DGTSV.1"></a><a href="dgtsv.f.html#DGTSV.1">DGTSV</a>( N, NRHS, DL, D, DU, B, LDB, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, LDB, N, NRHS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   B( LDB, * ), D( * ), DL( * ), DU( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DGTSV.17"></a><a href="dgtsv.f.html#DGTSV.1">DGTSV</a>  solves the equation
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     A*X = B,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where A is an n by n tridiagonal matrix, by Gaussian elimination with
+</span><span class="comment">*</span><span class="comment">  partial pivoting.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Note that the equation  A'*X = B  may be solved by interchanging the
+</span><span class="comment">*</span><span class="comment">  order of the arguments DU and DL.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NRHS    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of right hand sides, i.e., the number of columns
+</span><span class="comment">*</span><span class="comment">          of the matrix B.  NRHS &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DL      (input/output) DOUBLE PRECISION array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          On entry, DL must contain the (n-1) sub-diagonal elements of
+</span><span class="comment">*</span><span class="comment">          A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, DL is overwritten by the (n-2) elements of the
+</span><span class="comment">*</span><span class="comment">          second super-diagonal of the upper triangular matrix U from
+</span><span class="comment">*</span><span class="comment">          the LU factorization of A, in DL(1), ..., DL(n-2).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input/output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On entry, D must contain the diagonal elements of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, D is overwritten by the n diagonal elements of U.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DU      (input/output) DOUBLE PRECISION array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          On entry, DU must contain the (n-1) super-diagonal elements
+</span><span class="comment">*</span><span class="comment">          of A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, DU is overwritten by the (n-1) elements of the first
+</span><span class="comment">*</span><span class="comment">          super-diagonal of U.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input/output) DOUBLE PRECISION array, dimension (LDB,NRHS)
+</span><span class="comment">*</span><span class="comment">          On entry, the N by NRHS matrix of right hand side matrix B.
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, the N by NRHS solution matrix X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B.  LDB &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0: successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0: if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">          &gt; 0: if INFO = i, U(i,i) is exactly zero, and the solution
+</span><span class="comment">*</span><span class="comment">               has not been computed.  The factorization has not been
+</span><span class="comment">*</span><span class="comment">               completed unless i = N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO
+      PARAMETER          ( ZERO = 0.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, J
+      DOUBLE PRECISION   FACT, TEMP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.85"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( N.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( NRHS.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
+         INFO = -7
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.98"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DGTSV.98"></a><a href="dgtsv.f.html#DGTSV.1">DGTSV</a> '</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      IF( NRHS.EQ.1 ) THEN
+         DO 10 I = 1, N - 2
+            IF( ABS( D( I ) ).GE.ABS( DL( I ) ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              No row interchange required
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( D( I ).NE.ZERO ) THEN
+                  FACT = DL( I ) / D( I )
+                  D( I+1 ) = D( I+1 ) - FACT*DU( I )
+                  B( I+1, 1 ) = B( I+1, 1 ) - FACT*B( I, 1 )
+               ELSE
+                  INFO = I
+                  RETURN
+               END IF
+               DL( I ) = ZERO
+            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Interchange rows I and I+1
+</span><span class="comment">*</span><span class="comment">
+</span>               FACT = D( I ) / DL( I )
+               D( I ) = DL( I )
+               TEMP = D( I+1 )
+               D( I+1 ) = DU( I ) - FACT*TEMP
+               DL( I ) = DU( I+1 )
+               DU( I+1 ) = -FACT*DL( I )
+               DU( I ) = TEMP
+               TEMP = B( I, 1 )
+               B( I, 1 ) = B( I+1, 1 )
+               B( I+1, 1 ) = TEMP - FACT*B( I+1, 1 )
+            END IF
+   10    CONTINUE
+         IF( N.GT.1 ) THEN
+            I = N - 1
+            IF( ABS( D( I ) ).GE.ABS( DL( I ) ) ) THEN
+               IF( D( I ).NE.ZERO ) THEN
+                  FACT = DL( I ) / D( I )
+                  D( I+1 ) = D( I+1 ) - FACT*DU( I )
+                  B( I+1, 1 ) = B( I+1, 1 ) - FACT*B( I, 1 )
+               ELSE
+                  INFO = I
+                  RETURN
+               END IF
+            ELSE
+               FACT = D( I ) / DL( I )
+               D( I ) = DL( I )
+               TEMP = D( I+1 )
+               D( I+1 ) = DU( I ) - FACT*TEMP
+               DU( I ) = TEMP
+               TEMP = B( I, 1 )
+               B( I, 1 ) = B( I+1, 1 )
+               B( I+1, 1 ) = TEMP - FACT*B( I+1, 1 )
+            END IF
+         END IF
+         IF( D( N ).EQ.ZERO ) THEN
+            INFO = N
+            RETURN
+         END IF
+      ELSE
+         DO 40 I = 1, N - 2
+            IF( ABS( D( I ) ).GE.ABS( DL( I ) ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              No row interchange required
+</span><span class="comment">*</span><span class="comment">
+</span>               IF( D( I ).NE.ZERO ) THEN
+                  FACT = DL( I ) / D( I )
+                  D( I+1 ) = D( I+1 ) - FACT*DU( I )
+                  DO 20 J = 1, NRHS
+                     B( I+1, J ) = B( I+1, J ) - FACT*B( I, J )
+   20             CONTINUE
+               ELSE
+                  INFO = I
+                  RETURN
+               END IF
+               DL( I ) = ZERO
+            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Interchange rows I and I+1
+</span><span class="comment">*</span><span class="comment">
+</span>               FACT = D( I ) / DL( I )
+               D( I ) = DL( I )
+               TEMP = D( I+1 )
+               D( I+1 ) = DU( I ) - FACT*TEMP
+               DL( I ) = DU( I+1 )
+               DU( I+1 ) = -FACT*DL( I )
+               DU( I ) = TEMP
+               DO 30 J = 1, NRHS
+                  TEMP = B( I, J )
+                  B( I, J ) = B( I+1, J )
+                  B( I+1, J ) = TEMP - FACT*B( I+1, J )
+   30          CONTINUE
+            END IF
+   40    CONTINUE
+         IF( N.GT.1 ) THEN
+            I = N - 1
+            IF( ABS( D( I ) ).GE.ABS( DL( I ) ) ) THEN
+               IF( D( I ).NE.ZERO ) THEN
+                  FACT = DL( I ) / D( I )
+                  D( I+1 ) = D( I+1 ) - FACT*DU( I )
+                  DO 50 J = 1, NRHS
+                     B( I+1, J ) = B( I+1, J ) - FACT*B( I, J )
+   50             CONTINUE
+               ELSE
+                  INFO = I
+                  RETURN
+               END IF
+            ELSE
+               FACT = D( I ) / DL( I )
+               D( I ) = DL( I )
+               TEMP = D( I+1 )
+               D( I+1 ) = DU( I ) - FACT*TEMP
+               DU( I ) = TEMP
+               DO 60 J = 1, NRHS
+                  TEMP = B( I, J )
+                  B( I, J ) = B( I+1, J )
+                  B( I+1, J ) = TEMP - FACT*B( I+1, J )
+   60          CONTINUE
+            END IF
+         END IF
+         IF( D( N ).EQ.ZERO ) THEN
+            INFO = N
+            RETURN
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Back solve with the matrix U from the factorization.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( NRHS.LE.2 ) THEN
+         J = 1
+   70    CONTINUE
+         B( N, J ) = B( N, J ) / D( N )
+         IF( N.GT.1 )
+     $      B( N-1, J ) = ( B( N-1, J )-DU( N-1 )*B( N, J ) ) / D( N-1 )
+         DO 80 I = N - 2, 1, -1
+            B( I, J ) = ( B( I, J )-DU( I )*B( I+1, J )-DL( I )*
+     $                  B( I+2, J ) ) / D( I )
+   80    CONTINUE
+         IF( J.LT.NRHS ) THEN
+            J = J + 1
+            GO TO 70
+         END IF
+      ELSE
+         DO 100 J = 1, NRHS
+            B( N, J ) = B( N, J ) / D( N )
+            IF( N.GT.1 )
+     $         B( N-1, J ) = ( B( N-1, J )-DU( N-1 )*B( N, J ) ) /
+     $                       D( N-1 )
+            DO 90 I = N - 2, 1, -1
+               B( I, J ) = ( B( I, J )-DU( I )*B( I+1, J )-DL( I )*
+     $                     B( I+2, J ) ) / D( I )
+   90       CONTINUE
+  100    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DGTSV.260"></a><a href="dgtsv.f.html#DGTSV.1">DGTSV</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

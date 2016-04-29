@@ -1,0 +1,397 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlarrf.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLARRF.1"></a><a href="dlarrf.f.html#DLARRF.1">DLARRF</a>( N, D, L, LD, CLSTRT, CLEND,
+     $                   W, WGAP, WERR,
+     $                   SPDIAM, CLGAPL, CLGAPR, PIVMIN, SIGMA,
+     $                   DPLUS, LPLUS, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">*
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            CLSTRT, CLEND, INFO, N
+      DOUBLE PRECISION   CLGAPL, CLGAPR, PIVMIN, SIGMA, SPDIAM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   D( * ), DPLUS( * ), L( * ), LD( * ),
+     $          LPLUS( * ), W( * ), WGAP( * ), WERR( * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Given the initial representation L D L^T and its cluster of close
+</span><span class="comment">*</span><span class="comment">  eigenvalues (in a relative measure), W( CLSTRT ), W( CLSTRT+1 ), ...
+</span><span class="comment">*</span><span class="comment">  W( CLEND ), <a name="DLARRF.24"></a><a href="dlarrf.f.html#DLARRF.1">DLARRF</a> finds a new relatively robust representation
+</span><span class="comment">*</span><span class="comment">  L D L^T - SIGMA I = L(+) D(+) L(+)^T such that at least one of the
+</span><span class="comment">*</span><span class="comment">  eigenvalues of L(+) D(+) L(+)^T is relatively isolated.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix (subblock, if the matrix splitted).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The N diagonal elements of the diagonal matrix D.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  L       (input) DOUBLE PRECISION array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          The (N-1) subdiagonal elements of the unit bidiagonal
+</span><span class="comment">*</span><span class="comment">          matrix L.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LD      (input) DOUBLE PRECISION array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          The (N-1) elements L(i)*D(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CLSTRT  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The index of the first eigenvalue in the cluster.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CLEND   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The index of the last eigenvalue in the cluster.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  W       (input) DOUBLE PRECISION array, dimension &gt;=  (CLEND-CLSTRT+1)
+</span><span class="comment">*</span><span class="comment">          The eigenvalue APPROXIMATIONS of L D L^T in ascending order.
+</span><span class="comment">*</span><span class="comment">          W( CLSTRT ) through W( CLEND ) form the cluster of relatively
+</span><span class="comment">*</span><span class="comment">          close eigenalues.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WGAP    (input/output) DOUBLE PRECISION array, dimension &gt;=  (CLEND-CLSTRT+1)
+</span><span class="comment">*</span><span class="comment">          The separation from the right neighbor eigenvalue in W.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WERR    (input) DOUBLE PRECISION array, dimension &gt;=  (CLEND-CLSTRT+1)
+</span><span class="comment">*</span><span class="comment">          WERR contain the semiwidth of the uncertainty
+</span><span class="comment">*</span><span class="comment">          interval of the corresponding eigenvalue APPROXIMATION in W
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SPDIAM (input) estimate of the spectral diameter obtained from the
+</span><span class="comment">*</span><span class="comment">          Gerschgorin intervals
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CLGAPL, CLGAPR (input) absolute gap on each end of the cluster.
+</span><span class="comment">*</span><span class="comment">          Set by the calling routine to protect against shifts too close
+</span><span class="comment">*</span><span class="comment">          to eigenvalues outside the cluster.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  PIVMIN  (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The minimum pivot allowed in the Sturm sequence.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SIGMA   (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The shift used to form L(+) D(+) L(+)^T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DPLUS   (output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The N diagonal elements of the diagonal matrix D(+).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LPLUS   (output) DOUBLE PRECISION array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          The first (N-1) elements of LPLUS contain the subdiagonal
+</span><span class="comment">*</span><span class="comment">          elements of the unit bidiagonal matrix L(+).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) DOUBLE PRECISION array, dimension (2*N)
+</span><span class="comment">*</span><span class="comment">          Workspace.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Beresford Parlett, University of California, Berkeley, USA
+</span><span class="comment">*</span><span class="comment">     Jim Demmel, University of California, Berkeley, USA
+</span><span class="comment">*</span><span class="comment">     Inderjit Dhillon, University of Texas, Austin, USA
+</span><span class="comment">*</span><span class="comment">     Osni Marques, LBNL/NERSC, USA
+</span><span class="comment">*</span><span class="comment">     Christof Voemel, University of California, Berkeley, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   FOUR, MAXGROWTH1, MAXGROWTH2, ONE, QUART, TWO,
+     $                   ZERO
+      PARAMETER          ( ZERO = 0.0D0, ONE = 1.0D0, TWO = 2.0D0,
+     $                     FOUR = 4.0D0, QUART = 0.25D0,
+     $                     MAXGROWTH1 = 8.D0,
+     $                     MAXGROWTH2 = 8.D0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL   DORRR1, FORCER, NOFAIL, SAWNAN1, SAWNAN2, TRYRRR1
+      INTEGER            I, INDX, KTRY, KTRYMAX, SLEFT, SRIGHT, SHIFT
+      PARAMETER          ( KTRYMAX = 1, SLEFT = 1, SRIGHT = 2 )
+      DOUBLE PRECISION   AVGAP, BESTSHIFT, CLWDTH, EPS, FACT, FAIL,
+     $                   FAIL2, GROWTHBOUND, LDELTA, LDMAX, LSIGMA,
+     $                   MAX1, MAX2, MINGAP, OLDP, PROD, RDELTA, RDMAX,
+     $                   RRR1, RRR2, RSIGMA, S, SMLGROWTH, TMP, ZNM2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL <a name="DISNAN.115"></a><a href="disnan.f.html#DISNAN.1">DISNAN</a>
+      DOUBLE PRECISION   <a name="DLAMCH.116"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+      EXTERNAL           <a name="DISNAN.117"></a><a href="disnan.f.html#DISNAN.1">DISNAN</a>, <a name="DLAMCH.117"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DCOPY
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      FACT = DBLE(2**KTRYMAX)
+      EPS = <a name="DLAMCH.129"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Precision'</span> )
+      SHIFT = 0
+      FORCER = .FALSE.
+
+
+<span class="comment">*</span><span class="comment">     Note that we cannot guarantee that for any of the shifts tried,
+</span><span class="comment">*</span><span class="comment">     the factorization has a small or even moderate element growth.
+</span><span class="comment">*</span><span class="comment">     There could be Ritz values at both ends of the cluster and despite
+</span><span class="comment">*</span><span class="comment">     backing off, there are examples where all factorizations tried
+</span><span class="comment">*</span><span class="comment">     (in IEEE mode, allowing zero pivots &amp; infinities) have INFINITE
+</span><span class="comment">*</span><span class="comment">     element growth.
+</span><span class="comment">*</span><span class="comment">     For this reason, we should use PIVMIN in this subroutine so that at
+</span><span class="comment">*</span><span class="comment">     least the L D L^T factorization exists. It can be checked afterwards
+</span><span class="comment">*</span><span class="comment">     whether the element growth caused bad residuals/orthogonality.
+</span>
+<span class="comment">*</span><span class="comment">     Decide whether the code should accept the best among all
+</span><span class="comment">*</span><span class="comment">     representations despite large element growth or signal INFO=1
+</span>      NOFAIL = .TRUE.
+<span class="comment">*</span><span class="comment">
+</span>
+<span class="comment">*</span><span class="comment">     Compute the average gap length of the cluster
+</span>      CLWDTH = ABS(W(CLEND)-W(CLSTRT)) + WERR(CLEND) + WERR(CLSTRT)
+      AVGAP = CLWDTH / DBLE(CLEND-CLSTRT)
+      MINGAP = MIN(CLGAPL, CLGAPR)
+<span class="comment">*</span><span class="comment">     Initial values for shifts to both ends of cluster
+</span>      LSIGMA = MIN(W( CLSTRT ),W( CLEND )) - WERR( CLSTRT )
+      RSIGMA = MAX(W( CLSTRT ),W( CLEND )) + WERR( CLEND )
+
+<span class="comment">*</span><span class="comment">     Use a small fudge to make sure that we really shift to the outside
+</span>      LSIGMA = LSIGMA - ABS(LSIGMA)* FOUR * EPS
+      RSIGMA = RSIGMA + ABS(RSIGMA)* FOUR * EPS
+
+<span class="comment">*</span><span class="comment">     Compute upper bounds for how much to back off the initial shifts
+</span>      LDMAX = QUART * MINGAP + TWO * PIVMIN
+      RDMAX = QUART * MINGAP + TWO * PIVMIN
+
+      LDELTA = MAX(AVGAP,WGAP( CLSTRT ))/FACT
+      RDELTA = MAX(AVGAP,WGAP( CLEND-1 ))/FACT
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Initialize the record of the best representation found
+</span><span class="comment">*</span><span class="comment">
+</span>      S = <a name="DLAMCH.170"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'S'</span> )
+      SMLGROWTH = ONE / S
+      FAIL = DBLE(N-1)*MINGAP/(SPDIAM*EPS)
+      FAIL2 = DBLE(N-1)*MINGAP/(SPDIAM*SQRT(EPS))
+      BESTSHIFT = LSIGMA
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     while (KTRY &lt;= KTRYMAX)
+</span>      KTRY = 0
+      GROWTHBOUND = MAXGROWTH1*SPDIAM
+
+ 5    CONTINUE
+      SAWNAN1 = .FALSE.
+      SAWNAN2 = .FALSE.
+<span class="comment">*</span><span class="comment">     Ensure that we do not back off too much of the initial shifts
+</span>      LDELTA = MIN(LDMAX,LDELTA)
+      RDELTA = MIN(RDMAX,RDELTA)
+
+<span class="comment">*</span><span class="comment">     Compute the element growth when shifting to both ends of the cluster
+</span><span class="comment">*</span><span class="comment">     accept the shift if there is no element growth at one of the two ends
+</span>
+<span class="comment">*</span><span class="comment">     Left end
+</span>      S = -LSIGMA
+      DPLUS( 1 ) = D( 1 ) + S
+      IF(ABS(DPLUS(1)).LT.PIVMIN) THEN
+         DPLUS(1) = -PIVMIN
+<span class="comment">*</span><span class="comment">        Need to set SAWNAN1 because refined RRR test should not be used
+</span><span class="comment">*</span><span class="comment">        in this case
+</span>         SAWNAN1 = .TRUE.
+      ENDIF
+      MAX1 = ABS( DPLUS( 1 ) )
+      DO 6 I = 1, N - 1
+         LPLUS( I ) = LD( I ) / DPLUS( I )
+         S = S*LPLUS( I )*L( I ) - LSIGMA
+         DPLUS( I+1 ) = D( I+1 ) + S
+         IF(ABS(DPLUS(I+1)).LT.PIVMIN) THEN
+            DPLUS(I+1) = -PIVMIN
+<span class="comment">*</span><span class="comment">           Need to set SAWNAN1 because refined RRR test should not be used
+</span><span class="comment">*</span><span class="comment">           in this case
+</span>            SAWNAN1 = .TRUE.
+         ENDIF
+         MAX1 = MAX( MAX1,ABS(DPLUS(I+1)) )
+ 6    CONTINUE
+      SAWNAN1 = SAWNAN1 .OR.  <a name="DISNAN.212"></a><a href="disnan.f.html#DISNAN.1">DISNAN</a>( MAX1 )
+
+      IF( FORCER .OR.
+     $   (MAX1.LE.GROWTHBOUND .AND. .NOT.SAWNAN1 ) ) THEN
+         SIGMA = LSIGMA
+         SHIFT = SLEFT
+         GOTO 100
+      ENDIF
+
+<span class="comment">*</span><span class="comment">     Right end
+</span>      S = -RSIGMA
+      WORK( 1 ) = D( 1 ) + S
+      IF(ABS(WORK(1)).LT.PIVMIN) THEN
+         WORK(1) = -PIVMIN
+<span class="comment">*</span><span class="comment">        Need to set SAWNAN2 because refined RRR test should not be used
+</span><span class="comment">*</span><span class="comment">        in this case
+</span>         SAWNAN2 = .TRUE.
+      ENDIF
+      MAX2 = ABS( WORK( 1 ) )
+      DO 7 I = 1, N - 1
+         WORK( N+I ) = LD( I ) / WORK( I )
+         S = S*WORK( N+I )*L( I ) - RSIGMA
+         WORK( I+1 ) = D( I+1 ) + S
+         IF(ABS(WORK(I+1)).LT.PIVMIN) THEN
+            WORK(I+1) = -PIVMIN
+<span class="comment">*</span><span class="comment">           Need to set SAWNAN2 because refined RRR test should not be used
+</span><span class="comment">*</span><span class="comment">           in this case
+</span>            SAWNAN2 = .TRUE.
+         ENDIF
+         MAX2 = MAX( MAX2,ABS(WORK(I+1)) )
+ 7    CONTINUE
+      SAWNAN2 = SAWNAN2 .OR.  <a name="DISNAN.243"></a><a href="disnan.f.html#DISNAN.1">DISNAN</a>( MAX2 )
+
+      IF( FORCER .OR.
+     $   (MAX2.LE.GROWTHBOUND .AND. .NOT.SAWNAN2 ) ) THEN
+         SIGMA = RSIGMA
+         SHIFT = SRIGHT
+         GOTO 100
+      ENDIF
+<span class="comment">*</span><span class="comment">     If we are at this point, both shifts led to too much element growth
+</span>
+<span class="comment">*</span><span class="comment">     Record the better of the two shifts (provided it didn't lead to NaN)
+</span>      IF(SAWNAN1.AND.SAWNAN2) THEN
+<span class="comment">*</span><span class="comment">        both MAX1 and MAX2 are NaN
+</span>         GOTO 50
+      ELSE
+         IF( .NOT.SAWNAN1 ) THEN
+            INDX = 1
+            IF(MAX1.LE.SMLGROWTH) THEN
+               SMLGROWTH = MAX1
+               BESTSHIFT = LSIGMA
+            ENDIF
+         ENDIF
+         IF( .NOT.SAWNAN2 ) THEN
+            IF(SAWNAN1 .OR. MAX2.LE.MAX1) INDX = 2
+            IF(MAX2.LE.SMLGROWTH) THEN
+               SMLGROWTH = MAX2
+               BESTSHIFT = RSIGMA
+            ENDIF
+         ENDIF
+      ENDIF
+
+<span class="comment">*</span><span class="comment">     If we are here, both the left and the right shift led to
+</span><span class="comment">*</span><span class="comment">     element growth. If the element growth is moderate, then
+</span><span class="comment">*</span><span class="comment">     we may still accept the representation, if it passes a
+</span><span class="comment">*</span><span class="comment">     refined test for RRR. This test supposes that no NaN occurred.
+</span><span class="comment">*</span><span class="comment">     Moreover, we use the refined RRR test only for isolated clusters.
+</span>      IF((CLWDTH.LT.MINGAP/DBLE(128)) .AND.
+     $   (MIN(MAX1,MAX2).LT.FAIL2)
+     $  .AND.(.NOT.SAWNAN1).AND.(.NOT.SAWNAN2)) THEN
+         DORRR1 = .TRUE.
+      ELSE
+         DORRR1 = .FALSE.
+      ENDIF
+      TRYRRR1 = .TRUE.
+      IF( TRYRRR1 .AND. DORRR1 ) THEN
+      IF(INDX.EQ.1) THEN
+         TMP = ABS( DPLUS( N ) )
+         ZNM2 = ONE
+         PROD = ONE
+         OLDP = ONE
+         DO 15 I = N-1, 1, -1
+            IF( PROD .LE. EPS ) THEN
+               PROD =
+     $         ((DPLUS(I+1)*WORK(N+I+1))/(DPLUS(I)*WORK(N+I)))*OLDP
+            ELSE
+               PROD = PROD*ABS(WORK(N+I))
+            END IF
+            OLDP = PROD
+            ZNM2 = ZNM2 + PROD**2
+            TMP = MAX( TMP, ABS( DPLUS( I ) * PROD ))
+ 15      CONTINUE
+         RRR1 = TMP/( SPDIAM * SQRT( ZNM2 ) )
+         IF (RRR1.LE.MAXGROWTH2) THEN
+            SIGMA = LSIGMA
+            SHIFT = SLEFT
+            GOTO 100
+         ENDIF
+      ELSE IF(INDX.EQ.2) THEN
+         TMP = ABS( WORK( N ) )
+         ZNM2 = ONE
+         PROD = ONE
+         OLDP = ONE
+         DO 16 I = N-1, 1, -1
+            IF( PROD .LE. EPS ) THEN
+               PROD = ((WORK(I+1)*LPLUS(I+1))/(WORK(I)*LPLUS(I)))*OLDP
+            ELSE
+               PROD = PROD*ABS(LPLUS(I))
+            END IF
+            OLDP = PROD
+            ZNM2 = ZNM2 + PROD**2
+            TMP = MAX( TMP, ABS( WORK( I ) * PROD ))
+ 16      CONTINUE
+         RRR2 = TMP/( SPDIAM * SQRT( ZNM2 ) )
+         IF (RRR2.LE.MAXGROWTH2) THEN
+            SIGMA = RSIGMA
+            SHIFT = SRIGHT
+            GOTO 100
+         ENDIF
+      END IF
+      ENDIF
+
+ 50   CONTINUE
+
+      IF (KTRY.LT.KTRYMAX) THEN
+<span class="comment">*</span><span class="comment">        If we are here, both shifts failed also the RRR test.
+</span><span class="comment">*</span><span class="comment">        Back off to the outside
+</span>         LSIGMA = MAX( LSIGMA - LDELTA,
+     $     LSIGMA - LDMAX)
+         RSIGMA = MIN( RSIGMA + RDELTA,
+     $     RSIGMA + RDMAX )
+         LDELTA = TWO * LDELTA
+         RDELTA = TWO * RDELTA
+         KTRY = KTRY + 1
+         GOTO 5
+      ELSE
+<span class="comment">*</span><span class="comment">        None of the representations investigated satisfied our
+</span><span class="comment">*</span><span class="comment">        criteria. Take the best one we found.
+</span>         IF((SMLGROWTH.LT.FAIL).OR.NOFAIL) THEN
+            LSIGMA = BESTSHIFT
+            RSIGMA = BESTSHIFT
+            FORCER = .TRUE.
+            GOTO 5
+         ELSE
+            INFO = 1
+            RETURN
+         ENDIF
+      END IF
+
+ 100  CONTINUE
+      IF (SHIFT.EQ.SLEFT) THEN
+      ELSEIF (SHIFT.EQ.SRIGHT) THEN
+<span class="comment">*</span><span class="comment">        store new L and D back into DPLUS, LPLUS
+</span>         CALL DCOPY( N, WORK, 1, DPLUS, 1 )
+         CALL DCOPY( N-1, WORK(N+1), 1, LPLUS, 1 )
+      ENDIF
+
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLARRF.371"></a><a href="dlarrf.f.html#DLARRF.1">DLARRF</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

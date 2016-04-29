@@ -1,0 +1,244 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlarzb.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLARZB.1"></a><a href="dlarzb.f.html#DLARZB.1">DLARZB</a>( SIDE, TRANS, DIRECT, STOREV, M, N, K, L, V,
+     $                   LDV, T, LDT, C, LDC, WORK, LDWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          DIRECT, SIDE, STOREV, TRANS
+      INTEGER            K, L, LDC, LDT, LDV, LDWORK, M, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   C( LDC, * ), T( LDT, * ), V( LDV, * ),
+     $                   WORK( LDWORK, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLARZB.20"></a><a href="dlarzb.f.html#DLARZB.1">DLARZB</a> applies a real block reflector H or its transpose H**T to
+</span><span class="comment">*</span><span class="comment">  a real distributed M-by-N  C from the left or the right.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Currently, only STOREV = 'R' and DIRECT = 'B' are supported.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SIDE    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'L': apply H or H' from the Left
+</span><span class="comment">*</span><span class="comment">          = 'R': apply H or H' from the Right
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TRANS   (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'N': apply H (No transpose)
+</span><span class="comment">*</span><span class="comment">          = 'C': apply H' (Transpose)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIRECT  (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Indicates how H is formed from a product of elementary
+</span><span class="comment">*</span><span class="comment">          reflectors
+</span><span class="comment">*</span><span class="comment">          = 'F': H = H(1) H(2) . . . H(k) (Forward, not supported yet)
+</span><span class="comment">*</span><span class="comment">          = 'B': H = H(k) . . . H(2) H(1) (Backward)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  STOREV  (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Indicates how the vectors which define the elementary
+</span><span class="comment">*</span><span class="comment">          reflectors are stored:
+</span><span class="comment">*</span><span class="comment">          = 'C': Columnwise                        (not supported yet)
+</span><span class="comment">*</span><span class="comment">          = 'R': Rowwise
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix C.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix C.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  K       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix T (= the number of elementary
+</span><span class="comment">*</span><span class="comment">          reflectors whose product defines the block reflector).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  L       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix V containing the
+</span><span class="comment">*</span><span class="comment">          meaningful part of the Householder reflectors.
+</span><span class="comment">*</span><span class="comment">          If SIDE = 'L', M &gt;= L &gt;= 0, if SIDE = 'R', N &gt;= L &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  V       (input) DOUBLE PRECISION array, dimension (LDV,NV).
+</span><span class="comment">*</span><span class="comment">          If STOREV = 'C', NV = K; if STOREV = 'R', NV = L.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDV     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array V.
+</span><span class="comment">*</span><span class="comment">          If STOREV = 'C', LDV &gt;= L; if STOREV = 'R', LDV &gt;= K.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  T       (input) DOUBLE PRECISION array, dimension (LDT,K)
+</span><span class="comment">*</span><span class="comment">          The triangular K-by-K matrix T in the representation of the
+</span><span class="comment">*</span><span class="comment">          block reflector.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDT     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array T. LDT &gt;= K.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C       (input/output) DOUBLE PRECISION array, dimension (LDC,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the M-by-N matrix C.
+</span><span class="comment">*</span><span class="comment">          On exit, C is overwritten by H*C or H'*C or C*H or C*H'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDC     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array C. LDC &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) DOUBLE PRECISION array, dimension (LDWORK,K)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDWORK  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array WORK.
+</span><span class="comment">*</span><span class="comment">          If SIDE = 'L', LDWORK &gt;= max(1,N);
+</span><span class="comment">*</span><span class="comment">          if SIDE = 'R', LDWORK &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">    A. Petitet, Computer Science Dept., Univ. of Tenn., Knoxville, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ONE
+      PARAMETER          ( ONE = 1.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      CHARACTER          TRANST
+      INTEGER            I, INFO, J
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.108"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.109"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DCOPY, DGEMM, DTRMM, <a name="XERBLA.112"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( M.LE.0 .OR. N.LE.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Check for currently supported options
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( .NOT.<a name="LSAME.124"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( DIRECT, <span class="string">'B'</span> ) ) THEN
+         INFO = -3
+      ELSE IF( .NOT.<a name="LSAME.126"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( STOREV, <span class="string">'R'</span> ) ) THEN
+         INFO = -4
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.130"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DLARZB.130"></a><a href="dlarzb.f.html#DLARZB.1">DLARZB</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( <a name="LSAME.134"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TRANS, <span class="string">'N'</span> ) ) THEN
+         TRANST = <span class="string">'T'</span>
+      ELSE
+         TRANST = <span class="string">'N'</span>
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( <a name="LSAME.140"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'L'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Form  H * C  or  H' * C
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        W( 1:n, 1:k ) = C( 1:k, 1:n )'
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 10 J = 1, K
+            CALL DCOPY( N, C( J, 1 ), LDC, WORK( 1, J ), 1 )
+   10    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        W( 1:n, 1:k ) = W( 1:n, 1:k ) + ...
+</span><span class="comment">*</span><span class="comment">                        C( m-l+1:m, 1:n )' * V( 1:k, 1:l )'
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( L.GT.0 )
+     $      CALL DGEMM( <span class="string">'Transpose'</span>, <span class="string">'Transpose'</span>, N, K, L, ONE,
+     $                  C( M-L+1, 1 ), LDC, V, LDV, ONE, WORK, LDWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        W( 1:n, 1:k ) = W( 1:n, 1:k ) * T'  or  W( 1:m, 1:k ) * T
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL DTRMM( <span class="string">'Right'</span>, <span class="string">'Lower'</span>, TRANST, <span class="string">'Non-unit'</span>, N, K, ONE, T,
+     $               LDT, WORK, LDWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        C( 1:k, 1:n ) = C( 1:k, 1:n ) - W( 1:n, 1:k )'
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 30 J = 1, N
+            DO 20 I = 1, K
+               C( I, J ) = C( I, J ) - WORK( J, I )
+   20       CONTINUE
+   30    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        C( m-l+1:m, 1:n ) = C( m-l+1:m, 1:n ) - ...
+</span><span class="comment">*</span><span class="comment">                            V( 1:k, 1:l )' * W( 1:n, 1:k )'
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( L.GT.0 )
+     $      CALL DGEMM( <span class="string">'Transpose'</span>, <span class="string">'Transpose'</span>, L, N, K, -ONE, V, LDV,
+     $                  WORK, LDWORK, ONE, C( M-L+1, 1 ), LDC )
+<span class="comment">*</span><span class="comment">
+</span>      ELSE IF( <a name="LSAME.177"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( SIDE, <span class="string">'R'</span> ) ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Form  C * H  or  C * H'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        W( 1:m, 1:k ) = C( 1:m, 1:k )
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 40 J = 1, K
+            CALL DCOPY( M, C( 1, J ), 1, WORK( 1, J ), 1 )
+   40    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        W( 1:m, 1:k ) = W( 1:m, 1:k ) + ...
+</span><span class="comment">*</span><span class="comment">                        C( 1:m, n-l+1:n ) * V( 1:k, 1:l )'
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( L.GT.0 )
+     $      CALL DGEMM( <span class="string">'No transpose'</span>, <span class="string">'Transpose'</span>, M, K, L, ONE,
+     $                  C( 1, N-L+1 ), LDC, V, LDV, ONE, WORK, LDWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        W( 1:m, 1:k ) = W( 1:m, 1:k ) * T  or  W( 1:m, 1:k ) * T'
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL DTRMM( <span class="string">'Right'</span>, <span class="string">'Lower'</span>, TRANS, <span class="string">'Non-unit'</span>, M, K, ONE, T,
+     $               LDT, WORK, LDWORK )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        C( 1:m, 1:k ) = C( 1:m, 1:k ) - W( 1:m, 1:k )
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 60 J = 1, K
+            DO 50 I = 1, M
+               C( I, J ) = C( I, J ) - WORK( I, J )
+   50       CONTINUE
+   60    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        C( 1:m, n-l+1:n ) = C( 1:m, n-l+1:n ) - ...
+</span><span class="comment">*</span><span class="comment">                            W( 1:m, 1:k ) * V( 1:k, 1:l )
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( L.GT.0 )
+     $      CALL DGEMM( <span class="string">'No transpose'</span>, <span class="string">'No transpose'</span>, M, L, K, -ONE,
+     $                  WORK, LDWORK, V, LDV, ONE, C( 1, N-L+1 ), LDC )
+<span class="comment">*</span><span class="comment">
+</span>      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLARZB.218"></a><a href="dlarzb.f.html#DLARZB.1">DLARZB</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

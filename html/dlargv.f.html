@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlargv.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLARGV.1"></a><a href="dlargv.f.html#DLARGV.1">DLARGV</a>( N, X, INCX, Y, INCY, C, INCC )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INCC, INCX, INCY, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   C( * ), X( * ), Y( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLARGV.17"></a><a href="dlargv.f.html#DLARGV.1">DLARGV</a> generates a vector of real plane rotations, determined by
+</span><span class="comment">*</span><span class="comment">  elements of the real vectors x and y. For i = 1,2,...,n
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     (  c(i)  s(i) ) ( x(i) ) = ( a(i) )
+</span><span class="comment">*</span><span class="comment">     ( -s(i)  c(i) ) ( y(i) ) = (   0  )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of plane rotations to be generated.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X       (input/output) DOUBLE PRECISION array,
+</span><span class="comment">*</span><span class="comment">                         dimension (1+(N-1)*INCX)
+</span><span class="comment">*</span><span class="comment">          On entry, the vector x.
+</span><span class="comment">*</span><span class="comment">          On exit, x(i) is overwritten by a(i), for i = 1,...,n.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INCX    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The increment between elements of X. INCX &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Y       (input/output) DOUBLE PRECISION array,
+</span><span class="comment">*</span><span class="comment">                         dimension (1+(N-1)*INCY)
+</span><span class="comment">*</span><span class="comment">          On entry, the vector y.
+</span><span class="comment">*</span><span class="comment">          On exit, the sines of the plane rotations.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INCY    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The increment between elements of Y. INCY &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C       (output) DOUBLE PRECISION array, dimension (1+(N-1)*INCC)
+</span><span class="comment">*</span><span class="comment">          The cosines of the plane rotations.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INCC    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The increment between elements of C. INCC &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, IC, IX, IY
+      DOUBLE PRECISION   F, G, T, TT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      IX = 1
+      IY = 1
+      IC = 1
+      DO 10 I = 1, N
+         F = X( IX )
+         G = Y( IY )
+         IF( G.EQ.ZERO ) THEN
+            C( IC ) = ONE
+         ELSE IF( F.EQ.ZERO ) THEN
+            C( IC ) = ZERO
+            Y( IY ) = ONE
+            X( IX ) = G
+         ELSE IF( ABS( F ).GT.ABS( G ) ) THEN
+            T = G / F
+            TT = SQRT( ONE+T*T )
+            C( IC ) = ONE / TT
+            Y( IY ) = T*C( IC )
+            X( IX ) = F*TT
+         ELSE
+            T = F / G
+            TT = SQRT( ONE+T*T )
+            Y( IY ) = ONE / TT
+            C( IC ) = T*Y( IY )
+            X( IX ) = G*TT
+         END IF
+         IC = IC + INCC
+         IY = IY + INCY
+         IX = IX + INCX
+   10 CONTINUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLARGV.97"></a><a href="dlargv.f.html#DLARGV.1">DLARGV</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>cupgtr.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CUPGTR.1"></a><a href="cupgtr.f.html#CUPGTR.1">CUPGTR</a>( UPLO, N, AP, TAU, Q, LDQ, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          UPLO
+      INTEGER            INFO, LDQ, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX            AP( * ), Q( LDQ, * ), TAU( * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CUPGTR.18"></a><a href="cupgtr.f.html#CUPGTR.1">CUPGTR</a> generates a complex unitary matrix Q which is defined as the
+</span><span class="comment">*</span><span class="comment">  product of n-1 elementary reflectors H(i) of order n, as returned by
+</span><span class="comment">*</span><span class="comment">  <a name="CHPTRD.20"></a><a href="chptrd.f.html#CHPTRD.1">CHPTRD</a> using packed storage:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  if UPLO = 'U', Q = H(n-1) . . . H(2) H(1),
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  if UPLO = 'L', Q = H(1) H(2) . . . H(n-1).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U': Upper triangular packed storage used in previous
+</span><span class="comment">*</span><span class="comment">                 call to <a name="CHPTRD.31"></a><a href="chptrd.f.html#CHPTRD.1">CHPTRD</a>;
+</span><span class="comment">*</span><span class="comment">          = 'L': Lower triangular packed storage used in previous
+</span><span class="comment">*</span><span class="comment">                 call to <a name="CHPTRD.33"></a><a href="chptrd.f.html#CHPTRD.1">CHPTRD</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix Q. N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AP      (input) COMPLEX array, dimension (N*(N+1)/2)
+</span><span class="comment">*</span><span class="comment">          The vectors which define the elementary reflectors, as
+</span><span class="comment">*</span><span class="comment">          returned by <a name="CHPTRD.40"></a><a href="chptrd.f.html#CHPTRD.1">CHPTRD</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TAU     (input) COMPLEX array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          TAU(i) must contain the scalar factor of the elementary
+</span><span class="comment">*</span><span class="comment">          reflector H(i), as returned by <a name="CHPTRD.44"></a><a href="chptrd.f.html#CHPTRD.1">CHPTRD</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Q       (output) COMPLEX array, dimension (LDQ,N)
+</span><span class="comment">*</span><span class="comment">          The N-by-N unitary matrix Q.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDQ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Q. LDQ &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) COMPLEX array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      COMPLEX            CZERO, CONE
+      PARAMETER          ( CZERO = ( 0.0E+0, 0.0E+0 ),
+     $                   CONE = ( 1.0E+0, 0.0E+0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            UPPER
+      INTEGER            I, IINFO, IJ, J
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.70"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.71"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="CUNG2L.74"></a><a href="cung2l.f.html#CUNG2L.1">CUNG2L</a>, <a name="CUNG2R.74"></a><a href="cung2r.f.html#CUNG2R.1">CUNG2R</a>, <a name="XERBLA.74"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input arguments
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      UPPER = <a name="LSAME.84"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> )
+      IF( .NOT.UPPER .AND. .NOT.<a name="LSAME.85"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDQ.LT.MAX( 1, N ) ) THEN
+         INFO = -6
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.93"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CUPGTR.93"></a><a href="cupgtr.f.html#CUPGTR.1">CUPGTR</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      IF( UPPER ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Q was determined by a call to <a name="CHPTRD.104"></a><a href="chptrd.f.html#CHPTRD.1">CHPTRD</a> with UPLO = 'U'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Unpack the vectors which define the elementary reflectors and
+</span><span class="comment">*</span><span class="comment">        set the last row and column of Q equal to those of the unit
+</span><span class="comment">*</span><span class="comment">        matrix
+</span><span class="comment">*</span><span class="comment">
+</span>         IJ = 2
+         DO 20 J = 1, N - 1
+            DO 10 I = 1, J - 1
+               Q( I, J ) = AP( IJ )
+               IJ = IJ + 1
+   10       CONTINUE
+            IJ = IJ + 2
+            Q( N, J ) = CZERO
+   20    CONTINUE
+         DO 30 I = 1, N - 1
+            Q( I, N ) = CZERO
+   30    CONTINUE
+         Q( N, N ) = CONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Generate Q(1:n-1,1:n-1)
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="CUNG2L.126"></a><a href="cung2l.f.html#CUNG2L.1">CUNG2L</a>( N-1, N-1, N-1, Q, LDQ, TAU, WORK, IINFO )
+<span class="comment">*</span><span class="comment">
+</span>      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Q was determined by a call to <a name="CHPTRD.130"></a><a href="chptrd.f.html#CHPTRD.1">CHPTRD</a> with UPLO = 'L'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Unpack the vectors which define the elementary reflectors and
+</span><span class="comment">*</span><span class="comment">        set the first row and column of Q equal to those of the unit
+</span><span class="comment">*</span><span class="comment">        matrix
+</span><span class="comment">*</span><span class="comment">
+</span>         Q( 1, 1 ) = CONE
+         DO 40 I = 2, N
+            Q( I, 1 ) = CZERO
+   40    CONTINUE
+         IJ = 3
+         DO 60 J = 2, N
+            Q( 1, J ) = CZERO
+            DO 50 I = J + 1, N
+               Q( I, J ) = AP( IJ )
+               IJ = IJ + 1
+   50       CONTINUE
+            IJ = IJ + 2
+   60    CONTINUE
+         IF( N.GT.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Generate Q(2:n,2:n)
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="CUNG2R.153"></a><a href="cung2r.f.html#CUNG2R.1">CUNG2R</a>( N-1, N-1, N-1, Q( 2, 2 ), LDQ, TAU, WORK,
+     $                   IINFO )
+         END IF
+      END IF
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CUPGTR.159"></a><a href="cupgtr.f.html#CUPGTR.1">CUPGTR</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

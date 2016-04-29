@@ -1,0 +1,302 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dtrmv.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DTRMV.1"></a><a href="dtrmv.f.html#DTRMV.1">DTRMV</a>(UPLO,TRANS,DIAG,N,A,LDA,X,INCX)
+<span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER INCX,LDA,N
+      CHARACTER DIAG,TRANS,UPLO
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION A(LDA,*),X(*)
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DTRMV.13"></a><a href="dtrmv.f.html#DTRMV.1">DTRMV</a>  performs one of the matrix-vector operations
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     x := A*x,   or   x := A'*x,
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where x is an n element vector and  A is an n by n unit, or non-unit,
+</span><span class="comment">*</span><span class="comment">  upper or lower triangular matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  ==========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO   - CHARACTER*1.
+</span><span class="comment">*</span><span class="comment">           On entry, UPLO specifies whether the matrix is an upper or
+</span><span class="comment">*</span><span class="comment">           lower triangular matrix as follows:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              UPLO = 'U' or 'u'   A is an upper triangular matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              UPLO = 'L' or 'l'   A is a lower triangular matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TRANS  - CHARACTER*1.
+</span><span class="comment">*</span><span class="comment">           On entry, TRANS specifies the operation to be performed as
+</span><span class="comment">*</span><span class="comment">           follows:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              TRANS = 'N' or 'n'   x := A*x.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              TRANS = 'T' or 't'   x := A'*x.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              TRANS = 'C' or 'c'   x := A'*x.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIAG   - CHARACTER*1.
+</span><span class="comment">*</span><span class="comment">           On entry, DIAG specifies whether or not A is unit
+</span><span class="comment">*</span><span class="comment">           triangular as follows:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              DIAG = 'U' or 'u'   A is assumed to be unit triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              DIAG = 'N' or 'n'   A is not assumed to be unit
+</span><span class="comment">*</span><span class="comment">                                  triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N      - INTEGER.
+</span><span class="comment">*</span><span class="comment">           On entry, N specifies the order of the matrix A.
+</span><span class="comment">*</span><span class="comment">           N must be at least zero.
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A      - DOUBLE PRECISION array of DIMENSION ( LDA, n ).
+</span><span class="comment">*</span><span class="comment">           Before entry with  UPLO = 'U' or 'u', the leading n by n
+</span><span class="comment">*</span><span class="comment">           upper triangular part of the array A must contain the upper
+</span><span class="comment">*</span><span class="comment">           triangular matrix and the strictly lower triangular part of
+</span><span class="comment">*</span><span class="comment">           A is not referenced.
+</span><span class="comment">*</span><span class="comment">           Before entry with UPLO = 'L' or 'l', the leading n by n
+</span><span class="comment">*</span><span class="comment">           lower triangular part of the array A must contain the lower
+</span><span class="comment">*</span><span class="comment">           triangular matrix and the strictly upper triangular part of
+</span><span class="comment">*</span><span class="comment">           A is not referenced.
+</span><span class="comment">*</span><span class="comment">           Note that when  DIAG = 'U' or 'u', the diagonal elements of
+</span><span class="comment">*</span><span class="comment">           A are not referenced either, but are assumed to be unity.
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA    - INTEGER.
+</span><span class="comment">*</span><span class="comment">           On entry, LDA specifies the first dimension of A as declared
+</span><span class="comment">*</span><span class="comment">           in the calling (sub) program. LDA must be at least
+</span><span class="comment">*</span><span class="comment">           max( 1, n ).
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X      - DOUBLE PRECISION array of dimension at least
+</span><span class="comment">*</span><span class="comment">           ( 1 + ( n - 1 )*abs( INCX ) ).
+</span><span class="comment">*</span><span class="comment">           Before entry, the incremented array X must contain the n
+</span><span class="comment">*</span><span class="comment">           element vector x. On exit, X is overwritten with the
+</span><span class="comment">*</span><span class="comment">           tranformed vector x.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INCX   - INTEGER.
+</span><span class="comment">*</span><span class="comment">           On entry, INCX specifies the increment for the elements of
+</span><span class="comment">*</span><span class="comment">           X. INCX must not be zero.
+</span><span class="comment">*</span><span class="comment">           Unchanged on exit.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Level 2 Blas routine.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- Written on 22-October-1986.
+</span><span class="comment">*</span><span class="comment">     Jack Dongarra, Argonne National Lab.
+</span><span class="comment">*</span><span class="comment">     Jeremy Du Croz, Nag Central Office.
+</span><span class="comment">*</span><span class="comment">     Sven Hammarling, Nag Central Office.
+</span><span class="comment">*</span><span class="comment">     Richard Hanson, Sandia National Labs.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION ZERO
+      PARAMETER (ZERO=0.0D+0)
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      DOUBLE PRECISION TEMP
+      INTEGER I,INFO,IX,J,JX,KX
+      LOGICAL NOUNIT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL <a name="LSAME.111"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL <a name="LSAME.112"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL <a name="XERBLA.115"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF (.NOT.<a name="LSAME.124"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(UPLO,<span class="string">'U'</span>) .AND. .NOT.<a name="LSAME.124"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(UPLO,<span class="string">'L'</span>)) THEN
+          INFO = 1
+      ELSE IF (.NOT.<a name="LSAME.126"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(TRANS,<span class="string">'N'</span>) .AND. .NOT.<a name="LSAME.126"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(TRANS,<span class="string">'T'</span>) .AND.
+     +         .NOT.<a name="LSAME.127"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(TRANS,<span class="string">'C'</span>)) THEN
+          INFO = 2
+      ELSE IF (.NOT.<a name="LSAME.129"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(DIAG,<span class="string">'U'</span>) .AND. .NOT.<a name="LSAME.129"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(DIAG,<span class="string">'N'</span>)) THEN
+          INFO = 3
+      ELSE IF (N.LT.0) THEN
+          INFO = 4
+      ELSE IF (LDA.LT.MAX(1,N)) THEN
+          INFO = 6
+      ELSE IF (INCX.EQ.0) THEN
+          INFO = 8
+      END IF
+      IF (INFO.NE.0) THEN
+          CALL <a name="XERBLA.139"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>(<span class="string">'<a name="DTRMV.139"></a><a href="dtrmv.f.html#DTRMV.1">DTRMV</a> '</span>,INFO)
+          RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF (N.EQ.0) RETURN
+<span class="comment">*</span><span class="comment">
+</span>      NOUNIT = <a name="LSAME.147"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(DIAG,<span class="string">'N'</span>)
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Set up the start point in X if the increment is not unity. This
+</span><span class="comment">*</span><span class="comment">     will be  ( N - 1 )*INCX  too small for descending loops.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF (INCX.LE.0) THEN
+          KX = 1 - (N-1)*INCX
+      ELSE IF (INCX.NE.1) THEN
+          KX = 1
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Start the operations. In this version the elements of A are
+</span><span class="comment">*</span><span class="comment">     accessed sequentially with one pass through A.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF (<a name="LSAME.161"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(TRANS,<span class="string">'N'</span>)) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Form  x := A*x.
+</span><span class="comment">*</span><span class="comment">
+</span>          IF (<a name="LSAME.165"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(UPLO,<span class="string">'U'</span>)) THEN
+              IF (INCX.EQ.1) THEN
+                  DO 20 J = 1,N
+                      IF (X(J).NE.ZERO) THEN
+                          TEMP = X(J)
+                          DO 10 I = 1,J - 1
+                              X(I) = X(I) + TEMP*A(I,J)
+   10                     CONTINUE
+                          IF (NOUNIT) X(J) = X(J)*A(J,J)
+                      END IF
+   20             CONTINUE
+              ELSE
+                  JX = KX
+                  DO 40 J = 1,N
+                      IF (X(JX).NE.ZERO) THEN
+                          TEMP = X(JX)
+                          IX = KX
+                          DO 30 I = 1,J - 1
+                              X(IX) = X(IX) + TEMP*A(I,J)
+                              IX = IX + INCX
+   30                     CONTINUE
+                          IF (NOUNIT) X(JX) = X(JX)*A(J,J)
+                      END IF
+                      JX = JX + INCX
+   40             CONTINUE
+              END IF
+          ELSE
+              IF (INCX.EQ.1) THEN
+                  DO 60 J = N,1,-1
+                      IF (X(J).NE.ZERO) THEN
+                          TEMP = X(J)
+                          DO 50 I = N,J + 1,-1
+                              X(I) = X(I) + TEMP*A(I,J)
+   50                     CONTINUE
+                          IF (NOUNIT) X(J) = X(J)*A(J,J)
+                      END IF
+   60             CONTINUE
+              ELSE
+                  KX = KX + (N-1)*INCX
+                  JX = KX
+                  DO 80 J = N,1,-1
+                      IF (X(JX).NE.ZERO) THEN
+                          TEMP = X(JX)
+                          IX = KX
+                          DO 70 I = N,J + 1,-1
+                              X(IX) = X(IX) + TEMP*A(I,J)
+                              IX = IX - INCX
+   70                     CONTINUE
+                          IF (NOUNIT) X(JX) = X(JX)*A(J,J)
+                      END IF
+                      JX = JX - INCX
+   80             CONTINUE
+              END IF
+          END IF
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Form  x := A'*x.
+</span><span class="comment">*</span><span class="comment">
+</span>          IF (<a name="LSAME.223"></a><a href="lsame.f.html#LSAME.1">LSAME</a>(UPLO,<span class="string">'U'</span>)) THEN
+              IF (INCX.EQ.1) THEN
+                  DO 100 J = N,1,-1
+                      TEMP = X(J)
+                      IF (NOUNIT) TEMP = TEMP*A(J,J)
+                      DO 90 I = J - 1,1,-1
+                          TEMP = TEMP + A(I,J)*X(I)
+   90                 CONTINUE
+                      X(J) = TEMP
+  100             CONTINUE
+              ELSE
+                  JX = KX + (N-1)*INCX
+                  DO 120 J = N,1,-1
+                      TEMP = X(JX)
+                      IX = JX
+                      IF (NOUNIT) TEMP = TEMP*A(J,J)
+                      DO 110 I = J - 1,1,-1
+                          IX = IX - INCX
+                          TEMP = TEMP + A(I,J)*X(IX)
+  110                 CONTINUE
+                      X(JX) = TEMP
+                      JX = JX - INCX
+  120             CONTINUE
+              END IF
+          ELSE
+              IF (INCX.EQ.1) THEN
+                  DO 140 J = 1,N
+                      TEMP = X(J)
+                      IF (NOUNIT) TEMP = TEMP*A(J,J)
+                      DO 130 I = J + 1,N
+                          TEMP = TEMP + A(I,J)*X(I)
+  130                 CONTINUE
+                      X(J) = TEMP
+  140             CONTINUE
+              ELSE
+                  JX = KX
+                  DO 160 J = 1,N
+                      TEMP = X(JX)
+                      IX = JX
+                      IF (NOUNIT) TEMP = TEMP*A(J,J)
+                      DO 150 I = J + 1,N
+                          IX = IX + INCX
+                          TEMP = TEMP + A(I,J)*X(IX)
+  150                 CONTINUE
+                      X(JX) = TEMP
+                      JX = JX + INCX
+  160             CONTINUE
+              END IF
+          END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DTRMV.276"></a><a href="dtrmv.f.html#DTRMV.1">DTRMV</a> .
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

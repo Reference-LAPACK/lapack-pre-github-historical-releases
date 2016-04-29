@@ -1,0 +1,576 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dsbtrd.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DSBTRD.1"></a><a href="dsbtrd.f.html#DSBTRD.1">DSBTRD</a>( VECT, UPLO, N, KD, AB, LDAB, D, E, Q, LDQ,
+     $                   WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          UPLO, VECT
+      INTEGER            INFO, KD, LDAB, LDQ, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   AB( LDAB, * ), D( * ), E( * ), Q( LDQ, * ),
+     $                   WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DSBTRD.20"></a><a href="dsbtrd.f.html#DSBTRD.1">DSBTRD</a> reduces a real symmetric band matrix A to symmetric
+</span><span class="comment">*</span><span class="comment">  tridiagonal form T by an orthogonal similarity transformation:
+</span><span class="comment">*</span><span class="comment">  Q**T * A * Q = T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VECT    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'N':  do not form Q;
+</span><span class="comment">*</span><span class="comment">          = 'V':  form Q;
+</span><span class="comment">*</span><span class="comment">          = 'U':  update a matrix X, by forming X*Q.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangle of A is stored;
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangle of A is stored.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KD      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of superdiagonals of the matrix A if UPLO = 'U',
+</span><span class="comment">*</span><span class="comment">          or the number of subdiagonals if UPLO = 'L'.  KD &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AB      (input/output) DOUBLE PRECISION array, dimension (LDAB,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the upper or lower triangle of the symmetric band
+</span><span class="comment">*</span><span class="comment">          matrix A, stored in the first KD+1 rows of the array.  The
+</span><span class="comment">*</span><span class="comment">          j-th column of A is stored in the j-th column of the array AB
+</span><span class="comment">*</span><span class="comment">          as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', AB(kd+1+i-j,j) = A(i,j) for max(1,j-kd)&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', AB(1+i-j,j)    = A(i,j) for j&lt;=i&lt;=min(n,j+kd).
+</span><span class="comment">*</span><span class="comment">          On exit, the diagonal elements of AB are overwritten by the
+</span><span class="comment">*</span><span class="comment">          diagonal elements of the tridiagonal matrix T; if KD &gt; 0, the
+</span><span class="comment">*</span><span class="comment">          elements on the first superdiagonal (if UPLO = 'U') or the
+</span><span class="comment">*</span><span class="comment">          first subdiagonal (if UPLO = 'L') are overwritten by the
+</span><span class="comment">*</span><span class="comment">          off-diagonal elements of T; the rest of AB is overwritten by
+</span><span class="comment">*</span><span class="comment">          values generated during the reduction.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDAB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array AB.  LDAB &gt;= KD+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (output) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The diagonal elements of the tridiagonal matrix T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E       (output) DOUBLE PRECISION array, dimension (N-1)
+</span><span class="comment">*</span><span class="comment">          The off-diagonal elements of the tridiagonal matrix T:
+</span><span class="comment">*</span><span class="comment">          E(i) = T(i,i+1) if UPLO = 'U'; E(i) = T(i+1,i) if UPLO = 'L'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Q       (input/output) DOUBLE PRECISION array, dimension (LDQ,N)
+</span><span class="comment">*</span><span class="comment">          On entry, if VECT = 'U', then Q must contain an N-by-N
+</span><span class="comment">*</span><span class="comment">          matrix X; if VECT = 'N' or 'V', then Q need not be set.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit:
+</span><span class="comment">*</span><span class="comment">          if VECT = 'V', Q contains the N-by-N orthogonal matrix Q;
+</span><span class="comment">*</span><span class="comment">          if VECT = 'U', Q contains the product X*Q;
+</span><span class="comment">*</span><span class="comment">          if VECT = 'N', the array Q is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDQ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Q.
+</span><span class="comment">*</span><span class="comment">          LDQ &gt;= 1, and LDQ &gt;= N if VECT = 'V' or 'U'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Modified by Linda Kaufman, Bell Labs.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            INITQ, UPPER, WANTQ
+      INTEGER            I, I2, IBL, INCA, INCX, IQAEND, IQB, IQEND, J,
+     $                   J1, J1END, J1INC, J2, JEND, JIN, JINC, K, KD1,
+     $                   KDM1, KDN, L, LAST, LEND, NQ, NR, NRT
+      DOUBLE PRECISION   TEMP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="DLAR2V.105"></a><a href="dlar2v.f.html#DLAR2V.1">DLAR2V</a>, <a name="DLARGV.105"></a><a href="dlargv.f.html#DLARGV.1">DLARGV</a>, <a name="DLARTG.105"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>, <a name="DLARTV.105"></a><a href="dlartv.f.html#DLARTV.1">DLARTV</a>, <a name="DLASET.105"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>, DROT,
+     $                   <a name="XERBLA.106"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.112"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      EXTERNAL           <a name="LSAME.113"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters
+</span><span class="comment">*</span><span class="comment">
+</span>      INITQ = <a name="LSAME.119"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( VECT, <span class="string">'V'</span> )
+      WANTQ = INITQ .OR. <a name="LSAME.120"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( VECT, <span class="string">'U'</span> )
+      UPPER = <a name="LSAME.121"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> )
+      KD1 = KD + 1
+      KDM1 = KD - 1
+      INCX = LDAB - 1
+      IQEND = 1
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      IF( .NOT.WANTQ .AND. .NOT.<a name="LSAME.128"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( VECT, <span class="string">'N'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.UPPER .AND. .NOT.<a name="LSAME.130"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( KD.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( LDAB.LT.KD1 ) THEN
+         INFO = -6
+      ELSE IF( LDQ.LT.MAX( 1, N ) .AND. WANTQ ) THEN
+         INFO = -10
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.142"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DSBTRD.142"></a><a href="dsbtrd.f.html#DSBTRD.1">DSBTRD</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Initialize Q to the unit matrix, if needed
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( INITQ )
+     $   CALL <a name="DLASET.154"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'Full'</span>, N, N, ZERO, ONE, Q, LDQ )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Wherever possible, plane rotations are generated and applied in
+</span><span class="comment">*</span><span class="comment">     vector operations of length NR over the index set J1:J2:KD1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The cosines and sines of the plane rotations are stored in the
+</span><span class="comment">*</span><span class="comment">     arrays D and WORK.
+</span><span class="comment">*</span><span class="comment">
+</span>      INCA = KD1*LDAB
+      KDN = MIN( N-1, KD )
+      IF( UPPER ) THEN
+<span class="comment">*</span><span class="comment">
+</span>         IF( KD.GT.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Reduce to tridiagonal form, working with upper triangle
+</span><span class="comment">*</span><span class="comment">
+</span>            NR = 0
+            J1 = KDN + 2
+            J2 = 1
+<span class="comment">*</span><span class="comment">
+</span>            DO 90 I = 1, N - 2
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Reduce i-th row of matrix to tridiagonal form
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 80 K = KDN + 1, 2, -1
+                  J1 = J1 + KDN
+                  J2 = J2 + KDN
+<span class="comment">*</span><span class="comment">
+</span>                  IF( NR.GT.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    generate plane rotations to annihilate nonzero
+</span><span class="comment">*</span><span class="comment">                    elements which have been created outside the band
+</span><span class="comment">*</span><span class="comment">
+</span>                     CALL <a name="DLARGV.187"></a><a href="dlargv.f.html#DLARGV.1">DLARGV</a>( NR, AB( 1, J1-1 ), INCA, WORK( J1 ),
+     $                            KD1, D( J1 ), KD1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    apply rotations from the right
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Dependent on the the number of diagonals either
+</span><span class="comment">*</span><span class="comment">                    <a name="DLARTV.194"></a><a href="dlartv.f.html#DLARTV.1">DLARTV</a> or DROT is used
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( NR.GE.2*KD-1 ) THEN
+                        DO 10 L = 1, KD - 1
+                           CALL <a name="DLARTV.198"></a><a href="dlartv.f.html#DLARTV.1">DLARTV</a>( NR, AB( L+1, J1-1 ), INCA,
+     $                                  AB( L, J1 ), INCA, D( J1 ),
+     $                                  WORK( J1 ), KD1 )
+   10                   CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>                     ELSE
+                        JEND = J1 + ( NR-1 )*KD1
+                        DO 20 JINC = J1, JEND, KD1
+                           CALL DROT( KDM1, AB( 2, JINC-1 ), 1,
+     $                                AB( 1, JINC ), 1, D( JINC ),
+     $                                WORK( JINC ) )
+   20                   CONTINUE
+                     END IF
+                  END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span>                  IF( K.GT.2 ) THEN
+                     IF( K.LE.N-I+1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                       generate plane rotation to annihilate a(i,i+k-1)
+</span><span class="comment">*</span><span class="comment">                       within the band
+</span><span class="comment">*</span><span class="comment">
+</span>                        CALL <a name="DLARTG.220"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( AB( KD-K+3, I+K-2 ),
+     $                               AB( KD-K+2, I+K-1 ), D( I+K-1 ),
+     $                               WORK( I+K-1 ), TEMP )
+                        AB( KD-K+3, I+K-2 ) = TEMP
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                       apply rotation from the right
+</span><span class="comment">*</span><span class="comment">
+</span>                        CALL DROT( K-3, AB( KD-K+4, I+K-2 ), 1,
+     $                             AB( KD-K+3, I+K-1 ), 1, D( I+K-1 ),
+     $                             WORK( I+K-1 ) )
+                     END IF
+                     NR = NR + 1
+                     J1 = J1 - KDN - 1
+                  END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 apply plane rotations from both sides to diagonal
+</span><span class="comment">*</span><span class="comment">                 blocks
+</span><span class="comment">*</span><span class="comment">
+</span>                  IF( NR.GT.0 )
+     $               CALL <a name="DLAR2V.239"></a><a href="dlar2v.f.html#DLAR2V.1">DLAR2V</a>( NR, AB( KD1, J1-1 ), AB( KD1, J1 ),
+     $                            AB( KD, J1 ), INCA, D( J1 ),
+     $                            WORK( J1 ), KD1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 apply plane rotations from the left
+</span><span class="comment">*</span><span class="comment">
+</span>                  IF( NR.GT.0 ) THEN
+                     IF( 2*KD-1.LT.NR ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Dependent on the the number of diagonals either
+</span><span class="comment">*</span><span class="comment">                    <a name="DLARTV.249"></a><a href="dlartv.f.html#DLARTV.1">DLARTV</a> or DROT is used
+</span><span class="comment">*</span><span class="comment">
+</span>                        DO 30 L = 1, KD - 1
+                           IF( J2+L.GT.N ) THEN
+                              NRT = NR - 1
+                           ELSE
+                              NRT = NR
+                           END IF
+                           IF( NRT.GT.0 )
+     $                        CALL <a name="DLARTV.258"></a><a href="dlartv.f.html#DLARTV.1">DLARTV</a>( NRT, AB( KD-L, J1+L ), INCA,
+     $                                     AB( KD-L+1, J1+L ), INCA,
+     $                                     D( J1 ), WORK( J1 ), KD1 )
+   30                   CONTINUE
+                     ELSE
+                        J1END = J1 + KD1*( NR-2 )
+                        IF( J1END.GE.J1 ) THEN
+                           DO 40 JIN = J1, J1END, KD1
+                              CALL DROT( KD-1, AB( KD-1, JIN+1 ), INCX,
+     $                                   AB( KD, JIN+1 ), INCX,
+     $                                   D( JIN ), WORK( JIN ) )
+   40                      CONTINUE
+                        END IF
+                        LEND = MIN( KDM1, N-J2 )
+                        LAST = J1END + KD1
+                        IF( LEND.GT.0 )
+     $                     CALL DROT( LEND, AB( KD-1, LAST+1 ), INCX,
+     $                                AB( KD, LAST+1 ), INCX, D( LAST ),
+     $                                WORK( LAST ) )
+                     END IF
+                  END IF
+<span class="comment">*</span><span class="comment">
+</span>                  IF( WANTQ ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    accumulate product of plane rotations in Q
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( INITQ ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 take advantage of the fact that Q was
+</span><span class="comment">*</span><span class="comment">                 initially the Identity matrix
+</span><span class="comment">*</span><span class="comment">
+</span>                        IQEND = MAX( IQEND, J2 )
+                        I2 = MAX( 0, K-3 )
+                        IQAEND = 1 + I*KD
+                        IF( K.EQ.2 )
+     $                     IQAEND = IQAEND + KD
+                        IQAEND = MIN( IQAEND, IQEND )
+                        DO 50 J = J1, J2, KD1
+                           IBL = I - I2 / KDM1
+                           I2 = I2 + 1
+                           IQB = MAX( 1, J-IBL )
+                           NQ = 1 + IQAEND - IQB
+                           IQAEND = MIN( IQAEND+KD, IQEND )
+                           CALL DROT( NQ, Q( IQB, J-1 ), 1, Q( IQB, J ),
+     $                                1, D( J ), WORK( J ) )
+   50                   CONTINUE
+                     ELSE
+<span class="comment">*</span><span class="comment">
+</span>                        DO 60 J = J1, J2, KD1
+                           CALL DROT( N, Q( 1, J-1 ), 1, Q( 1, J ), 1,
+     $                                D( J ), WORK( J ) )
+   60                   CONTINUE
+                     END IF
+<span class="comment">*</span><span class="comment">
+</span>                  END IF
+<span class="comment">*</span><span class="comment">
+</span>                  IF( J2+KDN.GT.N ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    adjust J2 to keep within the bounds of the matrix
+</span><span class="comment">*</span><span class="comment">
+</span>                     NR = NR - 1
+                     J2 = J2 - KDN - 1
+                  END IF
+<span class="comment">*</span><span class="comment">
+</span>                  DO 70 J = J1, J2, KD1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    create nonzero element a(j-1,j+kd) outside the band
+</span><span class="comment">*</span><span class="comment">                    and store it in WORK
+</span><span class="comment">*</span><span class="comment">
+</span>                     WORK( J+KD ) = WORK( J )*AB( 1, J+KD )
+                     AB( 1, J+KD ) = D( J )*AB( 1, J+KD )
+   70             CONTINUE
+   80          CONTINUE
+   90       CONTINUE
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( KD.GT.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           copy off-diagonal elements to E
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 100 I = 1, N - 1
+               E( I ) = AB( KD, I+1 )
+  100       CONTINUE
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           set E to zero if original matrix was diagonal
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 110 I = 1, N - 1
+               E( I ) = ZERO
+  110       CONTINUE
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        copy diagonal elements to D
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 120 I = 1, N
+            D( I ) = AB( KD1, I )
+  120    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      ELSE
+<span class="comment">*</span><span class="comment">
+</span>         IF( KD.GT.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Reduce to tridiagonal form, working with lower triangle
+</span><span class="comment">*</span><span class="comment">
+</span>            NR = 0
+            J1 = KDN + 2
+            J2 = 1
+<span class="comment">*</span><span class="comment">
+</span>            DO 210 I = 1, N - 2
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Reduce i-th column of matrix to tridiagonal form
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 200 K = KDN + 1, 2, -1
+                  J1 = J1 + KDN
+                  J2 = J2 + KDN
+<span class="comment">*</span><span class="comment">
+</span>                  IF( NR.GT.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    generate plane rotations to annihilate nonzero
+</span><span class="comment">*</span><span class="comment">                    elements which have been created outside the band
+</span><span class="comment">*</span><span class="comment">
+</span>                     CALL <a name="DLARGV.379"></a><a href="dlargv.f.html#DLARGV.1">DLARGV</a>( NR, AB( KD1, J1-KD1 ), INCA,
+     $                            WORK( J1 ), KD1, D( J1 ), KD1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    apply plane rotations from one side
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Dependent on the the number of diagonals either
+</span><span class="comment">*</span><span class="comment">                    <a name="DLARTV.386"></a><a href="dlartv.f.html#DLARTV.1">DLARTV</a> or DROT is used
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( NR.GT.2*KD-1 ) THEN
+                        DO 130 L = 1, KD - 1
+                           CALL <a name="DLARTV.390"></a><a href="dlartv.f.html#DLARTV.1">DLARTV</a>( NR, AB( KD1-L, J1-KD1+L ), INCA,
+     $                                  AB( KD1-L+1, J1-KD1+L ), INCA,
+     $                                  D( J1 ), WORK( J1 ), KD1 )
+  130                   CONTINUE
+                     ELSE
+                        JEND = J1 + KD1*( NR-1 )
+                        DO 140 JINC = J1, JEND, KD1
+                           CALL DROT( KDM1, AB( KD, JINC-KD ), INCX,
+     $                                AB( KD1, JINC-KD ), INCX,
+     $                                D( JINC ), WORK( JINC ) )
+  140                   CONTINUE
+                     END IF
+<span class="comment">*</span><span class="comment">
+</span>                  END IF
+<span class="comment">*</span><span class="comment">
+</span>                  IF( K.GT.2 ) THEN
+                     IF( K.LE.N-I+1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                       generate plane rotation to annihilate a(i+k-1,i)
+</span><span class="comment">*</span><span class="comment">                       within the band
+</span><span class="comment">*</span><span class="comment">
+</span>                        CALL <a name="DLARTG.411"></a><a href="dlartg.f.html#DLARTG.1">DLARTG</a>( AB( K-1, I ), AB( K, I ),
+     $                               D( I+K-1 ), WORK( I+K-1 ), TEMP )
+                        AB( K-1, I ) = TEMP
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                       apply rotation from the left
+</span><span class="comment">*</span><span class="comment">
+</span>                        CALL DROT( K-3, AB( K-2, I+1 ), LDAB-1,
+     $                             AB( K-1, I+1 ), LDAB-1, D( I+K-1 ),
+     $                             WORK( I+K-1 ) )
+                     END IF
+                     NR = NR + 1
+                     J1 = J1 - KDN - 1
+                  END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 apply plane rotations from both sides to diagonal
+</span><span class="comment">*</span><span class="comment">                 blocks
+</span><span class="comment">*</span><span class="comment">
+</span>                  IF( NR.GT.0 )
+     $               CALL <a name="DLAR2V.429"></a><a href="dlar2v.f.html#DLAR2V.1">DLAR2V</a>( NR, AB( 1, J1-1 ), AB( 1, J1 ),
+     $                            AB( 2, J1-1 ), INCA, D( J1 ),
+     $                            WORK( J1 ), KD1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 apply plane rotations from the right
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    Dependent on the the number of diagonals either
+</span><span class="comment">*</span><span class="comment">                    <a name="DLARTV.437"></a><a href="dlartv.f.html#DLARTV.1">DLARTV</a> or DROT is used
+</span><span class="comment">*</span><span class="comment">
+</span>                  IF( NR.GT.0 ) THEN
+                     IF( NR.GT.2*KD-1 ) THEN
+                        DO 150 L = 1, KD - 1
+                           IF( J2+L.GT.N ) THEN
+                              NRT = NR - 1
+                           ELSE
+                              NRT = NR
+                           END IF
+                           IF( NRT.GT.0 )
+     $                        CALL <a name="DLARTV.448"></a><a href="dlartv.f.html#DLARTV.1">DLARTV</a>( NRT, AB( L+2, J1-1 ), INCA,
+     $                                     AB( L+1, J1 ), INCA, D( J1 ),
+     $                                     WORK( J1 ), KD1 )
+  150                   CONTINUE
+                     ELSE
+                        J1END = J1 + KD1*( NR-2 )
+                        IF( J1END.GE.J1 ) THEN
+                           DO 160 J1INC = J1, J1END, KD1
+                              CALL DROT( KDM1, AB( 3, J1INC-1 ), 1,
+     $                                   AB( 2, J1INC ), 1, D( J1INC ),
+     $                                   WORK( J1INC ) )
+  160                      CONTINUE
+                        END IF
+                        LEND = MIN( KDM1, N-J2 )
+                        LAST = J1END + KD1
+                        IF( LEND.GT.0 )
+     $                     CALL DROT( LEND, AB( 3, LAST-1 ), 1,
+     $                                AB( 2, LAST ), 1, D( LAST ),
+     $                                WORK( LAST ) )
+                     END IF
+                  END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span>                  IF( WANTQ ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    accumulate product of plane rotations in Q
+</span><span class="comment">*</span><span class="comment">
+</span>                     IF( INITQ ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 take advantage of the fact that Q was
+</span><span class="comment">*</span><span class="comment">                 initially the Identity matrix
+</span><span class="comment">*</span><span class="comment">
+</span>                        IQEND = MAX( IQEND, J2 )
+                        I2 = MAX( 0, K-3 )
+                        IQAEND = 1 + I*KD
+                        IF( K.EQ.2 )
+     $                     IQAEND = IQAEND + KD
+                        IQAEND = MIN( IQAEND, IQEND )
+                        DO 170 J = J1, J2, KD1
+                           IBL = I - I2 / KDM1
+                           I2 = I2 + 1
+                           IQB = MAX( 1, J-IBL )
+                           NQ = 1 + IQAEND - IQB
+                           IQAEND = MIN( IQAEND+KD, IQEND )
+                           CALL DROT( NQ, Q( IQB, J-1 ), 1, Q( IQB, J ),
+     $                                1, D( J ), WORK( J ) )
+  170                   CONTINUE
+                     ELSE
+<span class="comment">*</span><span class="comment">
+</span>                        DO 180 J = J1, J2, KD1
+                           CALL DROT( N, Q( 1, J-1 ), 1, Q( 1, J ), 1,
+     $                                D( J ), WORK( J ) )
+  180                   CONTINUE
+                     END IF
+                  END IF
+<span class="comment">*</span><span class="comment">
+</span>                  IF( J2+KDN.GT.N ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    adjust J2 to keep within the bounds of the matrix
+</span><span class="comment">*</span><span class="comment">
+</span>                     NR = NR - 1
+                     J2 = J2 - KDN - 1
+                  END IF
+<span class="comment">*</span><span class="comment">
+</span>                  DO 190 J = J1, J2, KD1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    create nonzero element a(j+kd,j-1) outside the
+</span><span class="comment">*</span><span class="comment">                    band and store it in WORK
+</span><span class="comment">*</span><span class="comment">
+</span>                     WORK( J+KD ) = WORK( J )*AB( KD1, J )
+                     AB( KD1, J ) = D( J )*AB( KD1, J )
+  190             CONTINUE
+  200          CONTINUE
+  210       CONTINUE
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( KD.GT.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           copy off-diagonal elements to E
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 220 I = 1, N - 1
+               E( I ) = AB( 2, I )
+  220       CONTINUE
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           set E to zero if original matrix was diagonal
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 230 I = 1, N - 1
+               E( I ) = ZERO
+  230       CONTINUE
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        copy diagonal elements to D
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 240 I = 1, N
+            D( I ) = AB( 1, I )
+  240    CONTINUE
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DSBTRD.550"></a><a href="dsbtrd.f.html#DSBTRD.1">DSBTRD</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

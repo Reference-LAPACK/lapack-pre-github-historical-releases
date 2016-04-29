@@ -1,0 +1,291 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zlascl.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZLASCL.1"></a><a href="zlascl.f.html#ZLASCL.1">ZLASCL</a>( TYPE, KL, KU, CFROM, CTO, M, N, A, LDA, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          TYPE
+      INTEGER            INFO, KL, KU, LDA, M, N
+      DOUBLE PRECISION   CFROM, CTO
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      COMPLEX*16         A( LDA, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZLASCL.19"></a><a href="zlascl.f.html#ZLASCL.1">ZLASCL</a> multiplies the M by N complex matrix A by the real scalar
+</span><span class="comment">*</span><span class="comment">  CTO/CFROM.  This is done without over/underflow as long as the final
+</span><span class="comment">*</span><span class="comment">  result CTO*A(I,J)/CFROM does not over/underflow. TYPE specifies that
+</span><span class="comment">*</span><span class="comment">  A may be full, upper triangular, lower triangular, upper Hessenberg,
+</span><span class="comment">*</span><span class="comment">  or banded.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TYPE    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          TYPE indices the storage type of the input matrix.
+</span><span class="comment">*</span><span class="comment">          = 'G':  A is a full matrix.
+</span><span class="comment">*</span><span class="comment">          = 'L':  A is a lower triangular matrix.
+</span><span class="comment">*</span><span class="comment">          = 'U':  A is an upper triangular matrix.
+</span><span class="comment">*</span><span class="comment">          = 'H':  A is an upper Hessenberg matrix.
+</span><span class="comment">*</span><span class="comment">          = 'B':  A is a symmetric band matrix with lower bandwidth KL
+</span><span class="comment">*</span><span class="comment">                  and upper bandwidth KU and with the only the lower
+</span><span class="comment">*</span><span class="comment">                  half stored.
+</span><span class="comment">*</span><span class="comment">          = 'Q':  A is a symmetric band matrix with lower bandwidth KL
+</span><span class="comment">*</span><span class="comment">                  and upper bandwidth KU and with the only the upper
+</span><span class="comment">*</span><span class="comment">                  half stored.
+</span><span class="comment">*</span><span class="comment">          = 'Z':  A is a band matrix with lower bandwidth KL and upper
+</span><span class="comment">*</span><span class="comment">                  bandwidth KU.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KL      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The lower bandwidth of A.  Referenced only if TYPE = 'B',
+</span><span class="comment">*</span><span class="comment">          'Q' or 'Z'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KU      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The upper bandwidth of A.  Referenced only if TYPE = 'B',
+</span><span class="comment">*</span><span class="comment">          'Q' or 'Z'.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  CFROM   (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">  CTO     (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          The matrix A is multiplied by CTO/CFROM. A(I,J) is computed
+</span><span class="comment">*</span><span class="comment">          without over/underflow if the final result CTO*A(I,J)/CFROM
+</span><span class="comment">*</span><span class="comment">          can be represented without over/underflow.  CFROM must be
+</span><span class="comment">*</span><span class="comment">          nonzero.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix A.  M &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) COMPLEX*16 array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          The matrix to be multiplied by CTO/CFROM.  See TYPE for the
+</span><span class="comment">*</span><span class="comment">          storage type.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(1,M).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          0  - successful exit
+</span><span class="comment">*</span><span class="comment">          &lt;0 - if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D0, ONE = 1.0D0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            DONE
+      INTEGER            I, ITYPE, J, K1, K2, K3, K4
+      DOUBLE PRECISION   BIGNUM, CFROM1, CFROMC, CTO1, CTOC, MUL, SMLNUM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.87"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      DOUBLE PRECISION   <a name="DLAMCH.88"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+      EXTERNAL           <a name="LSAME.89"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="DLAMCH.89"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           <a name="XERBLA.95"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input arguments
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+<span class="comment">*</span><span class="comment">
+</span>      IF( <a name="LSAME.103"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TYPE, <span class="string">'G'</span> ) ) THEN
+         ITYPE = 0
+      ELSE IF( <a name="LSAME.105"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TYPE, <span class="string">'L'</span> ) ) THEN
+         ITYPE = 1
+      ELSE IF( <a name="LSAME.107"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TYPE, <span class="string">'U'</span> ) ) THEN
+         ITYPE = 2
+      ELSE IF( <a name="LSAME.109"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TYPE, <span class="string">'H'</span> ) ) THEN
+         ITYPE = 3
+      ELSE IF( <a name="LSAME.111"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TYPE, <span class="string">'B'</span> ) ) THEN
+         ITYPE = 4
+      ELSE IF( <a name="LSAME.113"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TYPE, <span class="string">'Q'</span> ) ) THEN
+         ITYPE = 5
+      ELSE IF( <a name="LSAME.115"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( TYPE, <span class="string">'Z'</span> ) ) THEN
+         ITYPE = 6
+      ELSE
+         ITYPE = -1
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( ITYPE.EQ.-1 ) THEN
+         INFO = -1
+      ELSE IF( CFROM.EQ.ZERO ) THEN
+         INFO = -4
+      ELSE IF( M.LT.0 ) THEN
+         INFO = -6
+      ELSE IF( N.LT.0 .OR. ( ITYPE.EQ.4 .AND. N.NE.M ) .OR.
+     $         ( ITYPE.EQ.5 .AND. N.NE.M ) ) THEN
+         INFO = -7
+      ELSE IF( ITYPE.LE.3 .AND. LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -9
+      ELSE IF( ITYPE.GE.4 ) THEN
+         IF( KL.LT.0 .OR. KL.GT.MAX( M-1, 0 ) ) THEN
+            INFO = -2
+         ELSE IF( KU.LT.0 .OR. KU.GT.MAX( N-1, 0 ) .OR.
+     $            ( ( ITYPE.EQ.4 .OR. ITYPE.EQ.5 ) .AND. KL.NE.KU ) )
+     $             THEN
+            INFO = -3
+         ELSE IF( ( ITYPE.EQ.4 .AND. LDA.LT.KL+1 ) .OR.
+     $            ( ITYPE.EQ.5 .AND. LDA.LT.KU+1 ) .OR.
+     $            ( ITYPE.EQ.6 .AND. LDA.LT.2*KL+KU+1 ) ) THEN
+            INFO = -9
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.147"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="ZLASCL.147"></a><a href="zlascl.f.html#ZLASCL.1">ZLASCL</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 .OR. M.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Get machine parameters
+</span><span class="comment">*</span><span class="comment">
+</span>      SMLNUM = <a name="DLAMCH.158"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'S'</span> )
+      BIGNUM = ONE / SMLNUM
+<span class="comment">*</span><span class="comment">
+</span>      CFROMC = CFROM
+      CTOC = CTO
+<span class="comment">*</span><span class="comment">
+</span>   10 CONTINUE
+      CFROM1 = CFROMC*SMLNUM
+      CTO1 = CTOC / BIGNUM
+      IF( ABS( CFROM1 ).GT.ABS( CTOC ) .AND. CTOC.NE.ZERO ) THEN
+         MUL = SMLNUM
+         DONE = .FALSE.
+         CFROMC = CFROM1
+      ELSE IF( ABS( CTO1 ).GT.ABS( CFROMC ) ) THEN
+         MUL = BIGNUM
+         DONE = .FALSE.
+         CTOC = CTO1
+      ELSE
+         MUL = CTOC / CFROMC
+         DONE = .TRUE.
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( ITYPE.EQ.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Full matrix
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 30 J = 1, N
+            DO 20 I = 1, M
+               A( I, J ) = A( I, J )*MUL
+   20       CONTINUE
+   30    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      ELSE IF( ITYPE.EQ.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Lower triangular matrix
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 50 J = 1, N
+            DO 40 I = J, M
+               A( I, J ) = A( I, J )*MUL
+   40       CONTINUE
+   50    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      ELSE IF( ITYPE.EQ.2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Upper triangular matrix
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 70 J = 1, N
+            DO 60 I = 1, MIN( J, M )
+               A( I, J ) = A( I, J )*MUL
+   60       CONTINUE
+   70    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      ELSE IF( ITYPE.EQ.3 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Upper Hessenberg matrix
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 90 J = 1, N
+            DO 80 I = 1, MIN( J+1, M )
+               A( I, J ) = A( I, J )*MUL
+   80       CONTINUE
+   90    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      ELSE IF( ITYPE.EQ.4 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Lower half of a symmetric band matrix
+</span><span class="comment">*</span><span class="comment">
+</span>         K3 = KL + 1
+         K4 = N + 1
+         DO 110 J = 1, N
+            DO 100 I = 1, MIN( K3, K4-J )
+               A( I, J ) = A( I, J )*MUL
+  100       CONTINUE
+  110    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      ELSE IF( ITYPE.EQ.5 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Upper half of a symmetric band matrix
+</span><span class="comment">*</span><span class="comment">
+</span>         K1 = KU + 2
+         K3 = KU + 1
+         DO 130 J = 1, N
+            DO 120 I = MAX( K1-J, 1 ), K3
+               A( I, J ) = A( I, J )*MUL
+  120       CONTINUE
+  130    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      ELSE IF( ITYPE.EQ.6 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Band matrix
+</span><span class="comment">*</span><span class="comment">
+</span>         K1 = KL + KU + 2
+         K2 = KL + 1
+         K3 = 2*KL + KU + 1
+         K4 = KL + KU + 1 + M
+         DO 150 J = 1, N
+            DO 140 I = MAX( K1-J, K2 ), MIN( K3, K4-J )
+               A( I, J ) = A( I, J )*MUL
+  140       CONTINUE
+  150    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( .NOT.DONE )
+     $   GO TO 10
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZLASCL.265"></a><a href="zlascl.f.html#ZLASCL.1">ZLASCL</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

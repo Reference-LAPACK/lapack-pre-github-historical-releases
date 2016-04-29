@@ -1,0 +1,421 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>ctgsna.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CTGSNA.1"></a><a href="ctgsna.f.html#CTGSNA.1">CTGSNA</a>( JOB, HOWMNY, SELECT, N, A, LDA, B, LDB, VL,
+     $                   LDVL, VR, LDVR, S, DIF, MM, M, WORK, LWORK,
+     $                   IWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          HOWMNY, JOB
+      INTEGER            INFO, LDA, LDB, LDVL, LDVR, LWORK, M, MM, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      LOGICAL            SELECT( * )
+      INTEGER            IWORK( * )
+      REAL               DIF( * ), S( * )
+      COMPLEX            A( LDA, * ), B( LDB, * ), VL( LDVL, * ),
+     $                   VR( LDVR, * ), WORK( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CTGSNA.24"></a><a href="ctgsna.f.html#CTGSNA.1">CTGSNA</a> estimates reciprocal condition numbers for specified
+</span><span class="comment">*</span><span class="comment">  eigenvalues and/or eigenvectors of a matrix pair (A, B).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  (A, B) must be in generalized Schur canonical form, that is, A and
+</span><span class="comment">*</span><span class="comment">  B are both upper triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  JOB     (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies whether condition numbers are required for
+</span><span class="comment">*</span><span class="comment">          eigenvalues (S) or eigenvectors (DIF):
+</span><span class="comment">*</span><span class="comment">          = 'E': for eigenvalues only (S);
+</span><span class="comment">*</span><span class="comment">          = 'V': for eigenvectors only (DIF);
+</span><span class="comment">*</span><span class="comment">          = 'B': for both eigenvalues and eigenvectors (S and DIF).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  HOWMNY  (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'A': compute condition numbers for all eigenpairs;
+</span><span class="comment">*</span><span class="comment">          = 'S': compute condition numbers for selected eigenpairs
+</span><span class="comment">*</span><span class="comment">                 specified by the array SELECT.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SELECT  (input) LOGICAL array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          If HOWMNY = 'S', SELECT specifies the eigenpairs for which
+</span><span class="comment">*</span><span class="comment">          condition numbers are required. To select condition numbers
+</span><span class="comment">*</span><span class="comment">          for the corresponding j-th eigenvalue and/or eigenvector,
+</span><span class="comment">*</span><span class="comment">          SELECT(j) must be set to .TRUE..
+</span><span class="comment">*</span><span class="comment">          If HOWMNY = 'A', SELECT is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the square matrix pair (A, B). N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input) COMPLEX array, dimension (LDA,N)
+</span><span class="comment">*</span><span class="comment">          The upper triangular matrix A in the pair (A,B).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A. LDA &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input) COMPLEX array, dimension (LDB,N)
+</span><span class="comment">*</span><span class="comment">          The upper triangular matrix B in the pair (A, B).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B. LDB &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VL      (input) COMPLEX array, dimension (LDVL,M)
+</span><span class="comment">*</span><span class="comment">          IF JOB = 'E' or 'B', VL must contain left eigenvectors of
+</span><span class="comment">*</span><span class="comment">          (A, B), corresponding to the eigenpairs specified by HOWMNY
+</span><span class="comment">*</span><span class="comment">          and SELECT.  The eigenvectors must be stored in consecutive
+</span><span class="comment">*</span><span class="comment">          columns of VL, as returned by <a name="CTGEVC.71"></a><a href="ctgevc.f.html#CTGEVC.1">CTGEVC</a>.
+</span><span class="comment">*</span><span class="comment">          If JOB = 'V', VL is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDVL    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array VL. LDVL &gt;= 1; and
+</span><span class="comment">*</span><span class="comment">          If JOB = 'E' or 'B', LDVL &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VR      (input) COMPLEX array, dimension (LDVR,M)
+</span><span class="comment">*</span><span class="comment">          IF JOB = 'E' or 'B', VR must contain right eigenvectors of
+</span><span class="comment">*</span><span class="comment">          (A, B), corresponding to the eigenpairs specified by HOWMNY
+</span><span class="comment">*</span><span class="comment">          and SELECT.  The eigenvectors must be stored in consecutive
+</span><span class="comment">*</span><span class="comment">          columns of VR, as returned by <a name="CTGEVC.82"></a><a href="ctgevc.f.html#CTGEVC.1">CTGEVC</a>.
+</span><span class="comment">*</span><span class="comment">          If JOB = 'V', VR is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDVR    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array VR. LDVR &gt;= 1;
+</span><span class="comment">*</span><span class="comment">          If JOB = 'E' or 'B', LDVR &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  S       (output) REAL array, dimension (MM)
+</span><span class="comment">*</span><span class="comment">          If JOB = 'E' or 'B', the reciprocal condition numbers of the
+</span><span class="comment">*</span><span class="comment">          selected eigenvalues, stored in consecutive elements of the
+</span><span class="comment">*</span><span class="comment">          array.
+</span><span class="comment">*</span><span class="comment">          If JOB = 'V', S is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIF     (output) REAL array, dimension (MM)
+</span><span class="comment">*</span><span class="comment">          If JOB = 'V' or 'B', the estimated reciprocal condition
+</span><span class="comment">*</span><span class="comment">          numbers of the selected eigenvectors, stored in consecutive
+</span><span class="comment">*</span><span class="comment">          elements of the array.
+</span><span class="comment">*</span><span class="comment">          If the eigenvalues cannot be reordered to compute DIF(j),
+</span><span class="comment">*</span><span class="comment">          DIF(j) is set to 0; this can only occur when the true value
+</span><span class="comment">*</span><span class="comment">          would be very small anyway.
+</span><span class="comment">*</span><span class="comment">          For each eigenvalue/vector specified by SELECT, DIF stores
+</span><span class="comment">*</span><span class="comment">          a Frobenius norm-based estimate of Difl.
+</span><span class="comment">*</span><span class="comment">          If JOB = 'E', DIF is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  MM      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of elements in the arrays S and DIF. MM &gt;= M.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of elements of the arrays S and DIF used to store
+</span><span class="comment">*</span><span class="comment">          the specified condition numbers; for each selected eigenvalue
+</span><span class="comment">*</span><span class="comment">          one element is used. If HOWMNY = 'A', M is set to N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace/output) COMPLEX array, dimension (MAX(1,LWORK))
+</span><span class="comment">*</span><span class="comment">          On exit, if INFO = 0, WORK(1) returns the optimal LWORK.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LWORK  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The dimension of the array WORK. LWORK &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">          If JOB = 'V' or 'B', LWORK &gt;= max(1,2*N*N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK   (workspace) INTEGER array, dimension (N+2)
+</span><span class="comment">*</span><span class="comment">          If JOB = 'E', IWORK is not referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0: Successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0: If INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The reciprocal of the condition number of the i-th generalized
+</span><span class="comment">*</span><span class="comment">  eigenvalue w = (a, b) is defined as
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          S(I) = (|v'Au|**2 + |v'Bu|**2)**(1/2) / (norm(u)*norm(v))
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where u and v are the right and left eigenvectors of (A, B)
+</span><span class="comment">*</span><span class="comment">  corresponding to w; |z| denotes the absolute value of the complex
+</span><span class="comment">*</span><span class="comment">  number, and norm(u) denotes the 2-norm of the vector u. The pair
+</span><span class="comment">*</span><span class="comment">  (a, b) corresponds to an eigenvalue w = a/b (= v'Au/v'Bu) of the
+</span><span class="comment">*</span><span class="comment">  matrix pair (A, B). If both a and b equal zero, then (A,B) is
+</span><span class="comment">*</span><span class="comment">  singular and S(I) = -1 is returned.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  An approximate error bound on the chordal distance between the i-th
+</span><span class="comment">*</span><span class="comment">  computed generalized eigenvalue w and the corresponding exact
+</span><span class="comment">*</span><span class="comment">  eigenvalue lambda is
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          chord(w, lambda) &lt;=   EPS * norm(A, B) / S(I),
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where EPS is the machine precision.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The reciprocal of the condition number of the right eigenvector u
+</span><span class="comment">*</span><span class="comment">  and left eigenvector v corresponding to the generalized eigenvalue w
+</span><span class="comment">*</span><span class="comment">  is defined as follows. Suppose
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                   (A, B) = ( a   *  ) ( b  *  )  1
+</span><span class="comment">*</span><span class="comment">                            ( 0  A22 ),( 0 B22 )  n-1
+</span><span class="comment">*</span><span class="comment">                              1  n-1     1 n-1
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Then the reciprocal condition number DIF(I) is
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          Difl[(a, b), (A22, B22)]  = sigma-min( Zl )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where sigma-min(Zl) denotes the smallest singular value of
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">         Zl = [ kron(a, In-1) -kron(1, A22) ]
+</span><span class="comment">*</span><span class="comment">              [ kron(b, In-1) -kron(1, B22) ].
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Here In-1 is the identity matrix of size n-1 and X' is the conjugate
+</span><span class="comment">*</span><span class="comment">  transpose of X. kron(X, Y) is the Kronecker product between the
+</span><span class="comment">*</span><span class="comment">  matrices X and Y.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  We approximate the smallest singular value of Zl with an upper
+</span><span class="comment">*</span><span class="comment">  bound. This is done by <a name="CLATDF.173"></a><a href="clatdf.f.html#CLATDF.1">CLATDF</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  An approximate error bound for a computed eigenvector VL(i) or
+</span><span class="comment">*</span><span class="comment">  VR(i) is given by
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                      EPS * norm(A, B) / DIF(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  See ref. [2-3] for more details and further references.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Bo Kagstrom and Peter Poromaa, Department of Computing Science,
+</span><span class="comment">*</span><span class="comment">     Umea University, S-901 87 Umea, Sweden.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  References
+</span><span class="comment">*</span><span class="comment">  ==========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  [1] B. Kagstrom; A Direct Method for Reordering Eigenvalues in the
+</span><span class="comment">*</span><span class="comment">      Generalized Real Schur Form of a Regular Matrix Pair (A, B), in
+</span><span class="comment">*</span><span class="comment">      M.S. Moonen et al (eds), Linear Algebra for Large Scale and
+</span><span class="comment">*</span><span class="comment">      Real-Time Applications, Kluwer Academic Publ. 1993, pp 195-218.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  [2] B. Kagstrom and P. Poromaa; Computing Eigenspaces with Specified
+</span><span class="comment">*</span><span class="comment">      Eigenvalues of a Regular Matrix Pair (A, B) and Condition
+</span><span class="comment">*</span><span class="comment">      Estimation: Theory, Algorithms and Software, Report
+</span><span class="comment">*</span><span class="comment">      UMINF - 94.04, Department of Computing Science, Umea University,
+</span><span class="comment">*</span><span class="comment">      S-901 87 Umea, Sweden, 1994. Also as LAPACK Working Note 87.
+</span><span class="comment">*</span><span class="comment">      To appear in Numerical Algorithms, 1996.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  [3] B. Kagstrom and P. Poromaa, LAPACK-Style Algorithms and Software
+</span><span class="comment">*</span><span class="comment">      for Solving the Generalized Sylvester Equation and Estimating the
+</span><span class="comment">*</span><span class="comment">      Separation between Regular Matrix Pairs, Report UMINF - 93.23,
+</span><span class="comment">*</span><span class="comment">      Department of Computing Science, Umea University, S-901 87 Umea,
+</span><span class="comment">*</span><span class="comment">      Sweden, December 1993, Revised April 1994, Also as LAPACK Working
+</span><span class="comment">*</span><span class="comment">      Note 75.
+</span><span class="comment">*</span><span class="comment">      To appear in ACM Trans. on Math. Software, Vol 22, No 1, 1996.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, ONE
+      INTEGER            IDIFJB
+      PARAMETER          ( ZERO = 0.0E+0, ONE = 1.0E+0, IDIFJB = 3 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            LQUERY, SOMCON, WANTBH, WANTDF, WANTS
+      INTEGER            I, IERR, IFST, ILST, K, KS, LWMIN, N1, N2
+      REAL               BIGNUM, COND, EPS, LNRM, RNRM, SCALE, SMLNUM
+      COMPLEX            YHAX, YHBX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      COMPLEX            DUMMY( 1 ), DUMMY1( 1 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.226"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      REAL               SCNRM2, <a name="SLAMCH.227"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLAPY2.227"></a><a href="slapy2.f.html#SLAPY2.1">SLAPY2</a>
+      COMPLEX            CDOTC
+      EXTERNAL           <a name="LSAME.229"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, SCNRM2, <a name="SLAMCH.229"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLAPY2.229"></a><a href="slapy2.f.html#SLAPY2.1">SLAPY2</a>, CDOTC
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           CGEMV, <a name="CLACPY.232"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>, <a name="CTGEXC.232"></a><a href="ctgexc.f.html#CTGEXC.1">CTGEXC</a>, <a name="CTGSYL.232"></a><a href="ctgsyl.f.html#CTGSYL.1">CTGSYL</a>, <a name="SLABAD.232"></a><a href="slabad.f.html#SLABAD.1">SLABAD</a>, <a name="XERBLA.232"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, CMPLX, MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Decode and test the input parameters
+</span><span class="comment">*</span><span class="comment">
+</span>      WANTBH = <a name="LSAME.241"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'B'</span> )
+      WANTS = <a name="LSAME.242"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'E'</span> ) .OR. WANTBH
+      WANTDF = <a name="LSAME.243"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'V'</span> ) .OR. WANTBH
+<span class="comment">*</span><span class="comment">
+</span>      SOMCON = <a name="LSAME.245"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( HOWMNY, <span class="string">'S'</span> )
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      LQUERY = ( LWORK.EQ.-1 )
+<span class="comment">*</span><span class="comment">
+</span>      IF( .NOT.WANTS .AND. .NOT.WANTDF ) THEN
+         INFO = -1
+      ELSE IF( .NOT.<a name="LSAME.252"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( HOWMNY, <span class="string">'A'</span> ) .AND. .NOT.SOMCON ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+         INFO = -6
+      ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
+         INFO = -8
+      ELSE IF( WANTS .AND. LDVL.LT.N ) THEN
+         INFO = -10
+      ELSE IF( WANTS .AND. LDVR.LT.N ) THEN
+         INFO = -12
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Set M to the number of eigenpairs for which condition numbers
+</span><span class="comment">*</span><span class="comment">        are required, and test MM.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( SOMCON ) THEN
+            M = 0
+            DO 10 K = 1, N
+               IF( SELECT( K ) )
+     $            M = M + 1
+   10       CONTINUE
+         ELSE
+            M = N
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( N.EQ.0 ) THEN
+            LWMIN = 1
+         ELSE IF( <a name="LSAME.281"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'V'</span> ) .OR. <a name="LSAME.281"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( JOB, <span class="string">'B'</span> ) ) THEN
+            LWMIN = 2*N*N
+         ELSE
+            LWMIN = N
+         END IF
+         WORK( 1 ) = LWMIN
+<span class="comment">*</span><span class="comment">
+</span>         IF( MM.LT.M ) THEN
+            INFO = -15
+         ELSE IF( LWORK.LT.LWMIN .AND. .NOT.LQUERY ) THEN
+            INFO = -18
+         END IF
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.296"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="CTGSNA.296"></a><a href="ctgsna.f.html#CTGSNA.1">CTGSNA</a>'</span>, -INFO )
+         RETURN
+      ELSE IF( LQUERY ) THEN
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Get machine constants
+</span><span class="comment">*</span><span class="comment">
+</span>      EPS = <a name="SLAMCH.309"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'P'</span> )
+      SMLNUM = <a name="SLAMCH.310"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'S'</span> ) / EPS
+      BIGNUM = ONE / SMLNUM
+      CALL <a name="SLABAD.312"></a><a href="slabad.f.html#SLABAD.1">SLABAD</a>( SMLNUM, BIGNUM )
+      KS = 0
+      DO 20 K = 1, N
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Determine whether condition numbers are required for the k-th
+</span><span class="comment">*</span><span class="comment">        eigenpair.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( SOMCON ) THEN
+            IF( .NOT.SELECT( K ) )
+     $         GO TO 20
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         KS = KS + 1
+<span class="comment">*</span><span class="comment">
+</span>         IF( WANTS ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Compute the reciprocal condition number of the k-th
+</span><span class="comment">*</span><span class="comment">           eigenvalue.
+</span><span class="comment">*</span><span class="comment">
+</span>            RNRM = SCNRM2( N, VR( 1, KS ), 1 )
+            LNRM = SCNRM2( N, VL( 1, KS ), 1 )
+            CALL CGEMV( <span class="string">'N'</span>, N, N, CMPLX( ONE, ZERO ), A, LDA,
+     $                  VR( 1, KS ), 1, CMPLX( ZERO, ZERO ), WORK, 1 )
+            YHAX = CDOTC( N, WORK, 1, VL( 1, KS ), 1 )
+            CALL CGEMV( <span class="string">'N'</span>, N, N, CMPLX( ONE, ZERO ), B, LDB,
+     $                  VR( 1, KS ), 1, CMPLX( ZERO, ZERO ), WORK, 1 )
+            YHBX = CDOTC( N, WORK, 1, VL( 1, KS ), 1 )
+            COND = <a name="SLAPY2.339"></a><a href="slapy2.f.html#SLAPY2.1">SLAPY2</a>( ABS( YHAX ), ABS( YHBX ) )
+            IF( COND.EQ.ZERO ) THEN
+               S( KS ) = -ONE
+            ELSE
+               S( KS ) = COND / ( RNRM*LNRM )
+            END IF
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( WANTDF ) THEN
+            IF( N.EQ.1 ) THEN
+               DIF( KS ) = <a name="SLAPY2.349"></a><a href="slapy2.f.html#SLAPY2.1">SLAPY2</a>( ABS( A( 1, 1 ) ), ABS( B( 1, 1 ) ) )
+            ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Estimate the reciprocal condition number of the k-th
+</span><span class="comment">*</span><span class="comment">              eigenvectors.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Copy the matrix (A, B) to the array WORK and move the
+</span><span class="comment">*</span><span class="comment">              (k,k)th pair to the (1,1) position.
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CLACPY.358"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>( <span class="string">'Full'</span>, N, N, A, LDA, WORK, N )
+               CALL <a name="CLACPY.359"></a><a href="clacpy.f.html#CLACPY.1">CLACPY</a>( <span class="string">'Full'</span>, N, N, B, LDB, WORK( N*N+1 ), N )
+               IFST = K
+               ILST = 1
+<span class="comment">*</span><span class="comment">
+</span>               CALL <a name="CTGEXC.363"></a><a href="ctgexc.f.html#CTGEXC.1">CTGEXC</a>( .FALSE., .FALSE., N, WORK, N, WORK( N*N+1 ),
+     $                      N, DUMMY, 1, DUMMY1, 1, IFST, ILST, IERR )
+<span class="comment">*</span><span class="comment">
+</span>               IF( IERR.GT.0 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 Ill-conditioned problem - swap rejected.
+</span><span class="comment">*</span><span class="comment">
+</span>                  DIF( KS ) = ZERO
+               ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                 Reordering successful, solve generalized Sylvester
+</span><span class="comment">*</span><span class="comment">                 equation for R and L,
+</span><span class="comment">*</span><span class="comment">                            A22 * R - L * A11 = A12
+</span><span class="comment">*</span><span class="comment">                            B22 * R - L * B11 = B12,
+</span><span class="comment">*</span><span class="comment">                 and compute estimate of Difl[(A11,B11), (A22, B22)].
+</span><span class="comment">*</span><span class="comment">
+</span>                  N1 = 1
+                  N2 = N - N1
+                  I = N*N + 1
+                  CALL <a name="CTGSYL.382"></a><a href="ctgsyl.f.html#CTGSYL.1">CTGSYL</a>( <span class="string">'N'</span>, IDIFJB, N2, N1, WORK( N*N1+N1+1 ),
+     $                         N, WORK, N, WORK( N1+1 ), N,
+     $                         WORK( N*N1+N1+I ), N, WORK( I ), N,
+     $                         WORK( N1+I ), N, SCALE, DIF( KS ), DUMMY,
+     $                         1, IWORK, IERR )
+               END IF
+            END IF
+         END IF
+<span class="comment">*</span><span class="comment">
+</span>   20 CONTINUE
+      WORK( 1 ) = LWMIN
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CTGSNA.395"></a><a href="ctgsna.f.html#CTGSNA.1">CTGSNA</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

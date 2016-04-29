@@ -1,0 +1,605 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>stgex2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="STGEX2.1"></a><a href="stgex2.f.html#STGEX2.1">STGEX2</a>( WANTQ, WANTZ, N, A, LDA, B, LDB, Q, LDQ, Z,
+     $                   LDZ, J1, N1, N2, WORK, LWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      LOGICAL            WANTQ, WANTZ
+      INTEGER            INFO, J1, LDA, LDB, LDQ, LDZ, LWORK, N, N1, N2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               A( LDA, * ), B( LDB, * ), Q( LDQ, * ),
+     $                   WORK( * ), Z( LDZ, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="STGEX2.20"></a><a href="stgex2.f.html#STGEX2.1">STGEX2</a> swaps adjacent diagonal blocks (A11, B11) and (A22, B22)
+</span><span class="comment">*</span><span class="comment">  of size 1-by-1 or 2-by-2 in an upper (quasi) triangular matrix pair
+</span><span class="comment">*</span><span class="comment">  (A, B) by an orthogonal equivalence transformation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  (A, B) must be in generalized real Schur canonical form (as returned
+</span><span class="comment">*</span><span class="comment">  by <a name="SGGES.25"></a><a href="sgges.f.html#SGGES.1">SGGES</a>), i.e. A is block upper triangular with 1-by-1 and 2-by-2
+</span><span class="comment">*</span><span class="comment">  diagonal blocks. B is upper triangular.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Optionally, the matrices Q and Z of generalized Schur vectors are
+</span><span class="comment">*</span><span class="comment">  updated.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">         Q(in) * A(in) * Z(in)' = Q(out) * A(out) * Z(out)'
+</span><span class="comment">*</span><span class="comment">         Q(in) * B(in) * Z(in)' = Q(out) * B(out) * Z(out)'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WANTQ   (input) LOGICAL
+</span><span class="comment">*</span><span class="comment">          .TRUE. : update the left transformation matrix Q;
+</span><span class="comment">*</span><span class="comment">          .FALSE.: do not update Q.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WANTZ   (input) LOGICAL
+</span><span class="comment">*</span><span class="comment">          .TRUE. : update the right transformation matrix Z;
+</span><span class="comment">*</span><span class="comment">          .FALSE.: do not update Z.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrices A and B. N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A      (input/output) REAL arrays, dimensions (LDA,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the matrix A in the pair (A, B).
+</span><span class="comment">*</span><span class="comment">          On exit, the updated matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input)  INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A. LDA &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B      (input/output) REAL arrays, dimensions (LDB,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the matrix B in the pair (A, B).
+</span><span class="comment">*</span><span class="comment">          On exit, the updated matrix B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input)  INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B. LDB &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Q       (input/output) REAL array, dimension (LDZ,N)
+</span><span class="comment">*</span><span class="comment">          On entry, if WANTQ = .TRUE., the orthogonal matrix Q.
+</span><span class="comment">*</span><span class="comment">          On exit, the updated matrix Q.
+</span><span class="comment">*</span><span class="comment">          Not referenced if WANTQ = .FALSE..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDQ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Q. LDQ &gt;= 1.
+</span><span class="comment">*</span><span class="comment">          If WANTQ = .TRUE., LDQ &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z       (input/output) REAL array, dimension (LDZ,N)
+</span><span class="comment">*</span><span class="comment">          On entry, if WANTZ =.TRUE., the orthogonal matrix Z.
+</span><span class="comment">*</span><span class="comment">          On exit, the updated matrix Z.
+</span><span class="comment">*</span><span class="comment">          Not referenced if WANTZ = .FALSE..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDZ     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Z. LDZ &gt;= 1.
+</span><span class="comment">*</span><span class="comment">          If WANTZ = .TRUE., LDZ &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  J1      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The index to the first block (A11, B11). 1 &lt;= J1 &lt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N1      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the first block (A11, B11). N1 = 0, 1 or 2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N2      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the second block (A22, B22). N2 = 0, 1 or 2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) REAL array, dimension (MAX(1,LWORK)).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LWORK   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The dimension of the array WORK.
+</span><span class="comment">*</span><span class="comment">          LWORK &gt;=  MAX( N*(N2+N1), (N2+N1)*(N2+N1)*2 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">            =0: Successful exit
+</span><span class="comment">*</span><span class="comment">            &gt;0: If INFO = 1, the transformed matrix (A, B) would be
+</span><span class="comment">*</span><span class="comment">                too far from generalized Schur form; the blocks are
+</span><span class="comment">*</span><span class="comment">                not swapped and (A, B) and (Q, Z) are unchanged.
+</span><span class="comment">*</span><span class="comment">                The problem of swapping is too ill-conditioned.
+</span><span class="comment">*</span><span class="comment">            &lt;0: If INFO = -16: LWORK is too small. Appropriate value
+</span><span class="comment">*</span><span class="comment">                for LWORK is returned in WORK(1).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Bo Kagstrom and Peter Poromaa, Department of Computing Science,
+</span><span class="comment">*</span><span class="comment">     Umea University, S-901 87 Umea, Sweden.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  In the current code both weak and strong stability tests are
+</span><span class="comment">*</span><span class="comment">  performed. The user can omit the strong stability test by changing
+</span><span class="comment">*</span><span class="comment">  the internal logical parameter WANDS to .FALSE.. See ref. [2] for
+</span><span class="comment">*</span><span class="comment">  details.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  [1] B. Kagstrom; A Direct Method for Reordering Eigenvalues in the
+</span><span class="comment">*</span><span class="comment">      Generalized Real Schur Form of a Regular Matrix Pair (A, B), in
+</span><span class="comment">*</span><span class="comment">      M.S. Moonen et al (eds), Linear Algebra for Large Scale and
+</span><span class="comment">*</span><span class="comment">      Real-Time Applications, Kluwer Academic Publ. 1993, pp 195-218.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  [2] B. Kagstrom and P. Poromaa; Computing Eigenspaces with Specified
+</span><span class="comment">*</span><span class="comment">      Eigenvalues of a Regular Matrix Pair (A, B) and Condition
+</span><span class="comment">*</span><span class="comment">      Estimation: Theory, Algorithms and Software,
+</span><span class="comment">*</span><span class="comment">      Report UMINF - 94.04, Department of Computing Science, Umea
+</span><span class="comment">*</span><span class="comment">      University, S-901 87 Umea, Sweden, 1994. Also as LAPACK Working
+</span><span class="comment">*</span><span class="comment">      Note 87. To appear in Numerical Algorithms, 1996.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">  Replaced various illegal calls to SCOPY by calls to <a name="SLASET.130"></a><a href="slaset.f.html#SLASET.1">SLASET</a>, or by DO
+</span><span class="comment">*</span><span class="comment">  loops. Sven Hammarling, 1/5/02.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO, ONE
+      PARAMETER          ( ZERO = 0.0E+0, ONE = 1.0E+0 )
+      REAL               TEN
+      PARAMETER          ( TEN = 1.0E+01 )
+      INTEGER            LDST
+      PARAMETER          ( LDST = 4 )
+      LOGICAL            WANDS
+      PARAMETER          ( WANDS = .TRUE. )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            STRONG, WEAK
+      INTEGER            I, IDUM, LINFO, M
+      REAL               BQRA21, BRQA21, DDUM, DNORM, DSCALE, DSUM, EPS,
+     $                   F, G, SA, SB, SCALE, SMLNUM, SS, THRESH, WS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      INTEGER            IWORK( LDST )
+      REAL               AI( 2 ), AR( 2 ), BE( 2 ), IR( LDST, LDST ),
+     $                   IRCOP( LDST, LDST ), LI( LDST, LDST ),
+     $                   LICOP( LDST, LDST ), S( LDST, LDST ),
+     $                   SCPY( LDST, LDST ), T( LDST, LDST ),
+     $                   TAUL( LDST ), TAUR( LDST ), TCPY( LDST, LDST )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      REAL               <a name="SLAMCH.158"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+      EXTERNAL           <a name="SLAMCH.159"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           SGEMM, <a name="SGEQR2.162"></a><a href="sgeqr2.f.html#SGEQR2.1">SGEQR2</a>, <a name="SGERQ2.162"></a><a href="sgerq2.f.html#SGERQ2.1">SGERQ2</a>, <a name="SLACPY.162"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>, <a name="SLAGV2.162"></a><a href="slagv2.f.html#SLAGV2.1">SLAGV2</a>, <a name="SLARTG.162"></a><a href="slartg.f.html#SLARTG.1">SLARTG</a>,
+     $                   <a name="SLASET.163"></a><a href="slaset.f.html#SLASET.1">SLASET</a>, <a name="SLASSQ.163"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>, <a name="SORG2R.163"></a><a href="sorg2r.f.html#SORG2R.1">SORG2R</a>, <a name="SORGR2.163"></a><a href="sorgr2.f.html#SORGR2.1">SORGR2</a>, <a name="SORM2R.163"></a><a href="sorm2r.f.html#SORM2R.1">SORM2R</a>, <a name="SORMR2.163"></a><a href="sormr2.f.html#SORMR2.1">SORMR2</a>,
+     $                   SROT, SSCAL, <a name="STGSY2.164"></a><a href="stgsy2.f.html#STGSY2.1">STGSY2</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.LE.1 .OR. N1.LE.0 .OR. N2.LE.0 )
+     $   RETURN
+      IF( N1.GT.N .OR. ( J1+N1 ).GT.N )
+     $   RETURN
+      M = N1 + N2
+      IF( LWORK.LT.MAX( N*M, M*M*2 ) ) THEN
+         INFO = -16
+         WORK( 1 ) = MAX( N*M, M*M*2 )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      WEAK = .FALSE.
+      STRONG = .FALSE.
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Make a local copy of selected block
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="SLASET.191"></a><a href="slaset.f.html#SLASET.1">SLASET</a>( <span class="string">'Full'</span>, LDST, LDST, ZERO, ZERO, LI, LDST )
+      CALL <a name="SLASET.192"></a><a href="slaset.f.html#SLASET.1">SLASET</a>( <span class="string">'Full'</span>, LDST, LDST, ZERO, ZERO, IR, LDST )
+      CALL <a name="SLACPY.193"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, M, M, A( J1, J1 ), LDA, S, LDST )
+      CALL <a name="SLACPY.194"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, M, M, B( J1, J1 ), LDB, T, LDST )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute threshold for testing acceptance of swapping.
+</span><span class="comment">*</span><span class="comment">
+</span>      EPS = <a name="SLAMCH.198"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'P'</span> )
+      SMLNUM = <a name="SLAMCH.199"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'S'</span> ) / EPS
+      DSCALE = ZERO
+      DSUM = ONE
+      CALL <a name="SLACPY.202"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, M, M, S, LDST, WORK, M )
+      CALL <a name="SLASSQ.203"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>( M*M, WORK, 1, DSCALE, DSUM )
+      CALL <a name="SLACPY.204"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, M, M, T, LDST, WORK, M )
+      CALL <a name="SLASSQ.205"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>( M*M, WORK, 1, DSCALE, DSUM )
+      DNORM = DSCALE*SQRT( DSUM )
+      THRESH = MAX( TEN*EPS*DNORM, SMLNUM )
+<span class="comment">*</span><span class="comment">
+</span>      IF( M.EQ.2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        CASE 1: Swap 1-by-1 and 1-by-1 blocks.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute orthogonal QL and RQ that swap 1-by-1 and 1-by-1 blocks
+</span><span class="comment">*</span><span class="comment">        using Givens rotations and perform the swap tentatively.
+</span><span class="comment">*</span><span class="comment">
+</span>         F = S( 2, 2 )*T( 1, 1 ) - T( 2, 2 )*S( 1, 1 )
+         G = S( 2, 2 )*T( 1, 2 ) - T( 2, 2 )*S( 1, 2 )
+         SB = ABS( T( 2, 2 ) )
+         SA = ABS( S( 2, 2 ) )
+         CALL <a name="SLARTG.220"></a><a href="slartg.f.html#SLARTG.1">SLARTG</a>( F, G, IR( 1, 2 ), IR( 1, 1 ), DDUM )
+         IR( 2, 1 ) = -IR( 1, 2 )
+         IR( 2, 2 ) = IR( 1, 1 )
+         CALL SROT( 2, S( 1, 1 ), 1, S( 1, 2 ), 1, IR( 1, 1 ),
+     $              IR( 2, 1 ) )
+         CALL SROT( 2, T( 1, 1 ), 1, T( 1, 2 ), 1, IR( 1, 1 ),
+     $              IR( 2, 1 ) )
+         IF( SA.GE.SB ) THEN
+            CALL <a name="SLARTG.228"></a><a href="slartg.f.html#SLARTG.1">SLARTG</a>( S( 1, 1 ), S( 2, 1 ), LI( 1, 1 ), LI( 2, 1 ),
+     $                   DDUM )
+         ELSE
+            CALL <a name="SLARTG.231"></a><a href="slartg.f.html#SLARTG.1">SLARTG</a>( T( 1, 1 ), T( 2, 1 ), LI( 1, 1 ), LI( 2, 1 ),
+     $                   DDUM )
+         END IF
+         CALL SROT( 2, S( 1, 1 ), LDST, S( 2, 1 ), LDST, LI( 1, 1 ),
+     $              LI( 2, 1 ) )
+         CALL SROT( 2, T( 1, 1 ), LDST, T( 2, 1 ), LDST, LI( 1, 1 ),
+     $              LI( 2, 1 ) )
+         LI( 2, 2 ) = LI( 1, 1 )
+         LI( 1, 2 ) = -LI( 2, 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Weak stability test:
+</span><span class="comment">*</span><span class="comment">           |S21| + |T21| &lt;= O(EPS * F-norm((S, T)))
+</span><span class="comment">*</span><span class="comment">
+</span>         WS = ABS( S( 2, 1 ) ) + ABS( T( 2, 1 ) )
+         WEAK = WS.LE.THRESH
+         IF( .NOT.WEAK )
+     $      GO TO 70
+<span class="comment">*</span><span class="comment">
+</span>         IF( WANDS ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Strong stability test:
+</span><span class="comment">*</span><span class="comment">             F-norm((A-QL'*S*QR, B-QL'*T*QR)) &lt;= O(EPS*F-norm((A,B)))
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="SLACPY.254"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, M, M, A( J1, J1 ), LDA, WORK( M*M+1 ),
+     $                   M )
+            CALL SGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, M, M, M, ONE, LI, LDST, S, LDST, ZERO,
+     $                  WORK, M )
+            CALL SGEMM( <span class="string">'N'</span>, <span class="string">'T'</span>, M, M, M, -ONE, WORK, M, IR, LDST, ONE,
+     $                  WORK( M*M+1 ), M )
+            DSCALE = ZERO
+            DSUM = ONE
+            CALL <a name="SLASSQ.262"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>( M*M, WORK( M*M+1 ), 1, DSCALE, DSUM )
+<span class="comment">*</span><span class="comment">
+</span>            CALL <a name="SLACPY.264"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, M, M, B( J1, J1 ), LDB, WORK( M*M+1 ),
+     $                   M )
+            CALL SGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, M, M, M, ONE, LI, LDST, T, LDST, ZERO,
+     $                  WORK, M )
+            CALL SGEMM( <span class="string">'N'</span>, <span class="string">'T'</span>, M, M, M, -ONE, WORK, M, IR, LDST, ONE,
+     $                  WORK( M*M+1 ), M )
+            CALL <a name="SLASSQ.270"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>( M*M, WORK( M*M+1 ), 1, DSCALE, DSUM )
+            SS = DSCALE*SQRT( DSUM )
+            STRONG = SS.LE.THRESH
+            IF( .NOT.STRONG )
+     $         GO TO 70
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Update (A(J1:J1+M-1, M+J1:N), B(J1:J1+M-1, M+J1:N)) and
+</span><span class="comment">*</span><span class="comment">               (A(1:J1-1, J1:J1+M), B(1:J1-1, J1:J1+M)).
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL SROT( J1+1, A( 1, J1 ), 1, A( 1, J1+1 ), 1, IR( 1, 1 ),
+     $              IR( 2, 1 ) )
+         CALL SROT( J1+1, B( 1, J1 ), 1, B( 1, J1+1 ), 1, IR( 1, 1 ),
+     $              IR( 2, 1 ) )
+         CALL SROT( N-J1+1, A( J1, J1 ), LDA, A( J1+1, J1 ), LDA,
+     $              LI( 1, 1 ), LI( 2, 1 ) )
+         CALL SROT( N-J1+1, B( J1, J1 ), LDB, B( J1+1, J1 ), LDB,
+     $              LI( 1, 1 ), LI( 2, 1 ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Set  N1-by-N2 (2,1) - blocks to ZERO.
+</span><span class="comment">*</span><span class="comment">
+</span>         A( J1+1, J1 ) = ZERO
+         B( J1+1, J1 ) = ZERO
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Accumulate transformations into Q and Z if requested.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( WANTZ )
+     $      CALL SROT( N, Z( 1, J1 ), 1, Z( 1, J1+1 ), 1, IR( 1, 1 ),
+     $                 IR( 2, 1 ) )
+         IF( WANTQ )
+     $      CALL SROT( N, Q( 1, J1 ), 1, Q( 1, J1+1 ), 1, LI( 1, 1 ),
+     $                 LI( 2, 1 ) )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Exit with INFO = 0 if swap was successfully performed.
+</span><span class="comment">*</span><span class="comment">
+</span>         RETURN
+<span class="comment">*</span><span class="comment">
+</span>      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        CASE 2: Swap 1-by-1 and 2-by-2 blocks, or 2-by-2
+</span><span class="comment">*</span><span class="comment">                and 2-by-2 blocks.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Solve the generalized Sylvester equation
+</span><span class="comment">*</span><span class="comment">                 S11 * R - L * S22 = SCALE * S12
+</span><span class="comment">*</span><span class="comment">                 T11 * R - L * T22 = SCALE * T12
+</span><span class="comment">*</span><span class="comment">        for R and L. Solutions in LI and IR.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="SLACPY.317"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, N1, N2, T( 1, N1+1 ), LDST, LI, LDST )
+         CALL <a name="SLACPY.318"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, N1, N2, S( 1, N1+1 ), LDST,
+     $                IR( N2+1, N1+1 ), LDST )
+         CALL <a name="STGSY2.320"></a><a href="stgsy2.f.html#STGSY2.1">STGSY2</a>( <span class="string">'N'</span>, 0, N1, N2, S, LDST, S( N1+1, N1+1 ), LDST,
+     $                IR( N2+1, N1+1 ), LDST, T, LDST, T( N1+1, N1+1 ),
+     $                LDST, LI, LDST, SCALE, DSUM, DSCALE, IWORK, IDUM,
+     $                LINFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute orthogonal matrix QL:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    QL' * LI = [ TL ]
+</span><span class="comment">*</span><span class="comment">                               [ 0  ]
+</span><span class="comment">*</span><span class="comment">        where
+</span><span class="comment">*</span><span class="comment">                    LI =  [      -L              ]
+</span><span class="comment">*</span><span class="comment">                          [ SCALE * identity(N2) ]
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 10 I = 1, N2
+            CALL SSCAL( N1, -ONE, LI( 1, I ), 1 )
+            LI( N1+I, I ) = SCALE
+   10    CONTINUE
+         CALL <a name="SGEQR2.337"></a><a href="sgeqr2.f.html#SGEQR2.1">SGEQR2</a>( M, N2, LI, LDST, TAUL, WORK, LINFO )
+         IF( LINFO.NE.0 )
+     $      GO TO 70
+         CALL <a name="SORG2R.340"></a><a href="sorg2r.f.html#SORG2R.1">SORG2R</a>( M, M, N2, LI, LDST, TAUL, WORK, LINFO )
+         IF( LINFO.NE.0 )
+     $      GO TO 70
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute orthogonal matrix RQ:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                    IR * RQ' =   [ 0  TR],
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">         where IR = [ SCALE * identity(N1), R ]
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 20 I = 1, N1
+            IR( N2+I, I ) = SCALE
+   20    CONTINUE
+         CALL <a name="SGERQ2.353"></a><a href="sgerq2.f.html#SGERQ2.1">SGERQ2</a>( N1, M, IR( N2+1, 1 ), LDST, TAUR, WORK, LINFO )
+         IF( LINFO.NE.0 )
+     $      GO TO 70
+         CALL <a name="SORGR2.356"></a><a href="sorgr2.f.html#SORGR2.1">SORGR2</a>( M, M, N1, IR, LDST, TAUR, WORK, LINFO )
+         IF( LINFO.NE.0 )
+     $      GO TO 70
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Perform the swapping tentatively:
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL SGEMM( <span class="string">'T'</span>, <span class="string">'N'</span>, M, M, M, ONE, LI, LDST, S, LDST, ZERO,
+     $               WORK, M )
+         CALL SGEMM( <span class="string">'N'</span>, <span class="string">'T'</span>, M, M, M, ONE, WORK, M, IR, LDST, ZERO, S,
+     $               LDST )
+         CALL SGEMM( <span class="string">'T'</span>, <span class="string">'N'</span>, M, M, M, ONE, LI, LDST, T, LDST, ZERO,
+     $               WORK, M )
+         CALL SGEMM( <span class="string">'N'</span>, <span class="string">'T'</span>, M, M, M, ONE, WORK, M, IR, LDST, ZERO, T,
+     $               LDST )
+         CALL <a name="SLACPY.370"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'F'</span>, M, M, S, LDST, SCPY, LDST )
+         CALL <a name="SLACPY.371"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'F'</span>, M, M, T, LDST, TCPY, LDST )
+         CALL <a name="SLACPY.372"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'F'</span>, M, M, IR, LDST, IRCOP, LDST )
+         CALL <a name="SLACPY.373"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'F'</span>, M, M, LI, LDST, LICOP, LDST )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Triangularize the B-part by an RQ factorization.
+</span><span class="comment">*</span><span class="comment">        Apply transformation (from left) to A-part, giving S.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="SGERQ2.378"></a><a href="sgerq2.f.html#SGERQ2.1">SGERQ2</a>( M, M, T, LDST, TAUR, WORK, LINFO )
+         IF( LINFO.NE.0 )
+     $      GO TO 70
+         CALL <a name="SORMR2.381"></a><a href="sormr2.f.html#SORMR2.1">SORMR2</a>( <span class="string">'R'</span>, <span class="string">'T'</span>, M, M, M, T, LDST, TAUR, S, LDST, WORK,
+     $                LINFO )
+         IF( LINFO.NE.0 )
+     $      GO TO 70
+         CALL <a name="SORMR2.385"></a><a href="sormr2.f.html#SORMR2.1">SORMR2</a>( <span class="string">'L'</span>, <span class="string">'N'</span>, M, M, M, T, LDST, TAUR, IR, LDST, WORK,
+     $                LINFO )
+         IF( LINFO.NE.0 )
+     $      GO TO 70
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute F-norm(S21) in BRQA21. (T21 is 0.)
+</span><span class="comment">*</span><span class="comment">
+</span>         DSCALE = ZERO
+         DSUM = ONE
+         DO 30 I = 1, N2
+            CALL <a name="SLASSQ.395"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>( N1, S( N2+1, I ), 1, DSCALE, DSUM )
+   30    CONTINUE
+         BRQA21 = DSCALE*SQRT( DSUM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Triangularize the B-part by a QR factorization.
+</span><span class="comment">*</span><span class="comment">        Apply transformation (from right) to A-part, giving S.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="SGEQR2.402"></a><a href="sgeqr2.f.html#SGEQR2.1">SGEQR2</a>( M, M, TCPY, LDST, TAUL, WORK, LINFO )
+         IF( LINFO.NE.0 )
+     $      GO TO 70
+         CALL <a name="SORM2R.405"></a><a href="sorm2r.f.html#SORM2R.1">SORM2R</a>( <span class="string">'L'</span>, <span class="string">'T'</span>, M, M, M, TCPY, LDST, TAUL, SCPY, LDST,
+     $                WORK, INFO )
+         CALL <a name="SORM2R.407"></a><a href="sorm2r.f.html#SORM2R.1">SORM2R</a>( <span class="string">'R'</span>, <span class="string">'N'</span>, M, M, M, TCPY, LDST, TAUL, LICOP, LDST,
+     $                WORK, INFO )
+         IF( LINFO.NE.0 )
+     $      GO TO 70
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute F-norm(S21) in BQRA21. (T21 is 0.)
+</span><span class="comment">*</span><span class="comment">
+</span>         DSCALE = ZERO
+         DSUM = ONE
+         DO 40 I = 1, N2
+            CALL <a name="SLASSQ.417"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>( N1, SCPY( N2+1, I ), 1, DSCALE, DSUM )
+   40    CONTINUE
+         BQRA21 = DSCALE*SQRT( DSUM )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Decide which method to use.
+</span><span class="comment">*</span><span class="comment">          Weak stability test:
+</span><span class="comment">*</span><span class="comment">             F-norm(S21) &lt;= O(EPS * F-norm((S, T)))
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( BQRA21.LE.BRQA21 .AND. BQRA21.LE.THRESH ) THEN
+            CALL <a name="SLACPY.426"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'F'</span>, M, M, SCPY, LDST, S, LDST )
+            CALL <a name="SLACPY.427"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'F'</span>, M, M, TCPY, LDST, T, LDST )
+            CALL <a name="SLACPY.428"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'F'</span>, M, M, IRCOP, LDST, IR, LDST )
+            CALL <a name="SLACPY.429"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'F'</span>, M, M, LICOP, LDST, LI, LDST )
+         ELSE IF( BRQA21.GE.THRESH ) THEN
+            GO TO 70
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Set lower triangle of B-part to zero
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="SLASET.436"></a><a href="slaset.f.html#SLASET.1">SLASET</a>( <span class="string">'Lower'</span>, M-1, M-1, ZERO, ZERO, T(2,1), LDST )
+<span class="comment">*</span><span class="comment">
+</span>         IF( WANDS ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Strong stability test:
+</span><span class="comment">*</span><span class="comment">              F-norm((A-QL*S*QR', B-QL*T*QR')) &lt;= O(EPS*F-norm((A,B)))
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="SLACPY.443"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, M, M, A( J1, J1 ), LDA, WORK( M*M+1 ),
+     $                   M )
+            CALL SGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, M, M, M, ONE, LI, LDST, S, LDST, ZERO,
+     $                  WORK, M )
+            CALL SGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, M, M, M, -ONE, WORK, M, IR, LDST, ONE,
+     $                  WORK( M*M+1 ), M )
+            DSCALE = ZERO
+            DSUM = ONE
+            CALL <a name="SLASSQ.451"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>( M*M, WORK( M*M+1 ), 1, DSCALE, DSUM )
+<span class="comment">*</span><span class="comment">
+</span>            CALL <a name="SLACPY.453"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, M, M, B( J1, J1 ), LDB, WORK( M*M+1 ),
+     $                   M )
+            CALL SGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, M, M, M, ONE, LI, LDST, T, LDST, ZERO,
+     $                  WORK, M )
+            CALL SGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, M, M, M, -ONE, WORK, M, IR, LDST, ONE,
+     $                  WORK( M*M+1 ), M )
+            CALL <a name="SLASSQ.459"></a><a href="slassq.f.html#SLASSQ.1">SLASSQ</a>( M*M, WORK( M*M+1 ), 1, DSCALE, DSUM )
+            SS = DSCALE*SQRT( DSUM )
+            STRONG = ( SS.LE.THRESH )
+            IF( .NOT.STRONG )
+     $         GO TO 70
+<span class="comment">*</span><span class="comment">
+</span>         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        If the swap is accepted (&quot;weakly&quot; and &quot;strongly&quot;), apply the
+</span><span class="comment">*</span><span class="comment">        transformations and set N1-by-N2 (2,1)-block to zero.
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="SLASET.470"></a><a href="slaset.f.html#SLASET.1">SLASET</a>( <span class="string">'Full'</span>, N1, N2, ZERO, ZERO, S(N2+1,1), LDST )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        copy back M-by-M diagonal block starting at index J1 of (A, B)
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="SLACPY.474"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'F'</span>, M, M, S, LDST, A( J1, J1 ), LDA )
+         CALL <a name="SLACPY.475"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'F'</span>, M, M, T, LDST, B( J1, J1 ), LDB )
+         CALL <a name="SLASET.476"></a><a href="slaset.f.html#SLASET.1">SLASET</a>( <span class="string">'Full'</span>, LDST, LDST, ZERO, ZERO, T, LDST )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Standardize existing 2-by-2 blocks.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 50 I = 1, M*M
+            WORK(I) = ZERO
+   50    CONTINUE
+         WORK( 1 ) = ONE
+         T( 1, 1 ) = ONE
+         IDUM = LWORK - M*M - 2
+         IF( N2.GT.1 ) THEN
+            CALL <a name="SLAGV2.487"></a><a href="slagv2.f.html#SLAGV2.1">SLAGV2</a>( A( J1, J1 ), LDA, B( J1, J1 ), LDB, AR, AI, BE,
+     $                   WORK( 1 ), WORK( 2 ), T( 1, 1 ), T( 2, 1 ) )
+            WORK( M+1 ) = -WORK( 2 )
+            WORK( M+2 ) = WORK( 1 )
+            T( N2, N2 ) = T( 1, 1 )
+            T( 1, 2 ) = -T( 2, 1 )
+         END IF
+         WORK( M*M ) = ONE
+         T( M, M ) = ONE
+<span class="comment">*</span><span class="comment">
+</span>         IF( N1.GT.1 ) THEN
+            CALL <a name="SLAGV2.498"></a><a href="slagv2.f.html#SLAGV2.1">SLAGV2</a>( A( J1+N2, J1+N2 ), LDA, B( J1+N2, J1+N2 ), LDB,
+     $                   TAUR, TAUL, WORK( M*M+1 ), WORK( N2*M+N2+1 ),
+     $                   WORK( N2*M+N2+2 ), T( N2+1, N2+1 ),
+     $                   T( M, M-1 ) )
+            WORK( M*M ) = WORK( N2*M+N2+1 )
+            WORK( M*M-1 ) = -WORK( N2*M+N2+2 )
+            T( M, M ) = T( N2+1, N2+1 )
+            T( M-1, M ) = -T( M, M-1 )
+         END IF
+         CALL SGEMM( <span class="string">'T'</span>, <span class="string">'N'</span>, N2, N1, N2, ONE, WORK, M, A( J1, J1+N2 ),
+     $               LDA, ZERO, WORK( M*M+1 ), N2 )
+         CALL <a name="SLACPY.509"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, N2, N1, WORK( M*M+1 ), N2, A( J1, J1+N2 ),
+     $                LDA )
+         CALL SGEMM( <span class="string">'T'</span>, <span class="string">'N'</span>, N2, N1, N2, ONE, WORK, M, B( J1, J1+N2 ),
+     $               LDB, ZERO, WORK( M*M+1 ), N2 )
+         CALL <a name="SLACPY.513"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, N2, N1, WORK( M*M+1 ), N2, B( J1, J1+N2 ),
+     $                LDB )
+         CALL SGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, M, M, M, ONE, LI, LDST, WORK, M, ZERO,
+     $               WORK( M*M+1 ), M )
+         CALL <a name="SLACPY.517"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, M, M, WORK( M*M+1 ), M, LI, LDST )
+         CALL SGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, N2, N1, N1, ONE, A( J1, J1+N2 ), LDA,
+     $               T( N2+1, N2+1 ), LDST, ZERO, WORK, N2 )
+         CALL <a name="SLACPY.520"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, N2, N1, WORK, N2, A( J1, J1+N2 ), LDA )
+         CALL SGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, N2, N1, N1, ONE, B( J1, J1+N2 ), LDB,
+     $               T( N2+1, N2+1 ), LDST, ZERO, WORK, N2 )
+         CALL <a name="SLACPY.523"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, N2, N1, WORK, N2, B( J1, J1+N2 ), LDB )
+         CALL SGEMM( <span class="string">'T'</span>, <span class="string">'N'</span>, M, M, M, ONE, IR, LDST, T, LDST, ZERO,
+     $               WORK, M )
+         CALL <a name="SLACPY.526"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, M, M, WORK, M, IR, LDST )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Accumulate transformations into Q and Z if requested.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( WANTQ ) THEN
+            CALL SGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, N, M, M, ONE, Q( 1, J1 ), LDQ, LI,
+     $                  LDST, ZERO, WORK, N )
+            CALL <a name="SLACPY.533"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, N, M, WORK, N, Q( 1, J1 ), LDQ )
+<span class="comment">*</span><span class="comment">
+</span>         END IF
+<span class="comment">*</span><span class="comment">
+</span>         IF( WANTZ ) THEN
+            CALL SGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, N, M, M, ONE, Z( 1, J1 ), LDZ, IR,
+     $                  LDST, ZERO, WORK, N )
+            CALL <a name="SLACPY.540"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, N, M, WORK, N, Z( 1, J1 ), LDZ )
+<span class="comment">*</span><span class="comment">
+</span>         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Update (A(J1:J1+M-1, M+J1:N), B(J1:J1+M-1, M+J1:N)) and
+</span><span class="comment">*</span><span class="comment">                (A(1:J1-1, J1:J1+M), B(1:J1-1, J1:J1+M)).
+</span><span class="comment">*</span><span class="comment">
+</span>         I = J1 + M
+         IF( I.LE.N ) THEN
+            CALL SGEMM( <span class="string">'T'</span>, <span class="string">'N'</span>, M, N-I+1, M, ONE, LI, LDST,
+     $                  A( J1, I ), LDA, ZERO, WORK, M )
+            CALL <a name="SLACPY.551"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, M, N-I+1, WORK, M, A( J1, I ), LDA )
+            CALL SGEMM( <span class="string">'T'</span>, <span class="string">'N'</span>, M, N-I+1, M, ONE, LI, LDST,
+     $                  B( J1, I ), LDB, ZERO, WORK, M )
+            CALL <a name="SLACPY.554"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, M, N-I+1, WORK, M, B( J1, I ), LDB )
+         END IF
+         I = J1 - 1
+         IF( I.GT.0 ) THEN
+            CALL SGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, I, M, M, ONE, A( 1, J1 ), LDA, IR,
+     $                  LDST, ZERO, WORK, I )
+            CALL <a name="SLACPY.560"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, I, M, WORK, I, A( 1, J1 ), LDA )
+            CALL SGEMM( <span class="string">'N'</span>, <span class="string">'N'</span>, I, M, M, ONE, B( 1, J1 ), LDB, IR,
+     $                  LDST, ZERO, WORK, I )
+            CALL <a name="SLACPY.563"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'Full'</span>, I, M, WORK, I, B( 1, J1 ), LDB )
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Exit with INFO = 0 if swap was successfully performed.
+</span><span class="comment">*</span><span class="comment">
+</span>         RETURN
+<span class="comment">*</span><span class="comment">
+</span>      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Exit with INFO = 1 if swap was rejected.
+</span><span class="comment">*</span><span class="comment">
+</span>   70 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      INFO = 1
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="STGEX2.579"></a><a href="stgex2.f.html#STGEX2.1">STGEX2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlasd6.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLASD6.1"></a><a href="dlasd6.f.html#DLASD6.1">DLASD6</a>( ICOMPQ, NL, NR, SQRE, D, VF, VL, ALPHA, BETA,
+     $                   IDXQ, PERM, GIVPTR, GIVCOL, LDGCOL, GIVNUM,
+     $                   LDGNUM, POLES, DIFL, DIFR, Z, K, C, S, WORK,
+     $                   IWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            GIVPTR, ICOMPQ, INFO, K, LDGCOL, LDGNUM, NL,
+     $                   NR, SQRE
+      DOUBLE PRECISION   ALPHA, BETA, C, S
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            GIVCOL( LDGCOL, * ), IDXQ( * ), IWORK( * ),
+     $                   PERM( * )
+      DOUBLE PRECISION   D( * ), DIFL( * ), DIFR( * ),
+     $                   GIVNUM( LDGNUM, * ), POLES( LDGNUM, * ),
+     $                   VF( * ), VL( * ), WORK( * ), Z( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLASD6.26"></a><a href="dlasd6.f.html#DLASD6.1">DLASD6</a> computes the SVD of an updated upper bidiagonal matrix B
+</span><span class="comment">*</span><span class="comment">  obtained by merging two smaller ones by appending a row. This
+</span><span class="comment">*</span><span class="comment">  routine is used only for the problem which requires all singular
+</span><span class="comment">*</span><span class="comment">  values and optionally singular vector matrices in factored form.
+</span><span class="comment">*</span><span class="comment">  B is an N-by-M matrix with N = NL + NR + 1 and M = N + SQRE.
+</span><span class="comment">*</span><span class="comment">  A related subroutine, <a name="DLASD1.31"></a><a href="dlasd1.f.html#DLASD1.1">DLASD1</a>, handles the case in which all singular
+</span><span class="comment">*</span><span class="comment">  values and singular vectors of the bidiagonal matrix are desired.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLASD6.34"></a><a href="dlasd6.f.html#DLASD6.1">DLASD6</a> computes the SVD as follows:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">                ( D1(in)  0    0     0 )
+</span><span class="comment">*</span><span class="comment">    B = U(in) * (   Z1'   a   Z2'    b ) * VT(in)
+</span><span class="comment">*</span><span class="comment">                (   0     0   D2(in) 0 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">      = U(out) * ( D(out) 0) * VT(out)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where Z' = (Z1' a Z2' b) = u' VT', and u is a vector of dimension M
+</span><span class="comment">*</span><span class="comment">  with ALPHA and BETA in the NL+1 and NL+2 th entries and zeros
+</span><span class="comment">*</span><span class="comment">  elsewhere; and the entry b is empty if SQRE = 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The singular values of B can be computed using D1, D2, the first
+</span><span class="comment">*</span><span class="comment">  components of all the right singular vectors of the lower block, and
+</span><span class="comment">*</span><span class="comment">  the last components of all the right singular vectors of the upper
+</span><span class="comment">*</span><span class="comment">  block. These components are stored and updated in VF and VL,
+</span><span class="comment">*</span><span class="comment">  respectively, in <a name="DLASD6.50"></a><a href="dlasd6.f.html#DLASD6.1">DLASD6</a>. Hence U and VT are not explicitly
+</span><span class="comment">*</span><span class="comment">  referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The singular values are stored in D. The algorithm consists of two
+</span><span class="comment">*</span><span class="comment">  stages:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        The first stage consists of deflating the size of the problem
+</span><span class="comment">*</span><span class="comment">        when there are multiple singular values or if there is a zero
+</span><span class="comment">*</span><span class="comment">        in the Z vector. For each such occurence the dimension of the
+</span><span class="comment">*</span><span class="comment">        secular equation problem is reduced by one. This stage is
+</span><span class="comment">*</span><span class="comment">        performed by the routine <a name="DLASD7.60"></a><a href="dlasd7.f.html#DLASD7.1">DLASD7</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        The second stage consists of calculating the updated
+</span><span class="comment">*</span><span class="comment">        singular values. This is done by finding the roots of the
+</span><span class="comment">*</span><span class="comment">        secular equation via the routine <a name="DLASD4.64"></a><a href="dlasd4.f.html#DLASD4.1">DLASD4</a> (as called by <a name="DLASD8.64"></a><a href="dlasd8.f.html#DLASD8.1">DLASD8</a>).
+</span><span class="comment">*</span><span class="comment">        This routine also updates VF and VL and computes the distances
+</span><span class="comment">*</span><span class="comment">        between the updated singular values and the old singular
+</span><span class="comment">*</span><span class="comment">        values.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DLASD6.69"></a><a href="dlasd6.f.html#DLASD6.1">DLASD6</a> is called from <a name="DLASDA.69"></a><a href="dlasda.f.html#DLASDA.1">DLASDA</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ICOMPQ (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         Specifies whether singular vectors are to be computed in
+</span><span class="comment">*</span><span class="comment">         factored form:
+</span><span class="comment">*</span><span class="comment">         = 0: Compute singular values only.
+</span><span class="comment">*</span><span class="comment">         = 1: Compute singular vectors in factored form as well.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NL     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The row dimension of the upper block.  NL &gt;= 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NR     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The row dimension of the lower block.  NR &gt;= 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SQRE   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         = 0: the lower block is an NR-by-NR square matrix.
+</span><span class="comment">*</span><span class="comment">         = 1: the lower block is an NR-by-(NR+1) rectangular matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">         The bidiagonal matrix has row dimension N = NL + NR + 1,
+</span><span class="comment">*</span><span class="comment">         and column dimension M = N + SQRE.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D      (input/output) DOUBLE PRECISION array, dimension ( NL+NR+1 ).
+</span><span class="comment">*</span><span class="comment">         On entry D(1:NL,1:NL) contains the singular values of the
+</span><span class="comment">*</span><span class="comment">         upper block, and D(NL+2:N) contains the singular values
+</span><span class="comment">*</span><span class="comment">         of the lower block. On exit D(1:N) contains the singular
+</span><span class="comment">*</span><span class="comment">         values of the modified matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VF     (input/output) DOUBLE PRECISION array, dimension ( M )
+</span><span class="comment">*</span><span class="comment">         On entry, VF(1:NL+1) contains the first components of all
+</span><span class="comment">*</span><span class="comment">         right singular vectors of the upper block; and VF(NL+2:M)
+</span><span class="comment">*</span><span class="comment">         contains the first components of all right singular vectors
+</span><span class="comment">*</span><span class="comment">         of the lower block. On exit, VF contains the first components
+</span><span class="comment">*</span><span class="comment">         of all right singular vectors of the bidiagonal matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VL     (input/output) DOUBLE PRECISION array, dimension ( M )
+</span><span class="comment">*</span><span class="comment">         On entry, VL(1:NL+1) contains the  last components of all
+</span><span class="comment">*</span><span class="comment">         right singular vectors of the upper block; and VL(NL+2:M)
+</span><span class="comment">*</span><span class="comment">         contains the last components of all right singular vectors of
+</span><span class="comment">*</span><span class="comment">         the lower block. On exit, VL contains the last components of
+</span><span class="comment">*</span><span class="comment">         all right singular vectors of the bidiagonal matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ALPHA  (input/output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">         Contains the diagonal element associated with the added row.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BETA   (input/output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">         Contains the off-diagonal element associated with the added
+</span><span class="comment">*</span><span class="comment">         row.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IDXQ   (output) INTEGER array, dimension ( N )
+</span><span class="comment">*</span><span class="comment">         This contains the permutation which will reintegrate the
+</span><span class="comment">*</span><span class="comment">         subproblem just solved back into sorted order, i.e.
+</span><span class="comment">*</span><span class="comment">         D( IDXQ( I = 1, N ) ) will be in ascending order.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  PERM   (output) INTEGER array, dimension ( N )
+</span><span class="comment">*</span><span class="comment">         The permutations (from deflation and sorting) to be applied
+</span><span class="comment">*</span><span class="comment">         to each block. Not referenced if ICOMPQ = 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GIVPTR (output) INTEGER
+</span><span class="comment">*</span><span class="comment">         The number of Givens rotations which took place in this
+</span><span class="comment">*</span><span class="comment">         subproblem. Not referenced if ICOMPQ = 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GIVCOL (output) INTEGER array, dimension ( LDGCOL, 2 )
+</span><span class="comment">*</span><span class="comment">         Each pair of numbers indicates a pair of columns to take place
+</span><span class="comment">*</span><span class="comment">         in a Givens rotation. Not referenced if ICOMPQ = 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDGCOL (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         leading dimension of GIVCOL, must be at least N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GIVNUM (output) DOUBLE PRECISION array, dimension ( LDGNUM, 2 )
+</span><span class="comment">*</span><span class="comment">         Each number indicates the C or S value to be used in the
+</span><span class="comment">*</span><span class="comment">         corresponding Givens rotation. Not referenced if ICOMPQ = 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDGNUM (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The leading dimension of GIVNUM and POLES, must be at least N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  POLES  (output) DOUBLE PRECISION array, dimension ( LDGNUM, 2 )
+</span><span class="comment">*</span><span class="comment">         On exit, POLES(1,*) is an array containing the new singular
+</span><span class="comment">*</span><span class="comment">         values obtained from solving the secular equation, and
+</span><span class="comment">*</span><span class="comment">         POLES(2,*) is an array containing the poles in the secular
+</span><span class="comment">*</span><span class="comment">         equation. Not referenced if ICOMPQ = 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIFL   (output) DOUBLE PRECISION array, dimension ( N )
+</span><span class="comment">*</span><span class="comment">         On exit, DIFL(I) is the distance between I-th updated
+</span><span class="comment">*</span><span class="comment">         (undeflated) singular value and the I-th (undeflated) old
+</span><span class="comment">*</span><span class="comment">         singular value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIFR   (output) DOUBLE PRECISION array,
+</span><span class="comment">*</span><span class="comment">                  dimension ( LDGNUM, 2 ) if ICOMPQ = 1 and
+</span><span class="comment">*</span><span class="comment">                  dimension ( N ) if ICOMPQ = 0.
+</span><span class="comment">*</span><span class="comment">         On exit, DIFR(I, 1) is the distance between I-th updated
+</span><span class="comment">*</span><span class="comment">         (undeflated) singular value and the I+1-th (undeflated) old
+</span><span class="comment">*</span><span class="comment">         singular value.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">         If ICOMPQ = 1, DIFR(1:K,2) is an array containing the
+</span><span class="comment">*</span><span class="comment">         normalizing factors for the right singular vector matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">         See <a name="DLASD8.168"></a><a href="dlasd8.f.html#DLASD8.1">DLASD8</a> for details on DIFL and DIFR.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z      (output) DOUBLE PRECISION array, dimension ( M )
+</span><span class="comment">*</span><span class="comment">         The first elements of this array contain the components
+</span><span class="comment">*</span><span class="comment">         of the deflation-adjusted updating row vector.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  K      (output) INTEGER
+</span><span class="comment">*</span><span class="comment">         Contains the dimension of the non-deflated matrix,
+</span><span class="comment">*</span><span class="comment">         This is the order of the related secular equation. 1 &lt;= K &lt;=N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C      (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">         C contains garbage if SQRE =0 and the C-value of a Givens
+</span><span class="comment">*</span><span class="comment">         rotation related to the right null space if SQRE = 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  S      (output) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">         S contains garbage if SQRE =0 and the S-value of a Givens
+</span><span class="comment">*</span><span class="comment">         rotation related to the right null space if SQRE = 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK   (workspace) DOUBLE PRECISION array, dimension ( 4 * M )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK  (workspace) INTEGER array, dimension ( 3 * N )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO   (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit.
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = 1, an singular value did not converge
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Ming Gu and Huan Ren, Computer Science Division, University of
+</span><span class="comment">*</span><span class="comment">     California at Berkeley, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ONE, ZERO
+      PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, IDX, IDXC, IDXP, ISIGMA, IVFW, IVLW, IW, M,
+     $                   N, N1, N2
+      DOUBLE PRECISION   ORGNRM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DCOPY, <a name="DLAMRG.214"></a><a href="dlamrg.f.html#DLAMRG.1">DLAMRG</a>, <a name="DLASCL.214"></a><a href="dlascl.f.html#DLASCL.1">DLASCL</a>, <a name="DLASD7.214"></a><a href="dlasd7.f.html#DLASD7.1">DLASD7</a>, <a name="DLASD8.214"></a><a href="dlasd8.f.html#DLASD8.1">DLASD8</a>, <a name="XERBLA.214"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      N = NL + NR + 1
+      M = N + SQRE
+<span class="comment">*</span><span class="comment">
+</span>      IF( ( ICOMPQ.LT.0 ) .OR. ( ICOMPQ.GT.1 ) ) THEN
+         INFO = -1
+      ELSE IF( NL.LT.1 ) THEN
+         INFO = -2
+      ELSE IF( NR.LT.1 ) THEN
+         INFO = -3
+      ELSE IF( ( SQRE.LT.0 ) .OR. ( SQRE.GT.1 ) ) THEN
+         INFO = -4
+      ELSE IF( LDGCOL.LT.N ) THEN
+         INFO = -14
+      ELSE IF( LDGNUM.LT.N ) THEN
+         INFO = -16
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.241"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DLASD6.241"></a><a href="dlasd6.f.html#DLASD6.1">DLASD6</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     The following values are for bookkeeping purposes only.  They are
+</span><span class="comment">*</span><span class="comment">     integer pointers which indicate the portion of the workspace
+</span><span class="comment">*</span><span class="comment">     used by a particular array in <a name="DLASD7.247"></a><a href="dlasd7.f.html#DLASD7.1">DLASD7</a> and <a name="DLASD8.247"></a><a href="dlasd8.f.html#DLASD8.1">DLASD8</a>.
+</span><span class="comment">*</span><span class="comment">
+</span>      ISIGMA = 1
+      IW = ISIGMA + N
+      IVFW = IW + M
+      IVLW = IVFW + M
+<span class="comment">*</span><span class="comment">
+</span>      IDX = 1
+      IDXC = IDX + N
+      IDXP = IDXC + N
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Scale.
+</span><span class="comment">*</span><span class="comment">
+</span>      ORGNRM = MAX( ABS( ALPHA ), ABS( BETA ) )
+      D( NL+1 ) = ZERO
+      DO 10 I = 1, N
+         IF( ABS( D( I ) ).GT.ORGNRM ) THEN
+            ORGNRM = ABS( D( I ) )
+         END IF
+   10 CONTINUE
+      CALL <a name="DLASCL.267"></a><a href="dlascl.f.html#DLASCL.1">DLASCL</a>( <span class="string">'G'</span>, 0, 0, ORGNRM, ONE, N, 1, D, N, INFO )
+      ALPHA = ALPHA / ORGNRM
+      BETA = BETA / ORGNRM
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Sort and Deflate singular values.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="DLASD7.273"></a><a href="dlasd7.f.html#DLASD7.1">DLASD7</a>( ICOMPQ, NL, NR, SQRE, K, D, Z, WORK( IW ), VF,
+     $             WORK( IVFW ), VL, WORK( IVLW ), ALPHA, BETA,
+     $             WORK( ISIGMA ), IWORK( IDX ), IWORK( IDXP ), IDXQ,
+     $             PERM, GIVPTR, GIVCOL, LDGCOL, GIVNUM, LDGNUM, C, S,
+     $             INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Solve Secular Equation, compute DIFL, DIFR, and update VF, VL.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="DLASD8.281"></a><a href="dlasd8.f.html#DLASD8.1">DLASD8</a>( ICOMPQ, K, D, Z, VF, VL, DIFL, DIFR, LDGNUM,
+     $             WORK( ISIGMA ), WORK( IW ), INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Save the poles if ICOMPQ = 1.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ICOMPQ.EQ.1 ) THEN
+         CALL DCOPY( K, D, 1, POLES( 1, 1 ), 1 )
+         CALL DCOPY( K, WORK( ISIGMA ), 1, POLES( 1, 2 ), 1 )
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Unscale.
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="DLASCL.293"></a><a href="dlascl.f.html#DLASCL.1">DLASCL</a>( <span class="string">'G'</span>, 0, 0, ONE, ORGNRM, N, 1, D, N, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Prepare the IDXQ sorting permutation.
+</span><span class="comment">*</span><span class="comment">
+</span>      N1 = K
+      N2 = N - K
+      CALL <a name="DLAMRG.299"></a><a href="dlamrg.f.html#DLAMRG.1">DLAMRG</a>( N1, N2, D, 1, -1, IDXQ )
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLASD6.303"></a><a href="dlasd6.f.html#DLASD6.1">DLASD6</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

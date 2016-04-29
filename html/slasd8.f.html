@@ -1,0 +1,277 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slasd8.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLASD8.1"></a><a href="slasd8.f.html#SLASD8.1">SLASD8</a>( ICOMPQ, K, D, Z, VF, VL, DIFL, DIFR, LDDIFR,
+     $                   DSIGMA, WORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            ICOMPQ, INFO, K, LDDIFR
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               D( * ), DIFL( * ), DIFR( LDDIFR, * ),
+     $                   DSIGMA( * ), VF( * ), VL( * ), WORK( * ),
+     $                   Z( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLASD8.20"></a><a href="slasd8.f.html#SLASD8.1">SLASD8</a> finds the square roots of the roots of the secular equation,
+</span><span class="comment">*</span><span class="comment">  as defined by the values in DSIGMA and Z. It makes the appropriate
+</span><span class="comment">*</span><span class="comment">  calls to <a name="SLASD4.22"></a><a href="slasd4.f.html#SLASD4.1">SLASD4</a>, and stores, for each  element in D, the distance
+</span><span class="comment">*</span><span class="comment">  to its two nearest poles (elements in DSIGMA). It also updates
+</span><span class="comment">*</span><span class="comment">  the arrays VF and VL, the first and last components of all the
+</span><span class="comment">*</span><span class="comment">  right singular vectors of the original bidiagonal matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLASD8.27"></a><a href="slasd8.f.html#SLASD8.1">SLASD8</a> is called from <a name="SLASD6.27"></a><a href="slasd6.f.html#SLASD6.1">SLASD6</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ICOMPQ  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          Specifies whether singular vectors are to be computed in
+</span><span class="comment">*</span><span class="comment">          factored form in the calling routine:
+</span><span class="comment">*</span><span class="comment">          = 0: Compute singular values only.
+</span><span class="comment">*</span><span class="comment">          = 1: Compute singular vectors in factored form as well.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  K       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of terms in the rational function to be solved
+</span><span class="comment">*</span><span class="comment">          by <a name="SLASD4.40"></a><a href="slasd4.f.html#SLASD4.1">SLASD4</a>.  K &gt;= 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (output) REAL array, dimension ( K )
+</span><span class="comment">*</span><span class="comment">          On output, D contains the updated singular values.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z       (input) REAL array, dimension ( K )
+</span><span class="comment">*</span><span class="comment">          The first K elements of this array contain the components
+</span><span class="comment">*</span><span class="comment">          of the deflation-adjusted updating row vector.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VF      (input/output) REAL array, dimension ( K )
+</span><span class="comment">*</span><span class="comment">          On entry, VF contains  information passed through DBEDE8.
+</span><span class="comment">*</span><span class="comment">          On exit, VF contains the first K components of the first
+</span><span class="comment">*</span><span class="comment">          components of all right singular vectors of the bidiagonal
+</span><span class="comment">*</span><span class="comment">          matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VL      (input/output) REAL array, dimension ( K )
+</span><span class="comment">*</span><span class="comment">          On entry, VL contains  information passed through DBEDE8.
+</span><span class="comment">*</span><span class="comment">          On exit, VL contains the first K components of the last
+</span><span class="comment">*</span><span class="comment">          components of all right singular vectors of the bidiagonal
+</span><span class="comment">*</span><span class="comment">          matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIFL    (output) REAL array, dimension ( K )
+</span><span class="comment">*</span><span class="comment">          On exit, DIFL(I) = D(I) - DSIGMA(I).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIFR    (output) REAL array,
+</span><span class="comment">*</span><span class="comment">                   dimension ( LDDIFR, 2 ) if ICOMPQ = 1 and
+</span><span class="comment">*</span><span class="comment">                   dimension ( K ) if ICOMPQ = 0.
+</span><span class="comment">*</span><span class="comment">          On exit, DIFR(I,1) = D(I) - DSIGMA(I+1), DIFR(K,1) is not
+</span><span class="comment">*</span><span class="comment">          defined and will not be referenced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          If ICOMPQ = 1, DIFR(1:K,2) is an array containing the
+</span><span class="comment">*</span><span class="comment">          normalizing factors for the right singular vector matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDDIFR  (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of DIFR, must be at least K.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DSIGMA  (input) REAL array, dimension ( K )
+</span><span class="comment">*</span><span class="comment">          The first K elements of this array contain the old roots
+</span><span class="comment">*</span><span class="comment">          of the deflated updating problem.  These are the poles
+</span><span class="comment">*</span><span class="comment">          of the secular equation.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) REAL array, dimension at least 3 * K
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit.
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = 1, an singular value did not converge
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Ming Gu and Huan Ren, Computer Science Division, University of
+</span><span class="comment">*</span><span class="comment">     California at Berkeley, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ONE
+      PARAMETER          ( ONE = 1.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, IWK1, IWK2, IWK2I, IWK3, IWK3I, J
+      REAL               DIFLJ, DIFRJ, DJ, DSIGJ, DSIGJP, RHO, TEMP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           SCOPY, <a name="SLASCL.106"></a><a href="slascl.f.html#SLASCL.1">SLASCL</a>, <a name="SLASD4.106"></a><a href="slasd4.f.html#SLASD4.1">SLASD4</a>, <a name="SLASET.106"></a><a href="slaset.f.html#SLASET.1">SLASET</a>, <a name="XERBLA.106"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      REAL               SDOT, <a name="SLAMC3.109"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>, SNRM2
+      EXTERNAL           SDOT, <a name="SLAMC3.110"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>, SNRM2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, SIGN, SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+<span class="comment">*</span><span class="comment">
+</span>      IF( ( ICOMPQ.LT.0 ) .OR. ( ICOMPQ.GT.1 ) ) THEN
+         INFO = -1
+      ELSE IF( K.LT.1 ) THEN
+         INFO = -2
+      ELSE IF( LDDIFR.LT.K ) THEN
+         INFO = -9
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.129"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="SLASD8.129"></a><a href="slasd8.f.html#SLASD8.1">SLASD8</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( K.EQ.1 ) THEN
+         D( 1 ) = ABS( Z( 1 ) )
+         DIFL( 1 ) = D( 1 )
+         IF( ICOMPQ.EQ.1 ) THEN
+            DIFL( 2 ) = ONE
+            DIFR( 1, 2 ) = ONE
+         END IF
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Modify values DSIGMA(i) to make sure all DSIGMA(i)-DSIGMA(j) can
+</span><span class="comment">*</span><span class="comment">     be computed with high relative accuracy (barring over/underflow).
+</span><span class="comment">*</span><span class="comment">     This is a problem on machines without a guard digit in
+</span><span class="comment">*</span><span class="comment">     add/subtract (Cray XMP, Cray YMP, Cray C 90 and Cray 2).
+</span><span class="comment">*</span><span class="comment">     The following code replaces DSIGMA(I) by 2*DSIGMA(I)-DSIGMA(I),
+</span><span class="comment">*</span><span class="comment">     which on any of these machines zeros out the bottommost
+</span><span class="comment">*</span><span class="comment">     bit of DSIGMA(I) if it is 1; this makes the subsequent
+</span><span class="comment">*</span><span class="comment">     subtractions DSIGMA(I)-DSIGMA(J) unproblematic when cancellation
+</span><span class="comment">*</span><span class="comment">     occurs. On binary machines with a guard digit (almost all
+</span><span class="comment">*</span><span class="comment">     machines) it does not change DSIGMA(I) at all. On hexadecimal
+</span><span class="comment">*</span><span class="comment">     and decimal machines with a guard digit, it slightly
+</span><span class="comment">*</span><span class="comment">     changes the bottommost bits of DSIGMA(I). It does not account
+</span><span class="comment">*</span><span class="comment">     for hexadecimal or decimal machines without guard digits
+</span><span class="comment">*</span><span class="comment">     (we know of none). We use a subroutine call to compute
+</span><span class="comment">*</span><span class="comment">     2*DSIGMA(I) to prevent optimizing compilers from eliminating
+</span><span class="comment">*</span><span class="comment">     this code.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 10 I = 1, K
+         DSIGMA( I ) = <a name="SLAMC3.163"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( DSIGMA( I ), DSIGMA( I ) ) - DSIGMA( I )
+   10 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Book keeping.
+</span><span class="comment">*</span><span class="comment">
+</span>      IWK1 = 1
+      IWK2 = IWK1 + K
+      IWK3 = IWK2 + K
+      IWK2I = IWK2 - 1
+      IWK3I = IWK3 - 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Normalize Z.
+</span><span class="comment">*</span><span class="comment">
+</span>      RHO = SNRM2( K, Z, 1 )
+      CALL <a name="SLASCL.177"></a><a href="slascl.f.html#SLASCL.1">SLASCL</a>( <span class="string">'G'</span>, 0, 0, RHO, ONE, K, 1, Z, K, INFO )
+      RHO = RHO*RHO
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Initialize WORK(IWK3).
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="SLASET.182"></a><a href="slaset.f.html#SLASET.1">SLASET</a>( <span class="string">'A'</span>, K, 1, ONE, ONE, WORK( IWK3 ), K )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute the updated singular values, the arrays DIFL, DIFR,
+</span><span class="comment">*</span><span class="comment">     and the updated Z.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 40 J = 1, K
+         CALL <a name="SLASD4.188"></a><a href="slasd4.f.html#SLASD4.1">SLASD4</a>( K, J, DSIGMA, Z, WORK( IWK1 ), RHO, D( J ),
+     $                WORK( IWK2 ), INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        If the root finder fails, the computation is terminated.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( INFO.NE.0 ) THEN
+            RETURN
+         END IF
+         WORK( IWK3I+J ) = WORK( IWK3I+J )*WORK( J )*WORK( IWK2I+J )
+         DIFL( J ) = -WORK( J )
+         DIFR( J, 1 ) = -WORK( J+1 )
+         DO 20 I = 1, J - 1
+            WORK( IWK3I+I ) = WORK( IWK3I+I )*WORK( I )*
+     $                        WORK( IWK2I+I ) / ( DSIGMA( I )-
+     $                        DSIGMA( J ) ) / ( DSIGMA( I )+
+     $                        DSIGMA( J ) )
+   20    CONTINUE
+         DO 30 I = J + 1, K
+            WORK( IWK3I+I ) = WORK( IWK3I+I )*WORK( I )*
+     $                        WORK( IWK2I+I ) / ( DSIGMA( I )-
+     $                        DSIGMA( J ) ) / ( DSIGMA( I )+
+     $                        DSIGMA( J ) )
+   30    CONTINUE
+   40 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute updated Z.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 50 I = 1, K
+         Z( I ) = SIGN( SQRT( ABS( WORK( IWK3I+I ) ) ), Z( I ) )
+   50 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Update VF and VL.
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 80 J = 1, K
+         DIFLJ = DIFL( J )
+         DJ = D( J )
+         DSIGJ = -DSIGMA( J )
+         IF( J.LT.K ) THEN
+            DIFRJ = -DIFR( J, 1 )
+            DSIGJP = -DSIGMA( J+1 )
+         END IF
+         WORK( J ) = -Z( J ) / DIFLJ / ( DSIGMA( J )+DJ )
+         DO 60 I = 1, J - 1
+            WORK( I ) = Z( I ) / ( <a name="SLAMC3.231"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( DSIGMA( I ), DSIGJ )-DIFLJ )
+     $                   / ( DSIGMA( I )+DJ )
+   60    CONTINUE
+         DO 70 I = J + 1, K
+            WORK( I ) = Z( I ) / ( <a name="SLAMC3.235"></a><a href="slamch.f.html#SLAMC3.574">SLAMC3</a>( DSIGMA( I ), DSIGJP )+DIFRJ )
+     $                   / ( DSIGMA( I )+DJ )
+   70    CONTINUE
+         TEMP = SNRM2( K, WORK, 1 )
+         WORK( IWK2I+J ) = SDOT( K, WORK, 1, VF, 1 ) / TEMP
+         WORK( IWK3I+J ) = SDOT( K, WORK, 1, VL, 1 ) / TEMP
+         IF( ICOMPQ.EQ.1 ) THEN
+            DIFR( J, 2 ) = TEMP
+         END IF
+   80 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      CALL SCOPY( K, WORK( IWK2 ), 1, VF, 1 )
+      CALL SCOPY( K, WORK( IWK3 ), 1, VL, 1 )
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLASD8.251"></a><a href="slasd8.f.html#SLASD8.1">SLASD8</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slasq5.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLASQ5.1"></a><a href="slasq5.f.html#SLASQ5.1">SLASQ5</a>( I0, N0, Z, PP, TAU, DMIN, DMIN1, DMIN2, DN,
+     $                   DNM1, DNM2, IEEE )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      LOGICAL            IEEE
+      INTEGER            I0, N0, PP
+      REAL               DMIN, DMIN1, DMIN2, DN, DNM1, DNM2, TAU
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               Z( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLASQ5.20"></a><a href="slasq5.f.html#SLASQ5.1">SLASQ5</a> computes one dqds transform in ping-pong form, one
+</span><span class="comment">*</span><span class="comment">  version for IEEE machines another for non IEEE machines.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  I0    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">        First index.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N0    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">        Last index.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z     (input) REAL array, dimension ( 4*N )
+</span><span class="comment">*</span><span class="comment">        Z holds the qd array. EMIN is stored in Z(4*N0) to avoid
+</span><span class="comment">*</span><span class="comment">        an extra argument.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  PP    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">        PP=0 for ping, PP=1 for pong.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TAU   (input) REAL
+</span><span class="comment">*</span><span class="comment">        This is the shift.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DMIN  (output) REAL
+</span><span class="comment">*</span><span class="comment">        Minimum value of d.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DMIN1 (output) REAL
+</span><span class="comment">*</span><span class="comment">        Minimum value of d, excluding D( N0 ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DMIN2 (output) REAL
+</span><span class="comment">*</span><span class="comment">        Minimum value of d, excluding D( N0 ) and D( N0-1 ).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DN    (output) REAL
+</span><span class="comment">*</span><span class="comment">        d(N0), the last value of d.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DNM1  (output) REAL
+</span><span class="comment">*</span><span class="comment">        d(N0-1).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DNM2  (output) REAL
+</span><span class="comment">*</span><span class="comment">        d(N0-2).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IEEE  (input) LOGICAL
+</span><span class="comment">*</span><span class="comment">        Flag for IEEE or non IEEE arithmetic.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameter ..
+</span>      REAL               ZERO
+      PARAMETER          ( ZERO = 0.0E0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            J4, J4P2
+      REAL               D, EMIN, TEMP
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( ( N0-I0-1 ).LE.0 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      J4 = 4*I0 + PP - 3
+      EMIN = Z( J4+4 )
+      D = Z( J4 ) - TAU
+      DMIN = D
+      DMIN1 = -Z( J4 )
+<span class="comment">*</span><span class="comment">
+</span>      IF( IEEE ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Code for IEEE arithmetic.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( PP.EQ.0 ) THEN
+            DO 10 J4 = 4*I0, 4*( N0-3 ), 4
+               Z( J4-2 ) = D + Z( J4-1 )
+               TEMP = Z( J4+1 ) / Z( J4-2 )
+               D = D*TEMP - TAU
+               DMIN = MIN( DMIN, D )
+               Z( J4 ) = Z( J4-1 )*TEMP
+               EMIN = MIN( Z( J4 ), EMIN )
+   10       CONTINUE
+         ELSE
+            DO 20 J4 = 4*I0, 4*( N0-3 ), 4
+               Z( J4-3 ) = D + Z( J4 )
+               TEMP = Z( J4+2 ) / Z( J4-3 )
+               D = D*TEMP - TAU
+               DMIN = MIN( DMIN, D )
+               Z( J4-1 ) = Z( J4 )*TEMP
+               EMIN = MIN( Z( J4-1 ), EMIN )
+   20       CONTINUE
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Unroll last two steps.
+</span><span class="comment">*</span><span class="comment">
+</span>         DNM2 = D
+         DMIN2 = DMIN
+         J4 = 4*( N0-2 ) - PP
+         J4P2 = J4 + 2*PP - 1
+         Z( J4-2 ) = DNM2 + Z( J4P2 )
+         Z( J4 ) = Z( J4P2+2 )*( Z( J4P2 ) / Z( J4-2 ) )
+         DNM1 = Z( J4P2+2 )*( DNM2 / Z( J4-2 ) ) - TAU
+         DMIN = MIN( DMIN, DNM1 )
+<span class="comment">*</span><span class="comment">
+</span>         DMIN1 = DMIN
+         J4 = J4 + 4
+         J4P2 = J4 + 2*PP - 1
+         Z( J4-2 ) = DNM1 + Z( J4P2 )
+         Z( J4 ) = Z( J4P2+2 )*( Z( J4P2 ) / Z( J4-2 ) )
+         DN = Z( J4P2+2 )*( DNM1 / Z( J4-2 ) ) - TAU
+         DMIN = MIN( DMIN, DN )
+<span class="comment">*</span><span class="comment">
+</span>      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Code for non IEEE arithmetic.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( PP.EQ.0 ) THEN
+            DO 30 J4 = 4*I0, 4*( N0-3 ), 4
+               Z( J4-2 ) = D + Z( J4-1 )
+               IF( D.LT.ZERO ) THEN
+                  RETURN
+               ELSE
+                  Z( J4 ) = Z( J4+1 )*( Z( J4-1 ) / Z( J4-2 ) )
+                  D = Z( J4+1 )*( D / Z( J4-2 ) ) - TAU
+               END IF
+               DMIN = MIN( DMIN, D )
+               EMIN = MIN( EMIN, Z( J4 ) )
+   30       CONTINUE
+         ELSE
+            DO 40 J4 = 4*I0, 4*( N0-3 ), 4
+               Z( J4-3 ) = D + Z( J4 )
+               IF( D.LT.ZERO ) THEN
+                  RETURN
+               ELSE
+                  Z( J4-1 ) = Z( J4+2 )*( Z( J4 ) / Z( J4-3 ) )
+                  D = Z( J4+2 )*( D / Z( J4-3 ) ) - TAU
+               END IF
+               DMIN = MIN( DMIN, D )
+               EMIN = MIN( EMIN, Z( J4-1 ) )
+   40       CONTINUE
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Unroll last two steps.
+</span><span class="comment">*</span><span class="comment">
+</span>         DNM2 = D
+         DMIN2 = DMIN
+         J4 = 4*( N0-2 ) - PP
+         J4P2 = J4 + 2*PP - 1
+         Z( J4-2 ) = DNM2 + Z( J4P2 )
+         IF( DNM2.LT.ZERO ) THEN
+            RETURN
+         ELSE
+            Z( J4 ) = Z( J4P2+2 )*( Z( J4P2 ) / Z( J4-2 ) )
+            DNM1 = Z( J4P2+2 )*( DNM2 / Z( J4-2 ) ) - TAU
+         END IF
+         DMIN = MIN( DMIN, DNM1 )
+<span class="comment">*</span><span class="comment">
+</span>         DMIN1 = DMIN
+         J4 = J4 + 4
+         J4P2 = J4 + 2*PP - 1
+         Z( J4-2 ) = DNM1 + Z( J4P2 )
+         IF( DNM1.LT.ZERO ) THEN
+            RETURN
+         ELSE
+            Z( J4 ) = Z( J4P2+2 )*( Z( J4P2 ) / Z( J4-2 ) )
+            DN = Z( J4P2+2 )*( DNM1 / Z( J4-2 ) ) - TAU
+         END IF
+         DMIN = MIN( DMIN, DN )
+<span class="comment">*</span><span class="comment">
+</span>      END IF
+<span class="comment">*</span><span class="comment">
+</span>      Z( J4+2 ) = DN
+      Z( 4*N0-PP ) = EMIN
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLASQ5.193"></a><a href="slasq5.f.html#SLASQ5.1">SLASQ5</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

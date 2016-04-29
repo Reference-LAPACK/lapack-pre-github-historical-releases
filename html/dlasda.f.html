@@ -1,0 +1,414 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dlasda.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DLASDA.1"></a><a href="dlasda.f.html#DLASDA.1">DLASDA</a>( ICOMPQ, SMLSIZ, N, SQRE, D, E, U, LDU, VT, K,
+     $                   DIFL, DIFR, Z, POLES, GIVPTR, GIVCOL, LDGCOL,
+     $                   PERM, GIVNUM, C, S, WORK, IWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            ICOMPQ, INFO, LDGCOL, LDU, N, SMLSIZ, SQRE
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            GIVCOL( LDGCOL, * ), GIVPTR( * ), IWORK( * ),
+     $                   K( * ), PERM( LDGCOL, * )
+      DOUBLE PRECISION   C( * ), D( * ), DIFL( LDU, * ), DIFR( LDU, * ),
+     $                   E( * ), GIVNUM( LDU, * ), POLES( LDU, * ),
+     $                   S( * ), U( LDU, * ), VT( LDU, * ), WORK( * ),
+     $                   Z( LDU, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Using a divide and conquer approach, <a name="DLASDA.24"></a><a href="dlasda.f.html#DLASDA.1">DLASDA</a> computes the singular
+</span><span class="comment">*</span><span class="comment">  value decomposition (SVD) of a real upper bidiagonal N-by-M matrix
+</span><span class="comment">*</span><span class="comment">  B with diagonal D and offdiagonal E, where M = N + SQRE. The
+</span><span class="comment">*</span><span class="comment">  algorithm computes the singular values in the SVD B = U * S * VT.
+</span><span class="comment">*</span><span class="comment">  The orthogonal matrices U and VT are optionally computed in
+</span><span class="comment">*</span><span class="comment">  compact form.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A related subroutine, <a name="DLASD0.31"></a><a href="dlasd0.f.html#DLASD0.1">DLASD0</a>, computes the singular values and
+</span><span class="comment">*</span><span class="comment">  the singular vectors in explicit form.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ICOMPQ (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         Specifies whether singular vectors are to be computed
+</span><span class="comment">*</span><span class="comment">         in compact form, as follows
+</span><span class="comment">*</span><span class="comment">         = 0: Compute singular values only.
+</span><span class="comment">*</span><span class="comment">         = 1: Compute singular vectors of upper bidiagonal
+</span><span class="comment">*</span><span class="comment">              matrix in compact form.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SMLSIZ (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The maximum size of the subproblems at the bottom of the
+</span><span class="comment">*</span><span class="comment">         computation tree.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         The row dimension of the upper bidiagonal matrix. This is
+</span><span class="comment">*</span><span class="comment">         also the dimension of the main diagonal array D.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SQRE   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">         Specifies the column dimension of the bidiagonal matrix.
+</span><span class="comment">*</span><span class="comment">         = 0: The bidiagonal matrix has column dimension M = N;
+</span><span class="comment">*</span><span class="comment">         = 1: The bidiagonal matrix has column dimension M = N + 1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D      (input/output) DOUBLE PRECISION array, dimension ( N )
+</span><span class="comment">*</span><span class="comment">         On entry D contains the main diagonal of the bidiagonal
+</span><span class="comment">*</span><span class="comment">         matrix. On exit D, if INFO = 0, contains its singular values.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E      (input) DOUBLE PRECISION array, dimension ( M-1 )
+</span><span class="comment">*</span><span class="comment">         Contains the subdiagonal entries of the bidiagonal matrix.
+</span><span class="comment">*</span><span class="comment">         On exit, E has been destroyed.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  U      (output) DOUBLE PRECISION array,
+</span><span class="comment">*</span><span class="comment">         dimension ( LDU, SMLSIZ ) if ICOMPQ = 1, and not referenced
+</span><span class="comment">*</span><span class="comment">         if ICOMPQ = 0. If ICOMPQ = 1, on exit, U contains the left
+</span><span class="comment">*</span><span class="comment">         singular vector matrices of all subproblems at the bottom
+</span><span class="comment">*</span><span class="comment">         level.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDU    (input) INTEGER, LDU = &gt; N.
+</span><span class="comment">*</span><span class="comment">         The leading dimension of arrays U, VT, DIFL, DIFR, POLES,
+</span><span class="comment">*</span><span class="comment">         GIVNUM, and Z.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  VT     (output) DOUBLE PRECISION array,
+</span><span class="comment">*</span><span class="comment">         dimension ( LDU, SMLSIZ+1 ) if ICOMPQ = 1, and not referenced
+</span><span class="comment">*</span><span class="comment">         if ICOMPQ = 0. If ICOMPQ = 1, on exit, VT' contains the right
+</span><span class="comment">*</span><span class="comment">         singular vector matrices of all subproblems at the bottom
+</span><span class="comment">*</span><span class="comment">         level.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  K      (output) INTEGER array,
+</span><span class="comment">*</span><span class="comment">         dimension ( N ) if ICOMPQ = 1 and dimension 1 if ICOMPQ = 0.
+</span><span class="comment">*</span><span class="comment">         If ICOMPQ = 1, on exit, K(I) is the dimension of the I-th
+</span><span class="comment">*</span><span class="comment">         secular equation on the computation tree.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIFL   (output) DOUBLE PRECISION array, dimension ( LDU, NLVL ),
+</span><span class="comment">*</span><span class="comment">         where NLVL = floor(log_2 (N/SMLSIZ))).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  DIFR   (output) DOUBLE PRECISION array,
+</span><span class="comment">*</span><span class="comment">                  dimension ( LDU, 2 * NLVL ) if ICOMPQ = 1 and
+</span><span class="comment">*</span><span class="comment">                  dimension ( N ) if ICOMPQ = 0.
+</span><span class="comment">*</span><span class="comment">         If ICOMPQ = 1, on exit, DIFL(1:N, I) and DIFR(1:N, 2 * I - 1)
+</span><span class="comment">*</span><span class="comment">         record distances between singular values on the I-th
+</span><span class="comment">*</span><span class="comment">         level and singular values on the (I -1)-th level, and
+</span><span class="comment">*</span><span class="comment">         DIFR(1:N, 2 * I ) contains the normalizing factors for
+</span><span class="comment">*</span><span class="comment">         the right singular vector matrix. See <a name="DLASD8.96"></a><a href="dlasd8.f.html#DLASD8.1">DLASD8</a> for details.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Z      (output) DOUBLE PRECISION array,
+</span><span class="comment">*</span><span class="comment">                  dimension ( LDU, NLVL ) if ICOMPQ = 1 and
+</span><span class="comment">*</span><span class="comment">                  dimension ( N ) if ICOMPQ = 0.
+</span><span class="comment">*</span><span class="comment">         The first K elements of Z(1, I) contain the components of
+</span><span class="comment">*</span><span class="comment">         the deflation-adjusted updating row vector for subproblems
+</span><span class="comment">*</span><span class="comment">         on the I-th level.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  POLES  (output) DOUBLE PRECISION array,
+</span><span class="comment">*</span><span class="comment">         dimension ( LDU, 2 * NLVL ) if ICOMPQ = 1, and not referenced
+</span><span class="comment">*</span><span class="comment">         if ICOMPQ = 0. If ICOMPQ = 1, on exit, POLES(1, 2*I - 1) and
+</span><span class="comment">*</span><span class="comment">         POLES(1, 2*I) contain  the new and old singular values
+</span><span class="comment">*</span><span class="comment">         involved in the secular equations on the I-th level.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GIVPTR (output) INTEGER array,
+</span><span class="comment">*</span><span class="comment">         dimension ( N ) if ICOMPQ = 1, and not referenced if
+</span><span class="comment">*</span><span class="comment">         ICOMPQ = 0. If ICOMPQ = 1, on exit, GIVPTR( I ) records
+</span><span class="comment">*</span><span class="comment">         the number of Givens rotations performed on the I-th
+</span><span class="comment">*</span><span class="comment">         problem on the computation tree.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GIVCOL (output) INTEGER array,
+</span><span class="comment">*</span><span class="comment">         dimension ( LDGCOL, 2 * NLVL ) if ICOMPQ = 1, and not
+</span><span class="comment">*</span><span class="comment">         referenced if ICOMPQ = 0. If ICOMPQ = 1, on exit, for each I,
+</span><span class="comment">*</span><span class="comment">         GIVCOL(1, 2 *I - 1) and GIVCOL(1, 2 *I) record the locations
+</span><span class="comment">*</span><span class="comment">         of Givens rotations performed on the I-th level on the
+</span><span class="comment">*</span><span class="comment">         computation tree.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDGCOL (input) INTEGER, LDGCOL = &gt; N.
+</span><span class="comment">*</span><span class="comment">         The leading dimension of arrays GIVCOL and PERM.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  PERM   (output) INTEGER array,
+</span><span class="comment">*</span><span class="comment">         dimension ( LDGCOL, NLVL ) if ICOMPQ = 1, and not referenced
+</span><span class="comment">*</span><span class="comment">         if ICOMPQ = 0. If ICOMPQ = 1, on exit, PERM(1, I) records
+</span><span class="comment">*</span><span class="comment">         permutations done on the I-th level of the computation tree.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  GIVNUM (output) DOUBLE PRECISION array,
+</span><span class="comment">*</span><span class="comment">         dimension ( LDU,  2 * NLVL ) if ICOMPQ = 1, and not
+</span><span class="comment">*</span><span class="comment">         referenced if ICOMPQ = 0. If ICOMPQ = 1, on exit, for each I,
+</span><span class="comment">*</span><span class="comment">         GIVNUM(1, 2 *I - 1) and GIVNUM(1, 2 *I) record the C- and S-
+</span><span class="comment">*</span><span class="comment">         values of Givens rotations performed on the I-th level on
+</span><span class="comment">*</span><span class="comment">         the computation tree.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C      (output) DOUBLE PRECISION array,
+</span><span class="comment">*</span><span class="comment">         dimension ( N ) if ICOMPQ = 1, and dimension 1 if ICOMPQ = 0.
+</span><span class="comment">*</span><span class="comment">         If ICOMPQ = 1 and the I-th subproblem is not square, on exit,
+</span><span class="comment">*</span><span class="comment">         C( I ) contains the C-value of a Givens rotation related to
+</span><span class="comment">*</span><span class="comment">         the right null space of the I-th subproblem.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  S      (output) DOUBLE PRECISION array, dimension ( N ) if
+</span><span class="comment">*</span><span class="comment">         ICOMPQ = 1, and dimension 1 if ICOMPQ = 0. If ICOMPQ = 1
+</span><span class="comment">*</span><span class="comment">         and the I-th subproblem is not square, on exit, S( I )
+</span><span class="comment">*</span><span class="comment">         contains the S-value of a Givens rotation related to
+</span><span class="comment">*</span><span class="comment">         the right null space of the I-th subproblem.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK   (workspace) DOUBLE PRECISION array, dimension
+</span><span class="comment">*</span><span class="comment">         (6 * N + (SMLSIZ + 1)*(SMLSIZ + 1)).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK  (workspace) INTEGER array.
+</span><span class="comment">*</span><span class="comment">         Dimension must be at least (7 * N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO   (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit.
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value.
+</span><span class="comment">*</span><span class="comment">          &gt; 0:  if INFO = 1, an singular value did not converge
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Ming Gu and Huan Ren, Computer Science Division, University of
+</span><span class="comment">*</span><span class="comment">     California at Berkeley, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, I1, IC, IDXQ, IDXQI, IM1, INODE, ITEMP, IWK,
+     $                   J, LF, LL, LVL, LVL2, M, NCC, ND, NDB1, NDIML,
+     $                   NDIMR, NL, NLF, NLP1, NLVL, NR, NRF, NRP1, NRU,
+     $                   NWORK1, NWORK2, SMLSZP, SQREI, VF, VFI, VL, VLI
+      DOUBLE PRECISION   ALPHA, BETA
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DCOPY, <a name="DLASD6.183"></a><a href="dlasd6.f.html#DLASD6.1">DLASD6</a>, <a name="DLASDQ.183"></a><a href="dlasdq.f.html#DLASDQ.1">DLASDQ</a>, <a name="DLASDT.183"></a><a href="dlasdt.f.html#DLASDT.1">DLASDT</a>, <a name="DLASET.183"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>, <a name="XERBLA.183"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+<span class="comment">*</span><span class="comment">
+</span>      IF( ( ICOMPQ.LT.0 ) .OR. ( ICOMPQ.GT.1 ) ) THEN
+         INFO = -1
+      ELSE IF( SMLSIZ.LT.3 ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( ( SQRE.LT.0 ) .OR. ( SQRE.GT.1 ) ) THEN
+         INFO = -4
+      ELSE IF( LDU.LT.( N+SQRE ) ) THEN
+         INFO = -8
+      ELSE IF( LDGCOL.LT.N ) THEN
+         INFO = -17
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.205"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DLASDA.205"></a><a href="dlasda.f.html#DLASDA.1">DLASDA</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      M = N + SQRE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     If the input matrix is too small, call <a name="DLASDQ.211"></a><a href="dlasdq.f.html#DLASDQ.1">DLASDQ</a> to find the SVD.
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.LE.SMLSIZ ) THEN
+         IF( ICOMPQ.EQ.0 ) THEN
+            CALL <a name="DLASDQ.215"></a><a href="dlasdq.f.html#DLASDQ.1">DLASDQ</a>( <span class="string">'U'</span>, SQRE, N, 0, 0, 0, D, E, VT, LDU, U, LDU,
+     $                   U, LDU, WORK, INFO )
+         ELSE
+            CALL <a name="DLASDQ.218"></a><a href="dlasdq.f.html#DLASDQ.1">DLASDQ</a>( <span class="string">'U'</span>, SQRE, N, M, N, 0, D, E, VT, LDU, U, LDU,
+     $                   U, LDU, WORK, INFO )
+         END IF
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Book-keeping and  set up the computation tree.
+</span><span class="comment">*</span><span class="comment">
+</span>      INODE = 1
+      NDIML = INODE + N
+      NDIMR = NDIML + N
+      IDXQ = NDIMR + N
+      IWK = IDXQ + N
+<span class="comment">*</span><span class="comment">
+</span>      NCC = 0
+      NRU = 0
+<span class="comment">*</span><span class="comment">
+</span>      SMLSZP = SMLSIZ + 1
+      VF = 1
+      VL = VF + M
+      NWORK1 = VL + M
+      NWORK2 = NWORK1 + SMLSZP*SMLSZP
+<span class="comment">*</span><span class="comment">
+</span>      CALL <a name="DLASDT.241"></a><a href="dlasdt.f.html#DLASDT.1">DLASDT</a>( N, NLVL, ND, IWORK( INODE ), IWORK( NDIML ),
+     $             IWORK( NDIMR ), SMLSIZ )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     for the nodes on bottom level of the tree, solve
+</span><span class="comment">*</span><span class="comment">     their subproblems by <a name="DLASDQ.245"></a><a href="dlasdq.f.html#DLASDQ.1">DLASDQ</a>.
+</span><span class="comment">*</span><span class="comment">
+</span>      NDB1 = ( ND+1 ) / 2
+      DO 30 I = NDB1, ND
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        IC : center row of each node
+</span><span class="comment">*</span><span class="comment">        NL : number of rows of left  subproblem
+</span><span class="comment">*</span><span class="comment">        NR : number of rows of right subproblem
+</span><span class="comment">*</span><span class="comment">        NLF: starting row of the left   subproblem
+</span><span class="comment">*</span><span class="comment">        NRF: starting row of the right  subproblem
+</span><span class="comment">*</span><span class="comment">
+</span>         I1 = I - 1
+         IC = IWORK( INODE+I1 )
+         NL = IWORK( NDIML+I1 )
+         NLP1 = NL + 1
+         NR = IWORK( NDIMR+I1 )
+         NLF = IC - NL
+         NRF = IC + 1
+         IDXQI = IDXQ + NLF - 2
+         VFI = VF + NLF - 1
+         VLI = VL + NLF - 1
+         SQREI = 1
+         IF( ICOMPQ.EQ.0 ) THEN
+            CALL <a name="DLASET.268"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'A'</span>, NLP1, NLP1, ZERO, ONE, WORK( NWORK1 ),
+     $                   SMLSZP )
+            CALL <a name="DLASDQ.270"></a><a href="dlasdq.f.html#DLASDQ.1">DLASDQ</a>( <span class="string">'U'</span>, SQREI, NL, NLP1, NRU, NCC, D( NLF ),
+     $                   E( NLF ), WORK( NWORK1 ), SMLSZP,
+     $                   WORK( NWORK2 ), NL, WORK( NWORK2 ), NL,
+     $                   WORK( NWORK2 ), INFO )
+            ITEMP = NWORK1 + NL*SMLSZP
+            CALL DCOPY( NLP1, WORK( NWORK1 ), 1, WORK( VFI ), 1 )
+            CALL DCOPY( NLP1, WORK( ITEMP ), 1, WORK( VLI ), 1 )
+         ELSE
+            CALL <a name="DLASET.278"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'A'</span>, NL, NL, ZERO, ONE, U( NLF, 1 ), LDU )
+            CALL <a name="DLASET.279"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'A'</span>, NLP1, NLP1, ZERO, ONE, VT( NLF, 1 ), LDU )
+            CALL <a name="DLASDQ.280"></a><a href="dlasdq.f.html#DLASDQ.1">DLASDQ</a>( <span class="string">'U'</span>, SQREI, NL, NLP1, NL, NCC, D( NLF ),
+     $                   E( NLF ), VT( NLF, 1 ), LDU, U( NLF, 1 ), LDU,
+     $                   U( NLF, 1 ), LDU, WORK( NWORK1 ), INFO )
+            CALL DCOPY( NLP1, VT( NLF, 1 ), 1, WORK( VFI ), 1 )
+            CALL DCOPY( NLP1, VT( NLF, NLP1 ), 1, WORK( VLI ), 1 )
+         END IF
+         IF( INFO.NE.0 ) THEN
+            RETURN
+         END IF
+         DO 10 J = 1, NL
+            IWORK( IDXQI+J ) = J
+   10    CONTINUE
+         IF( ( I.EQ.ND ) .AND. ( SQRE.EQ.0 ) ) THEN
+            SQREI = 0
+         ELSE
+            SQREI = 1
+         END IF
+         IDXQI = IDXQI + NLP1
+         VFI = VFI + NLP1
+         VLI = VLI + NLP1
+         NRP1 = NR + SQREI
+         IF( ICOMPQ.EQ.0 ) THEN
+            CALL <a name="DLASET.302"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'A'</span>, NRP1, NRP1, ZERO, ONE, WORK( NWORK1 ),
+     $                   SMLSZP )
+            CALL <a name="DLASDQ.304"></a><a href="dlasdq.f.html#DLASDQ.1">DLASDQ</a>( <span class="string">'U'</span>, SQREI, NR, NRP1, NRU, NCC, D( NRF ),
+     $                   E( NRF ), WORK( NWORK1 ), SMLSZP,
+     $                   WORK( NWORK2 ), NR, WORK( NWORK2 ), NR,
+     $                   WORK( NWORK2 ), INFO )
+            ITEMP = NWORK1 + ( NRP1-1 )*SMLSZP
+            CALL DCOPY( NRP1, WORK( NWORK1 ), 1, WORK( VFI ), 1 )
+            CALL DCOPY( NRP1, WORK( ITEMP ), 1, WORK( VLI ), 1 )
+         ELSE
+            CALL <a name="DLASET.312"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'A'</span>, NR, NR, ZERO, ONE, U( NRF, 1 ), LDU )
+            CALL <a name="DLASET.313"></a><a href="dlaset.f.html#DLASET.1">DLASET</a>( <span class="string">'A'</span>, NRP1, NRP1, ZERO, ONE, VT( NRF, 1 ), LDU )
+            CALL <a name="DLASDQ.314"></a><a href="dlasdq.f.html#DLASDQ.1">DLASDQ</a>( <span class="string">'U'</span>, SQREI, NR, NRP1, NR, NCC, D( NRF ),
+     $                   E( NRF ), VT( NRF, 1 ), LDU, U( NRF, 1 ), LDU,
+     $                   U( NRF, 1 ), LDU, WORK( NWORK1 ), INFO )
+            CALL DCOPY( NRP1, VT( NRF, 1 ), 1, WORK( VFI ), 1 )
+            CALL DCOPY( NRP1, VT( NRF, NRP1 ), 1, WORK( VLI ), 1 )
+         END IF
+         IF( INFO.NE.0 ) THEN
+            RETURN
+         END IF
+         DO 20 J = 1, NR
+            IWORK( IDXQI+J ) = J
+   20    CONTINUE
+   30 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Now conquer each subproblem bottom-up.
+</span><span class="comment">*</span><span class="comment">
+</span>      J = 2**NLVL
+      DO 50 LVL = NLVL, 1, -1
+         LVL2 = LVL*2 - 1
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Find the first node LF and last node LL on
+</span><span class="comment">*</span><span class="comment">        the current level LVL.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( LVL.EQ.1 ) THEN
+            LF = 1
+            LL = 1
+         ELSE
+            LF = 2**( LVL-1 )
+            LL = 2*LF - 1
+         END IF
+         DO 40 I = LF, LL
+            IM1 = I - 1
+            IC = IWORK( INODE+IM1 )
+            NL = IWORK( NDIML+IM1 )
+            NR = IWORK( NDIMR+IM1 )
+            NLF = IC - NL
+            NRF = IC + 1
+            IF( I.EQ.LL ) THEN
+               SQREI = SQRE
+            ELSE
+               SQREI = 1
+            END IF
+            VFI = VF + NLF - 1
+            VLI = VL + NLF - 1
+            IDXQI = IDXQ + NLF - 1
+            ALPHA = D( IC )
+            BETA = E( IC )
+            IF( ICOMPQ.EQ.0 ) THEN
+               CALL <a name="DLASD6.362"></a><a href="dlasd6.f.html#DLASD6.1">DLASD6</a>( ICOMPQ, NL, NR, SQREI, D( NLF ),
+     $                      WORK( VFI ), WORK( VLI ), ALPHA, BETA,
+     $                      IWORK( IDXQI ), PERM, GIVPTR( 1 ), GIVCOL,
+     $                      LDGCOL, GIVNUM, LDU, POLES, DIFL, DIFR, Z,
+     $                      K( 1 ), C( 1 ), S( 1 ), WORK( NWORK1 ),
+     $                      IWORK( IWK ), INFO )
+            ELSE
+               J = J - 1
+               CALL <a name="DLASD6.370"></a><a href="dlasd6.f.html#DLASD6.1">DLASD6</a>( ICOMPQ, NL, NR, SQREI, D( NLF ),
+     $                      WORK( VFI ), WORK( VLI ), ALPHA, BETA,
+     $                      IWORK( IDXQI ), PERM( NLF, LVL ),
+     $                      GIVPTR( J ), GIVCOL( NLF, LVL2 ), LDGCOL,
+     $                      GIVNUM( NLF, LVL2 ), LDU,
+     $                      POLES( NLF, LVL2 ), DIFL( NLF, LVL ),
+     $                      DIFR( NLF, LVL2 ), Z( NLF, LVL ), K( J ),
+     $                      C( J ), S( J ), WORK( NWORK1 ),
+     $                      IWORK( IWK ), INFO )
+            END IF
+            IF( INFO.NE.0 ) THEN
+               RETURN
+            END IF
+   40    CONTINUE
+   50 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DLASDA.388"></a><a href="dlasda.f.html#DLASDA.1">DLASDA</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

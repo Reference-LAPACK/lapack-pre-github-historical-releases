@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slarra.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLARRA.1"></a><a href="slarra.f.html#SLARRA.1">SLARRA</a>( N, D, E, E2, SPLTOL, TNRM,
+     $                    NSPLIT, ISPLIT, INFO )
+      IMPLICIT NONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INFO, N, NSPLIT
+      REAL                SPLTOL, TNRM
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            ISPLIT( * )
+      REAL               D( * ), E( * ), E2( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Compute the splitting points with threshold SPLTOL.
+</span><span class="comment">*</span><span class="comment">  <a name="SLARRA.22"></a><a href="slarra.f.html#SLARRA.1">SLARRA</a> sets any &quot;small&quot; off-diagonal elements to zero.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix. N &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  D       (input) REAL             array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On entry, the N diagonal elements of the tridiagonal
+</span><span class="comment">*</span><span class="comment">          matrix T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E       (input/output) REAL             array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On entry, the first (N-1) entries contain the subdiagonal
+</span><span class="comment">*</span><span class="comment">          elements of the tridiagonal matrix T; E(N) need not be set.
+</span><span class="comment">*</span><span class="comment">          On exit, the entries E( ISPLIT( I ) ), 1 &lt;= I &lt;= NSPLIT,
+</span><span class="comment">*</span><span class="comment">          are set to zero, the other entries of E are untouched.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  E2      (input/output) REAL             array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          On entry, the first (N-1) entries contain the SQUARES of the
+</span><span class="comment">*</span><span class="comment">          subdiagonal elements of the tridiagonal matrix T;
+</span><span class="comment">*</span><span class="comment">          E2(N) need not be set.
+</span><span class="comment">*</span><span class="comment">          On exit, the entries E2( ISPLIT( I ) ),
+</span><span class="comment">*</span><span class="comment">          1 &lt;= I &lt;= NSPLIT, have been set to zero
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  SPLTOL (input) REAL            
+</span><span class="comment">*</span><span class="comment">          The threshold for splitting. Two criteria can be used:
+</span><span class="comment">*</span><span class="comment">          SPLTOL&lt;0 : criterion based on absolute off-diagonal value
+</span><span class="comment">*</span><span class="comment">          SPLTOL&gt;0 : criterion that preserves relative accuracy
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TNRM (input) REAL            
+</span><span class="comment">*</span><span class="comment">          The norm of the matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NSPLIT  (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of blocks T splits into. 1 &lt;= NSPLIT &lt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ISPLIT  (output) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The splitting points, at which T breaks up into blocks.
+</span><span class="comment">*</span><span class="comment">          The first block consists of rows/columns 1 to ISPLIT(1),
+</span><span class="comment">*</span><span class="comment">          the second of rows/columns ISPLIT(1)+1 through ISPLIT(2),
+</span><span class="comment">*</span><span class="comment">          etc., and the NSPLIT-th consists of rows/columns
+</span><span class="comment">*</span><span class="comment">          ISPLIT(NSPLIT-1)+1 through ISPLIT(NSPLIT)=N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Based on contributions by
+</span><span class="comment">*</span><span class="comment">     Beresford Parlett, University of California, Berkeley, USA
+</span><span class="comment">*</span><span class="comment">     Jim Demmel, University of California, Berkeley, USA
+</span><span class="comment">*</span><span class="comment">     Inderjit Dhillon, University of Texas, Austin, USA
+</span><span class="comment">*</span><span class="comment">     Osni Marques, LBNL/NERSC, USA
+</span><span class="comment">*</span><span class="comment">     Christof Voemel, University of California, Berkeley, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO
+      PARAMETER          ( ZERO = 0.0E0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I
+      REAL               EABS, TMP1
+
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+
+<span class="comment">*</span><span class="comment">     Compute splitting points
+</span>      NSPLIT = 1
+      IF(SPLTOL.LT.ZERO) THEN
+<span class="comment">*</span><span class="comment">        Criterion based on absolute off-diagonal value
+</span>         TMP1 = ABS(SPLTOL)* TNRM
+         DO 9 I = 1, N-1
+            EABS = ABS( E(I) )
+            IF( EABS .LE. TMP1) THEN
+               E(I) = ZERO
+               E2(I) = ZERO
+               ISPLIT( NSPLIT ) = I
+               NSPLIT = NSPLIT + 1
+            END IF
+ 9       CONTINUE
+      ELSE
+<span class="comment">*</span><span class="comment">        Criterion that guarantees relative accuracy
+</span>         DO 10 I = 1, N-1
+            EABS = ABS( E(I) )
+            IF( EABS .LE. SPLTOL * SQRT(ABS(D(I)))*SQRT(ABS(D(I+1))) )
+     $      THEN
+               E(I) = ZERO
+               E2(I) = ZERO
+               ISPLIT( NSPLIT ) = I
+               NSPLIT = NSPLIT + 1
+            END IF
+ 10      CONTINUE
+      ENDIF
+      ISPLIT( NSPLIT ) = N
+
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLARRA.128"></a><a href="slarra.f.html#SLARRA.1">SLARRA</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

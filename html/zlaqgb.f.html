@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>zlaqgb.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="ZLAQGB.1"></a><a href="zlaqgb.f.html#ZLAQGB.1">ZLAQGB</a>( M, N, KL, KU, AB, LDAB, R, C, ROWCND, COLCND,
+     $                   AMAX, EQUED )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          EQUED
+      INTEGER            KL, KU, LDAB, M, N
+      DOUBLE PRECISION   AMAX, COLCND, ROWCND
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      DOUBLE PRECISION   C( * ), R( * )
+      COMPLEX*16         AB( LDAB, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="ZLAQGB.21"></a><a href="zlaqgb.f.html#ZLAQGB.1">ZLAQGB</a> equilibrates a general M by N band matrix A with KL
+</span><span class="comment">*</span><span class="comment">  subdiagonals and KU superdiagonals using the row and scaling factors
+</span><span class="comment">*</span><span class="comment">  in the vectors R and C.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  M       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of rows of the matrix A.  M &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KL      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of subdiagonals within the band of A.  KL &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KU      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of superdiagonals within the band of A.  KU &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AB      (input/output) COMPLEX*16 array, dimension (LDAB,N)
+</span><span class="comment">*</span><span class="comment">          On entry, the matrix A in band storage, in rows 1 to KL+KU+1.
+</span><span class="comment">*</span><span class="comment">          The j-th column of A is stored in the j-th column of the
+</span><span class="comment">*</span><span class="comment">          array AB as follows:
+</span><span class="comment">*</span><span class="comment">          AB(ku+1+i-j,j) = A(i,j) for max(1,j-ku)&lt;=i&lt;=min(m,j+kl)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">          On exit, the equilibrated matrix, in the same storage format
+</span><span class="comment">*</span><span class="comment">          as A.  See EQUED for the form of the equilibrated matrix.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDAB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array AB.  LDA &gt;= KL+KU+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  R       (input) DOUBLE PRECISION array, dimension (M)
+</span><span class="comment">*</span><span class="comment">          The row scale factors for A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C       (input) DOUBLE PRECISION array, dimension (N)
+</span><span class="comment">*</span><span class="comment">          The column scale factors for A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ROWCND  (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          Ratio of the smallest R(i) to the largest R(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  COLCND  (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          Ratio of the smallest C(i) to the largest C(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AMAX    (input) DOUBLE PRECISION
+</span><span class="comment">*</span><span class="comment">          Absolute value of largest matrix entry.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  EQUED   (output) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          Specifies the form of equilibration that was done.
+</span><span class="comment">*</span><span class="comment">          = 'N':  No equilibration
+</span><span class="comment">*</span><span class="comment">          = 'R':  Row equilibration, i.e., A has been premultiplied by
+</span><span class="comment">*</span><span class="comment">                  diag(R).
+</span><span class="comment">*</span><span class="comment">          = 'C':  Column equilibration, i.e., A has been postmultiplied
+</span><span class="comment">*</span><span class="comment">                  by diag(C).
+</span><span class="comment">*</span><span class="comment">          = 'B':  Both row and column equilibration, i.e., A has been
+</span><span class="comment">*</span><span class="comment">                  replaced by diag(R) * A * diag(C).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Internal Parameters
+</span><span class="comment">*</span><span class="comment">  ===================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  THRESH is a threshold value used to decide if row or column scaling
+</span><span class="comment">*</span><span class="comment">  should be done based on the ratio of the row or column scaling
+</span><span class="comment">*</span><span class="comment">  factors.  If ROWCND &lt; THRESH, row scaling is done, and if
+</span><span class="comment">*</span><span class="comment">  COLCND &lt; THRESH, column scaling is done.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LARGE and SMALL are threshold values used to decide if row scaling
+</span><span class="comment">*</span><span class="comment">  should be done based on the absolute size of the largest matrix
+</span><span class="comment">*</span><span class="comment">  element.  If AMAX &gt; LARGE or AMAX &lt; SMALL, row scaling is done.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      DOUBLE PRECISION   ONE, THRESH
+      PARAMETER          ( ONE = 1.0D+0, THRESH = 0.1D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I, J
+      DOUBLE PRECISION   CJ, LARGE, SMALL
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      DOUBLE PRECISION   <a name="DLAMCH.100"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+      EXTERNAL           <a name="DLAMCH.101"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( M.LE.0 .OR. N.LE.0 ) THEN
+         EQUED = <span class="string">'N'</span>
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Initialize LARGE and SMALL.
+</span><span class="comment">*</span><span class="comment">
+</span>      SMALL = <a name="DLAMCH.117"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Safe minimum'</span> ) / <a name="DLAMCH.117"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Precision'</span> )
+      LARGE = ONE / SMALL
+<span class="comment">*</span><span class="comment">
+</span>      IF( ROWCND.GE.THRESH .AND. AMAX.GE.SMALL .AND. AMAX.LE.LARGE )
+     $     THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        No row scaling
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( COLCND.GE.THRESH ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           No column scaling
+</span><span class="comment">*</span><span class="comment">
+</span>            EQUED = <span class="string">'N'</span>
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Column scaling
+</span><span class="comment">*</span><span class="comment">
+</span>            DO 20 J = 1, N
+               CJ = C( J )
+               DO 10 I = MAX( 1, J-KU ), MIN( M, J+KL )
+                  AB( KU+1+I-J, J ) = CJ*AB( KU+1+I-J, J )
+   10          CONTINUE
+   20       CONTINUE
+            EQUED = <span class="string">'C'</span>
+         END IF
+      ELSE IF( COLCND.GE.THRESH ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Row scaling, no column scaling
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 40 J = 1, N
+            DO 30 I = MAX( 1, J-KU ), MIN( M, J+KL )
+               AB( KU+1+I-J, J ) = R( I )*AB( KU+1+I-J, J )
+   30       CONTINUE
+   40    CONTINUE
+         EQUED = <span class="string">'R'</span>
+      ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Row and column scaling
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 60 J = 1, N
+            CJ = C( J )
+            DO 50 I = MAX( 1, J-KU ), MIN( M, J+KL )
+               AB( KU+1+I-J, J ) = CJ*R( I )*AB( KU+1+I-J, J )
+   50       CONTINUE
+   60    CONTINUE
+         EQUED = <span class="string">'B'</span>
+      END IF
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="ZLAQGB.167"></a><a href="zlaqgb.f.html#ZLAQGB.1">ZLAQGB</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

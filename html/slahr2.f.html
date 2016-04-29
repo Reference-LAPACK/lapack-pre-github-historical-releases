@@ -1,0 +1,262 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slahr2.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLAHR2.1"></a><a href="slahr2.f.html#SLAHR2.1">SLAHR2</a>( N, K, NB, A, LDA, TAU, T, LDT, Y, LDY )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            K, LDA, LDT, LDY, N, NB
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL              A( LDA, * ), T( LDT, NB ), TAU( NB ),
+     $                   Y( LDY, NB )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="SLAHR2.18"></a><a href="slahr2.f.html#SLAHR2.1">SLAHR2</a> reduces the first NB columns of A real general n-BY-(n-k+1)
+</span><span class="comment">*</span><span class="comment">  matrix A so that elements below the k-th subdiagonal are zero. The
+</span><span class="comment">*</span><span class="comment">  reduction is performed by an orthogonal similarity transformation
+</span><span class="comment">*</span><span class="comment">  Q' * A * Q. The routine returns the matrices V and T which determine
+</span><span class="comment">*</span><span class="comment">  Q as a block reflector I - V*T*V', and also the matrix Y = A * V * T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This is an auxiliary routine called by <a name="SGEHRD.24"></a><a href="sgehrd.f.html#SGEHRD.1">SGEHRD</a>.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  K       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The offset for the reduction. Elements below the k-th
+</span><span class="comment">*</span><span class="comment">          subdiagonal in the first NB columns are reduced to zero.
+</span><span class="comment">*</span><span class="comment">          K &lt; N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NB      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of columns to be reduced.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  A       (input/output) REAL array, dimension (LDA,N-K+1)
+</span><span class="comment">*</span><span class="comment">          On entry, the n-by-(n-k+1) general matrix A.
+</span><span class="comment">*</span><span class="comment">          On exit, the elements on and above the k-th subdiagonal in
+</span><span class="comment">*</span><span class="comment">          the first NB columns are overwritten with the corresponding
+</span><span class="comment">*</span><span class="comment">          elements of the reduced matrix; the elements below the k-th
+</span><span class="comment">*</span><span class="comment">          subdiagonal, with the array TAU, represent the matrix Q as a
+</span><span class="comment">*</span><span class="comment">          product of elementary reflectors. The other columns of A are
+</span><span class="comment">*</span><span class="comment">          unchanged. See Further Details.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDA     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array A.  LDA &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  TAU     (output) REAL array, dimension (NB)
+</span><span class="comment">*</span><span class="comment">          The scalar factors of the elementary reflectors. See Further
+</span><span class="comment">*</span><span class="comment">          Details.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  T       (output) REAL array, dimension (LDT,NB)
+</span><span class="comment">*</span><span class="comment">          The upper triangular matrix T.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDT     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array T.  LDT &gt;= NB.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Y       (output) REAL array, dimension (LDY,NB)
+</span><span class="comment">*</span><span class="comment">          The n-by-nb matrix Y.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDY     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array Y. LDY &gt;= N.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ===============
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The matrix Q is represented as a product of nb elementary reflectors
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Q = H(1) H(2) . . . H(nb).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Each H(i) has the form
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     H(i) = I - tau * v * v'
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where tau is a real scalar, and v is a real vector with
+</span><span class="comment">*</span><span class="comment">  v(1:i+k-1) = 0, v(i+k) = 1; v(i+k+1:n) is stored on exit in
+</span><span class="comment">*</span><span class="comment">  A(i+k+1:n,i), and tau in TAU(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The elements of the vectors v together form the (n-k+1)-by-nb matrix
+</span><span class="comment">*</span><span class="comment">  V which is needed, with T and Y, to apply the transformation to the
+</span><span class="comment">*</span><span class="comment">  unreduced part of the matrix, using an update of the form:
+</span><span class="comment">*</span><span class="comment">  A := (I - V*T*V') * (A - Y*V').
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The contents of A on exit are illustrated by the following example
+</span><span class="comment">*</span><span class="comment">  with n = 7, k = 3 and nb = 2:
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ( a   a   a   a   a )
+</span><span class="comment">*</span><span class="comment">     ( a   a   a   a   a )
+</span><span class="comment">*</span><span class="comment">     ( a   a   a   a   a )
+</span><span class="comment">*</span><span class="comment">     ( h   h   a   a   a )
+</span><span class="comment">*</span><span class="comment">     ( v1  h   a   a   a )
+</span><span class="comment">*</span><span class="comment">     ( v1  v2  a   a   a )
+</span><span class="comment">*</span><span class="comment">     ( v1  v2  a   a   a )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  where a denotes an element of the original matrix A, h denotes a
+</span><span class="comment">*</span><span class="comment">  modified element of the upper Hessenberg matrix H, and vi denotes an
+</span><span class="comment">*</span><span class="comment">  element of the vector defining H(i).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This file is a slight modification of LAPACK-3.0's <a name="SLAHRD.103"></a><a href="slahrd.f.html#SLAHRD.1">SLAHRD</a>
+</span><span class="comment">*</span><span class="comment">  incorporating improvements proposed by Quintana-Orti and Van de
+</span><span class="comment">*</span><span class="comment">  Gejin. Note that the entries of A(1:K,2:NB) differ from those
+</span><span class="comment">*</span><span class="comment">  returned by the original LAPACK routine. This function is
+</span><span class="comment">*</span><span class="comment">  not backward compatible with LAPACK3.0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL              ZERO, ONE
+      PARAMETER          ( ZERO = 0.0E+0, 
+     $                     ONE = 1.0E+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      INTEGER            I
+      REAL              EI
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           SAXPY, SCOPY, SGEMM, SGEMV, <a name="SLACPY.121"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>,
+     $                   <a name="SLARFG.122"></a><a href="slarfg.f.html#SLARFG.1">SLARFG</a>, SSCAL, STRMM, STRMV
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.LE.1 )
+     $   RETURN
+<span class="comment">*</span><span class="comment">
+</span>      DO 10 I = 1, NB
+         IF( I.GT.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Update A(K+1:N,I)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Update I-th column of A - Y * V'
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL SGEMV( <span class="string">'NO TRANSPOSE'</span>, N-K, I-1, -ONE, Y(K+1,1), LDY,
+     $                  A( K+I-1, 1 ), LDA, ONE, A( K+1, I ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Apply I - V * T' * V' to this column (call it b) from the
+</span><span class="comment">*</span><span class="comment">           left, using the last column of T as workspace
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Let  V = ( V1 )   and   b = ( b1 )   (first I-1 rows)
+</span><span class="comment">*</span><span class="comment">                    ( V2 )             ( b2 )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           where V1 is unit lower triangular
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           w := V1' * b1
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL SCOPY( I-1, A( K+1, I ), 1, T( 1, NB ), 1 )
+            CALL STRMV( <span class="string">'Lower'</span>, <span class="string">'Transpose'</span>, <span class="string">'UNIT'</span>, 
+     $                  I-1, A( K+1, 1 ),
+     $                  LDA, T( 1, NB ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           w := w + V2'*b2
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL SGEMV( <span class="string">'Transpose'</span>, N-K-I+1, I-1, 
+     $                  ONE, A( K+I, 1 ),
+     $                  LDA, A( K+I, I ), 1, ONE, T( 1, NB ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           w := T'*w
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL STRMV( <span class="string">'Upper'</span>, <span class="string">'Transpose'</span>, <span class="string">'NON-UNIT'</span>, 
+     $                  I-1, T, LDT,
+     $                  T( 1, NB ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           b2 := b2 - V2*w
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL SGEMV( <span class="string">'NO TRANSPOSE'</span>, N-K-I+1, I-1, -ONE, 
+     $                  A( K+I, 1 ),
+     $                  LDA, T( 1, NB ), 1, ONE, A( K+I, I ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           b1 := b1 - V1*w
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL STRMV( <span class="string">'Lower'</span>, <span class="string">'NO TRANSPOSE'</span>, 
+     $                  <span class="string">'UNIT'</span>, I-1,
+     $                  A( K+1, 1 ), LDA, T( 1, NB ), 1 )
+            CALL SAXPY( I-1, -ONE, T( 1, NB ), 1, A( K+1, I ), 1 )
+<span class="comment">*</span><span class="comment">
+</span>            A( K+I-1, I-1 ) = EI
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Generate the elementary reflector H(I) to annihilate
+</span><span class="comment">*</span><span class="comment">        A(K+I+1:N,I)
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL <a name="SLARFG.190"></a><a href="slarfg.f.html#SLARFG.1">SLARFG</a>( N-K-I+1, A( K+I, I ), A( MIN( K+I+1, N ), I ), 1,
+     $                TAU( I ) )
+         EI = A( K+I, I )
+         A( K+I, I ) = ONE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute  Y(K+1:N,I)
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL SGEMV( <span class="string">'NO TRANSPOSE'</span>, N-K, N-K-I+1, 
+     $               ONE, A( K+1, I+1 ),
+     $               LDA, A( K+I, I ), 1, ZERO, Y( K+1, I ), 1 )
+         CALL SGEMV( <span class="string">'Transpose'</span>, N-K-I+1, I-1, 
+     $               ONE, A( K+I, 1 ), LDA,
+     $               A( K+I, I ), 1, ZERO, T( 1, I ), 1 )
+         CALL SGEMV( <span class="string">'NO TRANSPOSE'</span>, N-K, I-1, -ONE, 
+     $               Y( K+1, 1 ), LDY,
+     $               T( 1, I ), 1, ONE, Y( K+1, I ), 1 )
+         CALL SSCAL( N-K, TAU( I ), Y( K+1, I ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute T(1:I,I)
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL SSCAL( I-1, -TAU( I ), T( 1, I ), 1 )
+         CALL STRMV( <span class="string">'Upper'</span>, <span class="string">'No Transpose'</span>, <span class="string">'NON-UNIT'</span>, 
+     $               I-1, T, LDT,
+     $               T( 1, I ), 1 )
+         T( I, I ) = TAU( I )
+<span class="comment">*</span><span class="comment">
+</span>   10 CONTINUE
+      A( K+NB, NB ) = EI
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Compute Y(1:K,1:NB)
+</span><span class="comment">*</span><span class="comment">
+</span>      CALL <a name="SLACPY.221"></a><a href="slacpy.f.html#SLACPY.1">SLACPY</a>( <span class="string">'ALL'</span>, K, NB, A( 1, 2 ), LDA, Y, LDY )
+      CALL STRMM( <span class="string">'RIGHT'</span>, <span class="string">'Lower'</span>, <span class="string">'NO TRANSPOSE'</span>, 
+     $            <span class="string">'UNIT'</span>, K, NB,
+     $            ONE, A( K+1, 1 ), LDA, Y, LDY )
+      IF( N.GT.K+NB )
+     $   CALL SGEMM( <span class="string">'NO TRANSPOSE'</span>, <span class="string">'NO TRANSPOSE'</span>, K, 
+     $               NB, N-K-NB, ONE,
+     $               A( 1, 2+NB ), LDA, A( K+1+NB, 1 ), LDA, ONE, Y,
+     $               LDY )
+      CALL STRMM( <span class="string">'RIGHT'</span>, <span class="string">'Upper'</span>, <span class="string">'NO TRANSPOSE'</span>, 
+     $            <span class="string">'NON-UNIT'</span>, K, NB,
+     $            ONE, T, LDT, Y, LDY )
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="SLAHR2.236"></a><a href="slahr2.f.html#SLAHR2.1">SLAHR2</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

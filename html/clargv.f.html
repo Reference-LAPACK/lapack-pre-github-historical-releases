@@ -1,0 +1,251 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>clargv.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="CLARGV.1"></a><a href="clargv.f.html#CLARGV.1">CLARGV</a>( N, X, INCX, Y, INCY, C, INCC )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      INTEGER            INCC, INCX, INCY, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               C( * )
+      COMPLEX            X( * ), Y( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="CLARGV.18"></a><a href="clargv.f.html#CLARGV.1">CLARGV</a> generates a vector of complex plane rotations with real
+</span><span class="comment">*</span><span class="comment">  cosines, determined by elements of the complex vectors x and y.
+</span><span class="comment">*</span><span class="comment">  For i = 1,2,...,n
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     (        c(i)   s(i) ) ( x(i) ) = ( r(i) )
+</span><span class="comment">*</span><span class="comment">     ( -conjg(s(i))  c(i) ) ( y(i) ) = (   0  )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     where c(i)**2 + ABS(s(i))**2 = 1
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  The following conventions are used (these are the same as in <a name="CLARTG.27"></a><a href="clartg.f.html#CLARTG.1">CLARTG</a>,
+</span><span class="comment">*</span><span class="comment">  but differ from the BLAS1 routine CROTG):
+</span><span class="comment">*</span><span class="comment">     If y(i)=0, then c(i)=1 and s(i)=0.
+</span><span class="comment">*</span><span class="comment">     If x(i)=0, then c(i)=0 and s(i) is chosen so that r(i) is real.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of plane rotations to be generated.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X       (input/output) COMPLEX array, dimension (1+(N-1)*INCX)
+</span><span class="comment">*</span><span class="comment">          On entry, the vector x.
+</span><span class="comment">*</span><span class="comment">          On exit, x(i) is overwritten by r(i), for i = 1,...,n.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INCX    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The increment between elements of X. INCX &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Y       (input/output) COMPLEX array, dimension (1+(N-1)*INCY)
+</span><span class="comment">*</span><span class="comment">          On entry, the vector y.
+</span><span class="comment">*</span><span class="comment">          On exit, the sines of the plane rotations.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INCY    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The increment between elements of Y. INCY &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  C       (output) REAL array, dimension (1+(N-1)*INCC)
+</span><span class="comment">*</span><span class="comment">          The cosines of the plane rotations.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INCC    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The increment between elements of C. INCC &gt; 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Further Details
+</span><span class="comment">*</span><span class="comment">  ======= =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  6-6-96 - Modified with a new algorithm by W. Kahan and J. Demmel
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  This version has a few statements commented out for thread safety
+</span><span class="comment">*</span><span class="comment">  (machine parameters are computed on each entry). 10 feb 03, SJH.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               TWO, ONE, ZERO
+      PARAMETER          ( TWO = 2.0E+0, ONE = 1.0E+0, ZERO = 0.0E+0 )
+      COMPLEX            CZERO
+      PARAMETER          ( CZERO = ( 0.0E+0, 0.0E+0 ) )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span><span class="comment">*</span><span class="comment">     LOGICAL            FIRST
+</span>      INTEGER            COUNT, I, IC, IX, IY, J
+      REAL               CS, D, DI, DR, EPS, F2, F2S, G2, G2S, SAFMIN,
+     $                   SAFMN2, SAFMX2, SCALE
+      COMPLEX            F, FF, FS, G, GS, R, SN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      REAL               <a name="SLAMCH.82"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLAPY2.82"></a><a href="slapy2.f.html#SLAPY2.1">SLAPY2</a>
+      EXTERNAL           <a name="SLAMCH.83"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>, <a name="SLAPY2.83"></a><a href="slapy2.f.html#SLAPY2.1">SLAPY2</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, AIMAG, CMPLX, CONJG, INT, LOG, MAX, REAL,
+     $                   SQRT
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Functions ..
+</span>      REAL               ABS1, ABSSQ
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Save statement ..
+</span><span class="comment">*</span><span class="comment">     SAVE               FIRST, SAFMX2, SAFMIN, SAFMN2
+</span><span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Data statements ..
+</span><span class="comment">*</span><span class="comment">     DATA               FIRST / .TRUE. /
+</span><span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Statement Function definitions ..
+</span>      ABS1( FF ) = MAX( ABS( REAL( FF ) ), ABS( AIMAG( FF ) ) )
+      ABSSQ( FF ) = REAL( FF )**2 + AIMAG( FF )**2
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     IF( FIRST ) THEN
+</span><span class="comment">*</span><span class="comment">        FIRST = .FALSE.
+</span>         SAFMIN = <a name="SLAMCH.106"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'S'</span> )
+         EPS = <a name="SLAMCH.107"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'E'</span> )
+         SAFMN2 = <a name="SLAMCH.108"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'B'</span> )**INT( LOG( SAFMIN / EPS ) /
+     $            LOG( <a name="SLAMCH.109"></a><a href="slamch.f.html#SLAMCH.1">SLAMCH</a>( <span class="string">'B'</span> ) ) / TWO )
+         SAFMX2 = ONE / SAFMN2
+<span class="comment">*</span><span class="comment">     END IF
+</span>      IX = 1
+      IY = 1
+      IC = 1
+      DO 60 I = 1, N
+         F = X( IX )
+         G = Y( IY )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Use identical algorithm as in <a name="CLARTG.119"></a><a href="clartg.f.html#CLARTG.1">CLARTG</a>
+</span><span class="comment">*</span><span class="comment">
+</span>         SCALE = MAX( ABS1( F ), ABS1( G ) )
+         FS = F
+         GS = G
+         COUNT = 0
+         IF( SCALE.GE.SAFMX2 ) THEN
+   10       CONTINUE
+            COUNT = COUNT + 1
+            FS = FS*SAFMN2
+            GS = GS*SAFMN2
+            SCALE = SCALE*SAFMN2
+            IF( SCALE.GE.SAFMX2 )
+     $         GO TO 10
+         ELSE IF( SCALE.LE.SAFMN2 ) THEN
+            IF( G.EQ.CZERO ) THEN
+               CS = ONE
+               SN = CZERO
+               R = F
+               GO TO 50
+            END IF
+   20       CONTINUE
+            COUNT = COUNT - 1
+            FS = FS*SAFMX2
+            GS = GS*SAFMX2
+            SCALE = SCALE*SAFMX2
+            IF( SCALE.LE.SAFMN2 )
+     $         GO TO 20
+         END IF
+         F2 = ABSSQ( FS )
+         G2 = ABSSQ( GS )
+         IF( F2.LE.MAX( G2, ONE )*SAFMIN ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           This is a rare case: F is very small.
+</span><span class="comment">*</span><span class="comment">
+</span>            IF( F.EQ.CZERO ) THEN
+               CS = ZERO
+               R = <a name="SLAPY2.156"></a><a href="slapy2.f.html#SLAPY2.1">SLAPY2</a>( REAL( G ), AIMAG( G ) )
+<span class="comment">*</span><span class="comment">              Do complex/real division explicitly with two real
+</span><span class="comment">*</span><span class="comment">              divisions
+</span>               D = <a name="SLAPY2.159"></a><a href="slapy2.f.html#SLAPY2.1">SLAPY2</a>( REAL( GS ), AIMAG( GS ) )
+               SN = CMPLX( REAL( GS ) / D, -AIMAG( GS ) / D )
+               GO TO 50
+            END IF
+            F2S = <a name="SLAPY2.163"></a><a href="slapy2.f.html#SLAPY2.1">SLAPY2</a>( REAL( FS ), AIMAG( FS ) )
+<span class="comment">*</span><span class="comment">           G2 and G2S are accurate
+</span><span class="comment">*</span><span class="comment">           G2 is at least SAFMIN, and G2S is at least SAFMN2
+</span>            G2S = SQRT( G2 )
+<span class="comment">*</span><span class="comment">           Error in CS from underflow in F2S is at most
+</span><span class="comment">*</span><span class="comment">           UNFL / SAFMN2 .lt. sqrt(UNFL*EPS) .lt. EPS
+</span><span class="comment">*</span><span class="comment">           If MAX(G2,ONE)=G2, then F2 .lt. G2*SAFMIN,
+</span><span class="comment">*</span><span class="comment">           and so CS .lt. sqrt(SAFMIN)
+</span><span class="comment">*</span><span class="comment">           If MAX(G2,ONE)=ONE, then F2 .lt. SAFMIN
+</span><span class="comment">*</span><span class="comment">           and so CS .lt. sqrt(SAFMIN)/SAFMN2 = sqrt(EPS)
+</span><span class="comment">*</span><span class="comment">           Therefore, CS = F2S/G2S / sqrt( 1 + (F2S/G2S)**2 ) = F2S/G2S
+</span>            CS = F2S / G2S
+<span class="comment">*</span><span class="comment">           Make sure abs(FF) = 1
+</span><span class="comment">*</span><span class="comment">           Do complex/real division explicitly with 2 real divisions
+</span>            IF( ABS1( F ).GT.ONE ) THEN
+               D = <a name="SLAPY2.178"></a><a href="slapy2.f.html#SLAPY2.1">SLAPY2</a>( REAL( F ), AIMAG( F ) )
+               FF = CMPLX( REAL( F ) / D, AIMAG( F ) / D )
+            ELSE
+               DR = SAFMX2*REAL( F )
+               DI = SAFMX2*AIMAG( F )
+               D = <a name="SLAPY2.183"></a><a href="slapy2.f.html#SLAPY2.1">SLAPY2</a>( DR, DI )
+               FF = CMPLX( DR / D, DI / D )
+            END IF
+            SN = FF*CMPLX( REAL( GS ) / G2S, -AIMAG( GS ) / G2S )
+            R = CS*F + SN*G
+         ELSE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           This is the most common case.
+</span><span class="comment">*</span><span class="comment">           Neither F2 nor F2/G2 are less than SAFMIN
+</span><span class="comment">*</span><span class="comment">           F2S cannot overflow, and it is accurate
+</span><span class="comment">*</span><span class="comment">
+</span>            F2S = SQRT( ONE+G2 / F2 )
+<span class="comment">*</span><span class="comment">           Do the F2S(real)*FS(complex) multiply with two real
+</span><span class="comment">*</span><span class="comment">           multiplies
+</span>            R = CMPLX( F2S*REAL( FS ), F2S*AIMAG( FS ) )
+            CS = ONE / F2S
+            D = F2 + G2
+<span class="comment">*</span><span class="comment">           Do complex/real division explicitly with two real divisions
+</span>            SN = CMPLX( REAL( R ) / D, AIMAG( R ) / D )
+            SN = SN*CONJG( GS )
+            IF( COUNT.NE.0 ) THEN
+               IF( COUNT.GT.0 ) THEN
+                  DO 30 J = 1, COUNT
+                     R = R*SAFMX2
+   30             CONTINUE
+               ELSE
+                  DO 40 J = 1, -COUNT
+                     R = R*SAFMN2
+   40             CONTINUE
+               END IF
+            END IF
+         END IF
+   50    CONTINUE
+         C( IC ) = CS
+         Y( IY ) = SN
+         X( IX ) = R
+         IC = IC + INCC
+         IY = IY + INCY
+         IX = IX + INCX
+   60 CONTINUE
+      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="CLARGV.225"></a><a href="clargv.f.html#CLARGV.1">CLARGV</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

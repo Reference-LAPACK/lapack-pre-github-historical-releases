@@ -1,0 +1,365 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>dpbrfs.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.string   { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.string a { color: rgb(188, 143, 143);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="DPBRFS.1"></a><a href="dpbrfs.f.html#DPBRFS.1">DPBRFS</a>( UPLO, N, KD, NRHS, AB, LDAB, AFB, LDAFB, B,
+     $                   LDB, X, LDX, FERR, BERR, WORK, IWORK, INFO )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Modified to call <a name="DLACN2.8"></a><a href="dlacn2.f.html#DLACN2.1">DLACN2</a> in place of <a name="DLACON.8"></a><a href="dlacon.f.html#DLACON.1">DLACON</a>, 5 Feb 03, SJH.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      CHARACTER          UPLO
+      INTEGER            INFO, KD, LDAB, LDAFB, LDB, LDX, N, NRHS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      INTEGER            IWORK( * )
+      DOUBLE PRECISION   AB( LDAB, * ), AFB( LDAFB, * ), B( LDB, * ),
+     $                   BERR( * ), FERR( * ), WORK( * ), X( LDX, * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Purpose
+</span><span class="comment">*</span><span class="comment">  =======
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  <a name="DPBRFS.23"></a><a href="dpbrfs.f.html#DPBRFS.1">DPBRFS</a> improves the computed solution to a system of linear
+</span><span class="comment">*</span><span class="comment">  equations when the coefficient matrix is symmetric positive definite
+</span><span class="comment">*</span><span class="comment">  and banded, and provides error bounds and backward error estimates
+</span><span class="comment">*</span><span class="comment">  for the solution.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Arguments
+</span><span class="comment">*</span><span class="comment">  =========
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  UPLO    (input) CHARACTER*1
+</span><span class="comment">*</span><span class="comment">          = 'U':  Upper triangle of A is stored;
+</span><span class="comment">*</span><span class="comment">          = 'L':  Lower triangle of A is stored.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  N       (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The order of the matrix A.  N &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  KD      (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of superdiagonals of the matrix A if UPLO = 'U',
+</span><span class="comment">*</span><span class="comment">          or the number of subdiagonals if UPLO = 'L'.  KD &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  NRHS    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The number of right hand sides, i.e., the number of columns
+</span><span class="comment">*</span><span class="comment">          of the matrices B and X.  NRHS &gt;= 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AB      (input) DOUBLE PRECISION array, dimension (LDAB,N)
+</span><span class="comment">*</span><span class="comment">          The upper or lower triangle of the symmetric band matrix A,
+</span><span class="comment">*</span><span class="comment">          stored in the first KD+1 rows of the array.  The j-th column
+</span><span class="comment">*</span><span class="comment">          of A is stored in the j-th column of the array AB as follows:
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'U', AB(kd+1+i-j,j) = A(i,j) for max(1,j-kd)&lt;=i&lt;=j;
+</span><span class="comment">*</span><span class="comment">          if UPLO = 'L', AB(1+i-j,j)    = A(i,j) for j&lt;=i&lt;=min(n,j+kd).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDAB    (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array AB.  LDAB &gt;= KD+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  AFB     (input) DOUBLE PRECISION array, dimension (LDAFB,N)
+</span><span class="comment">*</span><span class="comment">          The triangular factor U or L from the Cholesky factorization
+</span><span class="comment">*</span><span class="comment">          A = U**T*U or A = L*L**T of the band matrix A as computed by
+</span><span class="comment">*</span><span class="comment">          <a name="DPBTRF.59"></a><a href="dpbtrf.f.html#DPBTRF.1">DPBTRF</a>, in the same storage format as A (see AB).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDAFB   (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array AFB.  LDAFB &gt;= KD+1.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  B       (input) DOUBLE PRECISION array, dimension (LDB,NRHS)
+</span><span class="comment">*</span><span class="comment">          The right hand side matrix B.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDB     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array B.  LDB &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  X       (input/output) DOUBLE PRECISION array, dimension (LDX,NRHS)
+</span><span class="comment">*</span><span class="comment">          On entry, the solution matrix X, as computed by <a name="DPBTRS.71"></a><a href="dpbtrs.f.html#DPBTRS.1">DPBTRS</a>.
+</span><span class="comment">*</span><span class="comment">          On exit, the improved solution matrix X.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  LDX     (input) INTEGER
+</span><span class="comment">*</span><span class="comment">          The leading dimension of the array X.  LDX &gt;= max(1,N).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  FERR    (output) DOUBLE PRECISION array, dimension (NRHS)
+</span><span class="comment">*</span><span class="comment">          The estimated forward error bound for each solution vector
+</span><span class="comment">*</span><span class="comment">          X(j) (the j-th column of the solution matrix X).
+</span><span class="comment">*</span><span class="comment">          If XTRUE is the true solution corresponding to X(j), FERR(j)
+</span><span class="comment">*</span><span class="comment">          is an estimated upper bound for the magnitude of the largest
+</span><span class="comment">*</span><span class="comment">          element in (X(j) - XTRUE) divided by the magnitude of the
+</span><span class="comment">*</span><span class="comment">          largest element in X(j).  The estimate is as reliable as
+</span><span class="comment">*</span><span class="comment">          the estimate for RCOND, and is almost always a slight
+</span><span class="comment">*</span><span class="comment">          overestimate of the true error.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  BERR    (output) DOUBLE PRECISION array, dimension (NRHS)
+</span><span class="comment">*</span><span class="comment">          The componentwise relative backward error of each solution
+</span><span class="comment">*</span><span class="comment">          vector X(j) (i.e., the smallest relative change in
+</span><span class="comment">*</span><span class="comment">          any element of A or B that makes X(j) an exact solution).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  WORK    (workspace) DOUBLE PRECISION array, dimension (3*N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  IWORK   (workspace) INTEGER array, dimension (N)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  INFO    (output) INTEGER
+</span><span class="comment">*</span><span class="comment">          = 0:  successful exit
+</span><span class="comment">*</span><span class="comment">          &lt; 0:  if INFO = -i, the i-th argument had an illegal value
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  Internal Parameters
+</span><span class="comment">*</span><span class="comment">  ===================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  ITMAX is the maximum number of steps of iterative refinement.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  =====================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      INTEGER            ITMAX
+      PARAMETER          ( ITMAX = 5 )
+      DOUBLE PRECISION   ZERO
+      PARAMETER          ( ZERO = 0.0D+0 )
+      DOUBLE PRECISION   ONE
+      PARAMETER          ( ONE = 1.0D+0 )
+      DOUBLE PRECISION   TWO
+      PARAMETER          ( TWO = 2.0D+0 )
+      DOUBLE PRECISION   THREE
+      PARAMETER          ( THREE = 3.0D+0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      LOGICAL            UPPER
+      INTEGER            COUNT, I, J, K, KASE, L, NZ
+      DOUBLE PRECISION   EPS, LSTRES, S, SAFE1, SAFE2, SAFMIN, XK
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Arrays ..
+</span>      INTEGER            ISAVE( 3 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Subroutines ..
+</span>      EXTERNAL           DAXPY, DCOPY, <a name="DLACN2.128"></a><a href="dlacn2.f.html#DLACN2.1">DLACN2</a>, <a name="DPBTRS.128"></a><a href="dpbtrs.f.html#DPBTRS.1">DPBTRS</a>, DSBMV, <a name="XERBLA.128"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS, MAX, MIN
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. External Functions ..
+</span>      LOGICAL            <a name="LSAME.134"></a><a href="lsame.f.html#LSAME.1">LSAME</a>
+      DOUBLE PRECISION   <a name="DLAMCH.135"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+      EXTERNAL           <a name="LSAME.136"></a><a href="lsame.f.html#LSAME.1">LSAME</a>, <a name="DLAMCH.136"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Test the input parameters.
+</span><span class="comment">*</span><span class="comment">
+</span>      INFO = 0
+      UPPER = <a name="LSAME.143"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'U'</span> )
+      IF( .NOT.UPPER .AND. .NOT.<a name="LSAME.144"></a><a href="lsame.f.html#LSAME.1">LSAME</a>( UPLO, <span class="string">'L'</span> ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( KD.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( NRHS.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( LDAB.LT.KD+1 ) THEN
+         INFO = -6
+      ELSE IF( LDAFB.LT.KD+1 ) THEN
+         INFO = -8
+      ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
+         INFO = -10
+      ELSE IF( LDX.LT.MAX( 1, N ) ) THEN
+         INFO = -12
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL <a name="XERBLA.162"></a><a href="xerbla.f.html#XERBLA.1">XERBLA</a>( <span class="string">'<a name="DPBRFS.162"></a><a href="dpbrfs.f.html#DPBRFS.1">DPBRFS</a>'</span>, -INFO )
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Quick return if possible
+</span><span class="comment">*</span><span class="comment">
+</span>      IF( N.EQ.0 .OR. NRHS.EQ.0 ) THEN
+         DO 10 J = 1, NRHS
+            FERR( J ) = ZERO
+            BERR( J ) = ZERO
+   10    CONTINUE
+         RETURN
+      END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     NZ = maximum number of nonzero elements in each row of A, plus 1
+</span><span class="comment">*</span><span class="comment">
+</span>      NZ = MIN( N+1, 2*KD+2 )
+      EPS = <a name="DLAMCH.179"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Epsilon'</span> )
+      SAFMIN = <a name="DLAMCH.180"></a><a href="dlamch.f.html#DLAMCH.1">DLAMCH</a>( <span class="string">'Safe minimum'</span> )
+      SAFE1 = NZ*SAFMIN
+      SAFE2 = SAFE1 / EPS
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     Do for each right hand side
+</span><span class="comment">*</span><span class="comment">
+</span>      DO 140 J = 1, NRHS
+<span class="comment">*</span><span class="comment">
+</span>         COUNT = 1
+         LSTRES = THREE
+   20    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Loop until stopping criterion is satisfied.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute residual R = B - A * X
+</span><span class="comment">*</span><span class="comment">
+</span>         CALL DCOPY( N, B( 1, J ), 1, WORK( N+1 ), 1 )
+         CALL DSBMV( UPLO, N, KD, -ONE, AB, LDAB, X( 1, J ), 1, ONE,
+     $               WORK( N+1 ), 1 )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute componentwise relative backward error from formula
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        max(i) ( abs(R(i)) / ( abs(A)*abs(X) + abs(B) )(i) )
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        where abs(Z) is the componentwise absolute value of the matrix
+</span><span class="comment">*</span><span class="comment">        or vector Z.  If the i-th component of the denominator is less
+</span><span class="comment">*</span><span class="comment">        than SAFE2, then SAFE1 is added to the i-th components of the
+</span><span class="comment">*</span><span class="comment">        numerator and denominator before dividing.
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 30 I = 1, N
+            WORK( I ) = ABS( B( I, J ) )
+   30    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Compute abs(A)*abs(X) + abs(B).
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( UPPER ) THEN
+            DO 50 K = 1, N
+               S = ZERO
+               XK = ABS( X( K, J ) )
+               L = KD + 1 - K
+               DO 40 I = MAX( 1, K-KD ), K - 1
+                  WORK( I ) = WORK( I ) + ABS( AB( L+I, K ) )*XK
+                  S = S + ABS( AB( L+I, K ) )*ABS( X( I, J ) )
+   40          CONTINUE
+               WORK( K ) = WORK( K ) + ABS( AB( KD+1, K ) )*XK + S
+   50       CONTINUE
+         ELSE
+            DO 70 K = 1, N
+               S = ZERO
+               XK = ABS( X( K, J ) )
+               WORK( K ) = WORK( K ) + ABS( AB( 1, K ) )*XK
+               L = 1 - K
+               DO 60 I = K + 1, MIN( N, K+KD )
+                  WORK( I ) = WORK( I ) + ABS( AB( L+I, K ) )*XK
+                  S = S + ABS( AB( L+I, K ) )*ABS( X( I, J ) )
+   60          CONTINUE
+               WORK( K ) = WORK( K ) + S
+   70       CONTINUE
+         END IF
+         S = ZERO
+         DO 80 I = 1, N
+            IF( WORK( I ).GT.SAFE2 ) THEN
+               S = MAX( S, ABS( WORK( N+I ) ) / WORK( I ) )
+            ELSE
+               S = MAX( S, ( ABS( WORK( N+I ) )+SAFE1 ) /
+     $             ( WORK( I )+SAFE1 ) )
+            END IF
+   80    CONTINUE
+         BERR( J ) = S
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Test stopping criterion. Continue iterating if
+</span><span class="comment">*</span><span class="comment">           1) The residual BERR(J) is larger than machine epsilon, and
+</span><span class="comment">*</span><span class="comment">           2) BERR(J) decreased by at least a factor of 2 during the
+</span><span class="comment">*</span><span class="comment">              last iteration, and
+</span><span class="comment">*</span><span class="comment">           3) At most ITMAX iterations tried.
+</span><span class="comment">*</span><span class="comment">
+</span>         IF( BERR( J ).GT.EPS .AND. TWO*BERR( J ).LE.LSTRES .AND.
+     $       COUNT.LE.ITMAX ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">           Update solution and try again.
+</span><span class="comment">*</span><span class="comment">
+</span>            CALL <a name="DPBTRS.261"></a><a href="dpbtrs.f.html#DPBTRS.1">DPBTRS</a>( UPLO, N, KD, 1, AFB, LDAFB, WORK( N+1 ), N,
+     $                   INFO )
+            CALL DAXPY( N, ONE, WORK( N+1 ), 1, X( 1, J ), 1 )
+            LSTRES = BERR( J )
+            COUNT = COUNT + 1
+            GO TO 20
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Bound error from formula
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        norm(X - XTRUE) / norm(X) .le. FERR =
+</span><span class="comment">*</span><span class="comment">        norm( abs(inv(A))*
+</span><span class="comment">*</span><span class="comment">           ( abs(R) + NZ*EPS*( abs(A)*abs(X)+abs(B) ))) / norm(X)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        where
+</span><span class="comment">*</span><span class="comment">          norm(Z) is the magnitude of the largest component of Z
+</span><span class="comment">*</span><span class="comment">          inv(A) is the inverse of A
+</span><span class="comment">*</span><span class="comment">          abs(Z) is the componentwise absolute value of the matrix or
+</span><span class="comment">*</span><span class="comment">             vector Z
+</span><span class="comment">*</span><span class="comment">          NZ is the maximum number of nonzeros in any row of A, plus 1
+</span><span class="comment">*</span><span class="comment">          EPS is machine epsilon
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        The i-th component of abs(R)+NZ*EPS*(abs(A)*abs(X)+abs(B))
+</span><span class="comment">*</span><span class="comment">        is incremented by SAFE1 if the i-th component of
+</span><span class="comment">*</span><span class="comment">        abs(A)*abs(X) + abs(B) is less than SAFE2.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Use <a name="DLACN2.287"></a><a href="dlacn2.f.html#DLACN2.1">DLACN2</a> to estimate the infinity-norm of the matrix
+</span><span class="comment">*</span><span class="comment">           inv(A) * diag(W),
+</span><span class="comment">*</span><span class="comment">        where W = abs(R) + NZ*EPS*( abs(A)*abs(X)+abs(B) )))
+</span><span class="comment">*</span><span class="comment">
+</span>         DO 90 I = 1, N
+            IF( WORK( I ).GT.SAFE2 ) THEN
+               WORK( I ) = ABS( WORK( N+I ) ) + NZ*EPS*WORK( I )
+            ELSE
+               WORK( I ) = ABS( WORK( N+I ) ) + NZ*EPS*WORK( I ) + SAFE1
+            END IF
+   90    CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>         KASE = 0
+  100    CONTINUE
+         CALL <a name="DLACN2.301"></a><a href="dlacn2.f.html#DLACN2.1">DLACN2</a>( N, WORK( 2*N+1 ), WORK( N+1 ), IWORK, FERR( J ),
+     $                KASE, ISAVE )
+         IF( KASE.NE.0 ) THEN
+            IF( KASE.EQ.1 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Multiply by diag(W)*inv(A').
+</span><span class="comment">*</span><span class="comment">
+</span>               CALL <a name="DPBTRS.308"></a><a href="dpbtrs.f.html#DPBTRS.1">DPBTRS</a>( UPLO, N, KD, 1, AFB, LDAFB, WORK( N+1 ), N,
+     $                      INFO )
+               DO 110 I = 1, N
+                  WORK( N+I ) = WORK( N+I )*WORK( I )
+  110          CONTINUE
+            ELSE IF( KASE.EQ.2 ) THEN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">              Multiply by inv(A)*diag(W).
+</span><span class="comment">*</span><span class="comment">
+</span>               DO 120 I = 1, N
+                  WORK( N+I ) = WORK( N+I )*WORK( I )
+  120          CONTINUE
+               CALL <a name="DPBTRS.320"></a><a href="dpbtrs.f.html#DPBTRS.1">DPBTRS</a>( UPLO, N, KD, 1, AFB, LDAFB, WORK( N+1 ), N,
+     $                      INFO )
+            END IF
+            GO TO 100
+         END IF
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">        Normalize error.
+</span><span class="comment">*</span><span class="comment">
+</span>         LSTRES = ZERO
+         DO 130 I = 1, N
+            LSTRES = MAX( LSTRES, ABS( X( I, J ) ) )
+  130    CONTINUE
+         IF( LSTRES.NE.ZERO )
+     $      FERR( J ) = FERR( J ) / LSTRES
+<span class="comment">*</span><span class="comment">
+</span>  140 CONTINUE
+<span class="comment">*</span><span class="comment">
+</span>      RETURN
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     End of <a name="DPBRFS.339"></a><a href="dpbrfs.f.html#DPBRFS.1">DPBRFS</a>
+</span><span class="comment">*</span><span class="comment">
+</span>      END
+
+</pre>
+
+ </body>
+</html>

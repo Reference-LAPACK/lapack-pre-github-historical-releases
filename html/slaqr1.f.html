@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+ <head>
+  <title>slaqr1.f</title>
+ <meta name="generator" content="emacs 21.3.1; htmlfontify 0.20">
+<style type="text/css"><!-- 
+body { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default   { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.default a { background: rgb(255, 255, 255);  color: rgb(0, 0, 0);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+span.comment   { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: none; }
+span.comment a { color: rgb(178, 34, 34);  background: rgb(255, 255, 255);  font-style: normal;  font-weight: 500;  font-stretch: normal;  font-family: adobe-courier;  font-size: 11pt;  text-decoration: underline; }
+ --></style>
+
+ </head>
+  <body>
+
+<pre>
+      SUBROUTINE <a name="SLAQR1.1"></a><a href="slaqr1.f.html#SLAQR1.1">SLAQR1</a>( N, H, LDH, SR1, SI1, SR2, SI2, V )
+<span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">  -- LAPACK auxiliary routine (version 3.1) --
+</span><span class="comment">*</span><span class="comment">     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+</span><span class="comment">*</span><span class="comment">     November 2006
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Scalar Arguments ..
+</span>      REAL               SI1, SI2, SR1, SR2
+      INTEGER            LDH, N
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Array Arguments ..
+</span>      REAL               H( LDH, * ), V( * )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">       Given a 2-by-2 or 3-by-3 matrix H, <a name="SLAQR1.15"></a><a href="slaqr1.f.html#SLAQR1.1">SLAQR1</a> sets v to a
+</span><span class="comment">*</span><span class="comment">       scalar multiple of the first column of the product
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">       (*)  K = (H - (sr1 + i*si1)*I)*(H - (sr2 + i*si2)*I)
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">       scaling to avoid overflows and most underflows. It
+</span><span class="comment">*</span><span class="comment">       is assumed that either
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">               1) sr1 = sr2 and si1 = -si2
+</span><span class="comment">*</span><span class="comment">           or
+</span><span class="comment">*</span><span class="comment">               2) si1 = si2 = 0.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">       This is useful for starting double implicit shift bulges
+</span><span class="comment">*</span><span class="comment">       in the QR algorithm.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">       N      (input) integer
+</span><span class="comment">*</span><span class="comment">              Order of the matrix H. N must be either 2 or 3.
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">       H      (input) REAL array of dimension (LDH,N)
+</span><span class="comment">*</span><span class="comment">              The 2-by-2 or 3-by-3 matrix H in (*).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">       LDH    (input) integer
+</span><span class="comment">*</span><span class="comment">              The leading dimension of H as declared in
+</span><span class="comment">*</span><span class="comment">              the calling procedure.  LDH.GE.N
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">       SR1    (input) REAL
+</span><span class="comment">*</span><span class="comment">       SI1    The shifts in (*).
+</span><span class="comment">*</span><span class="comment">       SR2
+</span><span class="comment">*</span><span class="comment">       SI2
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">       V      (output) REAL array of dimension N
+</span><span class="comment">*</span><span class="comment">              A scalar multiple of the first column of the
+</span><span class="comment">*</span><span class="comment">              matrix K in (*).
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ================================================================
+</span><span class="comment">*</span><span class="comment">     Based on contributions by
+</span><span class="comment">*</span><span class="comment">        Karen Braman and Ralph Byers, Department of Mathematics,
+</span><span class="comment">*</span><span class="comment">        University of Kansas, USA
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     ================================================================
+</span><span class="comment">*</span><span class="comment">
+</span><span class="comment">*</span><span class="comment">     .. Parameters ..
+</span>      REAL               ZERO
+      PARAMETER          ( ZERO = 0.0e0 )
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Local Scalars ..
+</span>      REAL               H21S, H31S, S
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Intrinsic Functions ..
+</span>      INTRINSIC          ABS
+<span class="comment">*</span><span class="comment">     ..
+</span><span class="comment">*</span><span class="comment">     .. Executable Statements ..
+</span>      IF( N.EQ.2 ) THEN
+         S = ABS( H( 1, 1 )-SR2 ) + ABS( SI2 ) + ABS( H( 2, 1 ) )
+         IF( S.EQ.ZERO ) THEN
+            V( 1 ) = ZERO
+            V( 2 ) = ZERO
+         ELSE
+            H21S = H( 2, 1 ) / S
+            V( 1 ) = H21S*H( 1, 2 ) + ( H( 1, 1 )-SR1 )*
+     $               ( ( H( 1, 1 )-SR2 ) / S ) - SI1*( SI2 / S )
+            V( 2 ) = H21S*( H( 1, 1 )+H( 2, 2 )-SR1-SR2 )
+         END IF
+      ELSE
+         S = ABS( H( 1, 1 )-SR2 ) + ABS( SI2 ) + ABS( H( 2, 1 ) ) +
+     $       ABS( H( 3, 1 ) )
+         IF( S.EQ.ZERO ) THEN
+            V( 1 ) = ZERO
+            V( 2 ) = ZERO
+            V( 3 ) = ZERO
+         ELSE
+            H21S = H( 2, 1 ) / S
+            H31S = H( 3, 1 ) / S
+            V( 1 ) = ( H( 1, 1 )-SR1 )*( ( H( 1, 1 )-SR2 ) / S ) -
+     $               SI1*( SI2 / S ) + H( 1, 2 )*H21S + H( 1, 3 )*H31S
+            V( 2 ) = H21S*( H( 1, 1 )+H( 2, 2 )-SR1-SR2 ) +
+     $               H( 2, 3 )*H31S
+            V( 3 ) = H31S*( H( 1, 1 )+H( 3, 3 )-SR1-SR2 ) +
+     $               H21S*H( 3, 2 )
+         END IF
+      END IF
+      END
+
+</pre>
+
+ </body>
+</html>
