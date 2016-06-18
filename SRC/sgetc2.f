@@ -98,7 +98,7 @@
 *> \author Univ. of Colorado Denver 
 *> \author NAG Ltd. 
 *
-*> \date November 2013
+*> \date June 2016
 *
 *> \ingroup realGEauxiliary
 *
@@ -111,10 +111,10 @@
 *  =====================================================================
       SUBROUTINE SGETC2( N, A, LDA, IPIV, JPIV, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.5.0) --
+*  -- LAPACK auxiliary routine (version 3.6.1) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2013
+*     June 2016
 *
 *     .. Scalar Arguments ..
       INTEGER            INFO, LDA, N
@@ -146,13 +146,31 @@
 *     ..
 *     .. Executable Statements ..
 *
+      INFO = 0
+*
+*     Quick return if possible
+*
+      IF( N.EQ.0 )
+     $   RETURN
+*
 *     Set constants to control overflow
 *
-      INFO = 0
       EPS = SLAMCH( 'P' )
       SMLNUM = SLAMCH( 'S' ) / EPS
       BIGNUM = ONE / SMLNUM
       CALL SLABAD( SMLNUM, BIGNUM )
+*
+*     Handle the case N=1 by itself
+*
+      IF( N.EQ.1 ) THEN
+         IPIV( 1 ) = 1
+         JPIV( 1 ) = 1
+         IF( ABS( A( 1, 1 ) ).LT.SMLNUM ) THEN
+            INFO = 1
+            A( 1, 1 ) = SMLNUM
+         END IF
+         RETURN
+      END IF
 *
 *     Factorize A using complete pivoting.
 *     Set pivots less than SMIN to SMIN.
