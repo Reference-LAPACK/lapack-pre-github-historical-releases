@@ -28,7 +28,7 @@
 *****************************************************************************
 * Contents: Native high-level C interface to LAPACK function clantr
 * Author: Intel Corporation
-* Generated November 2015
+* Generated June 2016
 *****************************************************************************/
 
 #include "lapacke_utils.h"
@@ -51,8 +51,7 @@ float LAPACKE_clantr( int matrix_layout, char norm, char uplo, char diag,
     }
 #endif
     /* Allocate memory for working array(s) */
-    if( LAPACKE_lsame( norm, 'i' ) || LAPACKE_lsame( norm, '1' ) ||
-        LAPACKE_lsame( norm, 'O' ) ) {
+    if( LAPACKE_lsame( norm, 'i' ) ) {
         work = (float*)LAPACKE_malloc( sizeof(float) * MAX(1,MAX(m,n)) );
         if( work == NULL ) {
             info = LAPACK_WORK_MEMORY_ERROR;
@@ -63,8 +62,7 @@ float LAPACKE_clantr( int matrix_layout, char norm, char uplo, char diag,
     res = LAPACKE_clantr_work( matrix_layout, norm, uplo, diag, m, n, a, lda,
                                 work );
     /* Release memory and exit */
-    if( LAPACKE_lsame( norm, 'i' ) || LAPACKE_lsame( norm, '1' ) ||
-        LAPACKE_lsame( norm, 'O' ) ) {
+    if( LAPACKE_lsame( norm, 'i' ) ) {
         LAPACKE_free( work );
     }
 exit_level_0:
